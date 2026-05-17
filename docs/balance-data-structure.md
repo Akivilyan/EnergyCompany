@@ -1,12 +1,14 @@
-# 数值、成就与商业化配置规划
+# 数值与商业化配置规划
 
 ## 1. 文档定位
 
 本文档只讨论数据配置层：
 - 数值表怎么拆
 - 应该做成哪些文件
-- 成就和负责人系统如何配置
+- 事件、公司等级、区域解锁与总监岗位（IAP）如何配置
 - 行业里更稳妥的落地方式是什么
+
+与 [`game-core-design.md`](./game-core-design.md) 对齐：**无成就系统**、**无抽卡**；社会价值**按月结算**；商业化**首发仅广告**，后续仅两档一次性买断礼包。
 
 ## 2. 推荐的配置管理方式
 
@@ -25,8 +27,8 @@
 数据库只适合后续做：
 - 用户存档
 - 排行榜
-- 抽卡记录
-- 付费订单
+- **付费订单 / IAP 解锁状态**（财务总监、技术总监、去广告等）
+- 广告相关统计（若需要）
 
 不适合用来承载静态玩法配置。
 
@@ -43,10 +45,10 @@ design-data/
   technology_tree.xlsx
   acquisition_targets.xlsx
   loan_tiers.xlsx
+  company_level_thresholds.xlsx
   event_pool.xlsx
-  achievements.xlsx
-  directors.xlsx
-  gacha_pool.xlsx
+  executive_roles.xlsx
+  iap_offers.xlsx
 ```
 
 程序导出目录建议：
@@ -60,11 +62,13 @@ assets/config/
   technology_tree.json
   acquisition_targets.json
   loan_tiers.json
+  company_level_thresholds.json
   event_pool.json
-  achievements.json
-  directors.json
-  gacha_pool.json
+  executive_roles.json
+  iap_offers.json
 ```
+
+**不纳入首版配置目录**：`achievements`、`gacha_pool`、多稀有度负责人收集表等（与当前玩法边界一致）。
 
 ## 4. 必要数值表
 
@@ -83,7 +87,7 @@ assets/config/
 - `wind_tag`
 - `solar_tag`
 - `default_color`
-- `unlock_company_level`
+- `unlock_company_level`（达到该**公司等级**后，本区方可进入**可经营**状态；具体区名与地图容量待定，见玩法文档第 9 章示例骨架）
 
 ### 4.2 区域节点表 `region_nodes`
 描述区域内的中心城市、农村、边区单位。
@@ -158,38 +162,61 @@ assets/config/
 - `interest_rate_annual`
 - `term_years`
 - `unlock_company_level`
-- `unlock_social_value`
+- `unlock_social_value`（可选，与等级阈值二选一或并用，由策划定）
 
-### 4.8 事件池表 `event_pool`
+### 4.8 公司等级阈值表 `company_level_thresholds`
+与公司等级、区域解锁、贷款档位挂钩。
+
+建议字段：
+- `company_level`
+- `cumulative_social_value_min`（累计社会价值达到此值且月度检视通过则升至该级；**只升不降**）
+- `regions_unlocked_count` 或 `unlock_region_ids`（二选一：用数量由程序按表排序发放，或显式列出 `region_id` 列表；地图定稿后再填具体区名）
+- `notes`（策划备注，不导出或导出时忽略）
+
+### 4.9 事件池表 `event_pool`
+与玩法文档第 16 章对齐：首版优先 **资金投入**、**资金收入**、**研发加快/减慢**；原材料、施工进度等慎用。
+
 建议字段：
 - `event_id`
 - `name`
-- `event_type`
+- `event_type`（如 `policy` / `market` / `disaster`）
 - `duration_months`
 - `trigger_rule`
-- `effect_type`
+- `effect_type`（如 `build_cost_mult`、`income_mult`、`research_months_delta`、`operating_cost_mult`、`one_time_cash` 等）
 - `effect_value`
+- `target_scope`（全局 / 指定能源类型 / 指定科技分支等，可选）
 - `flavor_text`
 
 ## 5. 社会价值数值结构
 
 建议每个区域的社会价值在数据层拆成：
 - `base_social_value`
-- `supply_value_cap`
-- `green_value_cap`
+- `supply_value_cap`（= `base_social_value * 0.8`）
+- `green_value_cap`（= `base_social_value * 0.2`）
 
-推荐规则：
-- `supply_value_cap = base_social_value * 0.8`
-- `green_value_cap = base_social_value * 0.2`
+**月度结算**（每次 `下一月` 后，对每个**已解锁可经营**地区）：
+- `monthly_supply = supply_value_cap * current_supply_satisfaction_rate`
+- `monthly_green = green_value_cap * clean_supply_ratio`
 
-示例：
-- 农村：100 -> 80 + 20
-- 小城市：500 -> 400 + 100
-- 大城市：3000 -> 2400 + 600
+其中：
+- `current_supply_satisfaction_rate`：当月供能满足率（0–1）
+- `clean_supply_ratio`：清洁供能占比（未配环保火电不计入清洁）
+
+当月公司社会价值增量 = 各已经营地区 `monthly_supply + monthly_green` 之和；允许为**负**（例如供能率骤降），累加到**累计社会价值**。
+
+示例基准：
+- 农村：100 → 80 + 20
+- 小城市：500 → 400 + 100
+- 大城市：3000 → 2400 + 600
 
 这样能直接表达：
-- 未配环保火电满供只能拿到 80%
-- 清洁供能或带环保火电可以吃满 100%
+- 未配环保火电满供只能拿到约 80% 的理论上限
+- 清洁供能或带环保火电可吃满 100%
+
+**存档 / UI 建议额外字段**（运行时，非静态表）：
+- `cumulative_social_value`
+- `company_level`（历史最高等级，不随累计值回落而降级）
+- `progress_to_next_level`（相对下一级阈值的进度，用于经验条展示）
 
 ## 6. 能源规则的数值落点
 
@@ -216,153 +243,51 @@ assets/config/
 
 ## 7. 年度经营数值
 
-年度报告建议汇总以下数据：
+年度报告建议汇总以下数据（社会价值由 **12 次月度结算** 累加或按月列表展示）：
 - 年度总建设费用
 - 年度总研发费用
 - 年度总运营费用
 - 年度总收入
 - 年度净结果
-- 年度新增社会价值
-- 年度新增清洁供能社会价值
-- 被竞争公司夺走或夺回的区域
+- **全年社会价值净变动**（供给 + 绿色分项可选）
+- **各月社会价值明细**（可选列，便于复盘）
 
-## 8. 成就配置
+## 8. 总监岗位与 IAP 配置（后续版本）
 
-### 8.1 建议做成独立表 `achievements`
+首发无内购时，程序可仅用 `executive_roles` 定义**未购买时的 baseline**，或整表在 IAP 开放后再读。
+
+### 8.1 岗位效果表 `executive_roles`
+全游戏仅两个可购买岗位 + 无抽卡、无升星、无碎片。
+
 建议字段：
-- `achievement_id`
-- `name`
-- `description`
-- `category`
-- `condition_type`
-- `condition_value`
-- `reward_type`
-- `reward_value`
-- `icon_id`
+- `role_id`（如 `cfo`、`cto`）
+- `name`（财务总监、技术总监）
+- `slot_key`（公司管理界面岗位键）
+- `effect_type` / `effect_value`（可多行或 JSON 列表达多项加成）
+- `requires_iap_offer_id`（空表示免费 baseline 或无此岗位）
 
-### 8.2 成就分类建议
-- 科技类
-- 经营类
-- 地图类
-- 挑战类
-- 隐藏类
+能力方向（与玩法文档一致）：
+- **财务总监**：贷款、收购、原材料、现金流相关
+- **技术总监**：研发周期、研发费用相关（建设类是否并入技术总监或 baseline，待定）
 
-### 8.3 你已经提出的成就可直接入表
-- `璀璨的放射`
-  - 条件：完成核电站关键科技研发
-- `卖油的娘子水梳头`
-  - 条件：连续 12 个月资金低于某阈值
-- `两都一十三区`
-  - 条件：全地图所有区域建立供能覆盖
-
-### 8.4 成就数值建议
-成就奖励不要给强数值。
-
-建议只给：
-- 头像框
-- 称号
-- 图鉴点亮
-- 小额非核心资源
-
-原因：
-- 成就应服务于目标感和回放价值
-- 不应绑架主经营平衡
-
-## 9. 战略支撑负责人系统配置
-
-### 9.1 配置表 `directors`
-建议字段：
-- `director_id`
-- `name`
-- `rarity`
-- `class_type`
-- `base_effect_type`
-- `base_effect_value`
-- `star_cap`
-- `shard_required`
-- `exclusive_tag`
-
-### 9.2 稀有度
-当前建议保留三档：
-- A
-- S
-- SSS
-
-### 9.3 类型
-- 建设
-- 科研
-- 财务
-
-### 9.4 升星规则
-- A：最高 5 星
-- S：最高 4 星
-- SSS：最高 3 星
-
-建议数据表达：
-- A 和 S 只能用本体升星
-- SSS 可用本体或碎片合成
-
-### 9.5 SSS 碎片规则
-建议：
-- `5` 个 SSS 碎片合成 1 个 SSS 负责人
-
-原因：
-- 门槛足够低，玩家有明确积累感
-- 不会把系统做得过重
-
-## 10. 抽卡池配置
-
-### 10.1 配置表 `gacha_pool`
-建议字段：
-- `pool_id`
-- `item_type`
-- `item_id`
-- `rarity`
-- `weight`
-- `is_pity_target`
-
-### 10.2 卡池规则建议
-- 10 抽保底 1 个 S 或以上
-- 50 抽保底 1 个 SSS 本体
-
-### 10.3 概率建议
-这里给一个可执行的首版方案：
-- A 级本体：84%
-- S 级本体：10%
-- SSS 碎片：5%
-- SSS 本体：1%
-
-这样满足两个目标：
-- SSS 碎片概率约为 S 的一半
-- 常规抽取中仍保留直接出 SSS 的极小概率
-
-### 10.4 十连与付费对应
-用户提出的方向可以直接保留：
-- 10 元 = 10 抽
-
-这部分是商业决策，不属于玩法平衡本体，但要在配置层独立出来，方便后续调整。
-
-## 11. 首充礼包配置
-
-建议做成独立表 `first_purchase_offers`。
-
+### 8.2 买断礼包表 `iap_offers`
 建议字段：
 - `offer_id`
-- `price`
-- `reward_type`
-- `reward_value`
-- `extra_slot`
-- `ad_free`
+- `price_cny`
+- `grant_role_id`（可空）
+- `ad_free`（boolean）
+- `repeatable`（首版两档均为 `false`，一次性买断）
 
-可录入的首版方案：
-- 6 元：S 级负责人
-- 30 元：SSS 级负责人 + 负责人栏位 +1
-- 60 元：免广告 + SSS 级负责人 + 负责人栏位 +1
+首版规划录入（后续版本开放支付时启用）：
+- `6` 元：解锁 **财务总监** 岗位
+- `30` 元：解锁 **技术总监** 岗位 + **去广告**
 
-## 12. 为什么建议“文件夹 + 多张表”，而不是一个大文件
+**不配置**：60 元档、十连抽、卡池权重、保底、碎片合成、负责人稀有度与升星。
+
+## 9. 为什么建议“文件夹 + 多张表”，而不是一个大文件
 
 原因很直接：
-- 区域、设施、科技、事件、成就、卡池不是一个维度的数据
+- 区域、设施、科技、事件、等级阈值、IAP 不是一个维度的数据
 - 全塞进一个表，后期必然不可维护
 - 分表后逻辑清晰，程序导出也简单
 
@@ -371,19 +296,24 @@ assets/config/
 - 每个系统一张表
 - 构建时导出为 JSON
 
-## 13. 当前结论
+## 10. 当前结论
 
-当前阶段建议你把数值与配置工作落成：
+当前阶段建议把数值与配置工作落成：
 - 一个 `design-data/` 文件夹
-- 10 张左右 Excel 配置表
+- 约 **10 张** Excel 配置表（无成就表、无抽卡表）
 - 程序端统一导出 JSON
 
 其中三张最优先：
 - `technology_tree.xlsx`
 - `facility_config.xlsx`
-- `region_base.xlsx`
+- `region_base.xlsx`（含 `unlock_company_level`；具体区名与解锁列表待地图定稿后填充）
 
-因为这三张表决定了：
-- 玩家能建什么
-- 建设花多少钱
-- 地图差异是否成立
+其次建议尽早定稿：
+- `company_level_thresholds.xlsx`（等级 ↔ 累计社会价值 ↔ 可经营区域）
+- `event_pool.xlsx`（资金 / 收入 / 研发节奏三类为主）
+
+因为上述表决定了：
+- 玩家能建什么、花多少钱
+- 地图与区域差异是否成立
+- 每月社会价值与等级节奏是否可玩
+- 事件能否提供足够的经营起伏
