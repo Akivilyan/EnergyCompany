@@ -2,7 +2,7 @@
 id: gdd/03-social-value
 title: 社会价值与公司等级
 status: draft
-version: 0.5.3
+version: 0.6.2
 sources:
   - docs/game-core-design.md#8
   - docs/game-core-design.md#9
@@ -12,7 +12,9 @@ depends_on:
   - gdd/00-vision
   - gdd/01-core-loop
   - gdd/02-economy
-open_questions: []
+  - gdd/04-energy-supply
+open_questions:
+  - 环保火电 / 环保核电 科技节点正式显示名称（T07 文案）
 ---
 
 # 社会价值与公司等级
@@ -41,7 +43,8 @@ open_questions: []
 M9 伪代码：
 
 ```text
-social_value_current = 按已解锁范围、当月供能/清洁表现，用 80/20 公式汇总
+social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_factor
+// eco_cap_factor: 全环保 1.0，否则 0.8；见下文
 // 直接赋值，可小于上月结果
 ```
 
@@ -80,7 +83,7 @@ social_value_current = 按已解锁范围、当月供能/清洁表现，用 80/2
 | 等级不降 | 已到 III 级不会因社会价值跌破旧门槛而回到 II 级 |
 | 与供能条 | **两套数**；玩家勿把 200/300 当成社会价值 |
 
-分地区 **供给/绿色** 明细（金/绿条）仍在公司界面展示，与 **升级用社会价值总数** 并列（UI：T29）。
+公司界面按城展示 **供能满足** 与 **是否全环保**（或环保上限 80% 提示），与 **升级用社会价值总数** 并列（UI：T29）。
 
 ---
 
@@ -172,21 +175,63 @@ social_value_current = 按已解锁范围、当月供能/清洁表现，用 80/2
 
 ---
 
-## 双组成公式（按城市）
+## 城市社会价值公式（按城市）
 
-每个 **城市** 配置 `city_base_social_value`（或继承所在区/都的基准，数值表在 `data/`，T07 与 region 表对齐）：
+每个 **城市** 配置 `city_base_social_value`（数值表 `data/`，T07 与 region 表对齐）。
+
+**已废止**：原「80% 供给 + 20% 绿色 × 清洁占比」双轨公式。
+
+### 现行公式
 
 ```text
-supply_part = city_base_social_value × 0.8 × satisfaction_rate_city
-green_part  = city_base_social_value × 0.2 × clean_supply_ratio_city
-city_sv_monthly = supply_part + green_part
+eco_cap_factor_city = 1.0   if city_fully_eco_supply else 0.8
+
+city_sv_monthly = city_base_social_value
+                × satisfaction_rate_city
+                × eco_cap_factor_city
 
 social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 ```
 
-未配环保火电满供 → 该城当月最多 **80%** 理论 `city_base`。
+| 因子 | 来源 |
+|------|------|
+| `satisfaction_rate_city` | M4 供能满足率（[04-energy-supply.md](./04-energy-supply.md)） |
+| `city_fully_eco_supply` | M4：本市设施均 `is_eco`；**外电视同环保**、不追溯（见 [04-energy-supply.md](./04-energy-supply.md)） |
 
-公司界面明细：省内 **按城列表**；**都** 作为 **单城一行** 展示；**升级总数** = 上述所有城市之和。
+### 环保上限规则（核心）
+
+| 条件 | `eco_cap_factor` | 满供时该城社会价值 |
+|------|------------------|-------------------|
+| **全环保**（本市仅风/光/水，或火/核均已环保升级；或无本市机组） | **1.0** | **100%** × `city_base` |
+| **本市存在任意非环保机组**（含 1 台未升级火电/核电） | **0.8** | **最多 80%** × `city_base` |
+
+说明：
+
+- **供能 100% 但有一台未升级火电/核电** → 满足率 1.0，但 `eco_cap_factor = 0.8` → 该城只得 **`city_base × 80%`**。
+- **纯风/光/水即可满供**，或 **无本市机组、靠外电满供** → 全环保 → **`city_base × 100%`**（满足率 100% 时）。
+- 环保升级 **不替代** 供能建设；两维独立：**盖得多**（满足率）与 **盖得绿**（本市机组是否全环保；外电视同环保）。
+- **后期**：超级水电（单座约 **10 城 / 2 省**）+ 电网外送，用电城减少本地火/核，兼顾 100% 社会价值潜力与高运维取舍（见 [04-energy-supply.md](./04-energy-supply.md#后期供能尺度与玩家取舍策划意图)）。
+
+### 与旧设计的对照
+
+| 旧规则 | 新规则 |
+|--------|--------|
+| 清洁占比折 20% 绿色条 | 取消；改为 **0.8 / 1.0 全城系数** |
+| 核电默认算清洁 | 核电 **默认非环保**，须 **环保核电** 科技 + 机组升级 |
+| 火电靠环保模块 | 改为 **环保火电** 科技 + 机组升级，与风光 max 同级思路 |
+
+公司界面明细：省内 **按城列表**；**都** 单行；展示建议含「本月社会价值 / 满额潜力」「是否全环保」。
+
+---
+
+## 环保身份（摘要）
+
+设施 `is_eco` 定义见 [04-energy-supply.md](./04-energy-supply.md#环保供能判定社会价值用)：
+
+| 类型 | 默认 |
+|------|------|
+| 风、光、水 | 环保 |
+| 火电、核电 | 非环保 → 环保科技 + 机组升级后为环保 |
 
 ---
 
@@ -195,9 +240,9 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 等级 | 解锁 |
 |------|------|
 | **IV** | 核电科技；核电建在 **省内中心大城市** 或 **都（那座特大城本身）** |
-| **V** | 超级水电科技；全图 **2** 座超级水电槽位；水电装机约核电 **10×** |
+| **V** | 超级水电科技；全图 **2** 座槽位；单座供能尺度约 **10 座城市（≈2 省）**，两座约 **4 省**（与核电「单机大、数量有限」互补，数值表校准） |
 
-常规水电：近江河城市可建。超级水电经主干连中心城/都。区域网损 **100** / 主干 **500**（暂定，见 [06-grid.md](./06-grid.md)）。
+常规水电：近江河城市可建。超级水电经主干向多城/省输送。区域网损 **100** / 主干 **500**（暂定，见 [06-grid.md](./06-grid.md)）。
 
 ---
 
@@ -234,6 +279,9 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 区 | **省壳**，社会价值 = 其内 **各城之和** |
 | 都 | **单座特大城**，社会价值 = **该城 1 条** |
 | M9 汇总 | **每个城市社会价值求和** |
+| 社会价值公式 | `city_base × 满足率 × (全环保 1.0 / 否则 0.8)` |
+| 火/核 | 默认非环保；环保科技 + 机组升级 |
+| 环保范围 | **仅本市机组**；**外电视同环保**；不追溯、外送不连带 |
 
 ---
 
@@ -245,3 +293,6 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 0.5.1 | 2026-05-19 | 区=省壳；社会价值按各城市求和 |
 | 0.5.2 | 2026-05-19 | 都=不隶属于区的大号单城；扁平地图；都直进城市界面 |
 | 0.5.3 | 2026-05-19 | 明确都≠省壳、都=单城非多城容器 |
+| 0.6.0 | 2026-05-22 | 废止 80/20 双轨；全环保 100% 潜力/否则 80%；火核默认非环保 |
+| 0.6.1 | 2026-05-22 | 环保处罚仅本市；受入外电不追溯、外送不连带 |
+| 0.6.2 | 2026-05-22 | 外电视同环保；超级水电 10 城/省尺度；后期电网经营意图 |
