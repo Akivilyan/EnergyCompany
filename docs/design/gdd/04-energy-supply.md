@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.3.3
+version: 0.4.1
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -15,8 +15,8 @@ depends_on:
   - gdd/02-economy
 open_questions:
   - 风能 max / 太阳能 max / 环保火电 / 环保核电 机组升级工期月数 N（架构 locked 后精算，T37）
-  - 科技树储能节点与 wind_max、solar_max 的具体拓扑（见 07-tech，后续规划）
-  - 「环保火电」「环保核电」科技节点的正式显示名称（文案，T07）
+  - 科技树多条平行线、交点与分支拓扑（见 [07-tech.md](./07-tech.md)，T09）
+  - wind_max / solar_max 升级后各设施 `output_capacity_mw` 具体取值（数值表，T37）
   - 超级水电单座 MW、火/核单城上限、运维倍率等（GDD 定型后统一精算）
 ---
 
@@ -73,42 +73,77 @@ satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
 
 ## 有效供能
 
-**有效供能** 不是设施铭牌加总，而是当月可用于满足该城需求的 **修正后出力**。
+**有效供能** 不是设施 **产能量** 简单加总，而是当月可用于满足该城需求的 **修正后出力**。
 
-### 计算思路（单城）
+### 设施属性与展示（产能）
+
+每座设施在配置表中有稳定字段（实现名见 `data/`，T37）；**玩家文案统一用「产能量」**，不用「铭牌」「×2」等策划黑话。
+
+| 字段（data） | 玩家可见名 | 说明 |
+|--------------|------------|------|
+| `facility_type` + `tier` | **设施名·lv** | 例：风电·2级、火电·4级 |
+| `output_capacity_mw` | **产能量** | 该设施设计出力（MW）；升级 **改表中的值**，非固定倍率公式 |
+| `monthly_operating_cost` | **运行费用** | x/月 |
+| `build_cost_total` / 工期 | **建设费用**、工期 | 仅 **建造列表** 与确认框展示 |
+
+| 界面 | 展示 |
+|------|------|
+| **建造列表**（点空位） | 每项至少：**设施名-lv**、**建设费用**、**产能量**、**运行费用**（详见 [05-map-and-slots.md](./05-map-and-slots.md)） |
+| **城内设施**（三国志12 位图） | 常显：状态图标（在建/运行/升级中等）；**点按** 设施 → 详情（例：风电·2级，产能量：100MW，运行费用：0/月） |
+| **升级后** | 产能量、运行费用等 **以升级目标行的配置为准**（可升可不变，由表决定） |
+
+### 分层公式（设施 → 城市 → 电网）
+
+**设施供能**（不算电网；仅已完工机组）：
 
 ```text
-对每座已完工、可发电的设施 i（本市）：
-    unit_i = nominal_output_i              // 含 wind_max / solar_max 升级后的铭牌（见下文）
-           × resource_factor_i            // 风/光地区标签（一般 100%、丰富 200%）
-           × grid_factor_i                // 并网、对外输送时的链路损耗（见 06-grid）
-           × event_factor_i               // 事件倍率（若有）
-
-import_supply_city = Σ 经区域/主干电网送入本城的电力_j
-                     // 扣链路固定损耗后计入；模拟「外电支援本市」
-
-gross_supply_city = Σ unit_i + import_supply_city
-
-effective_supply_city = apply_city_losses( gross_supply_city )   // 城市级汇总损耗（若有）
+facility_supply_i = output_capacity_i × resource_factor_i × event_factor_i
 ```
 
-**跨城输入**：经电网送入的电力 **计入受电城市的 `effective_supply_city`**，只影响 **供能满足率**。电网用于调配余缺；固定损耗等抽象见 [06-grid.md](./06-grid.md)。
+| 因子 | 作用层级 |
+|------|----------|
+| `output_capacity` | 设施表 / 升级表 |
+| `resource_factor` | 风/光等地区标签（火电/核电/水电通常为 1） |
+| `event_factor` | 事件临时修正 |
+| **电网** | **不在设施层**；在「并网岛」层一次结算（见 [06-grid.md](./06-grid.md)） |
 
-**环保判定不追溯电网**：只查 **本市机组** `is_eco`；**外电输入一律视同环保**（不参与处罚、不追溯来源）；本市 **外送** 不使他城受罚。避免单城非环保拖垮全网。
+**城市本地发电**：
+
+```text
+local_supply_city = Σ facility_supply_i   // 本市所有已完工机组
+```
+
+**城市有效供能**（供满足率用）：
+
+```text
+net_import_city = 电网调剂结果（可正可负；见 06-grid「并网岛」算法）
+effective_supply_city = local_supply_city + net_import_city
+satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
+```
+
+| 展示项 | 含义 |
+|--------|------|
+| `local_supply` | 本市机组合计 |
+| `net_import` | **受入 − 外送** 的净值；正=净受入，负=净外送 |
+| `effective_supply` | 本地 + 净值；用于 `200/300` 式供能条 |
+
+电网采用 **并网岛 + 固定线损 + 按需求比例分配**（[06-grid.md](./06-grid.md)，**已确认**）；未联网城市仅本地发电。
+
+**环保判定不追溯电网**：只查 **本市机组** `is_eco`；**外电输入一律视同环保**；本市外送不使他城受罚。
 
 ### 影响因素清单
 
 | 因素 | 说明 |
 |------|------|
-| 设施额定出力 | `facility_config.nominal_output_mw` |
+| 产能量 | `facility_config.output_capacity_mw`（旧表字段 `nominal_output_mw` 同义，T37 统一命名） |
 | 是否完工 | 在建不计入；**完工次月** 起计入（与 [02-economy.md](./02-economy.md) 一致） |
-| 地区资源禀赋 | 风能标签、日照档位、`fossil_energy` 等（后者主要影响 **运营成本**，见经济章） |
-| 机组升级档位 | `wind_max` / `solar_max` → 风/光铭牌 ×2；环保火电/核电科技 → 火/核机组标为 **环保** |
+| 地区资源禀赋 | 风能标签、日照档位、`fossil_energy` 等（后者主要影响 **运行费用**，见经济章） |
+| 机组升级 | `wind_max` / `solar_max`、环保改造、城内 **[升级]** → 更新设施实例上的产能量/费用/`is_eco` 等，**取值来自升级表**，非全局 ×2 |
 | 环保身份 `is_eco` | 仅 **本市设施** 参与「全环保」判定；电网受入/外送 **不追溯** |
-| 电网接入与损耗 | 本市出力可经网外送；**外电输入计入受电城有效供能**；链路固定损耗（[06-grid.md](./06-grid.md)） |
+| 电网 | 在 **并网岛** 层扣固定线损并分配 `net_import`；设施层不算电网（[06-grid.md](./06-grid.md)） |
 | 事件 | 可临时修正出力、成本或收入（[08-events.md](./08-events.md)） |
 
-具体加权顺序与 **`grid_factor`** 在 Feature **T16** 与电网章定稿；本章只约束 **输入输出语义**。
+具体并网算法在 **T16** 与 [06-grid.md](./06-grid.md) 定稿；本章只约束 **分层语义**（设施 / 城市 / 电网）。
 
 ### 总需求 `demand_city`
 
@@ -162,7 +197,7 @@ city_fully_eco_supply = true
 - 本市无机组、100% 靠外电满供 → **全环保**（外电视同环保 + 本市无设施）。
 - 后期鼓励：**联网受入** 超级水电/风光外送，同时 **拆除或不再新建** 本市高运维火电/核电（见下节「后期供能尺度」）。
 
-环保升级 **不提高** 铭牌（除非另有 max 类科技）；主要改变 `is_eco` 与 **运营成本**（待表）。
+环保升级 **默认不提高产能量**（除非表中为该升级单独配置了更高 `output_capacity_mw`）；主要改变 `is_eco` 与 **运行费用**（待表）。
 
 ### 示例
 
@@ -186,7 +221,7 @@ city_fully_eco_supply = true
 |------|------|
 | 建设费用 / 工期 | 分期扣款见 [02-economy.md](./02-economy.md) |
 | 月运营成本 | 受地区 `operation_cost_modifier`、`fossil_energy` 等影响 |
-| 有效供能能力 | 额定出力 × 本章资源修正 |
+| 有效供能能力 | 产能量 × 本章资源修正 |
 
 **不在首版 GDD 展开**：机组级热效率曲线、燃料库存、弃风弃光详细仿真。
 
@@ -195,7 +230,7 @@ city_fully_eco_supply = true
 | 项 | 规则 |
 |----|------|
 | 定位 | 前期易上量、运维可调；**默认非环保**（`is_eco = false`） |
-| 环保路线 | 科技树 **环保火电** 节点（正式名称可更有设计感，见 `07-tech`）→ 研发后可对 **已完工** 火电机组 **升级**（工期 N 月，待表）→ 完成后 `is_eco = true` |
+| 环保路线 | 科技树节点 **`eco_thermal`**（显示名 **清洁煤电改造**，见 [05-map-and-slots.md](./05-map-and-slots.md)）→ 研发后可对 **已完工** 火电机组 **升级**（工期 N 月，待表）→ 完成后 `is_eco = true` |
 | 运维 | 环保升级后 **月运营成本上升**（倍率待表）；`fossil_energy` 地区标签仍只减运维，不改 `is_eco` |
 
 ### 水电 `hydro`
@@ -211,15 +246,14 @@ city_fully_eco_supply = true
 | 项 | 规则 |
 |----|------|
 | 环保 | **是** |
-| 资源依赖 | 出力随地区 **风能标签** 修正（乘在铭牌上） |
+| 资源依赖 | 出力随地区 **风能标签** 修正（乘在产能量上） |
 | `wind_normal`（风能一般） | `resource_factor = **100%**`（×1.0） |
 | `wind_rich`（风能丰富） | `resource_factor = **200%**`（×2.0） |
-| 建设位 | 每城风能建设位上限（[05-map-and-slots.md](./05-map-and-slots.md)） |
+| 建设位 | 每城 **通用建设位** 上限；同位可建任意已解锁设施类型（[05-map-and-slots.md](./05-map-and-slots.md)） |
 
 ```text
-unit_wind = nominal_output × wind_region_factor × grid_factor × event_factor
-// wind_region_factor: 一般 1.0，丰富 2.0
-// nominal_output: 基础铭牌；若已做 max 升级则为升级后铭牌（×2，见下节）
+unit_wind = output_capacity × wind_region_factor × event_factor
+// output_capacity: 取自该设施实例当前配置（tier / 机组升级后的表值）
 ```
 
 建设界面与区域标签须 **明示** 本地风资源档位。
@@ -235,61 +269,42 @@ unit_wind = nominal_output × wind_region_factor × grid_factor × event_factor
 | `solar_rich`（光照丰富） | `solar_region_factor = **200%**`（×2.0） |
 
 ```text
-unit_solar = nominal_output × solar_region_factor × grid_factor × event_factor
-// solar_region_factor: 一般 1.0，丰富 2.0
-// nominal_output: 含 solar_max 升级后铭牌 ×2
+unit_solar = output_capacity × solar_region_factor × event_factor
 ```
 
 建设页须明示光照资源档位；标签体系与风能、化石能源一致。
 
-### 风光满配升级（`wind_max` / `solar_max`）
+### 风光机组升级（`wind_max` / `solar_max`）
 
-后期主力玩法：科技解锁后对 **已有** 风/光机组升级，提高铭牌而非改地区标签。
-
-#### 科技树关系（原则）
-
-| 节点 | 作用 |
-|------|------|
-| **储能设施**（科技） | 前置；与风能分支、太阳能分支 **分别交汇** |
-| **`wind_max`** | 储能节点 + 风能分支汇合；研发完成后允许风电机组升级 |
-| **`solar_max`** | 储能节点 + 太阳能分支汇合；研发完成后允许光伏机组升级 |
-
-具体节点拓扑、前置与费用在 [07-tech.md](./07-tech.md) 规划；本章只约束 **玩法效果**。
-
-#### 机组升级（玩家操作）
+科技解锁后，城内 **已完工** 风/光设施可点 **[升级]**（与 [05-map-and-slots.md](./05-map-and-slots.md) 城内升级一致）：升级 **改该设施实例的属性**，不是「产能量 ×2」的隐藏规则。
 
 | 项 | 规则 |
 |----|------|
-| 前置 | 已研发对应 **`wind_max`** 或 **`solar_max`** |
-| 对象 | 城内 **已完工** 的风电/光伏设施（逐台或批量由 Feature 定） |
-| 工期 | **N 个月**（数值表配置，与建设类似按月推进） |
-| 效果 | 升级完成后，该机组 **`nominal_output` 变为升级前的 2 倍** |
-| 与地区系数 | 先定铭牌（含升级 ×2），再乘 `wind_region_factor` / `solar_region_factor` 等 |
+| 前置 | 已研发 **`wind_max`** 或 **`solar_max`**（节点在科技树中的位置见 [07-tech.md](./07-tech.md)） |
+| 对象 | 城内已完工风电 / 光伏（逐台或批量由 Feature 定） |
+| 工期与费用 | 升级专用表或 `facility_upgrade_config`（T37） |
+| **产能量** | 完成后写入升级目标行的 **`output_capacity_mw`**（例：100→200 由表配置，**禁止**在代码里写死 ×2） |
+| **运行费用** | 同步为目标行 `monthly_operating_cost`（可升可不变） |
 
-**风电示例**（基础铭牌 100 MW，风能丰富区，已完成 `wind_max` 升级）：
-
-```text
-nominal_output = 200 MW
-unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
-```
-
-**光伏示例**（基础铭牌 100 MW，光照丰富区，已完成 `solar_max` 升级）：
+**示例**（表中配置：风电·2级 100MW → `wind_max` 升级后 200MW，风能丰富区）：
 
 ```text
-nominal_output = 200 MW
-unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
+升级前：unit = 100 × 2.0 = 200 MW
+升级后：unit = 200 × 2.0 = 400 MW   // 200 来自表，不是 100×2 的硬编码公式
 ```
 
-升级工期、升级费用（若有）进 `facility_config` / 升级专用表（T37）。
+#### 科技树结构（本章不展开）
+
+科技树为 **多条平行线、有交点、有分支**；`wind_max` / `solar_max` 与储能、风/光线的交汇关系在 **[07-tech.md](./07-tech.md)**（T09）专章定义。本章只约束 **升级后的设施属性语义**。
 
 ### 火/核环保升级（与风光 max 并列）
 
 | 科技节点（工作名） | 研发后效果 |
 |--------------------|------------|
-| **环保火电** | 可对火电机组发起环保升级；完成后 `is_eco = true` |
-| **环保核电** | 可对核电机组发起环保升级；完成后 `is_eco = true` |
+| **`eco_thermal`**（显示名 **清洁煤电改造**） | 可对火电机组发起环保升级；完成后 `is_eco = true` |
+| **`eco_nuclear`**（显示名 **先进核废料处理**） | 可对核电机组发起环保升级；完成后 `is_eco = true` |
 
-规则与 `wind_max` 机组升级类似：**已完工机组**、**N 个月工期**、数值表配置；是否收费待表。节点 **显示名称** 在科技树文案中可另起更有设计感的名字。
+规则与 `wind_max` 机组升级类似：**已完工机组**、**N 个月工期**、数值表配置；是否收费待表。显示名见 [05-map-and-slots.md](./05-map-and-slots.md#科技节点显示名称t07-文案)。
 
 ### 核电 `nuclear`
 
@@ -298,7 +313,7 @@ unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
 | 环保 | **默认否**（`is_eco = false`）；环保核电科技 + 机组升级后为 **是** |
 | 解锁 | 公司 **IV 级** + 核电科技（[03-social-value.md](./03-social-value.md)） |
 | 选址 | **省内中心大城市** 或 **都**（那座特大城本身） |
-| 出力 | 按额定与电网规则计，无风/光式地区折减 |
+| 出力 | 按产能量与电网规则计，无风/光式地区折减 |
 
 ---
 
@@ -351,7 +366,7 @@ unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
 | 计算粒度 | **按城市** |
 | 能源类型 | 火电、水电、风电、太阳能、核电 |
 | 风/光地区系数 | 一般 **100%**；丰富 **200%**（光伏与风电同逻辑） |
-| 风光 max | 储能科技汇合风/光分支 → 铭牌 **×2** |
+| 风光 max | 允许风/光机组 **[升级]**；产能量/费用由 **升级表** 配置 |
 | 火/核环保 | 火电、核电 **默认非环保**；环保科技 + 机组升级 → `is_eco` |
 | 天然环保 | 风、光、水 **始终** `is_eco` |
 | 社会价值衔接 | **全环保** → 100% 潜力；否则 **上限 80%**（与满足率相乘） |
@@ -370,9 +385,9 @@ unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
 | [01-core-loop.md](./01-core-loop.md) | M4 管道步骤；供能 100% 反馈策略 |
 | [02-economy.md](./02-economy.md) | 建设完工次月生效；`fossil_energy` 运维；月收入 |
 | [03-social-value.md](./03-social-value.md) | `satisfaction_rate`、`city_fully_eco_supply` |
-| [05-map-and-slots.md](./05-map-and-slots.md) | 风光建设位、江河/核电槽位 |
+| [05-map-and-slots.md](./05-map-and-slots.md) | 通用建设位、临水/核电选址、地图标注 |
 | [06-grid.md](./06-grid.md) | 并网、区域/主干固定损耗 |
-| [07-tech.md](./07-tech.md) | 储能、`wind_max` / `solar_max`、环保火电/核电、核电/超级水电 |
+| [07-tech.md](./07-tech.md) | 平行线/交点/分支拓扑；`wind_max` / `solar_max`、环保、核电/超级水电 |
 | [08-events.md](./08-events.md) | 临时修正供能或成本 |
 
 ---
@@ -387,8 +402,8 @@ unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
 
 ## 开放问题
 
-1. **`wind_max` / `solar_max` 升级工期 N** 及升级是否收费（数值表，T37）。
-2. **科技树拓扑**：储能节点与风/光分支交汇方式（T07 专章规划）。
+1. **`wind_max` / `solar_max` 升级** 各档 `output_capacity_mw`、工期、费用（数值表，T37）。
+2. **科技树拓扑**：平行线、交点、分支（见 [07-tech.md](./07-tech.md)，T09）。
 
 ---
 
@@ -402,3 +417,6 @@ unit = 200 × 2.0（丰富）= 400 MW（再乘电网、事件）
 | 0.3.1 | 2026-05-22 | 环保判定仅本市机组；电网受入/外送不追溯 |
 | 0.3.2 | 2026-05-22 | 外电视同环保；超级水电 10 城/2 省尺度；后期电网+降本地火核意图 |
 | 0.3.3 | 2026-05-22 | 省内 4–6 城浮动；超级水电改省体量表述；数值定性+后续精算流程 |
+| 0.3.4 | 2026-05-22 | 同步 T07：eco_thermal/eco_nuclear 显示名；移除 T07 文案 open_question |
+| 0.4.0 | 2026-05-22 | 产能量术语；建造列表/设施详情展示；wind_max 改表配置非×2；科技树拓扑 defer 07-tech |
+| 0.4.1 | 2026-05-22 | 设施/城市/电网分层公式；电网 defer 06 并网岛算法 |

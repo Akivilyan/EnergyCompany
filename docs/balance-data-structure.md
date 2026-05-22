@@ -119,18 +119,27 @@ assets/config/
 - `requires_storage`
 - `unlock_tech_id`
 
-### 4.4 电网配置表 `grid_links`
-建议字段：
-- `link_type`
+### 4.4 电网线损常数 `grid_loss_config` + 链路表 `grid_links`
+
+线损规则见 `docs/design/gdd/06-grid.md`。推导后 **取整** 写入配置：
+
+```text
+ordinary_city_reference_demand_mw = round( core_reference_demand_mw × ordinary_city_demand_ratio )
+// ordinary_city_demand_ratio ∈ [1/3, 1/2]
+
+loss_regional_mw  = round( ordinary_city_reference_demand_mw / 4 )
+loss_backbone_mw  = round( ordinary_city_reference_demand_mw )
+```
+
+`grid_loss_config` 建议字段：`core_reference_demand_mw`、`ordinary_city_demand_ratio`、`ordinary_city_reference_demand_mw`、`loss_regional_mw`、`loss_backbone_mw`。
+
+`grid_links` 建议字段：
+- `link_type`（`regional` | `backbone`）
 - `name`
-- `fixed_power_loss`
+- `loss_mw`（运行时从 `grid_loss_config` 按类型读取，或表内冗余取整值）
 - `build_cost_total`
 - `build_months`
 - `unlock_tech_id`
-
-建议首版固定值：
-- 区域链路：`1MW`
-- 主干链路：`1GW`
 
 ### 4.5 科技树配置表 `technology_tree`
 建议字段：

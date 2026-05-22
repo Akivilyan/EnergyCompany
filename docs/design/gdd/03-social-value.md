@@ -2,7 +2,7 @@
 id: gdd/03-social-value
 title: 社会价值与公司等级
 status: draft
-version: 0.6.3
+version: 0.6.4
 sources:
   - docs/game-core-design.md#8
   - docs/game-core-design.md#9
@@ -13,8 +13,7 @@ depends_on:
   - gdd/01-core-loop
   - gdd/02-economy
   - gdd/04-energy-supply
-open_questions:
-  - 环保火电 / 环保核电 科技节点正式显示名称（T07 文案）
+open_questions: []
 ---
 
 # 社会价值与公司等级
@@ -251,7 +250,7 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | **IV** | 核电科技；核电建在 **省内中心大城市** 或 **都（那座特大城本身）** |
 | **V** | 超级水电科技；全图 **2** 座槽位；单座策划尺度约 **2 省** 联网用电、两座约 **4 省**（非固定「10 城」；随各省 4–6 节点浮动，**精算在 data 阶段**） |
 
-常规水电：近江河城市可建。超级水电经主干向多城/省输送。区域网损 **100** / 主干 **500**（暂定，见 [06-grid.md](./06-grid.md)）。
+常规水电：近江河城市可建。超级水电经主干向多城/省输送。线损见 [06-grid.md](./06-grid.md)（单条区域 = 普通城需求 **÷4**，单条主干 = 普通城需求 **全额**；普通城需求 = 中心 **1/3～1/2**）。
 
 ---
 
@@ -308,3 +307,4 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 0.6.1 | 2026-05-22 | 环保处罚仅本市；受入外电不追溯、外送不连带 |
 | 0.6.2 | 2026-05-22 | 外电视同环保；超级水电 10 城/省尺度；后期电网经营意图 |
 | 0.6.3 | 2026-05-22 | 省内 4–6 城浮动、禁 5 城模板；超级水电/数值改为定性+后续精算 |
+| 0.6.4 | 2026-05-22 | 同步 T07：环保科技显示名迁至 05；移除 open_questions |
