@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.4.1
+version: 0.5.0
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -14,9 +14,8 @@ depends_on:
   - gdd/01-core-loop
   - gdd/02-economy
 open_questions:
-  - 风能 max / 太阳能 max / 环保火电 / 环保核电 机组升级工期月数 N（架构 locked 后精算，T37）
   - 科技树多条平行线、交点与分支拓扑（见 [07-tech.md](./07-tech.md)，T09）
-  - wind_max / solar_max 升级后各设施 `output_capacity_mw` 具体取值（数值表，T37）
+  - wind_max / solar_max 同步后各设施 `output_capacity_mw` 具体取值（数值表，T37）
   - 超级水电单座 MW、火/核单城上限、运维倍率等（GDD 定型后统一精算）
 ---
 
@@ -138,7 +137,7 @@ satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
 | 产能量 | `facility_config.output_capacity_mw`（旧表字段 `nominal_output_mw` 同义，T37 统一命名） |
 | 是否完工 | 在建不计入；**完工次月** 起计入（与 [02-economy.md](./02-economy.md) 一致） |
 | 地区资源禀赋 | 风能标签、日照档位、`fossil_energy` 等（后者主要影响 **运行费用**，见经济章） |
-| 机组升级 | `wind_max` / `solar_max`、环保改造、城内 **[升级]** → 更新设施实例上的产能量/费用/`is_eco` 等，**取值来自升级表**，非全局 ×2 |
+| 科技驱动同步 | `wind_max` / `solar_max`、环保、`facility_build_tier_max` 等节点 **研发完成当月** → **自动** 更新已完工实例的产能量/费用/`is_eco`（见 [05-map-and-slots.md](./05-map-and-slots.md)） |
 | 环保身份 `is_eco` | 仅 **本市设施** 参与「全环保」判定；电网受入/外送 **不追溯** |
 | 电网 | 在 **并网岛** 层扣固定线损并分配 `net_import`；设施层不算电网（[06-grid.md](./06-grid.md)） |
 | 事件 | 可临时修正出力、成本或收入（[08-events.md](./08-events.md)） |
@@ -187,8 +186,8 @@ city_fully_eco_supply = true
 | 风电 | **是** | — |
 | 太阳能 | **是** | — |
 | 水电 | **是** | — |
-| 火电 | **否** | 研发 **环保火电** 类科技后，对机组 **升级** 完成（见下节） |
-| 核电 | **否** | 研发 **环保核电** 类科技后，对机组 **升级** 完成 |
+| 火电 | **否** | **`eco_thermal`** 研发完成 → 已完工火电 **自动** 环保化 |
+| 核电 | **否** | **`eco_nuclear`** 研发完成 → 已完工核电 **自动** 环保化 |
 
 **设计意图**：
 
@@ -230,7 +229,7 @@ city_fully_eco_supply = true
 | 项 | 规则 |
 |----|------|
 | 定位 | 前期易上量、运维可调；**默认非环保**（`is_eco = false`） |
-| 环保路线 | 科技树节点 **`eco_thermal`**（显示名 **清洁煤电改造**，见 [05-map-and-slots.md](./05-map-and-slots.md)）→ 研发后可对 **已完工** 火电机组 **升级**（工期 N 月，待表）→ 完成后 `is_eco = true` |
+| 环保路线 | **`eco_thermal`**（**清洁煤电改造**）研发完成 → **已完工** 火电机组 **自动** `is_eco = true`（无手动升级） |
 | 运维 | 环保升级后 **月运营成本上升**（倍率待表）；`fossil_energy` 地区标签仍只减运维，不改 `is_eco` |
 
 ### 水电 `hydro`
@@ -274,43 +273,36 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 
 建设页须明示光照资源档位；标签体系与风能、化石能源一致。
 
-### 风光机组升级（`wind_max` / `solar_max`）
+### 科技驱动机组同步（`wind_max` / `solar_max` / 环保）
 
-科技解锁后，城内 **已完工** 风/光设施可点 **[升级]**（与 [05-map-and-slots.md](./05-map-and-slots.md) 城内升级一致）：升级 **改该设施实例的属性**，不是「产能量 ×2」的隐藏规则。
+**已决**：与 [05-map-and-slots.md](./05-map-and-slots.md) 一致——研发节点 **完成当月**（M3），**已完工** 且匹配的设施 **自动** 写入目标行配置；**无** 玩家点 [升级]、**无** 升级工期、**无** 升级费。
 
-| 项 | 规则 |
-|----|------|
-| 前置 | 已研发 **`wind_max`** 或 **`solar_max`**（节点在科技树中的位置见 [07-tech.md](./07-tech.md)） |
-| 对象 | 城内已完工风电 / 光伏（逐台或批量由 Feature 定） |
-| 工期与费用 | 升级专用表或 `facility_upgrade_config`（T37） |
-| **产能量** | 完成后写入升级目标行的 **`output_capacity_mw`**（例：100→200 由表配置，**禁止**在代码里写死 ×2） |
-| **运行费用** | 同步为目标行 `monthly_operating_cost`（可升可不变） |
+| 节点 | 对象 | 写入 |
+|------|------|------|
+| **`wind_max`** | 已完工风电 | 目标行 `output_capacity_mw`、`monthly_operating_cost` 等 |
+| **`solar_max`** | 已完工光伏 | 同上 |
+| **`eco_thermal`** | 已完工火电 | `is_eco = true` 及表内费用 |
+| **`eco_nuclear`** | 已完工核电 | 同上 |
+| **设施线 tier 解锁** | 该线 tier 低于新上限的已完工实例 | 升至 `facility_build_tier_max` 对应行 |
 
-**示例**（表中配置：风电·2级 100MW → `wind_max` 升级后 200MW，风能丰富区）：
+**产能量** 一律来自配置表（例：100→200 由表写死，**禁止**代码里 ×2）。下月 **M4** 起按新属性计供能与社会价值。
+
+**示例**（`wind_max` 完成，表配置 100→200，风能丰富区）：
 
 ```text
-升级前：unit = 100 × 2.0 = 200 MW
-升级后：unit = 200 × 2.0 = 400 MW   // 200 来自表，不是 100×2 的硬编码公式
+同步前：unit = 100 × 2.0 = 200 MW
+同步后：unit = 200 × 2.0 = 400 MW   // 200 来自表
 ```
 
 #### 科技树结构（本章不展开）
 
-科技树为 **多条平行线、有交点、有分支**；`wind_max` / `solar_max` 与储能、风/光线的交汇关系在 **[07-tech.md](./07-tech.md)**（T09）专章定义。本章只约束 **升级后的设施属性语义**。
-
-### 火/核环保升级（与风光 max 并列）
-
-| 科技节点（工作名） | 研发后效果 |
-|--------------------|------------|
-| **`eco_thermal`**（显示名 **清洁煤电改造**） | 可对火电机组发起环保升级；完成后 `is_eco = true` |
-| **`eco_nuclear`**（显示名 **先进核废料处理**） | 可对核电机组发起环保升级；完成后 `is_eco = true` |
-
-规则与 `wind_max` 机组升级类似：**已完工机组**、**N 个月工期**、数值表配置；是否收费待表。显示名见 [05-map-and-slots.md](./05-map-and-slots.md#科技节点显示名称t07-文案)。
+`wind_max` / `solar_max` 与储能、风/光线的交汇在 **[07-tech.md](./07-tech.md)**（T09）。本章只约束 **同步后的设施属性语义**。
 
 ### 核电 `nuclear`
 
 | 项 | 规则 |
 |----|------|
-| 环保 | **默认否**（`is_eco = false`）；环保核电科技 + 机组升级后为 **是** |
+| 环保 | **默认否**；**`eco_nuclear`** 研发完成 → 已完工核电 **自动** 环保化 |
 | 解锁 | 公司 **IV 级** + 核电科技（[03-social-value.md](./03-social-value.md)） |
 | 选址 | **省内中心大城市** 或 **都**（那座特大城本身） |
 | 出力 | 按产能量与电网规则计，无风/光式地区折减 |
@@ -366,8 +358,9 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 | 计算粒度 | **按城市** |
 | 能源类型 | 火电、水电、风电、太阳能、核电 |
 | 风/光地区系数 | 一般 **100%**；丰富 **200%**（光伏与风电同逻辑） |
-| 风光 max | 允许风/光机组 **[升级]**；产能量/费用由 **升级表** 配置 |
-| 火/核环保 | 火电、核电 **默认非环保**；环保科技 + 机组升级 → `is_eco` |
+| 风光 max | `wind_max` / `solar_max` 完成 → **自动** 同步已完工风/光 |
+| 火/核环保 | 默认非环保；环保科技完成 → **自动** `is_eco` |
+| 设施 tier | 科技提升可建 tier → 已完工低 tier **自动** 升至上限 |
 | 天然环保 | 风、光、水 **始终** `is_eco` |
 | 社会价值衔接 | **全环保** → 100% 潜力；否则 **上限 80%**（与满足率相乘） |
 | 城市需求 | **仅静态配置表** `base_demand_mw` |
@@ -394,7 +387,7 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 
 ## 首版本章边界
 
-**本章包含**：满足率定义、有效供能因素、五类能源规则、风/光地区系数、风光 max 与火/核环保升级、`city_fully_eco_supply`、M4 输出语义。
+**本章包含**：满足率定义、有效供能因素、五类能源规则、风/光地区系数、科技驱动机组同步、`city_fully_eco_supply`、M4 输出语义。
 
 **本章不包含**：电网建链流程、建设位数量表、设施拆除细则、具体 MW 与造价表、供能 UI 组件树、科技树全图（Feature T16 / UI / T07 后续任务）。
 
@@ -402,7 +395,7 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 
 ## 开放问题
 
-1. **`wind_max` / `solar_max` 升级** 各档 `output_capacity_mw`、工期、费用（数值表，T37）。
+1. **`wind_max` / `solar_max` 同步** 各档 `output_capacity_mw`（数值表，T37）。
 2. **科技树拓扑**：平行线、交点、分支（见 [07-tech.md](./07-tech.md)，T09）。
 
 ---
@@ -420,3 +413,4 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 | 0.3.4 | 2026-05-22 | 同步 T07：eco_thermal/eco_nuclear 显示名；移除 T07 文案 open_question |
 | 0.4.0 | 2026-05-22 | 产能量术语；建造列表/设施详情展示；wind_max 改表配置非×2；科技树拓扑 defer 07-tech |
 | 0.4.1 | 2026-05-22 | 设施/城市/电网分层公式；电网 defer 06 并网岛算法 |
+| 0.5.0 | 2026-05-22 | 取消手动机组升级；科技完成当月自动同步 tier/max/环保 |
