@@ -2,7 +2,7 @@
 id: gdd/03-social-value
 title: 社会价值与公司等级
 status: draft
-version: 0.6.4
+version: 0.6.6
 sources:
   - docs/game-core-design.md#8
   - docs/game-core-design.md#9
@@ -91,7 +91,7 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 | 用途 | 说明 |
 |------|------|
 | **公司升级** | `social_value_current >= social_value_threshold_next` → M10 |
-| 科技 | IV 核电、V 超级水电 |
+| 科技 | III 核电、V 超级水电 |
 | 可经营区域 | I–V 解锁 2 都 + 8 区 |
 | 贷款档位 | 随等级提高 |
 
@@ -127,6 +127,7 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 | 项 | 规则 |
 |----|------|
 | 全图 | **2 都 + 8 区**（10 个大地图节点：8 省 + 2 独立特大城）；跨区主干连接 **都/区** 对应节点 |
+| 连通 | 各等级 **可经营** 省/都 在 **网状邻接** 上须为 **单一连通块**（见 [05-map-and-slots.md](./05-map-and-slots.md#可经营区必须大地图相连已决)） |
 | 未解锁 | 灰显不可点 |
 | I | 入门 **1 城市**；II 起解锁大地上 **1 区**（MAP-01-C） |
 
@@ -134,8 +135,8 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 |------|----------------|
 | **I** | 1 城市 |
 | **II** | 1 区 |
-| **III** | 3 区 |
-| **IV** | 1 都 + 5 区 |
+| **III** | **1 都 + 2 区** |
+| **IV** | **1 都 + 5 区** |
 | **V** | 2 都 + 8 区 |
 
 ---
@@ -247,7 +248,8 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 
 | 等级 | 解锁 |
 |------|------|
-| **IV** | 核电科技；核电建在 **省内中心大城市** 或 **都（那座特大城本身）** |
+| **III** | `nuclear_1` 点亮后可建核电；选址 **省内中心大城市** 或 **都** |
+| **IV** | 无害化核废料 → 核电 ECO |
 | **V** | 超级水电科技；全图 **2** 座槽位；单座策划尺度约 **2 省** 联网用电、两座约 **4 省**（非固定「10 城」；随各省 4–6 节点浮动，**精算在 data 阶段**） |
 
 常规水电：近江河城市可建。超级水电经主干向多城/省输送。线损见 [06-grid.md](./06-grid.md)（单条区域 = 普通城需求 **÷4**，单条主干 = 普通城需求 **全额**；普通城需求 = 中心 **1/3～1/2**）。
@@ -308,3 +310,5 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 0.6.2 | 2026-05-22 | 外电视同环保；超级水电 10 城/省尺度；后期电网经营意图 |
 | 0.6.3 | 2026-05-22 | 省内 4–6 城浮动、禁 5 城模板；超级水电/数值改为定性+后续精算 |
 | 0.6.4 | 2026-05-22 | 同步 T07：环保科技显示名迁至 05；移除 open_questions |
+| 0.6.5 | 2026-05-22 | III=1都2区；核电 III 起；IV 无害化 ECO |
+| 0.6.6 | 2026-05-22 | 可经营区域须大地图连通（规则见 05-map） |

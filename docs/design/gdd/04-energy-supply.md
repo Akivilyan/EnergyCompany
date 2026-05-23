@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.5.0
+version: 0.6.1
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -14,8 +14,7 @@ depends_on:
   - gdd/01-core-loop
   - gdd/02-economy
 open_questions:
-  - 科技树多条平行线、交点与分支拓扑（见 [07-tech.md](./07-tech.md)，T09）
-  - wind_max / solar_max 同步后各设施 `output_capacity_mw` 具体取值（数值表，T37）
+  - 各 tier `output_capacity_mw` 与储能 ×2 叠乘后平衡（数值表，T37）
   - 超级水电单座 MW、火/核单城上限、运维倍率等（GDD 定型后统一精算）
 ---
 
@@ -81,7 +80,7 @@ satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
 | 字段（data） | 玩家可见名 | 说明 |
 |--------------|------------|------|
 | `facility_type` + `tier` | **设施名·lv** | 例：风电·2级、火电·4级 |
-| `output_capacity_mw` | **产能量** | 该设施设计出力（MW）；升级 **改表中的值**，非固定倍率公式 |
+| `output_capacity_mw` | **产能量（标称）** | 表内为 **已计入现实波动后的平均出力**（非峰值）；升级 **改表中的值** |
 | `monthly_operating_cost` | **运行费用** | x/月 |
 | `build_cost_total` / 工期 | **建设费用**、工期 | 仅 **建造列表** 与确认框展示 |
 
@@ -96,13 +95,36 @@ satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
 **设施供能**（不算电网；仅已完工机组）：
 
 ```text
-facility_supply_i = output_capacity_i × resource_factor_i × event_factor_i
+facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event_factor_i
+```
+
+| 因子 | 取值 | 适用 |
+|------|------|------|
+| `nominal_output` | 表字段 `output_capacity_mw`（**标称产能量**） | 全部类型 |
+| `region_mult` | **1** 或 **2** | 风电、光伏、**常规水电**（一般区 / 富资源区） |
+| `storage_mult` | **1** 或 **2** | 同上；`storage_system` **点亮** 后为 **2**（拉平波动） |
+| `region_mult` / `storage_mult` | 恒 **1** | 火电、核电、**超级水电** |
+| `event_factor` | 事件表 | 全部 |
+
+**风光水简化模型**（现实中有出力波动，本游戏不做逐时模拟）：
+
+- 默认可变电源 **带波动**；配置中的 **标称产能量 = 波动折算后的平均值**。
+- **富资源区** ×2、**储能系统点亮** 再 ×2；两个乘区 **独立叠乘**，均为 **1 或 2**。
+
+```text
+region_mult   = 1   // 风/光/水：一般区域
+              = 2   // 风/光/水：丰富区域
+storage_mult  = 1   // 未点亮 storage_system
+              = 2   // 已点亮 storage_system（拉平波动 → 在原有平均出力上 ×2）
+
+// 例：标称 100，富资源区，已储能
+facility_supply = 100 × 2 × 2 = 400
 ```
 
 | 因子 | 作用层级 |
 |------|----------|
-| `output_capacity` | 设施表 / 升级表 |
-| `resource_factor` | 风/光等地区标签（火电/核电/水电通常为 1） |
+| `nominal_output` | 设施表 / 科技同步后的 tier 行 |
+| `region_mult` / `storage_mult` | 仅风光水常规机组；见下节 |
 | `event_factor` | 事件临时修正 |
 | **电网** | **不在设施层**；在「并网岛」层一次结算（见 [06-grid.md](./06-grid.md)） |
 
@@ -137,7 +159,7 @@ satisfaction_rate_city = clamp( effective_supply_city / demand_city , 0 , 1 )
 | 产能量 | `facility_config.output_capacity_mw`（旧表字段 `nominal_output_mw` 同义，T37 统一命名） |
 | 是否完工 | 在建不计入；**完工次月** 起计入（与 [02-economy.md](./02-economy.md) 一致） |
 | 地区资源禀赋 | 风能标签、日照档位、`fossil_energy` 等（后者主要影响 **运行费用**，见经济章） |
-| 科技驱动同步 | `wind_max` / `solar_max`、环保、`facility_build_tier_max` 等节点 **研发完成当月** → **自动** 更新已完工实例的产能量/费用/`is_eco`（见 [05-map-and-slots.md](./05-map-and-slots.md)） |
+| 科技驱动同步 | 发电线 ·II～V、环保节点 **点亮** 当月 → **自动** 更新 tier / `is_eco`（见 [07-tech.md](./07-tech.md)、[05-map-and-slots.md](./05-map-and-slots.md)） |
 | 环保身份 `is_eco` | 仅 **本市设施** 参与「全环保」判定；电网受入/外送 **不追溯** |
 | 电网 | 在 **并网岛** 层扣固定线损并分配 `net_import`；设施层不算电网（[06-grid.md](./06-grid.md)） |
 | 事件 | 可临时修正出力、成本或收入（[08-events.md](./08-events.md)） |
@@ -240,70 +262,50 @@ city_fully_eco_supply = true
 | 选址 | 仅 **近江河** 城市可建（地图章 T07 定槽位） |
 | 常规 vs 超级 | **超级水电** 需 V 级科技；全图 **2** 座；单座策划尺度 ≈ **2 省** 体量联网供电、两座 ≈ **4 省**（各省 4–6 城不等，**不设**「每省 5 城」；MW 待精算，见下节） |
 
-### 风电 `wind`
+### 风电 / 光伏 / 常规水电（可变电源）
 
-| 项 | 规则 |
-|----|------|
-| 环保 | **是** |
-| 资源依赖 | 出力随地区 **风能标签** 修正（乘在产能量上） |
-| `wind_normal`（风能一般） | `resource_factor = **100%**`（×1.0） |
-| `wind_rich`（风能丰富） | `resource_factor = **200%**`（×2.0） |
-| 建设位 | 每城 **通用建设位** 上限；同位可建任意已解锁设施类型（[05-map-and-slots.md](./05-map-and-slots.md)） |
+三类共用 **标称 × 区域乘区 × 储能乘区**（见上节公式）。
 
-```text
-unit_wind = output_capacity × wind_region_factor × event_factor
-// output_capacity: 取自该设施实例当前配置（tier / 机组升级后的表值）
-```
+| 标签（风/光示例） | `region_mult` |
+|-------------------|---------------|
+| `wind_normal` / `solar_normal`（一般） | **1** |
+| `wind_rich` / `solar_rich`（丰富） | **2** |
+| 常规水电 | 由城市/省级水资源标签映射为 **1 或 2**（`data/`，T37） |
 
-建设界面与区域标签须 **明示** 本地风资源档位。
+| `storage_system` | `storage_mult` |
+|------------------|----------------|
+| 未点亮 | **1** |
+| 已点亮 | **2**（拉平波动；在 **当前** 标称×区域 结果上再 ×2） |
 
-### 太阳能 `solar`
+建设界面须 **明示** 资源档位（一般/丰富）；储能点亮后 UI 可提示「储能已启用：出力 ×2」。
 
-与风电 **同一套地区系数逻辑**（不做昼夜模拟）：
+**超级水电**：**不** 走上述乘区；标称即稳定出力，**无** 波动、**不** 吃储能（[07-tech.md](./07-tech.md)）。
 
-| 项 | 规则 |
-|----|------|
-| 环保 | **是**（`is_eco = true`） |
-| `solar_normal`（光照一般） | `solar_region_factor = **100%**`（×1.0） |
-| `solar_rich`（光照丰富） | `solar_region_factor = **200%**`（×2.0） |
+**储能·I～III**（科技）：仅 **解锁** 风光水 ·III～V 研发，**不** 额外叠乘（系统效果只来自 `storage_system` 点亮）。
 
-```text
-unit_solar = output_capacity × solar_region_factor × event_factor
-```
+### 火电 / 核电
 
-建设页须明示光照资源档位；标签体系与风能、化石能源一致。
+`region_mult = storage_mult = 1`；供能 = 标称 × `event_factor`（另见 ECO、运维规则）。
 
-### 科技驱动机组同步（`wind_max` / `solar_max` / 环保）
+### 科技驱动机组同步
 
-**已决**：与 [05-map-and-slots.md](./05-map-and-slots.md) 一致——研发节点 **完成当月**（M3），**已完工** 且匹配的设施 **自动** 写入目标行配置；**无** 玩家点 [升级]、**无** 升级工期、**无** 升级费。
+与 [07-tech.md](./07-tech.md)、[05-map-and-slots.md](./05-map-and-slots.md) 一致：
 
-| 节点 | 对象 | 写入 |
+| 触发 | 对象 | 写入 |
 |------|------|------|
-| **`wind_max`** | 已完工风电 | 目标行 `output_capacity_mw`、`monthly_operating_cost` 等 |
-| **`solar_max`** | 已完工光伏 | 同上 |
-| **`eco_thermal`** | 已完工火电 | `is_eco = true` 及表内费用 |
-| **`eco_nuclear`** | 已完工核电 | 同上 |
-| **设施线 tier 解锁** | 该线 tier 低于新上限的已完工实例 | 升至 `facility_build_tier_max` 对应行 |
+| `wind_N` / `solar_N` / `thermal_N` / `hydro_N` **点亮** | 该线已完工设施 | 升至对应 **tier N** 配置行 |
+| `eco_thermal` **点亮**（IV） | 已完工火电 | **即时** `is_eco = true` |
+| `eco_nuclear`（无害化核废料）**点亮**（IV） | 已完工核电 | **即时** `is_eco = true` |
+| `storage_system` **点亮** | — | 全局 `storage_system_lit`；M4 起重算风光水出力 |
 
-**产能量** 一律来自配置表（例：100→200 由表写死，**禁止**代码里 ×2）。下月 **M4** 起按新属性计供能与社会价值。
-
-**示例**（`wind_max` 完成，表配置 100→200，风能丰富区）：
-
-```text
-同步前：unit = 100 × 2.0 = 200 MW
-同步后：unit = 200 × 2.0 = 400 MW   // 200 来自表
-```
-
-#### 科技树结构（本章不展开）
-
-`wind_max` / `solar_max` 与储能、风/光线的交汇在 **[07-tech.md](./07-tech.md)**（T09）。本章只约束 **同步后的设施属性语义**。
+**无** 手动 [升级]、**无** 升级费/工期。tier 升档改 **标称** 表值；**区域/储能乘区** 仅取 1 或 2，**禁止** 在代码里写其它倍率。
 
 ### 核电 `nuclear`
 
 | 项 | 规则 |
 |----|------|
-| 环保 | **默认否**；**`eco_nuclear`** 研发完成 → 已完工核电 **自动** 环保化 |
-| 解锁 | 公司 **IV 级** + 核电科技（[03-social-value.md](./03-social-value.md)） |
+| 环保 | **默认否**；**无害化核废料**（IV）点亮 → 已完工核电 **自动** 环保化 |
+| 解锁 | 公司 **III 级** + `nuclear_1` 点亮（[07-tech.md](./07-tech.md)）；选址仍限中心城/都 |
 | 选址 | **省内中心大城市** 或 **都**（那座特大城本身） |
 | 出力 | 按产能量与电网规则计，无风/光式地区折减 |
 
@@ -311,7 +313,7 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 
 ## 后期供能尺度与玩家取舍（策划意图）
 
-整体架构下，**火电、核电单城供能上限有限**，无法单靠火/核铺满全图；**全图绿色供能**依赖后期科技（风光 max、环保升级、**超级水电** + **电网调配**）。
+整体架构下，**火电、核电单城供能上限有限**，无法单靠火/核铺满全图；**全图绿色供能**依赖 **储能**、发电 **·V**、**ECO 改造**、**超级水电** 与 **电网调配**。
 
 | 阶段 | 玩家路径 |
 |------|----------|
@@ -358,9 +360,9 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 | 计算粒度 | **按城市** |
 | 能源类型 | 火电、水电、风电、太阳能、核电 |
 | 风/光地区系数 | 一般 **100%**；丰富 **200%**（光伏与风电同逻辑） |
-| 风光 max | `wind_max` / `solar_max` 完成 → **自动** 同步已完工风/光 |
-| 火/核环保 | 默认非环保；环保科技完成 → **自动** `is_eco` |
-| 设施 tier | 科技提升可建 tier → 已完工低 tier **自动** 升至上限 |
+| 发电 tier | 风/光/火/水 **·I～V** 与公司等级绑定；**点亮** 后自动同步 |
+| 储能 | **系统** 点亮 → `storage_mult=2`（拉平波动）；**I～III** 卡 ·III～V |
+| 火/核环保 | IV **清洁煤电** / **无害化核废料** 点亮 → **即时** ECO |
 | 天然环保 | 风、光、水 **始终** `is_eco` |
 | 社会价值衔接 | **全环保** → 100% 潜力；否则 **上限 80%**（与满足率相乘） |
 | 城市需求 | **仅静态配置表** `base_demand_mw` |
@@ -380,7 +382,7 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 | [03-social-value.md](./03-social-value.md) | `satisfaction_rate`、`city_fully_eco_supply` |
 | [05-map-and-slots.md](./05-map-and-slots.md) | 通用建设位、临水/核电选址、地图标注 |
 | [06-grid.md](./06-grid.md) | 并网、区域/主干固定损耗 |
-| [07-tech.md](./07-tech.md) | 平行线/交点/分支拓扑；`wind_max` / `solar_max`、环保、核电/超级水电 |
+| [07-tech.md](./07-tech.md) | 四线·I～V、储能、电网 III/IV/V、减压科技 |
 | [08-events.md](./08-events.md) | 临时修正供能或成本 |
 
 ---
@@ -395,8 +397,7 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 
 ## 开放问题
 
-1. **`wind_max` / `solar_max` 同步** 各档 `output_capacity_mw`（数值表，T37）。
-2. **科技树拓扑**：平行线、交点、分支（见 [07-tech.md](./07-tech.md)，T09）。
+1. 各 tier `output_capacity_mw` 与储能 ×2 叠乘平衡（数值表，T37）。
 
 ---
 
@@ -414,3 +415,5 @@ unit_solar = output_capacity × solar_region_factor × event_factor
 | 0.4.0 | 2026-05-22 | 产能量术语；建造列表/设施详情展示；wind_max 改表配置非×2；科技树拓扑 defer 07-tech |
 | 0.4.1 | 2026-05-22 | 设施/城市/电网分层公式；电网 defer 06 并网岛算法 |
 | 0.5.0 | 2026-05-22 | 取消手动机组升级；科技完成当月自动同步 tier/max/环保 |
+| 0.6.0 | 2026-05-22 | 储能系统：消除风光水波动、出力×2；四线·I～V；移除 wind_max 独立节点 |
+| 0.6.1 | 2026-05-22 | 标称=波动平均；供能=标称×区域(1|2)×储能(1|2)；储能拉平=×2 叠乘 |
