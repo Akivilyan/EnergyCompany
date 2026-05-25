@@ -2,7 +2,7 @@
 id: gdd/01-core-loop
 title: 核心循环与时间
 status: locked
-version: 0.3.3
+version: 0.3.4
 sources:
   - docs/game-core-design.md#3
   - docs/game-core-design.md#4
@@ -196,6 +196,8 @@ open_questions:
 | M11 | 事件倒计时与生效 | [事件系统](./08-events.md) |
 | M12 | 关键节点反馈判定（弹窗 vs 界面内提示） | 本节 |
 | M13 | 若月份为 **12**：年度报表数据汇总（供公司界面查阅） | [年度战略与商业化](./09-year-end-and-monetization.md) |
+| M14 | **破产检视**（连续负资金月数） | [资源与经济](./02-economy.md#破产) |
+| M15 | **通关检视**（是否已撑过最终灾害） | [重玩性与方针](./11-replayability.md) |
 
 管道结束后回到可操作状态；默认上下文为推月前的界面（多为城市界面）。
 
@@ -264,6 +266,7 @@ open_questions:
 | [05-map-and-slots.md](./05-map-and-slots.md) | 城市/区域/大地图建造位 |
 | [06-grid.md](./06-grid.md) | 区域城内线、跨区主干线 |
 | [09-year-end-and-monetization.md](./09-year-end-and-monetization.md) | 贷款档位、年报；**单笔借贷并发**；收购留待后续版本（T11） |
+| [11-replayability.md](./11-replayability.md) | 新游戏方针/难度；M14 破产、M15 通关 |
 | `ui/*` | 旧任务名 `region-main` 等将随 UI 任务重映射为 city/region/world |
 
 ---
@@ -293,3 +296,4 @@ open_questions:
 | 0.3.1 | 2026-05-19 | 首版不做收购（对齐 02-economy） |
 | 0.3.2 | 2026-05-22 | 同步：每省 4–6 节点浮动，禁止统一 5 城模板 |
 | 0.3.3 | 2026-05-23 | 同步 T10 locked：灾害类事件一律全屏弹窗 |
+| 0.3.4 | 2026-05-24 | 管道新增 M14 破产、M15 战役通关检视 |

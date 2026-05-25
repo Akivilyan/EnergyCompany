@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.6.1
+version: 0.6.2
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -105,6 +105,7 @@ facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event
 | `storage_mult` | **1** 或 **2** | 同上；`storage_system` **点亮** 后为 **2**（拉平波动） |
 | `region_mult` / `storage_mult` | 恒 **1** | 火电、核电、**超级水电** |
 | `event_factor` | 事件表 | 全部 |
+| `doctrine_hydro_mult` | 仅 **水电方针** | 常规水电、超级水电（见 [11-replayability.md](./11-replayability.md)） |
 
 **风光水简化模型**（现实中有出力波动，本游戏不做逐时模拟）：
 
@@ -279,7 +280,26 @@ city_fully_eco_supply = true
 
 建设界面须 **明示** 资源档位（一般/丰富）；储能点亮后 UI 可提示「储能已启用：出力 ×2」。
 
-**超级水电**：**不** 走上述乘区；标称即稳定出力，**无** 波动、**不** 吃储能（[07-tech.md](./07-tech.md)）。
+**超级水电**：**不** 走 `region_mult` / `storage_mult`；标称即稳定出力，**无** 波动、**不** 吃储能（[07-tech.md](./07-tech.md)）。
+
+### 水电方针额外乘区
+
+仅当本局 `doctrine_id = hydro`（见 [11-replayability.md](./11-replayability.md)）：
+
+```text
+// 常规水电（临水城市）
+facility_supply = nominal × region_mult × storage_mult × doctrine_hydro_mult × event_factor
+
+// 超级水电
+facility_supply = nominal × doctrine_super_hydro_mult × event_factor
+```
+
+| 字段 | 说明 |
+|------|------|
+| `doctrine_hydro_mult` | 整数比 `mult_num / mult_den`；随方针局外等级略升 |
+| `doctrine_super_hydro_mult` | 超级水电 **单独** 配置，可与常规不同 |
+
+**不** 改变临水选址规则；优势仅在供能数值。
 
 **储能·I～III**（科技）：仅 **解锁** 风光水 ·III～V 研发，**不** 额外叠乘（系统效果只来自 `storage_system` 点亮）。
 
@@ -384,6 +404,7 @@ city_fully_eco_supply = true
 | [06-grid.md](./06-grid.md) | 并网、区域/主干固定损耗 |
 | [07-tech.md](./07-tech.md) | 四线·I～V、储能、电网 III/IV/V、减压科技 |
 | [08-events.md](./08-events.md) | 临时修正供能或成本 |
+| [11-replayability.md](./11-replayability.md) | 水电方针 `doctrine_hydro_mult` |
 
 ---
 
@@ -417,3 +438,4 @@ city_fully_eco_supply = true
 | 0.5.0 | 2026-05-22 | 取消手动机组升级；科技完成当月自动同步 tier/max/环保 |
 | 0.6.0 | 2026-05-22 | 储能系统：消除风光水波动、出力×2；四线·I～V；移除 wind_max 独立节点 |
 | 0.6.1 | 2026-05-22 | 标称=波动平均；供能=标称×区域(1|2)×储能(1|2)；储能拉平=×2 叠乘 |
+| 0.6.2 | 2026-05-24 | 水电方针 `doctrine_hydro_mult` / `doctrine_super_hydro_mult` |

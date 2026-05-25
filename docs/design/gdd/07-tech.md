@@ -2,7 +2,7 @@
 id: gdd/07-tech
 title: 科技研发
 status: draft
-version: 0.2.1
+version: 0.3.3
 sources:
   - docs/game-core-design.md#15
   - docs/tech-tree-design.md
@@ -192,7 +192,9 @@ screen_tech_tree（II 级起可见）
 
 ## 经营与减压（零散科技）
 
-**定位**：在公司升档、发电加码的同时，给 **减负** 与 **建设方式** 调整。首版 **6** 个，均在 **经营** 分页（II 级起随等级解锁）。
+**定位**：在公司升档、发电加码的同时，给 **减负** 与 **建设方式** 调整。首版 **7** 个，均在 **经营** 分页（II 级起随等级解锁）。
+
+**点亮预算**：非科技方针 **`doctrine_lit_budget = 15`**，与主线节点 **同一池**；`eng_*` 与发电/电网/储能等 **自由竞争** 点数（见 [11-replayability.md](./11-replayability.md)）。`tech` 方针无上限。
 
 | `tech_id` | 显示名 | 等级 | 类型 | 点亮效果（定性） |
 |-----------|--------|------|------|------------------|
@@ -202,7 +204,7 @@ screen_tech_tree（II 级起可见）
 | `eng_grid_dispatch` | 智能调度 | **III** | 强度辅助 | 区域线损 **−10%**（固定 MW 乘 0.9，[06-grid.md](./06-grid.md) 乘数） |
 | `eng_cashflow` | 现金流管理 | **IV** | 减压 | 贷款额度 **+1 档** 或利率 **−0.5%**（待表，[02-economy.md](./02-economy.md)） |
 | `eng_risk_reserve` | 风险准备金 | **IV** | 减压 | 负向事件资金损失 **−15%**（[08-events.md](./08-events.md) 挂钩，T10） |
-| `eng_green_pr` | 绿色品牌 | **V** | 强度辅助 | 全环保城 `city_base` 社会价值 **+5%**（乘 1.05） |
+| `eng_green_pr` | 绿色品牌 | **V** | 强度辅助 | 全环保城 `city_base` 社会价值 **+5%**（×1.05）；风光局常见终局选择之一 |
 
 **强度 vs 减压节奏**：
 
@@ -212,6 +214,39 @@ screen_tech_tree（II 级起可见）
 | III | 储能费、区域网、核电 | 运维外包、调度减线损 |
 | IV | 主干线损、ECO 成本、多城 | 现金流、事件减损 |
 | V | 全图、特高压、超水电 | 绿色品牌 |
+
+---
+
+## 经营方针与点亮预算
+
+单局 **`doctrine_id`** 决定开局 modifier 与 lit 规则（详见 [11-replayability.md](./11-replayability.md)）。
+
+### 非科技方针：`doctrine_lit_budget = 15`
+
+| 规则 | 说明 |
+|------|------|
+| 计数 | 每 lit 一个节点（含 `eng_*`）→ 预算 **−1** |
+| 不计入 | 全局开局 ·I；风光额外 `storage_system`、`storage_1` |
+| 自由分配 | **不区分** 主线 / 经营；玩家在 15 点内自行取舍 |
+| UI | 「本局剩余点亮：N / 15」 |
+
+### 科技方针 `tech`
+
+**无** lit 预算上限；可点亮全部可研节点。
+
+### 异线 tier 硬顶
+
+非 `tech` 方针下，**非本线** 发电与核电节点 **不可研 ·II 及以上**（·I 保持开局 lit）。例如 `renewable` 局内不可研 `thermal_2`。
+
+电网 `grid_*`、`super_hydro`、本线 ·II～V 不受异线硬顶。
+
+### 方针开局点亮（摘要）
+
+| 方针 | 额外开局 `lit` |
+|------|----------------|
+| `renewable` | `storage_system`、`storage_1`（**不**送 `storage_2～3`） |
+| `thermal` | `eco_thermal`、`eco_nuclear` |
+| `hydro` / `tech` | —（仅 modifier 表） |
 
 ---
 
@@ -255,6 +290,7 @@ screen_tech_tree（II 级起可见）
 | [05-map-and-slots.md](./05-map-and-slots.md) | tier 与自动同步 |
 | [06-grid.md](./06-grid.md) | 主干 IV、特高压 V |
 | [01-core-loop.md](./01-core-loop.md) | II 起科技界面；M3 |
+| [11-replayability.md](./11-replayability.md) | lit 预算、异线硬顶、方针开局 |
 
 ---
 
@@ -296,3 +332,7 @@ screen_tech_tree（II 级起可见）
 | 0.1.0 | 2026-05-22 | AoE2 范式、绿色/储能闸门、25 节点 |
 | 0.2.0 | 2026-05-22 | 四线·I～V 绑等级；储能 I～III 卡 III～V；减压节点；地图 III/IV 调整 |
 | 0.2.1 | 2026-05-22 | 储能=storage_mult×2，与 region_mult 独立叠乘；标称=波动平均 |
+| 0.3.0 | 2026-05-24 | 方针 lit 预算 14、异线硬顶、tech 无上限；风光开局 storage_system+storage_1 |
+| 0.3.1 | 2026-05-24 | 同步 11-replayability v0.1.1：lit=14、storage_1 开局 |
+| 0.3.2 | 2026-05-24 | 双池 main 14 + eng 1；风光 → `eng_green_pr` |
+| 0.3.3 | 2026-05-24 | 统一 lit **15**、自由分配（取消 main/eng 分池） |
