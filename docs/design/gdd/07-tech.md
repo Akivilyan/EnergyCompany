@@ -16,7 +16,7 @@ depends_on:
   - gdd/06-grid
 open_questions:
   - 各节点 `research_cost` / `research_months`（T37）
-  - 减压类节点具体倍率（工期 -1 月、运维 -10% 等）
+  - 减压类节点具体倍率（工期 -1 月、运维 -10% 等；`eng_risk_reserve` 挂钩见 [08-events.md](./08-events.md)）
 ---
 
 # 科技研发
@@ -285,8 +285,7 @@ screen_tech_tree（II 级起可见）
 
 ## 开放问题
 
-1. 减压节点数值与事件系统挂钩细节（T10）。
-2. `nuclear_2` / `nuclear_3` 是升单厂 tier 还是全局核电 BUFF（表驱动二选一，T37）。
+1. `nuclear_2` / `nuclear_3` 是升单厂 tier 还是全局核电 BUFF（表驱动二选一，T37）。
 
 ---
 
