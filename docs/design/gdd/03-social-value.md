@@ -1,8 +1,8 @@
 ---
 id: gdd/03-social-value
 title: 社会价值与公司等级
-status: draft
-version: 0.6.6
+status: locked
+version: 1.0.0
 sources:
   - docs/game-core-design.md#8
   - docs/game-core-design.md#9
@@ -13,6 +13,7 @@ depends_on:
   - gdd/01-core-loop
   - gdd/02-economy
   - gdd/04-energy-supply
+  - gdd/05-map-and-slots
 open_questions: []
 ---
 
@@ -27,6 +28,8 @@ open_questions: []
 - UI 让玩家一眼看懂：**现在社会价值多少 / 升到下一级还差多少**。
 
 月度流程：**M4 供能重算 → M9 社会价值重算 → M10 升级检视**（[核心循环与时间](./01-core-loop.md)）。
+
+**与旧稿差异**：已废止「供给 80% + 绿色 20%」**双轨分项**；现行用 **满足率 × 环保上限系数（0.8 / 1.0）** 单式表达（见「城市社会价值公式」）。公司界面 **不再** 展示金/绿两条分项进度条，改为 **按城一行** + 是否全环保。
 
 ---
 
@@ -129,15 +132,17 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 | 全图 | **2 都 + 8 区**（10 个大地图节点：8 省 + 2 独立特大城）；跨区主干连接 **都/区** 对应节点 |
 | 连通 | 各等级 **可经营** 省/都 在 **网状邻接** 上须为 **单一连通块**（见 [05-map-and-slots.md](./05-map-and-slots.md#可经营区必须大地图相连已决)） |
 | 未解锁 | 灰显不可点 |
-| I | 入门 **1 城市**；II 起解锁大地上 **1 区**（MAP-01-C） |
+| I | 入门 **`CITY-START`**（`MAP-01` 中心城）；同省其它城只读 |
 
-| 等级 | 可经营（累计） |
-|------|----------------|
-| **I** | 1 城市 |
-| **II** | 1 区 |
-| **III** | **1 都 + 2 区** |
-| **IV** | **1 都 + 5 区** |
-| **V** | 2 都 + 8 区 |
+| 等级 | 可经营（累计） | 本档新开放（占位，见 [05-map-and-slots.md](./05-map-and-slots.md)） |
+|------|----------------|--------------------------------------------------------|
+| **I** | 1 城市 | `CITY-START` |
+| **II** | 1 省壳全境 | `MAP-01` |
+| **III** | **1 都 + 2 省壳** | `MET-A` + `MAP-02` |
+| **IV** | **1 都 + 5 省壳** | `MAP-03`～`MAP-05` |
+| **V** | 2 都 + 8 省壳 | `MET-B` + `MAP-06`～`MAP-08` |
+
+各档可经营节点须在 **网状邻接** 上保持 **单一连通块**；换解锁顺序须同步改邻接表（见 05-map）。
 
 ---
 
@@ -175,12 +180,16 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 
 **策划意图**：`social_value_threshold_next` 通常 **低于** 该档已解锁地图的理论社会价值满额，使玩家 **高比例经营** 即可升级，**不必 100%**（比例在数值表按档调，非固定 80%）。
 
-**门槛示例**：
+**升级门槛（示例，待 `company_level_thresholds` 精算）**：
 
-| 当前等级 | 升下一级门槛（示例） |
-|----------|----------------------|
-| I → II | 500 |
-| II → III | 4500（若已解锁区潜力约 5000，门槛宜 < 5000） |
+| 当前等级 | 升下一级 | `social_value_threshold_next`（示例） |
+|----------|----------|--------------------------------------|
+| I | II | 500 |
+| II | III | 4500 |
+| III | IV | 12000 |
+| IV | V | 35000 |
+
+门槛宜 **低于** 该档已解锁地图的 **理论满额**（各城 `city_base` 之和），使玩家 **高比例经营** 即可升级，**不必** 全图满供。
 
 ---
 
@@ -195,11 +204,18 @@ social_value_current = Σ 各城 city_base × satisfaction_rate × eco_cap_facto
 ```text
 eco_cap_factor_city = 1.0   if city_fully_eco_supply else 0.8
 
+green_pr_mult = 1.05   if eng_green_pr lit AND city_fully_eco_supply else 1.0
+                     // 见 07-tech；仅全环保城生效
+
 city_sv_monthly = city_base_social_value
                 × satisfaction_rate_city
                 × eco_cap_factor_city
+                × green_pr_mult
 
-social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
+// 每城结算后取整，再求和（见 META §12 整数原则）
+city_sv_monthly_int = (city_sv_monthly 按配置 num/den 乘算后) // den 分母取整
+
+social_value_current = Σ_{each unlocked operable city} city_sv_monthly_int   // M9，覆盖写入
 ```
 
 | 因子 | 来源 |
@@ -230,6 +246,25 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 火电靠环保模块 | **`eco_thermal`** 研发完成 → 已完工火电 **自动** 环保化，与风光 max 同级思路 |
 
 公司界面明细：省内 **按城列表**；**都** 单行；展示建议含「本月社会价值 / 满额潜力」「是否全环保」。
+
+---
+
+## 扣减与波动
+
+**不做** 独立的「社会价值扣减事件」或第二套累计经验；**扣减** 仅指 **M9 重算后 `social_value_current` 变低**。
+
+| 触发 | 效果 |
+|------|------|
+| 供能满足率下降 | 该城 `× satisfaction_rate` 变小 → 总和可能减少 |
+| 新建未环保火电/核电 | `eco_cap_factor` 变 **0.8** → 该城上限降低 |
+| 拆除环保机组、遗留非环保机组 | 可能失去全环保 → **0.8** 上限 |
+| 解锁新城但暂未满供 | 分子增加但单项贡献低 → 总和可能暂时下降 |
+
+| 对比 | 说明 |
+|------|------|
+| vs 资金 | 收入随 **当月** 供能；社会价值亦 **当月快照**，非历史累加 |
+| vs 公司等级 | 社会价值可降；**等级 I–V 不回退** |
+| vs 事件 | 事件 **不** 直接改 `social_value_current`（见 [08-events.md](./08-events.md)） |
 
 ---
 
@@ -277,6 +312,31 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | `social_value_threshold_next` | 升到下一级所需 **社会价值**（UI 分母） |
 | `unlocked_sv_potential_ref` | 策划参考：该档理论满额 |
 
+`city_base_social_value` 定性尺度见 [05-map-and-slots.md](./05-map-and-slots.md#社会价值基数定性尺度)（农村 / 中心城 / 都等）。
+
+---
+
+## 与其他系统的关系
+
+| 文档 | 关系 |
+|------|------|
+| [01-core-loop.md](./01-core-loop.md) | M9/M10；顶栏双资源 |
+| [04-energy-supply.md](./04-energy-supply.md) | `satisfaction_rate`、`city_fully_eco_supply`、`is_eco` |
+| [05-map-and-slots.md](./05-map-and-slots.md) | 等级解锁地图节点；`city_base`；I 级仅 `CITY-START` |
+| [07-tech.md](./07-tech.md) | `eng_green_pr`；III 核电、V 超级水电 |
+| [09-year-end-and-monetization.md](./09-year-end-and-monetization.md) | 贷款档位随等级 |
+| [08-events.md](./08-events.md) | **不** 改 SV 公式 |
+
+---
+
+## 首版本章边界
+
+| 包含 | 不包含 |
+|------|--------|
+| M9/M10 规则、单式城市公式、环保 0.8/1.0 | `city_base` / 门槛 **整数表**（T37） |
+| 等级解锁骨架与 MAP 占位 | 社会价值明细 UI 线框（T29） |
+| 扣减语义、只升不降 | 事件改 SV、成就 |
+
 ---
 
 ## 已决事项
@@ -293,7 +353,15 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 火/核 | 默认非环保；环保科技 + 机组升级 |
 | 环保范围 | **仅本市机组**；**外电视同环保**；不追溯、外送不连带 |
 | 省内城数 | 每省 **4–6** 节点，逐省配置，禁止统一 5 城模板 |
-| 数值阶段 | GDD 仅定性尺度；**架构 locked 后**再精算平衡表 |
+| 数值阶段 | GDD 仅定性尺度；**整数表** 在 data 层 T37 精算 |
+| 公式形态 | **废止** 80/20 双轨；**现行** 满足率 × 环保系数 |
+| `eng_green_pr` | 全环保城 **×1.05**（[07-tech.md](./07-tech.md)） |
+
+---
+
+## 开放问题
+
+（无；门槛与 `city_base` 整数走 T37。）
 
 ---
 
@@ -312,3 +380,4 @@ social_value_current = Σ_{each unlocked operable city} city_sv_monthly   // M9
 | 0.6.4 | 2026-05-22 | 同步 T07：环保科技显示名迁至 05；移除 open_questions |
 | 0.6.5 | 2026-05-22 | III=1都2区；核电 III 起；IV 无害化 ECO |
 | 0.6.6 | 2026-05-22 | 可经营区域须大地图连通（规则见 05-map） |
+| 1.0.0 | 2026-05-26 | T05 收尾 **`locked`**：扣减节、MAP 解锁对齐、`eng_green_pr`、门槛表、废止双轨说明 |
