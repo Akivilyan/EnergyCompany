@@ -80,7 +80,7 @@ open_questions: []
 | 事件节点 | 承担主要经营起伏（资金、收入、研发节奏等） | [事件系统](./08-events.md) |
 | 重玩性 | 经营方针 × 难度 × 局外等级 × 灾害战役通关 | [重玩性与方针](./11-replayability.md) |
 | 双主资源 | 资金 + 社会价值；长期取舍 | [资源与经济](./02-economy.md)、[社会价值](./03-social-value.md) |
-| 新手引导与教程 | **首版必须**；与核心循环衔接 | [新手引导](./10-onboarding.md)（T11a 待写） |
+| 新手引导与教程 | **首版必须**；与核心循环衔接 | [新手引导](./10-onboarding.md) |
 | 激励广告 | **三类**、**单局 10 次硬顶**（免广告期不追加）；失败重开重置 | [公司经营与商业化](./09-year-end-and-monetization.md) |
 
 界面体系为**五类**（城市详细建设 / 区域 / 大地图 / 科技树 / 公司），详见 [核心循环与时间](./01-core-loop.md)；**不以**旧稿「四层 + 独立年度战略屏」为准。
@@ -144,7 +144,7 @@ open_questions: []
 |------|------|
 | [01-core-loop.md](./01-core-loop.md) | 四层界面、月度推进、关键节点弹出（T03） |
 | [02-economy.md](./02-economy.md) ~ [09-year-end-and-monetization.md](./09-year-end-and-monetization.md) | 各系统规则展开 |
-| [10-onboarding.md](./10-onboarding.md) | 新手引导（T11a） |
+| [10-onboarding.md](./10-onboarding.md) | 新手引导（教学方针关卡） |
 | [11-replayability.md](./11-replayability.md) | 方针、难度、通关/失败（T11b） |
 | [META.md](../META.md) | 编写规范与任务流程 |
 | 旧 `docs/game-core-design.md` | 搬迁参考；被本套件取代后见 `LEGACY.md`（T46） |

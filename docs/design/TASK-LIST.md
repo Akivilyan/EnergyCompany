@@ -35,7 +35,7 @@
 | T10 | [x] | **事件系统**：定位、作用维度、正负示例、与 UI 入口关系 | `gdd/08-events.md` | 旧 GDD §16 | T03 |
 | T11 | [x] | **公司经营与商业化**：公司界面快照、贷款梯度、岗位/IAP/激励广告 | `gdd/09-year-end-and-monetization.md` | 旧 GDD §17–18 | T04, T05 |
 | T11b | [x] | **重玩性与经营方针**：四方针、两难度、lit 预算、灾害战役通关、破产 | `gdd/11-replayability.md` | 用户 2026-05-23～24 | T03, T07, T08, T10 |
-| T11a | [ ] | **新手引导与教程**：首次进入流程、分步解锁、可跳过/重看、与核心循环衔接 | `gdd/10-onboarding.md` | 旧 GDD 零散 UI 提示 + 与用户共定 | T02, T03 |
+| T11a | [x] | **新手引导与教程**：教学方针关卡、8 步遮罩、可跳过/重玩/打勾 | `gdd/10-onboarding.md` | 旧 GDD 零散 UI 提示 + 与用户共定 | T02, T03 |
 | T12 | [ ] | **GDD 索引页**：各章链接、术语指向、与 Feature Spec 映射表 | `gdd/README.md` | 全文校对 | T02–T11, T11a, T11b |
 
 ---
@@ -145,6 +145,7 @@
 | T11b `11-replayability` | **draft**（v0.1.3）：统一 lit **15**、自由分配（不分 main/eng） |
 | T11 `09-year-end-and-monetization` | **locked**（v1.0.0）：工程总监、3 在建、单研发队列、激励 **10 次/局**（免广告不追加） |
 | T05 `03-social-value` | **locked**（v1.0.0）：满足率×环保系数；M9 覆盖可降；MAP 解锁；无 80/20 双轨 |
+| T11a `10-onboarding` | **locked**（v1.0.0）：教学方针独立关、7 步遮罩、完成打勾、四方针无遮罩 |
 | 破产 / 重玩性 | **T11b 已写初稿**；具体整数表留 T37 |
 | Playable v0 方针/难度 | 首版可仅 **1 方针 + 1 难度**；架构预留 `doctrine` / `difficulty` 字段 |
 
@@ -170,3 +171,7 @@
 | 2026-05-24 | T11b v0.1.1：lit=14、风光开局 storage_system+storage_1；META 配置可写 %、结算取整 |
 | 2026-05-26 | T11 **locked**（`gdd/09-year-end-and-monetization.md` v1.0.0）；07-tech 移除 `eng_fast_build` |
 | 2026-05-26 | T05 **locked**（`gdd/03-social-value.md` v1.0.0） |
+| 2026-05-26 | T11a 进行中：`gdd/10-onboarding.md` v0.1.0 初稿 |
+| 2026-05-26 | T11a v0.2.0：8 步、遮罩独占、仅 tech 方针强制链 |
+| 2026-05-26 | T11a v0.3.0：独立「教学」方针关卡、完成打勾、四方针无遮罩 |
+| 2026-05-26 | T11a **locked**（`gdd/10-onboarding.md` v1.0.0） |
