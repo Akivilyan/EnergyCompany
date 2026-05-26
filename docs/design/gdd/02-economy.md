@@ -2,7 +2,7 @@
 id: gdd/02-economy
 title: 资源与经济
 status: locked
-version: 0.3.0
+version: 0.3.1
 sources:
   - docs/game-core-design.md#6
   - docs/game-core-design.md#7
@@ -96,6 +96,18 @@ open_questions:
 
 在建取消、拆除已建设施的资金处理在 Feature（T15）与数值表定义；供能回落后下月 M9 社会价值 **可减**、收入 **降**，公司 **等级不掉**（见 [03-social-value.md](./03-social-value.md)）。
 
+### 全局在建上限
+
+| 规则 | 说明 |
+|------|------|
+| 计数范围 | **设施**（M1）+ **区域电网链路** + **主干电网链路** 共用同一 **全局** 在建池 |
+| 基础上限 | **3** 项同时 `under_construction` |
+| 工程总监 | 购买 `iap_pe_bundle` 后 **+1** → 上限 **4**（见 [09-year-end-and-monetization.md](./09-year-end-and-monetization.md)） |
+| 下达校验 | `active_construction_count >= max_concurrent_construction` 时 **不可新建**；提示「在建项目已满（N/M）」 |
+| 与建设位 | 建设位满与 **全局在建满** 为 **两道独立门槛**（位满但全局未满仍不可在同一城新建，反之亦然） |
+
+工期 modifier（**工程总监 −1 月** 等）在 **下达时** 写入该项目剩余工期，**下限 1 月**。**科技树不提供** 施工工期减免。
+
 ---
 
 ## 建设工期
@@ -158,7 +170,7 @@ open_questions:
 
 ## 贷款（摘要）
 
-公司界面、任意月、**同时仅 1 笔**未还清贷款；详见 [01-core-loop.md](./01-core-loop.md)。
+公司界面、任意月、**同时仅 1 笔**未还清贷款；档位与数值见 [09-year-end-and-monetization.md](./09-year-end-and-monetization.md)。
 
 ---
 
@@ -168,7 +180,7 @@ open_questions:
 
 ### 检视时机
 
-月度管道 **M14**（M12 关键节点反馈之后、回到可操作之前），见 [01-core-loop.md](./01-core-loop.md)。
+月度管道 **M13**（M12 关键节点反馈之后、回到可操作之前），见 [01-core-loop.md](./01-core-loop.md)。
 
 ### 规则
 
@@ -235,4 +247,5 @@ open_questions:
 |------|------|------|
 | 0.1.0 | 2026-05-19 | T04 初稿；首版不做收购 |
 | 0.2.0 | 2026-05-19 | 资金为带符号浮点；建设/研发立即扣款；`locked` |
-| 0.3.0 | 2026-05-24 | 资金改 **整数**；**连续 2 月末负资金破产**（M14） |
+| 0.3.0 | 2026-05-24 | 资金改 **整数**；**连续 2 月末负资金破产**（M13） |
+| 0.3.1 | 2026-05-26 | 全局 **最多 3 项在建**（工程总监 +1）；对齐 T11 |

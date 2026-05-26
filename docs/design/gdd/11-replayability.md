@@ -290,11 +290,11 @@ Playtest 须 **分方针、分难度** 跑通战役表，避免单一建设顺�
 
 | 文档 | 关系 |
 |------|------|
-| [02-economy.md](./02-economy.md) | 整数 `funds`；破产 M14 |
+| [02-economy.md](./02-economy.md) | 整数 `funds`；破产 M13 |
 | [07-tech.md](./07-tech.md) | lit 预算、异线硬顶、tech 无上限 |
 | [04-energy-supply.md](./04-energy-supply.md) | 水电方针供能 mult |
 | [08-events.md](./08-events.md) | 灾害战役、考试强度 |
-| [01-core-loop.md](./01-core-loop.md) | M14 破产、M15 通关检视 |
+| [01-core-loop.md](./01-core-loop.md) | M13 破产、M14 通关检视 |
 | [00-vision.md](./00-vision.md) | 起伏与重玩性入口 |
 
 ---

@@ -33,7 +33,7 @@
 | T08 | [x] | **电网**：区域内/主干、固定损耗、战略工程、特高压前置 | `gdd/06-grid.md` | 旧 GDD §14 | T06, T07 |
 | T09 | [x] | **科技研发**：规模原则、付费/取消规则、并行、重大节点列表 | `gdd/07-tech.md` | 旧 GDD §15 + `tech-tree-design.md` 原则部分 | T05 |
 | T10 | [x] | **事件系统**：定位、作用维度、正负示例、与 UI 入口关系 | `gdd/08-events.md` | 旧 GDD §16 | T03 |
-| T11 | [ ] | **年度战略与商业化**：年报字段、贷款收购、负责人/IAP 分阶段、无成就 | `gdd/09-year-end-and-monetization.md` | 旧 GDD §17–18 | T04, T05 |
+| T11 | [x] | **公司经营与商业化**：公司界面快照、贷款梯度、岗位/IAP/激励广告 | `gdd/09-year-end-and-monetization.md` | 旧 GDD §17–18 | T04, T05 |
 | T11b | [x] | **重玩性与经营方针**：四方针、两难度、lit 预算、灾害战役通关、破产 | `gdd/11-replayability.md` | 用户 2026-05-23～24 | T03, T07, T08, T10 |
 | T11a | [ ] | **新手引导与教程**：首次进入流程、分步解锁、可跳过/重看、与核心循环衔接 | `gdd/10-onboarding.md` | 旧 GDD 零散 UI 提示 + 与用户共定 | T02, T03 |
 | T12 | [ ] | **GDD 索引页**：各章链接、术语指向、与 Feature Spec 映射表 | `gdd/README.md` | 全文校对 | T02–T11, T11a, T11b |
@@ -51,13 +51,13 @@
 | T15 | [ ] | **设施建设**：选址、造价/工期、在建队列、完工生效、拆除（若有） | `features/construction.md` | §02, §04, §05 |
 | T16 | [ ] | **供能计算**：月度重算输入输出、有效供能修正项、满足率展示 | `features/supply-calculation.md` | §04, §06 |
 | T17 | [ ] | **社会价值结算**：分地区公式、公司汇总、扣减、等级检视 | `features/social-value-settlement.md` | §03 |
-| T18 | [ ] | **公司管理**：现金流/负债/明细页、等级进度条行为 | `features/company-management.md` | §03, §09 |
+| T18 | [ ] | **公司管理**：经营快照、近月流水、借贷、岗位、等级进度 | `features/company-management.md` | §03, §09 |
 | T19 | [ ] | **全国大地图**：选区、解锁/灰显、战略工程入口、联通展示 | `features/world-map.md` | §05, §06 |
 | T20 | [ ] | **区域电网与主干**：建链、损耗、接入条件、跨区限制 | `features/grid-network.md` | §06 |
 | T21 | [ ] | **科技树**：研发流程、取消返还、并行、解锁效果挂载点 | `features/tech-tree.md` | §07 |
 | T22 | [ ] | **事件**：实例生命周期、倒计时、效果类型、与结算顺序 | `features/events.md` | §08 |
-| T23 | [ ] | **年度战略**：12 月触发、年报、贷款、收购 | `features/year-end-strategy.md` | §09 |
-| T24 | [ ] | **商业化（后续阶段）**：广告 / 两档 IAP / 总监岗位 | `features/monetization.md` | §09 |
+| T23 | [-] | ~~年度战略~~ → **合并 T18**（无年报） | — | §09 |
+| T24 | [ ] | **商业化**：激励广告三类、10 次/局、CFO/工程总监 IAP | `features/monetization.md` | §09 |
 | T24a | [ ] | **新手引导**：引导步骤 ID、触发条件、完成/跳过、存档标记 | `features/onboarding.md` | `gdd/10-onboarding.md` |
 | T25 | [ ] | **Feature 索引**：系统列表、优先级（MVP / 后续）、GDD 交叉引用 | `features/README.md` | T13–T24, T24a |
 
@@ -74,7 +74,7 @@
 | T30 | [ ] | **建设流程**（选型、确认、在建列表） | `ui/construction-flow.md` | T15, T26 |
 | T31 | [ ] | **科技树界面** | `ui/tech-tree.md` | T21, T26 |
 | T32 | [ ] | **事件面板与事件弹窗** | `ui/events.md` | T22, T26 |
-| T33 | [ ] | **年度战略 / 年报** | `ui/year-end.md` | T23, T26 |
+| T33 | [-] | ~~年度战略 / 年报~~ → **合并 T29** | — | T18, T26 |
 | T34 | [ ] | **关键节点插画/弹窗**（升级、竣工、供能 100% 等） | `ui/milestones.md` | T03, T26 |
 | T35a | [ ] | **新手引导 UI**：遮罩、高亮、手指提示、步骤条、跳过确认 | `ui/onboarding.md` | T24a, T26 |
 | T35 | [ ] | **UI 索引**：微信小游戏安全区、通用组件（顶栏、按钮、Toast 策略） | `ui/README.md` | T26–T35a |
@@ -143,6 +143,7 @@
 | 协作起点 | **T02**（T01 已完成） |
 | T10 `08-events` | **locked**（v0.3.0）：四类效果、≤3 并发、等级缩放、灾害考试 |
 | T11b `11-replayability` | **draft**（v0.1.3）：统一 lit **15**、自由分配（不分 main/eng） |
+| T11 `09-year-end-and-monetization` | **locked**（v1.0.0）：工程总监、3 在建、单研发队列、激励 **10 次/局**（免广告不追加） |
 | 破产 / 重玩性 | **T11b 已写初稿**；具体整数表留 T37 |
 | Playable v0 方针/难度 | 首版可仅 **1 方针 + 1 难度**；架构预留 `doctrine` / `difficulty` 字段 |
 
@@ -166,3 +167,4 @@
 | 2026-05-23 | T10 **locked**（`gdd/08-events.md` v0.3.0）；破产/重玩性留待下轮 |
 | 2026-05-24 | T11b 初稿：`gdd/11-replayability.md`；02 整数资金+破产；07 lit 预算；08 灾害战役 |
 | 2026-05-24 | T11b v0.1.1：lit=14、风光开局 storage_system+storage_1；META 配置可写 %、结算取整 |
+| 2026-05-26 | T11 **locked**（`gdd/09-year-end-and-monetization.md` v1.0.0）；07-tech 移除 `eng_fast_build` |
