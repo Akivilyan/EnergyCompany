@@ -109,7 +109,7 @@
 
 | ID | 状态 | 任务 | 产出物 | 依赖 |
 |----|------|------|--------|------|
-| T46 | [ ] | **旧文档归档说明**：哪些已 superseded、只读参考路径 | `docs/design/LEGACY.md` | 全部 GDD/Feature/UI locked |
+| T46 | [x] | **旧文档归档说明**：哪些已 superseded、只读参考路径 | `docs/design/LEGACY.md` | 全部 GDD/Feature/UI locked |
 | T47 | [ ] | **（可选）** 删除或移动旧 `docs/*.md` 至 `docs/archive/` | 用户确认后执行 | T46 |
 
 ---
@@ -201,3 +201,4 @@
 | 2026-05-27 | T43 完成：新增 `engineering/architecture.md`（core/config/ui/modules 边界与依赖矩阵） |
 | 2026-05-28 | T44 完成：新增 `engineering/simulation-api.md`（GameState、dispatch/settleNextMonth、错误码、单测策略） |
 | 2026-05-28 | T45 完成：新增 `engineering/IMPLEMENTATION-TASKS.md`（M0-M8 里程碑与 T45-01~16 编码拆条） |
+| 2026-05-28 | T46 完成：新增 `LEGACY.md`（旧 docs 文档 superseded/reference 映射与使用规则） |
