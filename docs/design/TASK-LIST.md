@@ -86,7 +86,7 @@
 | ID | 状态 | 任务 | 产出物 | 主要摘录来源 | 依赖 |
 |----|------|------|--------|--------------|------|
 | T36 | [ ] | **配置总览**：目录约定、Excel→JSON 流程、表清单 | `data/README.md` | `balance-data-structure.md` §2–3 | T12 |
-| T37 | [ ] | **核心表字段说明**（region / facility / company_level / event 等） | `data/schemas/*.md` | `balance-data-structure.md` §4+ | T36 |
+| T37 | [x] | **核心表字段说明**（region / facility / company_level / event 等） | `data/schemas/*.md` | `balance-data-structure.md` §4+ | T36 |
 | T38 | [ ] | **科技树配置说明** + 与 `gdd/07-tech` 对齐的节点表结构 | `data/technology-tree.md` | `tech-tree-design.md` | T09, T37 |
 | T39 | [ ] | **垂直切片数据包**：范围随 T41 共定；占位数值 | `data/vertical-slice-v0/` | 策划待定 | T37, T25, **T41** |
 | T40 | [ ] | **数据验收清单**：缺省值、ID 规范、与 Feature 字段对齐检查表 | `data/CHECKLIST.md` | — | T37–T39 |
@@ -182,3 +182,4 @@
 | 2026-05-26 | T11b v0.6.0：风光/化石 **%** 建设减免；科技 80→60%、−1～−3 月；水电核电线+高 mult |
 | 2026-05-27 | T11b v0.6.3：储能科技 `tech_id` 统一为 `storage_system_1～3`（与 07/04/08 对齐） |
 | 2026-05-27 | T11b **locked**（`gdd/11-replayability.md` v0.6.3） |
+| 2026-05-27 | T37 完成：新增 `data/schemas/` 核心字段说明（region/city、facility/grid、company/run、events/campaign、doctrine_meta） |
