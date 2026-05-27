@@ -21,7 +21,7 @@ GDD → Feature Spec → UI Spec → Data → Code
 1. 编写规范见 [`META.md`](./META.md)；任务顺序见 [`TASK-LIST.md`](./TASK-LIST.md)。
 2. **每次对话只做一个任务**；由 Agent 引导，从旧 `docs/` 摘录并改写，不一次性搬迁。
 3. 新文档使用 `META.md` 中的 front matter（`status`: draft / locked 等）。
-4. **阶段 1（GDD）已完成**；**下一项协作任务：T22**（`features/events.md`）。GDD 总索引见 [`gdd/README.md`](./gdd/README.md)；Feature 起点见 [`features/00-game-state.md`](./features/00-game-state.md)、[`features/region-main.md`](./features/region-main.md)、[`features/construction.md`](./features/construction.md)、[`features/supply-calculation.md`](./features/supply-calculation.md)、[`features/social-value-settlement.md`](./features/social-value-settlement.md)、[`features/company-management.md`](./features/company-management.md)、[`features/world-map.md`](./features/world-map.md)、[`features/grid-network.md`](./features/grid-network.md)、[`features/tech-tree.md`](./features/tech-tree.md)。
+4. **阶段 1（GDD）已完成**；**下一项协作任务：T24**（`features/monetization.md`）。GDD 总索引见 [`gdd/README.md`](./gdd/README.md)；Feature 起点见 [`features/00-game-state.md`](./features/00-game-state.md) 至 [`features/events.md`](./features/events.md)。
 
 ## 旧文档对照（搬迁来源，非权威）
 

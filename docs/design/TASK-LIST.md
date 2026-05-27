@@ -55,7 +55,7 @@
 | T19 | [x] | **全国大地图**：选区、解锁/灰显、战略工程入口、联通展示 | `features/world-map.md` | §05, §06 |
 | T20 | [x] | **区域电网与主干**：建链、损耗、接入条件、跨区限制 | `features/grid-network.md` | §06 |
 | T21 | [x] | **科技树**：研发流程、取消返还、并行、解锁效果挂载点 | `features/tech-tree.md` | §07 |
-| T22 | [ ] | **事件**：实例生命周期、倒计时、效果类型、与结算顺序 | `features/events.md` | §08 |
+| T22 | [x] | **事件**：实例生命周期、倒计时、效果类型、与结算顺序 | `features/events.md` | §08 |
 | T23 | [-] | ~~年度战略~~ → **合并 T18**（无年报） | — | §09 |
 | T24 | [ ] | **商业化**：激励广告三类、10 次/局、CFO/工程总监 IAP | `features/monetization.md` | §09 |
 | T24a | [ ] | **新手引导**：引导步骤 ID、触发条件、完成/跳过、存档标记 | `features/onboarding.md` | `gdd/10-onboarding.md` |
@@ -196,3 +196,4 @@
 | 2026-05-27 | T19 完成：新增 `features/world-map.md`（节点导航、灰显解锁、战略入口） |
 | 2026-05-27 | T20 完成：新增 `features/grid-network.md`（区域/主干建链、线损档位、自动升档） |
 | 2026-05-27 | T21 完成：新增 `features/tech-tree.md`（单队列研发、取消返还、效果挂载） |
+| 2026-05-27 | T22 完成：新增 `features/events.md`（生命周期、M11 调度、固定灾害轴） |
