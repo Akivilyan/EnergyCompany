@@ -147,6 +147,7 @@ scheduled → active → expired
   - [设施建设](./construction.md)
   - [科技树](./tech-tree.md)
   - [供能计算](./supply-calculation.md)
+  - [事件 UI](../ui/events.md)（T32）
 
 ## 变更记录
 

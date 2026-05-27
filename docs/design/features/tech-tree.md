@@ -164,6 +164,7 @@ locked → unlocked → researching → lit
   - [设施建设](./construction.md)
   - [区域电网与主干](./grid-network.md)
   - [供能计算](./supply-calculation.md)
+  - [科技树 UI](../ui/tech-tree.md)（T31）
 
 ## 变更记录
 

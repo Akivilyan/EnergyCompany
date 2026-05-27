@@ -202,7 +202,7 @@ open_questions:
   - [公司管理](./company-management.md)
   - [科技树](./tech-tree.md)
   - [商业化](./monetization.md)
-- UI：`ui/onboarding.md`（T35a）
+- UI：[新手引导 UI](../ui/onboarding.md)（T35a）
 - Data：`tutorial_run_config`（T37）
 
 ## 变更记录

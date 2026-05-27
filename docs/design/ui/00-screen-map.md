@@ -12,9 +12,7 @@ depends_on:
   - features/README
   - gdd/01-core-loop
   - gdd/10-onboarding
-open_questions:
-  - 事件面板为全屏还是底部抽屉（T32 定稿）
-  - 建设确认是否为独立屏或模态（T30 定稿）
+open_questions: []
 ---
 
 # 屏幕地图
@@ -88,7 +86,7 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 | `modal_build_list` | 模态 | 城市空位 | 否 | T30 | construction |
 | `modal_build_confirm` | 模态 | 建造列表选设施 | 否 | T30 | construction |
 | `panel_construction_queue` | 侧栏/底 sheet | 城市·在建 | 否 | T30 | construction |
-| `panel_events` | 面板 | 城市·事件按钮 | 否 | T32 | [events](../features/events.md) |
+| `panel_events` | 底部 sheet | 城市·事件按钮 | 否 | T32 | [events](../features/events.md) |
 | `modal_event_fullscreen` | 全屏 | 灾害/显著政策 | 只读确认 | T32 | events |
 | `modal_loan_apply` | 模态 | 公司·借贷 | 否 | T29 | company-management |
 | `modal_ad_reward_pick` | 模态 | 公司·激励 | 否 | T29 | monetization |

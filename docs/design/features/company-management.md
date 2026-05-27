@@ -126,6 +126,7 @@ open_questions: []
   - [全局游戏状态与月度结算](./00-game-state.md)
   - [社会价值结算](./social-value-settlement.md)
   - [商业化](./monetization.md)
+  - [公司管理 UI](../ui/company.md)（T29）
 
 ## 变更记录
 

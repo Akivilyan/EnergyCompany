@@ -154,7 +154,8 @@ open_questions:
 - Feature：
   - [全局游戏状态与月度结算](./00-game-state.md)
   - [地区主界面](./region-main.md)
-  - `features/grid-network.md`（T20）
+  - [区域电网与主干](./grid-network.md)
+  - [建设流程 UI](../ui/construction-flow.md)（T30）
 
 ## 变更记录
 
