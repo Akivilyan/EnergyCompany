@@ -198,7 +198,7 @@ IAP 为 **账号级** 写入，不绑定单局 `run_id`。
 | 重复购买 `iap_cfo` | 拒绝或提示已拥有；不二次发货 |
 | 结算中发起激励 / IAP | 拒绝；`month_settling` |
 | `run_result` 中发起激励 | 拒绝；`run_ended` |
-| 教程白名单未包含商业化命令 | 返回 `blocked_by_tutorial`（步骤定义见 T24a） |
+| 教程白名单未包含商业化命令 | 返回 `blocked_by_tutorial`（见 [onboarding](./onboarding.md) §5.1） |
 
 ## 10. 验收标准
 

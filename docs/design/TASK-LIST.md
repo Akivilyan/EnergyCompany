@@ -58,8 +58,8 @@
 | T22 | [x] | **事件**：实例生命周期、倒计时、效果类型、与结算顺序 | `features/events.md` | §08 |
 | T23 | [-] | ~~年度战略~~ → **合并 T18**（无年报） | — | §09 |
 | T24 | [x] | **商业化**：激励广告三类、10 次/局、CFO/工程总监 IAP | `features/monetization.md` | §09 |
-| T24a | [ ] | **新手引导**：引导步骤 ID、触发条件、完成/跳过、存档标记 | `features/onboarding.md` | `gdd/10-onboarding.md` |
-| T25 | [ ] | **Feature 索引**：系统列表、优先级（MVP / 后续）、GDD 交叉引用 | `features/README.md` | T13–T24, T24a |
+| T24a | [x] | **新手引导**：引导步骤 ID、触发条件、完成/跳过、存档标记 | `features/onboarding.md` | `gdd/10-onboarding.md` |
+| T25 | [x] | **Feature 索引**：系统列表、优先级（MVP / 后续）、GDD 交叉引用 | `features/README.md` | T13–T24, T24a |
 
 ---
 

@@ -87,6 +87,8 @@ open_questions:
 | `purchase_iap` | 商业化 | `sku_id` | 平台可购、SKU 合法 | 写入 profile 岗位/免广告并刷新 modifier |
 | `next_month` | 时间推进 | 无 | 当前非结算态且不被锁 | 进入结算管道 M1-M14 |
 | `acknowledge_result` | 结果处理 | `result_type` | 当前在 `run_result` | 标记已读并允许跳转 |
+| `advance_onboarding` | 新手引导 | 无 | 教学局当前步允许确认 | 步进 `onboarding_current_step_id` |
+| `skip_onboarding` | 新手引导 | 无 | `is_tutorial_run` | 结束教学局；不写 `tutorial_doctrine_cleared` |
 
 `set_run_option`、`confirm_run_setup`、`cancel_run_setup` 属于 `run_setup`，由本表外的顶层流程处理。
 
@@ -162,6 +164,7 @@ open_questions:
   - `features/supply-calculation.md`（T16）
   - `features/social-value-settlement.md`（T17）
   - [商业化](./monetization.md)（T24）
+  - [新手引导](./onboarding.md)（T24a）
 
 ## 变更记录
 
