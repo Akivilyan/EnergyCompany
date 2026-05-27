@@ -49,7 +49,7 @@
 | T13 | [x] | **全局**：游戏状态机、命令枚举（玩家可发起的操作）、`下一月` 结算管道步骤表 | `features/00-game-state.md` | §01 |
 | T14 | [x] | **地区主界面**：进入条件、顶栏、主区、悬浮按钮、`下一月` | `features/region-main.md` | §01, §03 |
 | T15 | [x] | **设施建设**：选址、造价/工期、在建队列、完工生效、拆除（若有） | `features/construction.md` | §02, §04, §05 |
-| T16 | [ ] | **供能计算**：月度重算输入输出、有效供能修正项、满足率展示 | `features/supply-calculation.md` | §04, §06 |
+| T16 | [x] | **供能计算**：月度重算输入输出、有效供能修正项、满足率展示 | `features/supply-calculation.md` | §04, §06 |
 | T17 | [ ] | **社会价值结算**：分地区公式、公司汇总、扣减、等级检视 | `features/social-value-settlement.md` | §03 |
 | T18 | [ ] | **公司管理**：经营快照、近月流水、借贷、岗位、等级进度 | `features/company-management.md` | §03, §09 |
 | T19 | [ ] | **全国大地图**：选区、解锁/灰显、战略工程入口、联通展示 | `features/world-map.md` | §05, §06 |
@@ -190,3 +190,4 @@
 | 2026-05-27 | T13 完成：新增 `features/00-game-state.md`（状态机、命令枚举、M1–M14 结算表） |
 | 2026-05-27 | T14 完成：新增 `features/region-main.md`（区域入口、组网操作、结算关系、验收） |
 | 2026-05-27 | T15 完成：新增 `features/construction.md`（建设校验、分期扣费、在建/完工/取消） |
+| 2026-05-27 | T16 完成：新增 `features/supply-calculation.md`（设施/电网/城市三层供能重算） |
