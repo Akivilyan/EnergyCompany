@@ -2,7 +2,7 @@
 id: gdd/07-tech
 title: 科技研发
 status: draft
-version: 0.3.7
+version: 0.3.8
 sources:
   - docs/game-core-design.md#15
   - docs/tech-tree-design.md
@@ -322,7 +322,7 @@ screen_tech_tree（II 级起可见）
 
 ## 开放问题
 
-1. `nuclear_2` / `nuclear_3` 是升单厂 tier 还是全局核电 BUFF（表驱动二选一，T37）。
+（无）
 
 ---
 
@@ -338,6 +338,7 @@ screen_tech_tree（II 级起可见）
 | 0.3.5 | 2026-05-26 | 废除 `storage_system`；合并为 **储能系统·I～III**（`storage_system_1～3`）；×2 效果归 ·I |
 | 0.3.6 | 2026-05-26 | 全文显示名统一 **储能系统·I～III**；闸门表补全显示名 |
 | 0.3.7 | 2026-05-27 | `tech_id` 统一迁移为 `storage_system_1～3`；移除旧 `storage_*` 三段写法作为当前口径 |
+| 0.3.8 | 2026-05-27 | `nuclear_2` / `nuclear_3` 决策为 **单厂升 tier（A）**；移出开放问题 |
 | 0.3.2 | 2026-05-24 | 双池 main 14 + eng 1；风光 → `eng_green_pr` |
 | 0.3.3 | 2026-05-24 | 统一 lit **15**、自由分配（取消 main/eng 分池） |
 | 0.3.4 | 2026-05-26 | **单队列研发**（同时仅 1 项在研）；对齐 T11 |

@@ -2,7 +2,7 @@
 id: gdd/06-grid
 title: 电网
 status: draft
-version: 0.5.1
+version: 0.5.2
 sources:
   - docs/game-core-design.md#14
 supersedes: []
@@ -11,7 +11,7 @@ depends_on:
   - gdd/04-energy-supply
   - gdd/05-map-and-slots
 open_questions:
-  - ordinary_city_demand_ratio 相对中心城取 1/3～1/2 的具体值（精算取整，T37）
+  - `city_demand_profile` 四类城市范围值（中心/常规/农村/边陲）首版上下界待 T39 试跑
 ---
 
 # 电网
@@ -108,12 +108,12 @@ open_questions:
 
 线损为 **每月固定 MW**，写入 `grid_loss_config`（**不按流量、不按距离**）。绝对数 **精算后取整**。
 
-**普通城市**（`mid_city` / `rural` / `remote`，非中心/非都）月需求 `base_demand_mw` 宜为 **中心城** 的 **1/3～1/2**：
+**普通城市**（`ordinary_city` / `rural` / `frontier_town`，非中心/非都）月需求 `base_demand_mw` 由 `city_demand_profile` 选档：
 
 ```text
 ordinary_city_reference_demand_mw
-    = round( core_reference_demand_mw × ordinary_city_demand_ratio )
-// ordinary_city_demand_ratio ∈ [1/3, 1/2]，具体值待表（T37）
+    = selected_value(city_demand_profile, ordinary_city)
+// 由 Data 表按城市类型给定范围值，不再强制单比例系数
 ```
 
 | 线型 | 每月线损（单条链路） |
@@ -144,7 +144,7 @@ loss_backbone_pre_uhv_mw = floor( raw_pre / 10 ) × 10   // 先向下取整，�
 | 字段 | 说明 |
 |------|------|
 | `core_reference_demand_mw` | 典型中心城需求 |
-| `ordinary_city_demand_ratio` | 普通城相对中心（0.333～0.5） |
+| `city_demand_profile` | 城市类型需求档位（中心/常规/农村/边陲） |
 | `ordinary_city_reference_demand_mw` | 取整后的普通城参考需求 |
 | `loss_regional_mw` | `round(ordinary_reference / 4)` |
 | `loss_backbone_uhv_mw` | `round(ordinary_reference)`（特高压后 / 升档目标） |
@@ -154,14 +154,14 @@ loss_backbone_pre_uhv_mw = floor( raw_pre / 10 ) × 10   // 先向下取整，�
 
 #### 量级示例
 
-`core_reference = 900`，`ordinary_city_demand_ratio = 0.4` → 普通城参考 **360 MW**：
+`city_demand_profile.ordinary_city = 500` → 普通城参考 **500 MW**：
 
 | 线型 | 线损 |
 |------|------|
-| 区域 ×1 | 90 MW |
-| 主干 ×1（特高压后） | 360 MW |
-| 主干 ×1（特高压前） | `floor(540/10)×10` = **540 MW** |
-| 区域 ×4 合计 | 360 MW（= 特高压后主干 ×1） |
+| 区域 ×1 | 125 MW |
+| 主干 ×1（特高压后） | 500 MW |
+| 主干 ×1（特高压前） | `floor(750/10)×10` = **750 MW** |
+| 区域 ×4 合计 | 500 MW（= 特高压后主干 ×1） |
 
 ### 并网岛算法（M4）
 
@@ -256,8 +256,7 @@ rate = 30/150 = 0.2
 
 ## 开放问题
 
-1. **`ordinary_city_demand_ratio`** 取 1/3 还是 1/2（或分省差异）——与 `region_nodes.base_demand_mw` 一并精算（T37）。
-2. **链路造价与工期**——与线损量级同批落表（T37）；本章只定线损比例关系。
+1. **链路造价与工期**——与线损量级同批落表（T37）；本章只定线损比例关系。
 
 ---
 
@@ -272,3 +271,4 @@ rate = 30/150 = 0.2
 | 0.4.0 | 2026-05-22 | T08 定稿：建链/枢纽/特高压门控、超级水电图节点、M2 施工；开放问题收敛 |
 | 0.5.0 | 2026-05-22 | IV 级可铺主干；特高压前线损 1.5× 个位归零；点亮后主干自动升档 |
 | 0.5.1 | 2026-05-22 | 区域电网 III、主干 IV、特高压 V 科技门控 |
+| 0.5.2 | 2026-05-27 | 普通城需求改为 `city_demand_profile` 范围档位；移除固定比例未决项 |

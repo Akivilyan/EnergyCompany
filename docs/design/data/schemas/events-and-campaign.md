@@ -2,7 +2,7 @@
 id: data/schemas/events-and-campaign
 title: 事件与固定灾害轴字段
 status: draft
-version: 0.1.0
+version: 0.1.1
 sources:
   - docs/design/gdd/08-events.md
   - docs/design/gdd/11-replayability.md
@@ -42,15 +42,20 @@ open_questions:
 | `warn_lead_months` | int | 是 | 预警月数（8/10/12/14） |
 | `event_id` | string | 是 | 对应灾害事件 ID（指向 `event_pool`） |
 | `exam_tier` | int | 是 | 备考档位（1-3） |
-| `base_cash_penalty` | int | 是 | 基础扣款（难度前） |
-| `base_sv_penalty` | int | 是 | 基础社会价值扣减 |
+| `immediate_cash_penalty` | int | 是 | 即刻现金惩罚（难度修正前） |
+| `debuff_duration_months` | int | 是 | 负面持续月数 N |
+| `income_mult_num` / `income_mult_den` | int / int | 是 | 每月收益倍率（持续期间） |
+| `build_duration_mult_num` / `build_duration_mult_den` | int / int | 是 | 设施建造工期倍率（持续期间） |
+| `research_duration_mult_num` / `research_duration_mult_den` | int / int | 是 | 科研周期倍率（持续期间） |
 | `exam_fail_extra_cash` | int | 是 | 备考失败额外现金惩罚 |
-| `exam_fail_extra_sv` | int | 是 | 备考失败额外 SV 惩罚 |
 | `popup_required` | bool | 是 | 是否强制弹窗（固定灾害 true） |
+
+> 约束：固定灾害**不使用社会价值扣减**字段，避免造成升级路径锁死。
 
 ## 3) 结算顺序（固定）
 
 1. 命中 `trigger_month` -> 触发灾害事件。
 2. 应用 `difficulty_modifiers.disaster_cash_mult`、`exam_tier_delta`。
-3. 结算后统一截断为整数。
+3. 写入持续性 debuff（收益/建造/科研）并设置 `debuff_duration_months`。
+4. 月结算按 active debuff 叠乘后统一截断为整数。
 
