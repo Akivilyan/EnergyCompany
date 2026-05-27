@@ -53,7 +53,7 @@
 | T17 | [x] | **社会价值结算**：分地区公式、公司汇总、扣减、等级检视 | `features/social-value-settlement.md` | §03 |
 | T18 | [x] | **公司管理**：经营快照、近月流水、借贷、岗位、等级进度 | `features/company-management.md` | §03, §09 |
 | T19 | [x] | **全国大地图**：选区、解锁/灰显、战略工程入口、联通展示 | `features/world-map.md` | §05, §06 |
-| T20 | [ ] | **区域电网与主干**：建链、损耗、接入条件、跨区限制 | `features/grid-network.md` | §06 |
+| T20 | [x] | **区域电网与主干**：建链、损耗、接入条件、跨区限制 | `features/grid-network.md` | §06 |
 | T21 | [ ] | **科技树**：研发流程、取消返还、并行、解锁效果挂载点 | `features/tech-tree.md` | §07 |
 | T22 | [ ] | **事件**：实例生命周期、倒计时、效果类型、与结算顺序 | `features/events.md` | §08 |
 | T23 | [-] | ~~年度战略~~ → **合并 T18**（无年报） | — | §09 |
@@ -194,3 +194,4 @@
 | 2026-05-27 | T17 完成：新增 `features/social-value-settlement.md`（M9 汇总、M10 升级、只升不降） |
 | 2026-05-27 | T18 完成：新增 `features/company-management.md`（经营快照、借贷、岗位、激励入口） |
 | 2026-05-27 | T19 完成：新增 `features/world-map.md`（节点导航、灰显解锁、战略入口） |
+| 2026-05-27 | T20 完成：新增 `features/grid-network.md`（区域/主干建链、线损档位、自动升档） |
