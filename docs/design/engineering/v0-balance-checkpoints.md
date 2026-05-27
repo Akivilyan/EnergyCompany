@@ -7,6 +7,7 @@
 - 存在等待月，但等待是“有预期的等待”。
 
 配套填写模板：`docs/design/engineering/v0-balance-runlog-template.md`。
+首轮目标区间：`docs/design/engineering/v0-balance-target-lines.md`。
 
 ## 试玩设置
 
