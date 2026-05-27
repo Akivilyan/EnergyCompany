@@ -48,7 +48,7 @@ open_questions:
 | 方针 UI | 仅 **`tech`** + **`simple`**（`renewable` / `hydro` / `thermal` / `normal` **代码保留、UI 隐藏**） |
 | 教学 | **保留**：方针屏 **「教学」** + `overlay_onboarding` |
 | 开局城 | `CITY-START`（`MAP-01` 中心城） |
-| 起始资金 | **120** 万（80 + 简单 +40） |
+| 起始资金 | **140** 万（90 + 简单 +50） |
 | 方针熟练度 | 固定 **`doctrine_meta_level = 1`**（tech 路线） |
 | 战役 | `campaign_id = main_v0`；灾害 **22 / 41 / 63 / 86** |
 | 随机事件池 | **不接入** M11 权重抽取（见 §4 不做） |

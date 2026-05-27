@@ -1,7 +1,7 @@
 {
   "package_id": "vertical-slice-v0",
-  "config_version": "0.1.0",
-  "description": "Playable v0 placeholder balance; replace after T37 full export",
+  "config_version": "0.3.0",
+  "description": "Playable v0 tuned placeholder balance with MAP-01 and MAP-02 city-role templates",
   "files": [
     "run_config.json",
     "difficulty_modifiers.json",

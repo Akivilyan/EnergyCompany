@@ -1,8 +1,8 @@
 [
   {
     "difficulty_id": "simple",
-    "starting_cash_add": 40,
-    "disaster_cash_mult": 0.75,
+    "starting_cash_add": 50,
+    "disaster_cash_mult": 0.8,
     "exam_tier_delta": -1
   },
   {
