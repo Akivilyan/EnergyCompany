@@ -100,7 +100,7 @@
 | T41 | [x] | **垂直切片范围（Playable v0）**：必做系统、明确不做、体验目标（**与用户共定**） | `engineering/vertical-slice-v0.md` | — | T25 |
 | T42 | [x] | **技术选型定稿**：引擎、语言、目录结构、配置加载方式 | `engineering/stack.md` | `technical-and-tooling-plan.md` | T41 |
 | T43 | [x] | **模块划分与依赖**：core / config / ui / modules 边界 | `engineering/architecture.md` | 同上 | T42 |
-| T44 | [ ] | **模拟层接口**：GameState、月度结算函数签名、单测策略 | `engineering/simulation-api.md` | Feature 00、supply、social-value | T13, T16, T17, T43 |
+| T44 | [x] | **模拟层接口**：GameState、月度结算函数签名、单测策略 | `engineering/simulation-api.md` | Feature 00、supply、social-value | T13, T16, T17, T43 |
 | T45 | [ ] | **实现里程碑**：v0 编码任务拆条（供 Agent 逐对话执行） | `engineering/IMPLEMENTATION-TASKS.md` | — | T41–T44, T39 |
 
 ---
@@ -199,3 +199,4 @@
 | 2026-05-27 | T22 完成：新增 `features/events.md`（生命周期、M11 调度、固定灾害轴） |
 | 2026-05-27 | T42 完成：新增 `engineering/stack.md`（微信小游戏 + 配置驱动模拟层；Unity 适配审稿结论） |
 | 2026-05-27 | T43 完成：新增 `engineering/architecture.md`（core/config/ui/modules 边界与依赖矩阵） |
+| 2026-05-28 | T44 完成：新增 `engineering/simulation-api.md`（GameState、dispatch/settleNextMonth、错误码、单测策略） |
