@@ -85,11 +85,11 @@
 
 | ID | 状态 | 任务 | 产出物 | 主要摘录来源 | 依赖 |
 |----|------|------|--------|--------------|------|
-| T36 | [ ] | **配置总览**：目录约定、Excel→JSON 流程、表清单 | `data/README.md` | `balance-data-structure.md` §2–3 | T12 |
+| T36 | [x] | **配置总览**：目录约定、Excel→JSON 流程、表清单 | `data/README.md` | `balance-data-structure.md` §2–3 | T12 |
 | T37 | [x] | **核心表字段说明**（region / facility / company_level / event 等） | `data/schemas/*.md` | `balance-data-structure.md` §4+ | T36 |
 | T38 | [x] | **科技树配置说明** + 与 `gdd/07-tech` 对齐的节点表结构 | `data/technology-tree.md` | `tech-tree-design.md` | T09, T37 |
 | T39 | [ ] | **垂直切片数据包**：范围随 T41 共定；占位数值 | `data/vertical-slice-v0/` | 策划待定 | T37, T25, **T41** |
-| T40 | [ ] | **数据验收清单**：缺省值、ID 规范、与 Feature 字段对齐检查表 | `data/CHECKLIST.md` | — | T37–T39 |
+| T40 | [x] | **数据验收清单**：缺省值、ID 规范、与 Feature 字段对齐检查表 | `data/CHECKLIST.md` | — | T37–T39 |
 
 ---
 

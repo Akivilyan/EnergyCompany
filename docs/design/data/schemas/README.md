@@ -22,12 +22,12 @@ depends_on:
   - gdd/08-events
   - gdd/11-replayability
 open_questions:
-  - 各表最终 JSON 拆分粒度（单表单文件 vs 按模块聚合）待 T36/T39 决定
+  - `vertical-slice-v0` 子集裁剪范围待 T39/T41
 ---
 
 # 核心表字段说明（T37）
 
-本目录是 Data 层的字段真理源，供 T38/T39 直接引用。
+本目录是 Data 层的字段真理源，供 T38/T39 直接引用。目录与导出流程见 [`../README.md`](../README.md)（T36）。
 
 ## 文件清单
 

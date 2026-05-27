@@ -183,7 +183,7 @@ Feature 目录尚未建立；下表对应 [`TASK-LIST`](../TASK-LIST.md) 阶段 
 | 方针 meta、熟练度 | [`data/schemas/doctrine-meta.md`](../data/schemas/doctrine-meta.md) |
 | 科技树表结构 | [`data/technology-tree.md`](../data/technology-tree.md) |
 
-配置总览与 Excel→JSON 流程待 **T36**（`data/README.md`）。
+配置总览与 Excel→JSON 流程见 [`../data/README.md`](../data/README.md)（T36）。
 
 ---
 
