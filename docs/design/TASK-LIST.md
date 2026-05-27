@@ -36,7 +36,7 @@
 | T11 | [x] | **公司经营与商业化**：公司界面快照、贷款梯度、岗位/IAP/激励广告 | `gdd/09-year-end-and-monetization.md` | 旧 GDD §17–18 | T04, T05 |
 | T11b | [x] | **重玩性与经营方针（locked）**：四方针、两难度、lit 预算、灾害战役通关、破产 | `gdd/11-replayability.md` | 用户 2026-05-23～24 | T03, T07, T08, T10 |
 | T11a | [x] | **新手引导与教程**：教学方针关卡、8 步遮罩、可跳过/重玩/打勾 | `gdd/10-onboarding.md` | 旧 GDD 零散 UI 提示 + 与用户共定 | T02, T03 |
-| T12 | [ ] | **GDD 索引页**：各章链接、术语指向、与 Feature Spec 映射表 | `gdd/README.md` | 全文校对 | T02–T11, T11a, T11b |
+| T12 | [x] | **GDD 索引页**：各章链接、术语指向、与 Feature Spec 映射表 | `gdd/README.md` | 全文校对 | T02–T11, T11a, T11b |
 
 ---
 
@@ -186,3 +186,4 @@
 | 2026-05-27 | T38 完成：新增 `data/technology-tree.md`，定义 `technology_config` 字段、储能系统 ID 约束与校验清单 |
 | 2026-05-27 | T37/T38 细化：`nuclear_2/3` 固定为单厂升 tier；灾害改现金+持续 debuff（收益/建造/科研）且不扣 SV；城市需求改四类范围档位 |
 | 2026-05-27 | 地图架构调整：每省行政单位改为 **6–8**（且仅 1 中心城）；八省组合差异化；补充两都供能范围建议 |
+| 2026-05-27 | T12 完成：`gdd/README.md` 索引、术语表、Feature/Data 映射 |
