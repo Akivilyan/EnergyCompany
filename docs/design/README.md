@@ -21,7 +21,7 @@ GDD → Feature Spec → UI Spec → Data → Code
 1. 编写规范见 [`META.md`](./META.md)；任务顺序见 [`TASK-LIST.md`](./TASK-LIST.md)。
 2. **每次对话只做一个任务**；由 Agent 引导，从旧 `docs/` 摘录并改写，不一次性搬迁。
 3. 新文档使用 `META.md` 中的 front matter（`status`: draft / locked 等）。
-4. **阶段 1（GDD）与阶段 2（Feature）文稿已完成**；**下一项协作任务：T26**（`ui/00-screen-map.md`）。索引见 [`features/README.md`](./features/README.md)、[`gdd/README.md`](./gdd/README.md)。
+4. **阶段 2（Feature）已完成**；**下一项协作任务：T27**（`ui/region-main.md`）。屏幕总表见 [`ui/00-screen-map.md`](./ui/00-screen-map.md)；Feature 见 [`features/README.md`](./features/README.md)。
 
 ## 旧文档对照（搬迁来源，非权威）
 
