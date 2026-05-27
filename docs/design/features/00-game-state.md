@@ -84,6 +84,7 @@ open_questions:
 | `cancel_research` | 科研 | `research_id` | 在研中 | 按规则返还并清队列 |
 | `apply_loan` | 公司经营 | `loan_id` | 同时仅 1 笔未结清、等级可贷 | 放款并生成还款计划 |
 | `claim_ad_reward` | 商业化 | `ad_type`, `target_id?` | `ads_remaining > 0`、目标存在 | 立即发奖并扣次数 |
+| `purchase_iap` | 商业化 | `sku_id` | 平台可购、SKU 合法 | 写入 profile 岗位/免广告并刷新 modifier |
 | `next_month` | 时间推进 | 无 | 当前非结算态且不被锁 | 进入结算管道 M1-M14 |
 | `acknowledge_result` | 结果处理 | `result_type` | 当前在 `run_result` | 标记已读并允许跳转 |
 
@@ -160,6 +161,7 @@ open_questions:
   - `features/construction.md`（T15）
   - `features/supply-calculation.md`（T16）
   - `features/social-value-settlement.md`（T17）
+  - [商业化](./monetization.md)（T24）
 
 ## 变更记录
 

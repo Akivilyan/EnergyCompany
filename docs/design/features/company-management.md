@@ -125,7 +125,7 @@ open_questions: []
 - Feature：
   - [全局游戏状态与月度结算](./00-game-state.md)
   - [社会价值结算](./social-value-settlement.md)
-  - `features/monetization.md`（T24）
+  - [商业化](./monetization.md)
 
 ## 变更记录
 
