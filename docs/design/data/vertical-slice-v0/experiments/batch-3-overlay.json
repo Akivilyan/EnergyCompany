@@ -1,0 +1,16 @@
+{
+  "ad_rewards": [
+    {
+      "company_level": 1,
+      "reward_cash": 9
+    },
+    {
+      "company_level": 3,
+      "reward_cash": 25
+    },
+    {
+      "company_level": 5,
+      "reward_cash": 54
+    }
+  ]
+}

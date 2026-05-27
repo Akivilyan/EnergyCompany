@@ -48,6 +48,17 @@ open_questions:
   vertical-slice-v0/*.json  →  合并/覆盖到运行时 config/
 ```
 
+首轮调参批次覆盖文件（可选）：
+
+```text
+  vertical-slice-v0/experiments/batch-1-overlay.json
+  vertical-slice-v0/experiments/batch-2-overlay.json
+  vertical-slice-v0/experiments/batch-3-overlay.json
+  vertical-slice-v0/experiments/batch-4-overlay.json
+```
+
+说明：每次只加载一个 batch overlay，避免跨批混改导致因果不可追踪。
+
 验收勾选项见 [CHECKLIST.md](../CHECKLIST.md) §D。
 
 ## MAP-01 模板（v0.2）
@@ -74,6 +85,7 @@ open_questions:
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 0.3.1 | 2026-05-28 | 新增 `experiments/` 首轮调参批次覆盖文件（Batch 1~4） |
 | 0.1.0 | 2026-05-27 | T39 占位包初版 |
 | 0.2.0 | 2026-05-28 | MAP-01 分工模板、设施扩到五类·I、广告与灾害强度微调、开局资金上调 |
 | 0.3.0 | 2026-05-28 | 新增 MAP-02 资源外送省三城模板与区域偏向字段 |

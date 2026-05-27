@@ -124,3 +124,92 @@
 1. 提升外围资源点 `rich` 价值（资源标签/需求对比）
 2. 调整负荷城需求与本地补建边际
 3. 再调线损（避免一次改太大）
+
+---
+
+## 首轮调参批次计划（每批 3~4 参数）
+
+目标：首轮只做小步迭代，保证每批改动后都能从 A/B/C 三策略结果中看清因果。
+
+### 批次 1：基础生存托底（优先）
+
+参数（4 个）：
+
+1. `campaign_disasters[0].immediate_cash_penalty`
+2. `campaign_disasters[0].debuff_duration_months`
+3. `campaign_disasters[1].immediate_cash_penalty`
+4. `starting_cash_base`
+
+观察重点：
+
+- A 策略在 M22 前是否仍大面积崩盘
+- B 策略是否在少量广告下明显更稳
+
+判定口径：
+
+- 若 A 生存改善明显且 B/C 没有“直接失去压力”，保留本批
+- 若 A 仍过难，再进入批次 2
+
+### 批次 2：中段压力平滑
+
+参数（3 个）：
+
+1. `campaign_disasters[1].debuff_duration_months`
+2. `campaign_disasters[2].immediate_cash_penalty`
+3. `campaign_disasters[2].debuff_duration_months`
+
+观察重点：
+
+- M41 / M63 是否从“断崖失败”变为“可通过运营挽回”
+- 连续负资金峰值是否下降到可接受区间
+
+判定口径：
+
+- 若 A 有稳定可通关样本、B 仍需经营决策，保留本批
+- 若 C 已接近无脑通关，后续批次优先收紧广告收益
+
+### 批次 3：广告价值校准
+
+参数（3 个）：
+
+1. `ad_rewards`（`ad_cash` 低等级档位）
+2. `ad_rewards`（`ad_cash` 中等级档位）
+3. `ad_rewards`（`ad_cash` 高等级档位）
+
+观察重点：
+
+- 全样本平均广告次数能否回落到 `3 ~ 5 次/局`
+- B 是否为“好用但非必需”，C 是否“更快但不碾压”
+
+判定口径：
+
+- 若 B 通关率和体验最佳，且 C 不至于无脑，保留本批
+- 若广告仍是主收入来源，再小幅下调 `ad_cash` 梯度
+
+### 批次 4：地图分工强化
+
+参数（4 个）：
+
+1. `map_regions` 中外围资源区的 `rich` 权重
+2. `map_regions` 中负荷中心区的需求权重
+3. `grid_loss_config.loss_regional_mw`
+4. `grid_loss_config.loss_backbone_pre_uhv_mw`（或 `loss_backbone_uhv_mw`，二选一）
+
+观察重点：
+
+- 外送占比是否随月份上升
+- 是否出现“扩外送优于本地补建”的阶段性决策
+
+判定口径：
+
+- 满足“资源分工验证线”3 条中的至少 2 条即通过
+- 若外送过强形成单解，优先回调线损参数
+
+注：若当前 v0 数据包尚未落地 `grid_loss_config` 文件，则该批次先只改地图侧 2 参数，线损参数在配置落地后补跑同批复验。
+
+### 批次执行规则
+
+1. 一次只跑一个批次，不跨批混改。
+2. 每批至少跑 A/B/C 各 2 局，再决定是否进入下一批。
+3. 若某批已达目标线，后续批次仅在对应问题仍存在时启动。
+4. 所有改动记录到 runlog，并标注“批次号 + 参数 + 改动方向”。

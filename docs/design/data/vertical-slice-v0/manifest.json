@@ -1,6 +1,6 @@
 {
   "package_id": "vertical-slice-v0",
-  "config_version": "0.3.0",
+  "config_version": "0.3.1",
   "description": "Playable v0 tuned placeholder balance with MAP-01 and MAP-02 city-role templates",
   "files": [
     "run_config.json",
@@ -13,6 +13,10 @@
     "doctrine_meta_tech_l1.json",
     "tutorial_run_config.json",
     "ad_rewards.json",
-    "loan_tiers.json"
+    "loan_tiers.json",
+    "experiments/batch-1-overlay.json",
+    "experiments/batch-2-overlay.json",
+    "experiments/batch-3-overlay.json",
+    "experiments/batch-4-overlay.json"
   ]
 }
