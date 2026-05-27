@@ -6,6 +6,8 @@
 - 大城市承担负荷与基荷，外围资源点承担外送。
 - 存在等待月，但等待是“有预期的等待”。
 
+配套填写模板：`docs/design/engineering/v0-balance-runlog-template.md`。
+
 ## 试玩设置
 
 - 档位：`tech + simple`
