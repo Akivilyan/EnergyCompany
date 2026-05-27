@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.6.3
+version: 0.6.4
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -102,7 +102,7 @@ facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event
 |------|------|------|
 | `nominal_output` | 表字段 `output_capacity_mw`（**标称产能量**） | 全部类型 |
 | `region_mult` | **1** 或 **2** | 风电、光伏、**常规水电**（一般区 / 富资源区） |
-| `storage_mult` | **1** 或 **2** | 同上；**`storage_1`（储能系统·I）点亮** 后为 **2**（拉平波动） |
+| `storage_mult` | **1** 或 **2** | 同上；**`storage_system_1`（储能系统·I）点亮** 后为 **2**（拉平波动） |
 | `region_mult` / `storage_mult` | 恒 **1** | 火电、核电、**超级水电** |
 | `event_factor` | 事件表 | 全部 |
 | `doctrine_hydro_mult` | 仅 **水电方针** | 常规水电、超级水电（见 [11-replayability.md](./11-replayability.md)） |
@@ -115,8 +115,8 @@ facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event
 ```text
 region_mult   = 1   // 风/光/水：一般区域
               = 2   // 风/光/水：丰富区域
-storage_mult  = 1   // 未点亮 storage_1（储能系统·I）
-              = 2   // 已点亮 storage_1（拉平波动 → 在原有平均出力上 ×2）
+storage_mult  = 1   // 未点亮 storage_system_1（储能系统·I）
+              = 2   // 已点亮 storage_system_1（拉平波动 → 在原有平均出力上 ×2）
 
 // 例：标称 100，富资源区，已储能
 facility_supply = 100 × 2 × 2 = 400
@@ -273,7 +273,7 @@ city_fully_eco_supply = true
 | `wind_rich` / `solar_rich`（丰富） | **2** |
 | 常规水电 | 由城市/省级水资源标签映射为 **1 或 2**（`data/`，T37） |
 
-| **`storage_1`（储能系统·I）** | `storage_mult` |
+| **`storage_system_1`（储能系统·I）** | `storage_mult` |
 |------------------------------|----------------|
 | 未点亮 | **1** |
 | 已点亮 | **2**（拉平波动；在 **当前** 标称×区域 结果上再 ×2） |
@@ -301,7 +301,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 
 **不** 改变临水选址规则；优势仅在供能数值。
 
-**储能系统·II / ·III**（`storage_2～3`）：仅 **解锁** 风光水 ·IV / ·V；**不** 改变 `storage_mult`（×2 仅来自 **·I**）。
+**储能系统·II / ·III**（`storage_system_2～3`）：仅 **解锁** 风光水 ·IV / ·V；**不** 改变 `storage_mult`（×2 仅来自 **·I**）。
 
 ### 火电 / 核电
 
@@ -316,7 +316,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | `wind_N` / `solar_N` / `thermal_N` / `hydro_N` **点亮** | 该线已完工设施 | 升至对应 **tier N** 配置行 |
 | `eco_thermal` **点亮**（IV） | 已完工火电 | **即时** `is_eco = true` |
 | `eco_nuclear`（无害化核废料）**点亮**（IV） | 已完工核电 | **即时** `is_eco = true` |
-| **`storage_1` 点亮** | — | 全局 `storage_tier_1_lit`（实现可沿用 `storage_1_lit`）；M4 起重算风光水出力 |
+| **`storage_system_1` 点亮** | — | 全局 `storage_system_tier_1_lit`（实现可沿用 `storage_system_1_lit`）；M4 起重算风光水出力 |
 
 **无** 手动 [升级]、**无** 升级费/工期。tier 升档改 **标称** 表值；**区域/储能乘区** 仅取 1 或 2，**禁止** 在代码里写其它倍率。
 
@@ -440,3 +440,4 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | 0.6.1 | 2026-05-22 | 标称=波动平均；供能=标称×区域(1|2)×储能(1|2)；储能拉平=×2 叠乘 |
 | 0.6.2 | 2026-05-24 | 水电方针 `doctrine_hydro_mult` / `doctrine_super_hydro_mult` |
 | 0.6.3 | 2026-05-26 | 显示名统一 **储能系统·I～III**；`storage_mult` 文案对齐 ·I |
+| 0.6.4 | 2026-05-27 | 储能科技 `tech_id` 统一为 `storage_system_1～3`；状态字段命名同步 |

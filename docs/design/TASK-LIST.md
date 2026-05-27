@@ -34,7 +34,7 @@
 | T09 | [x] | **科技研发**：规模原则、付费/取消规则、并行、重大节点列表 | `gdd/07-tech.md` | 旧 GDD §15 + `tech-tree-design.md` 原则部分 | T05 |
 | T10 | [x] | **事件系统**：定位、作用维度、正负示例、与 UI 入口关系 | `gdd/08-events.md` | 旧 GDD §16 | T03 |
 | T11 | [x] | **公司经营与商业化**：公司界面快照、贷款梯度、岗位/IAP/激励广告 | `gdd/09-year-end-and-monetization.md` | 旧 GDD §17–18 | T04, T05 |
-| T11b | [x] | **重玩性与经营方针**：四方针、两难度、lit 预算、灾害战役通关、破产 | `gdd/11-replayability.md` | 用户 2026-05-23～24 | T03, T07, T08, T10 |
+| T11b | [x] | **重玩性与经营方针（locked）**：四方针、两难度、lit 预算、灾害战役通关、破产 | `gdd/11-replayability.md` | 用户 2026-05-23～24 | T03, T07, T08, T10 |
 | T11a | [x] | **新手引导与教程**：教学方针关卡、8 步遮罩、可跳过/重玩/打勾 | `gdd/10-onboarding.md` | 旧 GDD 零散 UI 提示 + 与用户共定 | T02, T03 |
 | T12 | [ ] | **GDD 索引页**：各章链接、术语指向、与 Feature Spec 映射表 | `gdd/README.md` | 全文校对 | T02–T11, T11a, T11b |
 
@@ -168,7 +168,7 @@
 | 2026-05-23 | T10 修订 v0.2.0：四类效果、≤3 并发、等级缩放、灾害考试与失败导向 |
 | 2026-05-23 | T10 **locked**（`gdd/08-events.md` v0.3.0）；破产/重玩性留待下轮 |
 | 2026-05-24 | T11b 初稿：`gdd/11-replayability.md`；02 整数资金+破产；07 lit 预算；08 灾害战役 |
-| 2026-05-24 | T11b v0.1.1：lit=14、风光开局 storage_system+storage_1；META 配置可写 %、结算取整 |
+| 2026-05-24 | T11b v0.1.1：lit=14、风光开局 storage_system+storage_system_1；META 配置可写 %、结算取整 |
 | 2026-05-26 | T11 **locked**（`gdd/09-year-end-and-monetization.md` v1.0.0）；07-tech 移除 `eng_fast_build` |
 | 2026-05-26 | T05 **locked**（`gdd/03-social-value.md` v1.0.0） |
 | 2026-05-26 | T11a 进行中：`gdd/10-onboarding.md` v0.1.0 初稿 |
@@ -180,3 +180,5 @@
 | 2026-05-26 | T11b v0.4.0：熟练度 3 才研发 50%/-1；meta 四路线定稿；终局 84 月 |
 | 2026-05-26 | T11b v0.5.0：L1 核心 meta、线性步长；灾害参差月表、按 tier 预警 |
 | 2026-05-26 | T11b v0.6.0：风光/化石 **%** 建设减免；科技 80→60%、−1～−3 月；水电核电线+高 mult |
+| 2026-05-27 | T11b v0.6.3：储能科技 `tech_id` 统一为 `storage_system_1～3`（与 07/04/08 对齐） |
+| 2026-05-27 | T11b **locked**（`gdd/11-replayability.md` v0.6.3） |

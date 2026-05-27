@@ -2,7 +2,7 @@
 id: gdd/07-tech
 title: 科技研发
 status: draft
-version: 0.3.6
+version: 0.3.7
 sources:
   - docs/game-core-design.md#15
   - docs/tech-tree-design.md
@@ -28,7 +28,7 @@ open_questions:
 - **界面**：参考 **《帝国时代 2》**——按 **领域分页** + **等级列** 平铺；**不** 用大理石式交叉树（[META.md §10](../META.md#10-设计参考长期)）。
 - **II 级起** 才开放 **`screen_tech_tree`**；I 级仅享受开局已点亮的 ·I 效果。
 - **风 / 光 / 火 / 水** 各 **1～V 级**，与公司等级 **一一解锁**；风光水 **·III～V** 另受 **储能系统·I～III** 卡住。
-- **储能系统·I～III**（`storage_1～3`，III～V 解锁）：**·I 点亮** 启用风/光/水 **`storage_mult = 2`**（拉平波动）；**·II / ·III** 仅解锁更高发电 tier（见下）。
+- **储能系统·I～III**（`storage_system_1～3`，III～V 解锁）：**·I 点亮** 启用风/光/水 **`storage_mult = 2`**（拉平波动）；**·II / ·III** 仅解锁更高发电 tier（见下）。
 - **核电** 独立三线（III～V）；**电网** 区域 III、主干 IV、特高压 V；**超级水电** V（无储能配套）。
 
 ---
@@ -73,16 +73,16 @@ locked → unlocked → researching → lit
 |----------|----------------------|------|------|
 | **I** | ·I **已点亮**（开局） | — | 科技界面关闭 |
 | **II** | ·II **解锁** | — | 开放科技树 |
-| **III** | ·III **解锁**；须 **`storage_1` 已 lit** 才可研 ·III | **储能系统·I**（`storage_1`）**解锁** | 区域电网、核电·I **解锁** |
-| **IV** | ·IV **解锁**；须 **`storage_2` 已 lit** | **储能系统·II**（`storage_2`）**解锁** | 主干电网、核电·II；清洁煤电、无害化核废料 |
-| **V** | ·V **解锁**；须 **`storage_3` 已 lit** | **储能系统·III**（`storage_3`）**解锁** | 特高压、核电·III、超级水电 |
+| **III** | ·III **解锁**；须 **`storage_system_1` 已 lit** 才可研 ·III | **储能系统·I**（`storage_system_1`）**解锁** | 区域电网、核电·I **解锁** |
+| **IV** | ·IV **解锁**；须 **`storage_system_2` 已 lit** | **储能系统·II**（`storage_system_2`）**解锁** | 主干电网、核电·II；清洁煤电、无害化核废料 |
+| **V** | ·V **解锁**；须 **`storage_system_3` 已 lit** | **储能系统·III**（`storage_system_3`）**解锁** | 特高压、核电·III、超级水电 |
 
-**储能系统·I～III 与风光水 ·III～V**（`tech_id` 仍用 `storage_1～3`）：
+**储能系统·I～III 与风光水 ·III～V**（`tech_id` 采用 `storage_system_1～3`）：
 
 ```text
-点亮 storage_1（储能系统·I）→ storage_mult = 2，且可研/点亮 wind_3 / solar_3 / hydro_3
-点亮 storage_2（储能系统·II）→ 可研/点亮 ·IV
-点亮 storage_3（储能系统·III）→ 可研/点亮 ·V
+点亮 storage_system_1（储能系统·I）→ storage_mult = 2，且可研/点亮 wind_3 / solar_3 / hydro_3
+点亮 storage_system_2（储能系统·II）→ 可研/点亮 ·IV
+点亮 storage_system_3（储能系统·III）→ 可研/点亮 ·V
 ```
 
 **火电 ·I～V**、**火电 ECO**：**不** 受储能系统闸门；仅公司等级 + 各档研发。
@@ -119,9 +119,9 @@ screen_tech_tree（II 级起可见）
 |------|----------|----------|
 | `*_1` | I | 开局 **已 lit**；`facility_build_tier_max` ≥ 1 |
 | `*_2` | II | tier ≥ 2；已建同线设施 **自动同步** |
-| `*_3` | III | tier ≥ 3；须 `storage_1`（**储能系统·I**）**lit** 才可研 |
-| `*_4` | IV | tier ≥ 4；须 `storage_2`（**储能系统·II**）**lit** |
-| `*_5` | V | tier ≥ 5；须 `storage_3`（**储能系统·III**）**lit** |
+| `*_3` | III | tier ≥ 3；须 `storage_system_1`（**储能系统·I**）**lit** 才可研 |
+| `*_4` | IV | tier ≥ 4；须 `storage_system_2`（**储能系统·II**）**lit** |
+| `*_5` | V | tier ≥ 5；须 `storage_system_3`（**储能系统·III**）**lit** |
 
 **同线有效 tier** = 该线已 **点亮** 节点中的 **最高 N**（建造列表只显示该 tier，[05-map-and-slots.md](./05-map-and-slots.md)）。
 
@@ -137,21 +137,21 @@ screen_tech_tree（II 级起可见）
 
 ## 储能系统·I～III（新能源页 / 风光水页共享一行）
 
-**2026-05 合并**：旧稿拆成 **`storage_system`（出力 ×2）** + **`storage_1`（卡 ·III）** 两个节点，玩家与策划易混淆。现 **合并为一条三级线**：显示名 **储能系统·I / ·II / ·III**，`tech_id` 仍为 `storage_1～3`（少维护改表）。
+**2026-05 合并**：旧稿拆成 **`storage_system`（出力 ×2）** + **`storage_system_1`（卡 ·III）** 两个节点，玩家与策划易混淆。现 **合并为一条三级线**：显示名 **储能系统·I / ·II / ·III**，`tech_id` 为 `storage_system_1～3`（命名与显示一致）。
 
 **非设施**：更早草案曾有「初级/中级/高级储能设备」等 **可部署设施**；为简化已 **取消**，储能效果 **仅** 在本节科技树体现（见 [`tech-tree-design.md`](../../tech-tree-design.md) §1.1）。
 
 | `tech_id` | 显示名 | 公司等级 | 点亮效果 |
 |-----------|--------|----------|----------|
-| `storage_1` | **储能系统·I** | **III** 解锁 | ① 风光水 **`storage_mult = 2`**（拉平波动，见下） ② 允许研发/点亮风/光/水 **·III** |
-| `storage_2` | **储能系统·II** | **IV** 解锁 | 允许研发/点亮风/光/水 **·IV**（**不** 再叠 `storage_mult`） |
-| `storage_3` | **储能系统·III** | **V** 解锁 | 允许研发/点亮风/光/水 **·V** |
+| `storage_system_1` | **储能系统·I** | **III** 解锁 | ① 风光水 **`storage_mult = 2`**（拉平波动，见下） ② 允许研发/点亮风/光/水 **·III** |
+| `storage_system_2` | **储能系统·II** | **IV** 解锁 | 允许研发/点亮风/光/水 **·IV**（**不** 再叠 `storage_mult`） |
+| `storage_system_3` | **储能系统·III** | **V** 解锁 | 允许研发/点亮风/光/水 **·V** |
 
-### 储能系统·I 的供能效果（`storage_1` 点亮后）
+### 储能系统·I 的供能效果（`storage_system_1` 点亮后）
 
 对 **风电、光伏、常规水电**（**不含** 超级水电）：
 
-| 乘区 | 未点亮 `storage_1` | 已点亮 `storage_1` |
+| 乘区 | 未点亮 `storage_system_1` | 已点亮 `storage_system_1` |
 |------|-------------------|---------------------|
 | `storage_mult` | **1** | **2**（在 **标称 × 区域乘区** 之后叠乘） |
 
@@ -228,7 +228,7 @@ screen_tech_tree（II 级起可见）
 | 规则 | 说明 |
 |------|------|
 | 计数 | 每 lit 一个节点（含 `eng_*`）→ 预算 **−1** |
-| 不计入 | 全局开局 ·I；风光额外 **`storage_1`（储能系统·I）** 已 lit |
+| 不计入 | 全局开局 ·I；风光额外 **`storage_system_1`（储能系统·I）** 已 lit |
 | 自由分配 | **不区分** 主线 / 经营；玩家在 15 点内自行取舍 |
 | UI | 「本局剩余点亮：N / 15」 |
 
@@ -246,7 +246,7 @@ screen_tech_tree（II 级起可见）
 
 | 方针 | 额外开局 `lit` |
 |------|----------------|
-| `renewable` | **`storage_1`（储能系统·I）** 已 lit（**不**送 `storage_2～3`） |
+| `renewable` | **`storage_system_1`（储能系统·I）** 已 lit（**不**送 `storage_system_2～3`） |
 | `thermal` | `eco_thermal`、`eco_nuclear` |
 | `hydro` / `tech` | —（仅 modifier 表） |
 
@@ -257,7 +257,7 @@ screen_tech_tree（II 级起可见）
 | 分类 | 节点数 | 备注 |
 |------|--------|------|
 | 风 / 光 / 火 / 水 ·I～V | 4×5 = **20** | ·I 开局 **lit** |
-| 储能系统·I～III | **3** | `storage_1～3`（废除 `storage_system`） |
+| 储能系统·I～III | **3** | `storage_system_1～3`（废除 `storage_system`） |
 | 火电 ECO | **1** | `eco_thermal` |
 | 核电 | **4** | I～III + 无害化 |
 | 电网 | **3** | 区域 / 主干 / 特高压 |
@@ -275,7 +275,7 @@ screen_tech_tree（II 级起可见）
 | `display_name` | 简体中文 |
 | `tab` | `wind` \| `solar` \| `thermal` \| `hydro` \| `nuclear` \| `grid` \| `engineering` |
 | `company_level_min` | I–V；解锁档 |
-| `requires_lit` | 如 `storage_1`（储能系统·I）卡 `wind_3` |
+| `requires_lit` | 如 `storage_system_1`（储能系统·I）卡 `wind_3` |
 | `starts_lit` | 仅 `*_1` 四线为 true |
 | `research_cost` / `research_months` | 待表 |
 | `effect_type` | `facility_tier` \| `storage_gate` \| `storage_buff` \| `eco_sync` \| `grid` \| `modifier` |
@@ -333,10 +333,11 @@ screen_tech_tree（II 级起可见）
 | 0.1.0 | 2026-05-22 | AoE2 范式、绿色/储能闸门、25 节点 |
 | 0.2.0 | 2026-05-22 | 四线·I～V 绑等级；储能系统·I～III 卡 III～V；减压节点；地图 III/IV 调整 |
 | 0.2.1 | 2026-05-22 | 储能=storage_mult×2，与 region_mult 独立叠乘；标称=波动平均 |
-| 0.3.0 | 2026-05-24 | 方针 lit 预算 14、异线硬顶、tech 无上限；风光开局 storage_system+storage_1 |
-| 0.3.1 | 2026-05-24 | 同步 11-replayability v0.1.1：lit=14、storage_1 开局 |
-| 0.3.5 | 2026-05-26 | 废除 `storage_system`；合并为 **储能系统·I～III**（`storage_1～3`）；×2 效果归 ·I |
+| 0.3.0 | 2026-05-24 | 方针 lit 预算 14、异线硬顶、tech 无上限；风光开局 storage_system+storage_system_1 |
+| 0.3.1 | 2026-05-24 | 同步 11-replayability v0.1.1：lit=14、storage_system_1 开局 |
+| 0.3.5 | 2026-05-26 | 废除 `storage_system`；合并为 **储能系统·I～III**（`storage_system_1～3`）；×2 效果归 ·I |
 | 0.3.6 | 2026-05-26 | 全文显示名统一 **储能系统·I～III**；闸门表补全显示名 |
+| 0.3.7 | 2026-05-27 | `tech_id` 统一迁移为 `storage_system_1～3`；移除旧 `storage_*` 三段写法作为当前口径 |
 | 0.3.2 | 2026-05-24 | 双池 main 14 + eng 1；风光 → `eng_green_pr` |
 | 0.3.3 | 2026-05-24 | 统一 lit **15**、自由分配（取消 main/eng 分池） |
 | 0.3.4 | 2026-05-26 | **单队列研发**（同时仅 1 项在研）；对齐 T11 |

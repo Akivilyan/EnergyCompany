@@ -2,7 +2,7 @@
 id: gdd/08-events
 title: 事件系统
 status: locked
-version: 0.3.1
+version: 0.3.2
 sources:
   - docs/game-core-design.md#16
   - docs/game-core-design-整合摘要.md#事件
@@ -250,7 +250,7 @@ expired（已结束）→ 移出活跃列表，可留历史摘要
 |--------------|------|------|
 | 政策倡导风电和太阳能 | `policy` | 风/光 `build_cost_mult` ↓ |
 | 全球天然气增产 | `market` | 火电 `operating_cost_mult` ↓ |
-| 国家补贴储能系统 | `policy` | `storage_1～3` 研发 `cost_mult` ↓（或政策窗内风/光 `build_cost_mult` ↓，T37 定稿） |
+| 国家补贴储能系统 | `policy` | `storage_system_1～3` 研发 `cost_mult` ↓（或政策窗内风/光 `build_cost_mult` ↓，T37 定稿） |
 | 产业联盟支持 | `policy` | 指定分页 `research_duration_delta` ↓ |
 | 电价上调窗口 | `market` | `income_mult` ↑ |
 
@@ -328,3 +328,4 @@ expired（已结束）→ 移出活跃列表，可留历史摘要
 | 0.2.0 | 2026-05-23 | 用户拍板：四类效果、≤3 并发、等级缩放、灾害考试+弹窗+失败导向 |
 | 0.3.0 | 2026-05-23 | 用户确认；`locked` |
 | 0.3.1 | 2026-05-24 | 灾害战役表、M14 通关；破产对齐 02-economy |
+| 0.3.2 | 2026-05-27 | 储能科技 ID 命名对齐：`storage_system_1～3` |

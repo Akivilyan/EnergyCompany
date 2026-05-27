@@ -2,7 +2,7 @@
 id: gdd/05-map-and-slots
 title: 地图与建设位
 status: draft
-version: 0.3.4
+version: 0.3.5
 sources:
   - docs/game-core-design.md#12
   - docs/game-core-design.md#13
@@ -288,7 +288,7 @@ screen_world_map（全国）
 |------------------|----------|----------|
 | `thermal_N` 等发电线 **点亮** | 该线已完工设施 | 升至 **tier N** 配置行 |
 | `eco_thermal` / `eco_nuclear` | 火/核 | **即时** `is_eco = true` |
-| `storage_1`（储能系统·I） | — | 全局 `storage_mult`（[04](./04-energy-supply.md)、[07-tech.md](./07-tech.md)） |
+| `storage_system_1`（储能系统·I） | — | 全局 `storage_mult`（[04](./04-energy-supply.md)、[07-tech.md](./07-tech.md)） |
 | `uhv_transmission` | 已完工 `backbone_link` | `loss_mw` 升为特高压后档（[06-grid.md](./06-grid.md)） |
 
 ```text
@@ -491,3 +491,4 @@ GDD 约定 **玩家可见** 行为；线框与组件树在 **UI Spec**（三国�
 | 0.3.2 | 2026-05-22 | 可经营区必须大地图连通；链式邻接占位 MAP-01～08 + 两都 |
 | 0.3.3 | 2026-05-22 | 邻接改为网状（度数灵活、多邻接）；作废链式为硬约束 |
 | 0.3.4 | 2026-05-22 | 明确「源于现实、模仿现实」；链式仅作少数走廊省 |
+| 0.3.5 | 2026-05-27 | 储能科技 ID 命名对齐：`storage_system_1` 触发全局 `storage_mult` |
