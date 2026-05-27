@@ -288,7 +288,7 @@ screen_world_map（全国）
 |------------------|----------|----------|
 | `thermal_N` 等发电线 **点亮** | 该线已完工设施 | 升至 **tier N** 配置行 |
 | `eco_thermal` / `eco_nuclear` | 火/核 | **即时** `is_eco = true` |
-| `storage_system` | — | 全局储能出力规则（[04](./04-energy-supply.md)） |
+| `storage_1`（储能系统·I） | — | 全局 `storage_mult`（[04](./04-energy-supply.md)、[07-tech.md](./07-tech.md)） |
 | `uhv_transmission` | 已完工 `backbone_link` | `loss_mw` 升为特高压后档（[06-grid.md](./06-grid.md)） |
 
 ```text

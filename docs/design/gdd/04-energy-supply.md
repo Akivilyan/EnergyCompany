@@ -2,7 +2,7 @@
 id: gdd/04-energy-supply
 title: 供能与能源类型
 status: draft
-version: 0.6.2
+version: 0.6.3
 sources:
   - docs/game-core-design.md#10
   - docs/game-core-design.md#11
@@ -102,7 +102,7 @@ facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event
 |------|------|------|
 | `nominal_output` | 表字段 `output_capacity_mw`（**标称产能量**） | 全部类型 |
 | `region_mult` | **1** 或 **2** | 风电、光伏、**常规水电**（一般区 / 富资源区） |
-| `storage_mult` | **1** 或 **2** | 同上；`storage_system` **点亮** 后为 **2**（拉平波动） |
+| `storage_mult` | **1** 或 **2** | 同上；**`storage_1`（储能系统·I）点亮** 后为 **2**（拉平波动） |
 | `region_mult` / `storage_mult` | 恒 **1** | 火电、核电、**超级水电** |
 | `event_factor` | 事件表 | 全部 |
 | `doctrine_hydro_mult` | 仅 **水电方针** | 常规水电、超级水电（见 [11-replayability.md](./11-replayability.md)） |
@@ -110,13 +110,13 @@ facility_supply_i = nominal_output_i × region_mult_i × storage_mult_i × event
 **风光水简化模型**（现实中有出力波动，本游戏不做逐时模拟）：
 
 - 默认可变电源 **带波动**；配置中的 **标称产能量 = 波动折算后的平均值**。
-- **富资源区** ×2、**储能系统点亮** 再 ×2；两个乘区 **独立叠乘**，均为 **1 或 2**。
+- **富资源区** ×2、**储能系统·I 点亮** 再 ×2；两个乘区 **独立叠乘**，均为 **1 或 2**。
 
 ```text
 region_mult   = 1   // 风/光/水：一般区域
               = 2   // 风/光/水：丰富区域
-storage_mult  = 1   // 未点亮 storage_system
-              = 2   // 已点亮 storage_system（拉平波动 → 在原有平均出力上 ×2）
+storage_mult  = 1   // 未点亮 storage_1（储能系统·I）
+              = 2   // 已点亮 storage_1（拉平波动 → 在原有平均出力上 ×2）
 
 // 例：标称 100，富资源区，已储能
 facility_supply = 100 × 2 × 2 = 400
@@ -273,12 +273,12 @@ city_fully_eco_supply = true
 | `wind_rich` / `solar_rich`（丰富） | **2** |
 | 常规水电 | 由城市/省级水资源标签映射为 **1 或 2**（`data/`，T37） |
 
-| `storage_system` | `storage_mult` |
-|------------------|----------------|
+| **`storage_1`（储能系统·I）** | `storage_mult` |
+|------------------------------|----------------|
 | 未点亮 | **1** |
 | 已点亮 | **2**（拉平波动；在 **当前** 标称×区域 结果上再 ×2） |
 
-建设界面须 **明示** 资源档位（一般/丰富）；储能点亮后 UI 可提示「储能已启用：出力 ×2」。
+建设界面须 **明示** 资源档位（一般/丰富）；**储能系统·I** 点亮后 UI 可提示「储能已启用：出力 ×2」。
 
 **超级水电**：**不** 走 `region_mult` / `storage_mult`；标称即稳定出力，**无** 波动、**不** 吃储能（[07-tech.md](./07-tech.md)）。
 
@@ -301,7 +301,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 
 **不** 改变临水选址规则；优势仅在供能数值。
 
-**储能·I～III**（科技）：仅 **解锁** 风光水 ·III～V 研发，**不** 额外叠乘（系统效果只来自 `storage_system` 点亮）。
+**储能系统·II / ·III**（`storage_2～3`）：仅 **解锁** 风光水 ·IV / ·V；**不** 改变 `storage_mult`（×2 仅来自 **·I**）。
 
 ### 火电 / 核电
 
@@ -316,7 +316,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | `wind_N` / `solar_N` / `thermal_N` / `hydro_N` **点亮** | 该线已完工设施 | 升至对应 **tier N** 配置行 |
 | `eco_thermal` **点亮**（IV） | 已完工火电 | **即时** `is_eco = true` |
 | `eco_nuclear`（无害化核废料）**点亮**（IV） | 已完工核电 | **即时** `is_eco = true` |
-| `storage_system` **点亮** | — | 全局 `storage_system_lit`；M4 起重算风光水出力 |
+| **`storage_1` 点亮** | — | 全局 `storage_tier_1_lit`（实现可沿用 `storage_1_lit`）；M4 起重算风光水出力 |
 
 **无** 手动 [升级]、**无** 升级费/工期。tier 升档改 **标称** 表值；**区域/储能乘区** 仅取 1 或 2，**禁止** 在代码里写其它倍率。
 
@@ -333,7 +333,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 
 ## 后期供能尺度与玩家取舍（策划意图）
 
-整体架构下，**火电、核电单城供能上限有限**，无法单靠火/核铺满全图；**全图绿色供能**依赖 **储能**、发电 **·V**、**ECO 改造**、**超级水电** 与 **电网调配**。
+整体架构下，**火电、核电单城供能上限有限**，无法单靠火/核铺满全图；**全图绿色供能**依赖 **储能系统·I～III**、发电 **·V**、**ECO 改造**、**超级水电** 与 **电网调配**。
 
 | 阶段 | 玩家路径 |
 |------|----------|
@@ -381,7 +381,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | 能源类型 | 火电、水电、风电、太阳能、核电 |
 | 风/光地区系数 | 一般 **100%**；丰富 **200%**（光伏与风电同逻辑） |
 | 发电 tier | 风/光/火/水 **·I～V** 与公司等级绑定；**点亮** 后自动同步 |
-| 储能 | **系统** 点亮 → `storage_mult=2`（拉平波动）；**I～III** 卡 ·III～V |
+| 储能系统·I～III | **·I 点亮** → `storage_mult=2`；**·II/·III** 卡 ·IV/·V |
 | 火/核环保 | IV **清洁煤电** / **无害化核废料** 点亮 → **即时** ECO |
 | 天然环保 | 风、光、水 **始终** `is_eco` |
 | 社会价值衔接 | **全环保** → 100% 潜力；否则 **上限 80%**（与满足率相乘） |
@@ -402,7 +402,7 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | [03-social-value.md](./03-social-value.md) | `satisfaction_rate`、`city_fully_eco_supply` |
 | [05-map-and-slots.md](./05-map-and-slots.md) | 通用建设位、临水/核电选址、地图标注 |
 | [06-grid.md](./06-grid.md) | 并网、区域/主干固定损耗 |
-| [07-tech.md](./07-tech.md) | 四线·I～V、储能、电网 III/IV/V、减压科技 |
+| [07-tech.md](./07-tech.md) | 四线·I～V、储能系统·I～III、电网 III/IV/V、减压科技 |
 | [08-events.md](./08-events.md) | 临时修正供能或成本 |
 | [11-replayability.md](./11-replayability.md) | 水电方针 `doctrine_hydro_mult` |
 
@@ -439,3 +439,4 @@ facility_supply = nominal × doctrine_super_hydro_mult × event_factor
 | 0.6.0 | 2026-05-22 | 储能系统：消除风光水波动、出力×2；四线·I～V；移除 wind_max 独立节点 |
 | 0.6.1 | 2026-05-22 | 标称=波动平均；供能=标称×区域(1|2)×储能(1|2)；储能拉平=×2 叠乘 |
 | 0.6.2 | 2026-05-24 | 水电方针 `doctrine_hydro_mult` / `doctrine_super_hydro_mult` |
+| 0.6.3 | 2026-05-26 | 显示名统一 **储能系统·I～III**；`storage_mult` 文案对齐 ·I |
