@@ -2,19 +2,19 @@
   "cities": [
     {
       "city_id": "CITY-START",
-      "base_demand_mw": 1260
+      "base_demand_mw": 1320
     },
     {
       "city_id": "CITY-MAP01-03",
-      "base_demand_mw": 80
+      "base_demand_mw": 70
     },
     {
       "city_id": "CITY-MAP02-02",
-      "base_demand_mw": 420
+      "base_demand_mw": 380
     },
     {
       "city_id": "CITY-MAP02-03",
-      "base_demand_mw": 70
+      "base_demand_mw": 60
     }
   ]
 }

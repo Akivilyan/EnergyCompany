@@ -1,16 +1,16 @@
 {
   "run_config": {
-    "starting_cash_base": 95
+    "starting_cash_base": 104
   },
   "campaign_disasters": [
     {
       "seq": 1,
-      "immediate_cash_penalty": 10,
+      "immediate_cash_penalty": 6,
       "debuff_duration_months": 1
     },
     {
       "seq": 2,
-      "immediate_cash_penalty": 18
+      "immediate_cash_penalty": 14
     }
   ]
 }

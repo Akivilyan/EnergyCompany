@@ -41,27 +41,27 @@
   {
     "batch": "batch-1",
     "vector": {
-      "earlyPressure": 0.615,
-      "midPressure": 0.8,
-      "econBuffer": 1.108,
+      "earlyPressure": 0.44499999999999995,
+      "midPressure": 0.75,
+      "econBuffer": 1.198,
       "adPower": 1.0371428571428571,
       "mapExportScore": 1.791044776119403
     },
     "result": {
       "A": {
-        "passRate": 0.4716666666666667,
-        "adsAvg": 2.8800561024818503,
-        "durationAvg": 82.89412747431004
+        "passRate": 0.5216666666666666,
+        "adsAvg": 2.1630561024818427,
+        "durationAvg": 81.42412747431152
       },
       "B": {
-        "passRate": 0.81,
-        "adsAvg": 2.6324988246960292,
-        "durationAvg": 79.46487682201756
+        "passRate": 0.8716666666666667,
+        "adsAvg": 1.9154988246960238,
+        "durationAvg": 77.99487682201881
       },
       "C": {
-        "passRate": 0.9833333333333333,
-        "adsAvg": 4.121669705927228,
-        "durationAvg": 72.61817441791253
+        "passRate": 0.9866666666666667,
+        "adsAvg": 3.404669705927228,
+        "durationAvg": 71.1481744179133
       }
     },
     "eval": {
@@ -70,37 +70,37 @@
         "A": false,
         "B": true,
         "C": true,
-        "ads": true,
+        "ads": false,
         "duration": true
       },
-      "overallAds": 3.2114082110350353,
-      "overallDuration": 78.32572623808005
+      "overallAds": 2.4944082110350316,
+      "overallDuration": 76.85572623808122
     }
   },
   {
     "batch": "batch-2",
     "vector": {
       "earlyPressure": 0.75,
-      "midPressure": 0.75,
+      "midPressure": 0.55,
       "econBuffer": 1.058,
       "adPower": 1.0371428571428571,
       "mapExportScore": 1.791044776119403
     },
     "result": {
       "A": {
-        "passRate": 0.43666666666666665,
-        "adsAvg": 3.3337526605372423,
-        "durationAvg": 83.02471759104576
+        "passRate": 0.45666666666666667,
+        "adsAvg": 3.0737526605372403,
+        "durationAvg": 81.22471759104643
       },
       "B": {
-        "passRate": 0.75,
-        "adsAvg": 3.0569626416950206,
-        "durationAvg": 80.13229063117514
+        "passRate": 0.7733333333333333,
+        "adsAvg": 2.7969626416950257,
+        "durationAvg": 78.33229063117567
       },
       "C": {
-        "passRate": 0.9416666666666667,
-        "adsAvg": 4.519624672093844,
-        "durationAvg": 72.97077757040624
+        "passRate": 0.9666666666666667,
+        "adsAvg": 4.259624672093829,
+        "durationAvg": 71.1707775704064
       }
     },
     "eval": {
@@ -112,8 +112,8 @@
         "ads": true,
         "duration": true
       },
-      "overallAds": 3.6367799914420353,
-      "overallDuration": 78.70926193087571
+      "overallAds": 3.3767799914420316,
+      "overallDuration": 76.90926193087616
     }
   },
   {
@@ -121,25 +121,25 @@
     "vector": {
       "earlyPressure": 0.75,
       "midPressure": 0.825,
-      "econBuffer": 1.048,
-      "adPower": 0.9314285714285715,
+      "econBuffer": 0.994,
+      "adPower": 0.35714285714285715,
       "mapExportScore": 1.791044776119403
     },
     "result": {
       "A": {
-        "passRate": 0.42,
-        "adsAvg": 3.409540938516545,
-        "durationAvg": 84.04886991804413
+        "passRate": 0.4166666666666667,
+        "adsAvg": 3.4743409385165522,
+        "durationAvg": 86.34601277518777
       },
       "B": {
-        "passRate": 0.775,
-        "adsAvg": 3.316129532611028,
-        "durationAvg": 81.32573155795644
+        "passRate": 0.66,
+        "adsAvg": 4.242358104039625,
+        "durationAvg": 83.62287441509996
       },
       "C": {
-        "passRate": 0.9216666666666666,
-        "adsAvg": 4.8406919213733755,
-        "durationAvg": 74.47831618990955
+        "passRate": 0.7816666666666666,
+        "adsAvg": 6.111491921373362,
+        "durationAvg": 76.77545904705272
       }
     },
     "eval": {
@@ -147,12 +147,12 @@
       "targetCheck": {
         "A": false,
         "B": false,
-        "C": true,
+        "C": false,
         "ads": true,
         "duration": true
       },
-      "overallAds": 3.8554541308336496,
-      "overallDuration": 79.95097255530338
+      "overallAds": 4.609396987976513,
+      "overallDuration": 82.24811541244681
     }
   },
   {
@@ -162,21 +162,21 @@
       "midPressure": 0.825,
       "econBuffer": 1.058,
       "adPower": 1.0371428571428571,
-      "mapExportScore": 2.210526315789474
+      "mapExportScore": 2.588235294117647
     },
     "result": {
       "A": {
-        "passRate": 0.4216666666666667,
+        "passRate": 0.4483333333333333,
         "adsAvg": 3.3898737947472988,
         "durationAvg": 83.7020101652585
       },
       "B": {
-        "passRate": 0.805,
+        "passRate": 0.8316666666666667,
         "adsAvg": 3.157363650628332,
         "durationAvg": 80.66548975342609
       },
       "C": {
-        "passRate": 0.9666666666666667,
+        "passRate": 0.9733333333333334,
         "adsAvg": 4.615960545893444,
         "durationAvg": 73.76432190306673
       }
@@ -192,6 +192,45 @@
       },
       "overallAds": 3.7210659970896915,
       "overallDuration": 79.37727394058378
+    }
+  },
+  {
+    "batch": "combined-b1-b2-b3-b4",
+    "vector": {
+      "earlyPressure": 0.44499999999999995,
+      "midPressure": 0.475,
+      "econBuffer": 1.1340000000000001,
+      "adPower": 0.35714285714285715,
+      "mapExportScore": 2.588235294117647
+    },
+    "result": {
+      "A": {
+        "passRate": 0.6066666666666667,
+        "adsAvg": 1.8563863242357501,
+        "durationAvg": 81.59382235241638
+      },
+      "B": {
+        "passRate": 0.8866666666666667,
+        "adsAvg": 2.6312992072087553,
+        "durationAvg": 78.6118124152989
+      },
+      "C": {
+        "passRate": 0.955,
+        "adsAvg": 4.52497920241265,
+        "durationAvg": 71.80581252234812
+      }
+    },
+    "eval": {
+      "batchName": "combined-b1-b2-b3-b4",
+      "targetCheck": {
+        "A": true,
+        "B": true,
+        "C": true,
+        "ads": true,
+        "duration": true
+      },
+      "overallAds": 3.0042215779523853,
+      "overallDuration": 77.33714909668781
     }
   }
 ]

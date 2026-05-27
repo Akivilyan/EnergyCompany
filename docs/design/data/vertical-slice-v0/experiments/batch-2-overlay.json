@@ -2,12 +2,12 @@
   "campaign_disasters": [
     {
       "seq": 2,
-      "debuff_duration_months": 2
+      "debuff_duration_months": 1
     },
     {
       "seq": 3,
-      "immediate_cash_penalty": 30,
-      "debuff_duration_months": 3
+      "immediate_cash_penalty": 20,
+      "debuff_duration_months": 1
     }
   ]
 }

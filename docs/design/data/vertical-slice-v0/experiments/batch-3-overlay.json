@@ -2,15 +2,15 @@
   "ad_rewards": [
     {
       "company_level": 1,
-      "reward_cash": 9
+      "reward_cash": 4
     },
     {
       "company_level": 3,
-      "reward_cash": 25
+      "reward_cash": 10
     },
     {
       "company_level": 5,
-      "reward_cash": 54
+      "reward_cash": 20
     }
   ]
 }

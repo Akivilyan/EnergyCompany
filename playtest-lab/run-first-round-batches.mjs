@@ -5,11 +5,20 @@ const root = process.cwd();
 const dataDir = path.join(root, "docs", "design", "data", "vertical-slice-v0");
 const outputDir = path.join(root, "playtest-lab", "output");
 const overlays = [
-  null,
-  "batch-1-overlay.json",
-  "batch-2-overlay.json",
-  "batch-3-overlay.json",
-  "batch-4-overlay.json"
+  { name: "baseline", files: [] },
+  { name: "batch-1", files: ["batch-1-overlay.json"] },
+  { name: "batch-2", files: ["batch-2-overlay.json"] },
+  { name: "batch-3", files: ["batch-3-overlay.json"] },
+  { name: "batch-4", files: ["batch-4-overlay.json"] },
+  {
+    name: "combined-b1-b2-b3-b4",
+    files: [
+      "batch-1-overlay.json",
+      "batch-2-overlay.json",
+      "batch-3-overlay.json",
+      "batch-4-overlay.json"
+    ]
+  }
 ];
 
 const target = {
@@ -68,6 +77,15 @@ function applyOverlay(baseConfig, overlayConfig) {
     mergeById(config.cities, overlayConfig.cities, "city_id");
   }
   return config;
+}
+
+function applyOverlays(baseConfig, overlayFiles) {
+  let current = clone(baseConfig);
+  for (const file of overlayFiles) {
+    const overlayData = readJson(path.join(dataDir, "experiments", file));
+    current = applyOverlay(current, overlayData);
+  }
+  return current;
 }
 
 function metricVector(config) {
@@ -157,21 +175,19 @@ function run() {
     cities: readJson(path.join(dataDir, "cities.json"))
   };
 
-  const batchNames = ["baseline", "batch-1", "batch-2", "batch-3", "batch-4"];
   const records = [];
 
   for (let i = 0; i < overlays.length; i++) {
-    const overlayFile = overlays[i];
-    const overlayData = overlayFile ? readJson(path.join(dataDir, "experiments", overlayFile)) : null;
-    const cfg = applyOverlay(baseConfig, overlayData);
+    const scenario = overlays[i];
+    const cfg = applyOverlays(baseConfig, scenario.files);
     const vec = metricVector(cfg);
     const result = {
       A: simulateStrategy(vec, "A", 600, i * 3 + 1),
       B: simulateStrategy(vec, "B", 600, i * 3 + 2),
       C: simulateStrategy(vec, "C", 600, i * 3 + 3)
     };
-    const evalResult = evaluate(batchNames[i], result);
-    records.push({ batch: batchNames[i], vector: vec, result, eval: evalResult });
+    const evalResult = evaluate(scenario.name, result);
+    records.push({ batch: scenario.name, vector: vec, result, eval: evalResult });
   }
 
   fs.mkdirSync(outputDir, { recursive: true });
@@ -182,6 +198,10 @@ function run() {
   lines.push("# First-Round Batch Simulation Report");
   lines.push("");
   lines.push("Method: heuristic proxy simulation (not runtime game engine).");
+  lines.push("");
+  lines.push("> 中文注释：`batch` 表示调参批次（每批只改 3~4 个参数）。");
+  lines.push("> 中文注释：`A/B/C` 是三种策略：A=不看广告，B=保守救急广告，C=激进加速广告。");
+  lines.push("> 中文注释：本报告用于比较调参方向，不替代引擎实跑验收。");
   lines.push("");
   for (const row of records) {
     const check = row.eval.targetCheck;
