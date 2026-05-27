@@ -88,7 +88,7 @@
 | T36 | [x] | **配置总览**：目录约定、Excel→JSON 流程、表清单 | `data/README.md` | `balance-data-structure.md` §2–3 | T12 |
 | T37 | [x] | **核心表字段说明**（region / facility / company_level / event 等） | `data/schemas/*.md` | `balance-data-structure.md` §4+ | T36 |
 | T38 | [x] | **科技树配置说明** + 与 `gdd/07-tech` 对齐的节点表结构 | `data/technology-tree.md` | `tech-tree-design.md` | T09, T37 |
-| T39 | [ ] | **垂直切片数据包**：范围随 T41 共定；占位数值 | `data/vertical-slice-v0/` | 策划待定 | T37, T25, **T41** |
+| T39 | [x] | **垂直切片数据包**：范围随 T41 共定；占位数值 | `data/vertical-slice-v0/` | 策划待定 | T37, T25, **T41** |
 | T40 | [x] | **数据验收清单**：缺省值、ID 规范、与 Feature 字段对齐检查表 | `data/CHECKLIST.md` | — | T37–T39 |
 
 ---
@@ -97,7 +97,7 @@
 
 | ID | 状态 | 任务 | 产出物 | 主要摘录来源 | 依赖 |
 |----|------|------|--------|--------------|------|
-| T41 | [ ] | **垂直切片范围（Playable v0）**：必做系统、明确不做、体验目标（**与用户共定**） | `engineering/vertical-slice-v0.md` | — | T25 |
+| T41 | [x] | **垂直切片范围（Playable v0）**：必做系统、明确不做、体验目标（**与用户共定**） | `engineering/vertical-slice-v0.md` | — | T25 |
 | T42 | [ ] | **技术选型定稿**：引擎、语言、目录结构、配置加载方式 | `engineering/stack.md` | `technical-and-tooling-plan.md` | T41 |
 | T43 | [ ] | **模块划分与依赖**：core / config / ui / modules 边界 | `engineering/architecture.md` | 同上 | T42 |
 | T44 | [ ] | **模拟层接口**：GameState、月度结算函数签名、单测策略 | `engineering/simulation-api.md` | Feature 00、supply、social-value | T13, T16, T17, T43 |
@@ -138,7 +138,7 @@
 | 任务粒度 | 一项 = 一次对话 |
 | GDD 拆分 | 保持 T02–T11 十个主题文件，不合并 |
 | 新手引导 | **必须**；GDD **T11a** + Feature **T24a** + UI **T35a** |
-| Playable v0 | **后续在 T41 共定** |
+| Playable v0 | **T41 已定稿**（`engineering/vertical-slice-v0.md`）；数据占位 `data/vertical-slice-v0/` |
 | 审核 | 暂不使用 |
 | 协作起点 | **T02**（T01 已完成） |
 | T10 `08-events` | **locked**（v0.3.0）：四类效果、≤3 并发、等级缩放、灾害考试 |

@@ -36,7 +36,7 @@ docs/design/data/
     company-level-and-run.md
     events-and-campaign.md
     doctrine-meta.md
-  vertical-slice-v0/        ← Playable v0 样例包（T39，随 T41 共定）
+  vertical-slice-v0/        ← Playable v0 占位包（T39，见 engineering/vertical-slice-v0.md）
 ```
 
 **运行时 JSON**（实现阶段，路径 T42 定）建议：

@@ -22,7 +22,7 @@ depends_on:
   - gdd/08-events
   - gdd/11-replayability
 open_questions:
-  - `vertical-slice-v0` 子集裁剪范围待 T39/T41
+  - 全量数值精算后替换 `vertical-slice-v0` 占位整数
 ---
 
 # 核心表字段说明（T37）

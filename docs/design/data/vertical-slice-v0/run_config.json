@@ -1,0 +1,8 @@
+{
+  "campaign_run_target_months": 86,
+  "starting_cash_base": 80,
+  "doctrine_lit_budget": 15,
+  "bankrupt_consecutive_months": 2,
+  "allow_decimal_in_config": true,
+  "settlement_rounding_mode": "truncate_to_int"
+}

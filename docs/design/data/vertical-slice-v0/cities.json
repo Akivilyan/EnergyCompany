@@ -1,0 +1,35 @@
+[
+  {
+    "city_id": "CITY-START",
+    "region_id": "MAP-01",
+    "city_type": "central",
+    "unlock_company_level": 1,
+    "build_slot_count": 6,
+    "has_river": true,
+    "is_nuclear_eligible": false,
+    "city_base_social_value": 20,
+    "display_name": "起始城（占位）"
+  },
+  {
+    "city_id": "CITY-MAP01-02",
+    "region_id": "MAP-01",
+    "city_type": "ordinary",
+    "unlock_company_level": 2,
+    "build_slot_count": 4,
+    "has_river": false,
+    "is_nuclear_eligible": false,
+    "city_base_social_value": 12,
+    "display_name": "同省城市2（占位）"
+  },
+  {
+    "city_id": "CITY-MAP01-03",
+    "region_id": "MAP-01",
+    "city_type": "rural",
+    "unlock_company_level": 2,
+    "build_slot_count": 3,
+    "has_river": false,
+    "is_nuclear_eligible": false,
+    "city_base_social_value": 8,
+    "display_name": "同省城市3（占位）"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "package_id": "vertical-slice-v0",
+  "config_version": "0.1.0",
+  "description": "Playable v0 placeholder balance; replace after T37 full export",
+  "files": [
+    "run_config.json",
+    "difficulty_modifiers.json",
+    "campaign_disasters.json",
+    "company_levels.json",
+    "regions.json",
+    "cities.json",
+    "facilities_slice.json",
+    "doctrine_meta_tech_l1.json",
+    "tutorial_run_config.json",
+    "ad_rewards.json",
+    "loan_tiers.json"
+  ]
+}

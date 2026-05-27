@@ -134,7 +134,7 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 ---
 
-## 8. Playable v0 暴露建议（待 T41 共定）
+## 8. Playable v0 暴露建议（见 engineering/vertical-slice-v0.md）
 
 | 屏幕/入口 | v0 建议 |
 |-----------|---------|

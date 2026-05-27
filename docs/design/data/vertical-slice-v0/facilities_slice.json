@@ -1,0 +1,22 @@
+[
+  {
+    "facility_id": "wind",
+    "tier": 1,
+    "build_cost_total": 12,
+    "build_duration_months": 2,
+    "installment_count": 2,
+    "monthly_operating_cost": 1,
+    "output_capacity_mw": 40,
+    "display_name": "风电·I（占位）"
+  },
+  {
+    "facility_id": "solar",
+    "tier": 1,
+    "build_cost_total": 10,
+    "build_duration_months": 2,
+    "installment_count": 2,
+    "monthly_operating_cost": 1,
+    "output_capacity_mw": 35,
+    "display_name": "光伏·I（占位）"
+  }
+]

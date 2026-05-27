@@ -1,0 +1,14 @@
+[
+  {
+    "difficulty_id": "simple",
+    "starting_cash_add": 40,
+    "disaster_cash_mult": 0.75,
+    "exam_tier_delta": -1
+  },
+  {
+    "difficulty_id": "normal",
+    "starting_cash_add": 0,
+    "disaster_cash_mult": 1.0,
+    "exam_tier_delta": 0
+  }
+]

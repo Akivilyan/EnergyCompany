@@ -9,15 +9,14 @@ sources:
 supersedes: []
 depends_on:
   - gdd/README
-open_questions:
-  - Playable v0 各 Feature 裁剪边界待 T41 与用户共定后回写本表「v0 列」
+open_questions: []
 ---
 
 # Feature Spec 索引
 
 `docs/design/features/` 面向 **实现与测试**：规则细节引用 GDD，不复制整章。编写规范见 [`../META.md`](../META.md)；任务节奏见 [`../TASK-LIST.md`](../TASK-LIST.md)。
 
-**状态说明**：下文「文档」指 Feature 文稿是否已有初稿；**优先级**指产品/架构层面的建议分档，**不等同** T41 垂直切片最终范围。
+**状态说明**：下文「文档」指 Feature 文稿是否已有初稿；**优先级**指产品/架构层面的建议分档。Playable v0 裁剪见 [`engineering/vertical-slice-v0.md`](../engineering/vertical-slice-v0.md)。
 
 ---
 

@@ -1,0 +1,9 @@
+{
+  "doctrine_id": "tutorial",
+  "forced_difficulty": "simple",
+  "starting_cash_override": 100,
+  "company_level_ii_sv_threshold_override": 60,
+  "disable_campaign_disasters": true,
+  "disable_random_events": true,
+  "notes": "Shorter II gate for teaching; no disaster axis in tutorial run"
+}

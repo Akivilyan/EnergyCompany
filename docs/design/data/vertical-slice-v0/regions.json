@@ -1,0 +1,12 @@
+[
+  { "region_id": "MAP-01", "region_type": "province", "unlock_company_level": 1, "display_name": "起始省（占位）" },
+  { "region_id": "MAP-02", "region_type": "province", "unlock_company_level": 3, "display_name": "省二（占位）" },
+  { "region_id": "MAP-03", "region_type": "province", "unlock_company_level": 4, "display_name": "省三（占位）" },
+  { "region_id": "MAP-04", "region_type": "province", "unlock_company_level": 4, "display_name": "省四（占位）" },
+  { "region_id": "MAP-05", "region_type": "province", "unlock_company_level": 4, "display_name": "省五（占位）" },
+  { "region_id": "MAP-06", "region_type": "province", "unlock_company_level": 5, "display_name": "省六（占位）" },
+  { "region_id": "MAP-07", "region_type": "province", "unlock_company_level": 5, "display_name": "省七（占位）" },
+  { "region_id": "MAP-08", "region_type": "province", "unlock_company_level": 5, "display_name": "省八（占位）" },
+  { "region_id": "MET-A", "region_type": "metropolis", "unlock_company_level": 3, "display_name": "特大城A（占位）" },
+  { "region_id": "MET-B", "region_type": "metropolis", "unlock_company_level": 5, "display_name": "特大城B（占位）" }
+]
