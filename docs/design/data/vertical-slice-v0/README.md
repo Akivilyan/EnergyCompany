@@ -2,7 +2,7 @@
 id: data/vertical-slice-v0/README
 title: Playable v0 垂直切片数据包
 status: draft
-version: 0.3.0
+version: 0.3.2
 sources:
   - docs/design/engineering/vertical-slice-v0.md
   - docs/design/gdd/11-replayability.md
@@ -16,7 +16,7 @@ open_questions:
 
 # Playable v0 垂直切片数据包（T39）
 
-**占位数值**，仅供 v0 工程联调。玩法以 GDD 为准；平衡性 **未** 经 playtest。
+**占位数值**，仅供 v0 工程联调。玩法以 GDD 为准；已完成首轮代理仿真调参，仍需引擎实跑复验。
 
 ## 文件清单
 
@@ -85,6 +85,7 @@ open_questions:
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 0.3.2 | 2026-05-28 | 应用首轮调参结果到主数据：开局资金、前中段灾害、广告梯度与外送城市需求 |
 | 0.3.1 | 2026-05-28 | 新增 `experiments/` 首轮调参批次覆盖文件（Batch 1~4） |
 | 0.1.0 | 2026-05-27 | T39 占位包初版 |
 | 0.2.0 | 2026-05-28 | MAP-01 分工模板、设施扩到五类·I、广告与灾害强度微调、开局资金上调 |
