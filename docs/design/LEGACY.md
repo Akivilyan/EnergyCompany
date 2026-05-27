@@ -19,8 +19,7 @@ depends_on:
   - ui/README
   - data/README
   - engineering/IMPLEMENTATION-TASKS
-open_questions:
-  - 是否在 T47 将已被完全替代的旧文档统一移动到 `docs/archive/`
+open_questions: []
 ---
 
 # 旧文档归档说明（Superseded / 只读参考）
@@ -76,6 +75,11 @@ open_questions:
 2. 确认团队已统一以 `docs/design/` 为权威；  
 3. 再决定是否移动 `superseded` 文档到 `docs/archive/`。  
 
+执行结果（2026-05-28）：
+
+- 本仓库内未检出可迁移的旧 `docs/*.md` 文件；
+- 因此 T47 在当前仓库按**不适用**处理（不执行文件移动）。
+
 ---
 
 ## 6. 相关文档
@@ -93,3 +97,4 @@ open_questions:
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1.0 | 2026-05-28 | T46 初稿：明确旧文档 superseded/reference 状态与映射关系 |
+| 0.1.1 | 2026-05-28 | 记录 T47 结果：本仓库无可迁移旧文件，按不适用跳过 |
