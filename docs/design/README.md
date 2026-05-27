@@ -21,7 +21,7 @@ GDD → Feature Spec → UI Spec → Data → Code
 1. 编写规范见 [`META.md`](./META.md)；任务顺序见 [`TASK-LIST.md`](./TASK-LIST.md)。
 2. **每次对话只做一个任务**；由 Agent 引导，从旧 `docs/` 摘录并改写，不一次性搬迁。
 3. 新文档使用 `META.md` 中的 front matter（`status`: draft / locked 等）。
-4. **Playable v0 范围已定**（[`engineering/vertical-slice-v0.md`](./engineering/vertical-slice-v0.md) + [`data/vertical-slice-v0/`](./data/vertical-slice-v0/)）。**下一项：T42** 技术选型。配置总览 [`data/README.md`](./data/README.md)。
+4. **Playable v0 范围已定**（[`engineering/vertical-slice-v0.md`](./engineering/vertical-slice-v0.md) + [`data/vertical-slice-v0/`](./data/vertical-slice-v0/)）。**当前进度：T42、T43 已完成；下一项：T44** 模拟层接口。配置总览 [`data/README.md`](./data/README.md)。
 
 ## 旧文档对照（搬迁来源，非权威）
 
