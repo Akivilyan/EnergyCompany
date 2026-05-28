@@ -242,4 +242,50 @@ describe("settleNextMonth", () => {
     expect(next.cities["CITY-START"].cityFullyEcoSupply).toBe(false);
     expect(next.cities["CITY-START"].ecoCapFactor).toBe(0.8);
   });
+
+  it("M10 does not downgrade company level when SV drops", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.companyLevel = 3;
+    state.facilities = {};
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.companyLevel).toBe(3);
+  });
+
+  it("M13 resets bankrupt streak when funds recover", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.bankruptConsecutiveMonths = 1;
+    state.funds = 200;
+    state.cities["CITY-START"].demandMw = 0;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.bankruptConsecutiveMonths).toBe(0);
+    expect(month.value.state.runResult).toBe(null);
+  });
+
+  it("M14 enters victory when target month reached and final disaster already triggered", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const finalDisaster = config.bundle.disasters.find((d) => d.is_final);
+    expect(finalDisaster).toBeTruthy();
+    if (!finalDisaster) return;
+
+    const state = createInitialState(config);
+    state.currentMonth = config.bundle.runConfig.campaign_run_target_months;
+    state.disastersTriggered.push(finalDisaster.seq);
+    state.funds = 10;
+    state.cities["CITY-START"].demandMw = 0;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.runResult).toBe("victory");
+    expect(month.value.state.phase).toBe("run_result");
+    expect(month.value.report.result).toBe("victory");
+  });
 });
