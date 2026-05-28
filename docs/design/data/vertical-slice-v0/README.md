@@ -2,7 +2,7 @@
 id: data/vertical-slice-v0/README
 title: Playable v0 垂直切片数据包
 status: draft
-version: 0.3.2
+version: 0.3.3
 sources:
   - docs/design/engineering/vertical-slice-v0.md
   - docs/design/gdd/11-replayability.md
@@ -85,6 +85,7 @@ open_questions:
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 0.3.3 | 2026-05-28 | 灾害 debuff 改为大理石式长持续（8/10/10/12 月）；力度字段恢复 GDD 基准 |
 | 0.3.2 | 2026-05-28 | 应用首轮调参结果到主数据：开局资金、前中段灾害、广告梯度与外送城市需求 |
 | 0.3.1 | 2026-05-28 | 新增 `experiments/` 首轮调参批次覆盖文件（Batch 1~4） |
 | 0.1.0 | 2026-05-27 | T39 占位包初版 |

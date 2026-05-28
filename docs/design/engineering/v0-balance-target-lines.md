@@ -98,8 +98,8 @@
 优先顺序：
 
 1. 下调前两场灾害 `immediate_cash_penalty`
-2. 缩短前两场 `debuff_duration_months`
-3. 轻微上调 `starting_cash_base` 或 `simple.starting_cash_add`
+2. 上调前两场 `income_mult_num`（减轻持续期压制；**不改** `debuff_duration_months`）
+3. 轻微上调 `starting_cash_base`、`loan_tiers`、设施收入/造价，或 `simple.starting_cash_add`
 
 ### 2) 广告依赖过高（平均 > 6 次/局）
 
@@ -131,12 +131,14 @@
 
 目标：首轮只做小步迭代，保证每批改动后都能从 A/B/C 三策略结果中看清因果。
 
+约束：`debuff_duration_months` 为设计锁定项（见 [v0-disaster-balance-policy.md](./v0-disaster-balance-policy.md)），本阶段不纳入调参。
+
 ### 批次 1：基础生存托底（优先）
 
 参数（4 个）：
 
 1. `campaign_disasters[0].immediate_cash_penalty`
-2. `campaign_disasters[0].debuff_duration_months`
+2. `campaign_disasters[0].income_mult_num`
 3. `campaign_disasters[1].immediate_cash_penalty`
 4. `starting_cash_base`
 
@@ -154,9 +156,9 @@
 
 参数（3 个）：
 
-1. `campaign_disasters[1].debuff_duration_months`
+1. `campaign_disasters[1].income_mult_num`
 2. `campaign_disasters[2].immediate_cash_penalty`
-3. `campaign_disasters[2].debuff_duration_months`
+3. `campaign_disasters[2].income_mult_num`
 
 观察重点：
 

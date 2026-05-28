@@ -1,0 +1,16 @@
+{
+  "name": "energy-company",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "sim:demo": "tsx src/app/cli.ts",
+    "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

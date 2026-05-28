@@ -17,10 +17,12 @@
 
 ## 2) 批次改值（建议首轮）
 
+约束：`debuff_duration_months` 视为设计锁定项，本阶段不调持续月数，只调惩罚力度。
+
 ## Batch 1：基础生存托底（4 参数）
 
 - `campaign_disasters.seq=1.immediate_cash_penalty`: `12 -> 10`
-- `campaign_disasters.seq=1.debuff_duration_months`: `2 -> 1`
+- `campaign_disasters.seq=1.income_mult_num`: `92 -> 94`
 - `campaign_disasters.seq=2.immediate_cash_penalty`: `20 -> 18`
 - `run_config.starting_cash_base`: `90 -> 95`
 
@@ -28,9 +30,9 @@
 
 ## Batch 2：中段压力平滑（3 参数）
 
-- `campaign_disasters.seq=2.debuff_duration_months`: `3 -> 2`
+- `campaign_disasters.seq=2.income_mult_num`: `88 -> 90`
 - `campaign_disasters.seq=3.immediate_cash_penalty`: `32 -> 30`
-- `campaign_disasters.seq=3.debuff_duration_months`: `4 -> 3`
+- `campaign_disasters.seq=3.income_mult_num`: `84 -> 86`
 
 目标：将 M41/M63 从“断崖”调整为“可挽回压力段”。
 

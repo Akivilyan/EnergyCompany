@@ -5,8 +5,7 @@
   "campaign_disasters": [
     {
       "seq": 1,
-      "immediate_cash_penalty": 6,
-      "debuff_duration_months": 1
+      "immediate_cash_penalty": 6
     },
     {
       "seq": 2,

@@ -68,7 +68,12 @@ function applyOverlay(baseConfig, overlayConfig) {
     config.run_config = { ...config.run_config, ...overlayConfig.run_config };
   }
   if (overlayConfig.campaign_disasters) {
-    mergeById(config.campaign_disasters, overlayConfig.campaign_disasters, "seq");
+    // 政策锁定：overlay 不得覆盖 debuff 持续月数
+    const sanitized = overlayConfig.campaign_disasters.map((row) => {
+      const { debuff_duration_months: _locked, ...rest } = row;
+      return rest;
+    });
+    mergeById(config.campaign_disasters, sanitized, "seq");
   }
   if (overlayConfig.ad_rewards) {
     mergeById(config.ad_rewards, overlayConfig.ad_rewards, "company_level");

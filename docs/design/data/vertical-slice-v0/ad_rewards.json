@@ -1,7 +1,7 @@
 [
-  { "company_level": 1, "reward_cash": 4 },
-  { "company_level": 2, "reward_cash": 7 },
-  { "company_level": 3, "reward_cash": 10 },
-  { "company_level": 4, "reward_cash": 15 },
-  { "company_level": 5, "reward_cash": 20 }
+  { "company_level": 1, "reward_cash": 10 },
+  { "company_level": 2, "reward_cash": 18 },
+  { "company_level": 3, "reward_cash": 28 },
+  { "company_level": 4, "reward_cash": 42 },
+  { "company_level": 5, "reward_cash": 60 }
 ]
