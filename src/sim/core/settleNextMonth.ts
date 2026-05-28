@@ -16,17 +16,44 @@ export interface SettleOutput {
 
 function validateSettlementConfig(config: ConfigRepo): SimResult<true> {
   if (config.bundle.companyLevels.length === 0) {
-    return err("config_missing", "company level config is empty");
+    return err("config_missing", "company level config is empty", {
+      company_levels_len: config.bundle.companyLevels.length
+    });
   }
   if (config.bundle.runConfig.bankrupt_consecutive_months < 1) {
-    return err("config_missing", "bankrupt_consecutive_months must be >= 1");
+    return err("config_missing", "bankrupt_consecutive_months must be >= 1", {
+      bankrupt_consecutive_months: config.bundle.runConfig.bankrupt_consecutive_months
+    });
   }
   if (config.bundle.runConfig.campaign_run_target_months < 1) {
-    return err("config_missing", "campaign_run_target_months must be >= 1");
+    return err("config_missing", "campaign_run_target_months must be >= 1", {
+      campaign_run_target_months: config.bundle.runConfig.campaign_run_target_months
+    });
   }
   const hasFinalDisaster = config.bundle.disasters.some((d) => d.is_final);
   if (!hasFinalDisaster) {
-    return err("config_missing", "missing final disaster for victory check");
+    return err("config_missing", "missing final disaster for victory check", {
+      disasters_len: config.bundle.disasters.length
+    });
+  }
+  return ok(true);
+}
+
+function validateSettlementState(state: GameState): SimResult<true> {
+  if (state.companyLevel < 1) {
+    return err("state_invariant_broken", "companyLevel must be >= 1", {
+      company_level: state.companyLevel
+    });
+  }
+  if (state.bankruptConsecutiveMonths < 0) {
+    return err("state_invariant_broken", "bankruptConsecutiveMonths must be >= 0", {
+      bankrupt_consecutive_months: state.bankruptConsecutiveMonths
+    });
+  }
+  if (state.adsRemaining < 0) {
+    return err("state_invariant_broken", "adsRemaining must be >= 0", {
+      ads_remaining: state.adsRemaining
+    });
   }
   return ok(true);
 }
@@ -201,6 +228,10 @@ export function settleNextMonth(
   const configCheck = validateSettlementConfig(config);
   if (!configCheck.ok) {
     return configCheck;
+  }
+  const stateCheck = validateSettlementState(state);
+  if (!stateCheck.ok) {
+    return stateCheck;
   }
 
   const next: GameState = structuredClone(state);

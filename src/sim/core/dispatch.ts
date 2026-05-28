@@ -21,6 +21,16 @@ function makeUndirectedLinkKey(fromCityId: string, toCityId: string): string {
   return [fromCityId, toCityId].sort().join("::");
 }
 
+function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResult<true> {
+  if (companyLevel < unlockLevel) {
+    return err("not_unlocked", "city not unlocked for current company level", {
+      company_level: companyLevel,
+      unlock_level: unlockLevel
+    });
+  }
+  return ok(true);
+}
+
 export function dispatch(
   state: GameState,
   command: Command,
@@ -29,6 +39,11 @@ export function dispatch(
 ): SimResult<DispatchOutput> {
   if (state.phase !== "run_playable" || state.runResult !== null) {
     return err("invalid_phase", "commands only allowed in run_playable without result");
+  }
+  if (state.adsRemaining < 0) {
+    return err("state_invariant_broken", "adsRemaining must be >= 0", {
+      ads_remaining: state.adsRemaining
+    });
   }
 
   const next = cloneState(state);
@@ -39,6 +54,10 @@ export function dispatch(
       const city = config.getCity(command.cityId);
       if (!facility || !city) {
         return err("not_found", "facility or city not found");
+      }
+      const unlocked = assertCityUnlocked(next.companyLevel, city.unlock_company_level);
+      if (!unlocked.ok) {
+        return unlocked;
       }
       if (next.constructionQueue.length >= 3) {
         return err("conflict_in_progress", "global construction queue full");
@@ -65,6 +84,14 @@ export function dispatch(
       const to = config.getCity(command.toCityId);
       if (!from || !to) {
         return err("not_found", "city not found for grid link");
+      }
+      const fromUnlocked = assertCityUnlocked(next.companyLevel, from.unlock_company_level);
+      if (!fromUnlocked.ok) {
+        return fromUnlocked;
+      }
+      const toUnlocked = assertCityUnlocked(next.companyLevel, to.unlock_company_level);
+      if (!toUnlocked.ok) {
+        return toUnlocked;
       }
       const linkKey = makeUndirectedLinkKey(command.fromCityId, command.toCityId);
       if (next.gridLinks[linkKey]) {
@@ -103,6 +130,9 @@ export function dispatch(
       break;
     }
     case "start_research": {
+      if (next.companyLevel < 2) {
+        return err("not_unlocked", "research is unlocked from company level II");
+      }
       if (next.litTechIds.includes(command.techId)) {
         return err("conflict_in_progress", "tech already researched");
       }

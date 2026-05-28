@@ -92,6 +92,7 @@ describe("settleNextMonth", () => {
   it("dispatch supports start_research and enforces single queue", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config);
+    state.companyLevel = 2;
     const initialFunds = state.funds;
     const start = dispatch(
       state,
@@ -119,6 +120,7 @@ describe("settleNextMonth", () => {
   it("M3 progresses research and lights tech on completion", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config);
+    state.companyLevel = 2;
     const start = dispatch(
       state,
       { type: "start_research", techId: "storage_system_1" },
@@ -143,6 +145,7 @@ describe("settleNextMonth", () => {
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 2;
     state.facilities["fac-a"] = {
       id: "fac-a",
       cityId: "CITY-START",
@@ -201,6 +204,7 @@ describe("settleNextMonth", () => {
   it("M4 marks city non-eco even with net import", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 2;
     state.facilities["fac-thermal"] = {
       id: "fac-thermal",
       cityId: "CITY-START",
@@ -309,5 +313,44 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(false);
     if (month.ok) return;
     expect(month.error).toBe("config_missing");
+  });
+
+  it("dispatch blocks construction on locked city", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-MAP01-02", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
+  });
+
+  it("dispatch blocks research before company level II", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    const result = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
+  });
+
+  it("settle returns state_invariant_broken for invalid runtime state", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.adsRemaining = -1;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(false);
+    if (month.ok) return;
+    expect(month.error).toBe("state_invariant_broken");
   });
 });
