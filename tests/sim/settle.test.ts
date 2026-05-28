@@ -2,10 +2,30 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { ConfigRepo, createInitialState, dispatch, settleNextMonth, defaultPorts } from "../../src/sim/index.js";
+import type { GameState } from "../../src/sim/index.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("settleNextMonth", () => {
+  function withSecondCity(state: GameState, config: ConfigRepo): GameState {
+    const city = config.getCity("CITY-MAP01-02");
+    if (!city) {
+      throw new Error("missing CITY-MAP01-02");
+    }
+    state.cities[city.city_id] = {
+      cityId: city.city_id,
+      demandMw: city.base_demand_mw,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: city.city_base_social_value
+    };
+    return state;
+  }
+
   it("runs M1-M14 in order", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config);
@@ -67,5 +87,109 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(false);
     expect(state.funds).toBe(before.funds);
+  });
+
+  it("dispatch supports start_research and enforces single queue", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config);
+    const initialFunds = state.funds;
+    const start = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(start.ok).toBe(true);
+    if (!start.ok) return;
+    state = start.value.state;
+    expect(state.funds).toBe(initialFunds - 60);
+    expect(Object.keys(state.researches)).toContain("storage_system_1");
+
+    const second = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_2" },
+      config,
+      defaultPorts
+    );
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.error).toBe("conflict_in_progress");
+  });
+
+  it("M3 progresses research and lights tech on completion", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config);
+    const start = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(start.ok).toBe(true);
+    if (!start.ok) return;
+    state = start.value.state;
+
+    for (let i = 0; i < 3; i += 1) {
+      const month = settleNextMonth(state, config, defaultPorts);
+      expect(month.ok).toBe(true);
+      if (!month.ok) return;
+      state = month.value.state;
+    }
+
+    expect(state.litTechIds).toContain("storage_system_1");
+    expect(Object.keys(state.researches)).toHaveLength(0);
+  });
+
+  it("M4 uses unified island rate when two cities are connected in v0", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = withSecondCity(createInitialState(config), config);
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 920,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    const next = month.value.state;
+    expect(next.cities["CITY-START"].supplyRatio).toBe(0.5);
+    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0.5);
+    expect(next.cities["CITY-MAP01-02"].netImportMw).toBeGreaterThan(0);
+  });
+
+  it("M4 marks city non-eco even with net import", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = withSecondCity(createInitialState(config), config);
+    state.facilities["fac-thermal"] = {
+      id: "fac-thermal",
+      cityId: "CITY-START",
+      facilityId: "thermal",
+      tier: 1,
+      outputMw: 220,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-wind"] = {
+      id: "fac-wind",
+      cityId: "CITY-MAP01-02",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    const next = month.value.state;
+    expect(next.cities["CITY-START"].netImportMw).toBeGreaterThan(0);
+    expect(next.cities["CITY-START"].cityFullyEcoSupply).toBe(false);
+    expect(next.cities["CITY-START"].ecoCapFactor).toBe(0.8);
   });
 });

@@ -8,6 +8,9 @@ export interface DispatchOutput {
   state: GameState;
 }
 
+const RESEARCH_COST = 60;
+const RESEARCH_MONTHS = 3;
+
 function cloneState(state: GameState): GameState {
   return structuredClone(state);
 }
@@ -62,6 +65,24 @@ export function dispatch(
         principalRemaining: tier.principal,
         monthlyPayment: tier.monthly_payment_approx,
         monthsRemaining: tier.terms
+      };
+      break;
+    }
+    case "start_research": {
+      if (next.litTechIds.includes(command.techId)) {
+        return err("conflict_in_progress", "tech already researched");
+      }
+      if (Object.keys(next.researches).length > 0) {
+        return err("conflict_in_progress", "only one active research allowed");
+      }
+      if (next.funds < RESEARCH_COST) {
+        return err("insufficient_funds", "not enough funds for research");
+      }
+      next.funds -= RESEARCH_COST;
+      next.researches[command.techId] = {
+        researchId: `rq-${next.currentMonth}-${command.techId}`,
+        techId: command.techId,
+        monthsRemaining: RESEARCH_MONTHS
       };
       break;
     }

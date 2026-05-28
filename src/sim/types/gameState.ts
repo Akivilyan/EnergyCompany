@@ -47,7 +47,11 @@ export interface CityRuntime {
   cityId: string;
   demandMw: number;
   localSupplyMw: number;
+  effectiveSupplyMw: number;
+  netImportMw: number;
   supplyRatio: number;
+  cityFullyEcoSupply: boolean;
+  ecoCapFactor: number;
   cityBaseSocialValue: number;
 }
 
@@ -55,6 +59,12 @@ export interface LoanRuntime {
   loanId: string;
   principalRemaining: number;
   monthlyPayment: number;
+  monthsRemaining: number;
+}
+
+export interface ResearchRuntime {
+  researchId: string;
+  techId: string;
   monthsRemaining: number;
 }
 
@@ -79,6 +89,8 @@ export interface GameState {
   cities: Record<string, CityRuntime>;
   facilities: Record<string, FacilityRuntime>;
   constructionQueue: ConstructionQueueItem[];
+  researches: Record<string, ResearchRuntime>;
+  litTechIds: string[];
   loans: Record<string, LoanRuntime>;
   activeDebuffs: ActiveDebuff[];
   disastersTriggered: number[];

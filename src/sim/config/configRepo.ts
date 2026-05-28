@@ -27,11 +27,13 @@ export interface DisasterConfig {
 
 export interface FacilityConfig {
   facility_id: string;
+  facility_type?: string;
   build_cost_total: number;
   build_duration_months: number;
   installment_count: number;
   monthly_operating_cost: number;
   output_capacity_mw: number;
+  is_eco_default?: boolean;
   requires_river: boolean;
 }
 

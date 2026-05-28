@@ -23,17 +23,50 @@ function step(
 }
 
 function recalcSupply(state: GameState): void {
+  const hasStorageBoost = state.litTechIds.some((id) => id.startsWith("storage_system_"));
+  const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
+  const localSupplyByCity = new Map<string, number>();
+  const localFullyEcoByCity = new Map<string, boolean>();
+
+  for (const cityId of Object.keys(state.cities)) {
+    localSupplyByCity.set(cityId, 0);
+    localFullyEcoByCity.set(cityId, true);
+  }
+
+  for (const fac of Object.values(state.facilities)) {
+    const current = localSupplyByCity.get(fac.cityId) ?? 0;
+    const boost =
+      hasStorageBoost && storageBoostTypes.has(fac.facilityId) ? 2 : 1;
+    localSupplyByCity.set(fac.cityId, current + fac.outputMw * boost);
+    if (fac.facilityId === "thermal" || fac.facilityId === "nuclear") {
+      localFullyEcoByCity.set(fac.cityId, false);
+    }
+  }
+
+  let totalDemand = 0;
+  let totalLocalSupply = 0;
+  for (const city of Object.values(state.cities)) {
+    totalDemand += city.demandMw;
+  }
+  for (const supply of localSupplyByCity.values()) {
+    totalLocalSupply += supply;
+  }
+  const availableSupply = Math.max(0, totalLocalSupply);
+  const islandRate = totalDemand <= 0 ? 0 : Math.min(1, availableSupply / totalDemand);
+
   for (const cityId of Object.keys(state.cities)) {
     const city = state.cities[cityId];
-    let supply = 0;
-    for (const fac of Object.values(state.facilities)) {
-      if (fac.cityId === cityId) {
-        supply += fac.outputMw;
-      }
-    }
-    city.localSupplyMw = supply;
+    const localSupply = localSupplyByCity.get(cityId) ?? 0;
+    const effectiveSupply = Math.floor(city.demandMw * islandRate);
+    city.localSupplyMw = localSupply;
+    city.effectiveSupplyMw = effectiveSupply;
+    city.netImportMw = effectiveSupply - localSupply;
     city.supplyRatio =
-      city.demandMw <= 0 ? 1 : Math.min(1, Math.floor((supply * 100) / city.demandMw) / 100);
+      city.demandMw <= 0
+        ? 0
+        : Math.min(1, Math.floor((effectiveSupply * 100) / city.demandMw) / 100);
+    city.cityFullyEcoSupply = localFullyEcoByCity.get(cityId) ?? true;
+    city.ecoCapFactor = city.cityFullyEcoSupply ? 1 : 0.8;
   }
 }
 
@@ -65,6 +98,25 @@ function runM1(state: GameState, config: ConfigRepo): SettlementStepReport {
   });
 }
 
+function runM3(state: GameState): SettlementStepReport {
+  const completed: string[] = [];
+  for (const item of Object.values(state.researches)) {
+    if (item.monthsRemaining > 0) {
+      item.monthsRemaining -= 1;
+    }
+    if (item.monthsRemaining <= 0) {
+      if (!state.litTechIds.includes(item.techId)) {
+        state.litTechIds.push(item.techId);
+      }
+      completed.push(item.techId);
+      delete state.researches[item.techId];
+    }
+  }
+  return step("M3_research_progress", `completed=${completed.length}`, {
+    research_queue_len: Object.keys(state.researches).length
+  });
+}
+
 export function settleNextMonth(
   state: GameState,
   config: ConfigRepo,
@@ -83,7 +135,7 @@ export function settleNextMonth(
   const steps: SettlementStepReport[] = [];
 
   steps.push(step("M2_grid_progress", "v0 stub: no grid queue"));
-  steps.push(step("M3_research_progress", "v0 stub: no research queue"));
+  steps.push(runM3(next));
 
   steps.push(runM1(next, config));
   recalcSupply(next);
@@ -133,7 +185,7 @@ export function settleNextMonth(
 
   let sv = 0;
   for (const city of Object.values(next.cities)) {
-    sv += Math.floor(city.cityBaseSocialValue * city.supplyRatio);
+    sv += Math.floor(city.cityBaseSocialValue * city.supplyRatio * city.ecoCapFactor);
   }
   next.socialValueCurrent = sv;
   steps.push(step("M9_social_value_settlement", `sv=${sv}`, { social_value: sv }));

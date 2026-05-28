@@ -22,7 +22,11 @@ export function createInitialState(
       cityId: startCity.city_id,
       demandMw: startCity.base_demand_mw,
       localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
       supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
       cityBaseSocialValue: startCity.city_base_social_value
     }
   };
@@ -44,6 +48,8 @@ export function createInitialState(
     cities,
     facilities: {},
     constructionQueue: [],
+    researches: {},
+    litTechIds: ["wind_1", "solar_1", "thermal_1", "hydro_1"],
     loans: {},
     activeDebuffs: [],
     disastersTriggered: [],
