@@ -10,9 +10,15 @@ export interface DispatchOutput {
 
 const RESEARCH_COST = 60;
 const RESEARCH_MONTHS = 3;
+const GRID_LINK_COST = 8;
+const GRID_LINK_BUILD_MONTHS = 1;
 
 function cloneState(state: GameState): GameState {
   return structuredClone(state);
+}
+
+function makeUndirectedLinkKey(fromCityId: string, toCityId: string): string {
+  return [fromCityId, toCityId].sort().join("::");
 }
 
 export function dispatch(
@@ -49,6 +55,34 @@ export function dispatch(
         monthsRemaining: facility.build_duration_months,
         installmentRemaining: 0
       });
+      break;
+    }
+    case "queue_grid_link": {
+      if (command.fromCityId === command.toCityId) {
+        return err("invalid_command_payload", "grid link endpoints must be different");
+      }
+      const from = config.getCity(command.fromCityId);
+      const to = config.getCity(command.toCityId);
+      if (!from || !to) {
+        return err("not_found", "city not found for grid link");
+      }
+      const linkKey = makeUndirectedLinkKey(command.fromCityId, command.toCityId);
+      if (next.gridLinks[linkKey]) {
+        return err("conflict_in_progress", "grid link already exists");
+      }
+      if (next.funds < GRID_LINK_COST) {
+        return err("insufficient_funds", "not enough funds for grid link");
+      }
+      next.funds -= GRID_LINK_COST;
+      next.gridLinks[linkKey] = {
+        linkId: linkKey,
+        fromCityId: command.fromCityId,
+        toCityId: command.toCityId,
+        linkType: command.linkType,
+        status: "building",
+        monthsRemaining: GRID_LINK_BUILD_MONTHS,
+        lossMw: 0
+      };
       break;
     }
     case "apply_loan": {

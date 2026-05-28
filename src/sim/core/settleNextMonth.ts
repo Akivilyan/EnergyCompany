@@ -22,6 +22,40 @@ function step(
   return { stepId, ok: true, summary, metrics };
 }
 
+function buildIslands(state: GameState): string[][] {
+  const cityIds = Object.keys(state.cities);
+  const adj = new Map<string, Set<string>>();
+  for (const cityId of cityIds) {
+    adj.set(cityId, new Set());
+  }
+  for (const link of Object.values(state.gridLinks)) {
+    if (link.status !== "finished") continue;
+    if (!adj.has(link.fromCityId) || !adj.has(link.toCityId)) continue;
+    adj.get(link.fromCityId)?.add(link.toCityId);
+    adj.get(link.toCityId)?.add(link.fromCityId);
+  }
+  const visited = new Set<string>();
+  const islands: string[][] = [];
+  for (const cityId of cityIds) {
+    if (visited.has(cityId)) continue;
+    const island: string[] = [];
+    const stack = [cityId];
+    visited.add(cityId);
+    while (stack.length > 0) {
+      const cur = stack.pop();
+      if (!cur) continue;
+      island.push(cur);
+      for (const next of adj.get(cur) ?? []) {
+        if (visited.has(next)) continue;
+        visited.add(next);
+        stack.push(next);
+      }
+    }
+    islands.push(island);
+  }
+  return islands;
+}
+
 function recalcSupply(state: GameState): void {
   const hasStorageBoost = state.litTechIds.some((id) => id.startsWith("storage_system_"));
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
@@ -43,31 +77,50 @@ function recalcSupply(state: GameState): void {
     }
   }
 
-  let totalDemand = 0;
-  let totalLocalSupply = 0;
-  for (const city of Object.values(state.cities)) {
-    totalDemand += city.demandMw;
+  const islands = buildIslands(state);
+  for (const island of islands) {
+    let islandDemand = 0;
+    let islandSupply = 0;
+    for (const cityId of island) {
+      const city = state.cities[cityId];
+      islandDemand += city.demandMw;
+      islandSupply += localSupplyByCity.get(cityId) ?? 0;
+    }
+    const islandRate =
+      islandDemand <= 0 ? 0 : Math.min(1, Math.max(0, islandSupply) / islandDemand);
+    for (const cityId of island) {
+      const city = state.cities[cityId];
+      const localSupply = localSupplyByCity.get(cityId) ?? 0;
+      const effectiveSupply = Math.floor(city.demandMw * islandRate);
+      city.localSupplyMw = localSupply;
+      city.effectiveSupplyMw = effectiveSupply;
+      city.netImportMw = effectiveSupply - localSupply;
+      city.supplyRatio =
+        city.demandMw <= 0
+          ? 0
+          : Math.min(1, Math.floor((effectiveSupply * 100) / city.demandMw) / 100);
+      city.cityFullyEcoSupply = localFullyEcoByCity.get(cityId) ?? true;
+      city.ecoCapFactor = city.cityFullyEcoSupply ? 1 : 0.8;
+    }
   }
-  for (const supply of localSupplyByCity.values()) {
-    totalLocalSupply += supply;
-  }
-  const availableSupply = Math.max(0, totalLocalSupply);
-  const islandRate = totalDemand <= 0 ? 0 : Math.min(1, availableSupply / totalDemand);
+}
 
-  for (const cityId of Object.keys(state.cities)) {
-    const city = state.cities[cityId];
-    const localSupply = localSupplyByCity.get(cityId) ?? 0;
-    const effectiveSupply = Math.floor(city.demandMw * islandRate);
-    city.localSupplyMw = localSupply;
-    city.effectiveSupplyMw = effectiveSupply;
-    city.netImportMw = effectiveSupply - localSupply;
-    city.supplyRatio =
-      city.demandMw <= 0
-        ? 0
-        : Math.min(1, Math.floor((effectiveSupply * 100) / city.demandMw) / 100);
-    city.cityFullyEcoSupply = localFullyEcoByCity.get(cityId) ?? true;
-    city.ecoCapFactor = city.cityFullyEcoSupply ? 1 : 0.8;
+function runM2(state: GameState): SettlementStepReport {
+  let completed = 0;
+  for (const link of Object.values(state.gridLinks)) {
+    if (link.status !== "building") continue;
+    if (link.monthsRemaining > 0) {
+      link.monthsRemaining -= 1;
+    }
+    if (link.monthsRemaining <= 0) {
+      link.status = "finished";
+      link.monthsRemaining = 0;
+      completed += 1;
+    }
   }
+  return step("M2_grid_progress", `completed=${completed}`, {
+    grid_links_total: Object.keys(state.gridLinks).length
+  });
 }
 
 function runM1(state: GameState, config: ConfigRepo): SettlementStepReport {
@@ -134,7 +187,7 @@ export function settleNextMonth(
   const monthFrom = next.currentMonth;
   const steps: SettlementStepReport[] = [];
 
-  steps.push(step("M2_grid_progress", "v0 stub: no grid queue"));
+  steps.push(runM2(next));
   steps.push(runM3(next));
 
   steps.push(runM1(next, config));

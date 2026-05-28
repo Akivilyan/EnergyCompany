@@ -68,6 +68,16 @@ export interface ResearchRuntime {
   monthsRemaining: number;
 }
 
+export interface GridLinkRuntime {
+  linkId: string;
+  fromCityId: string;
+  toCityId: string;
+  linkType: "region" | "trunk";
+  status: "building" | "finished";
+  monthsRemaining: number;
+  lossMw: number;
+}
+
 export interface GameState {
   version: number;
   runId: string;
@@ -88,6 +98,7 @@ export interface GameState {
 
   cities: Record<string, CityRuntime>;
   facilities: Record<string, FacilityRuntime>;
+  gridLinks: Record<string, GridLinkRuntime>;
   constructionQueue: ConstructionQueueItem[];
   researches: Record<string, ResearchRuntime>;
   litTechIds: string[];

@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -39,7 +39,7 @@ open_questions: []
 | T45-03 | done | `GameState` 与初始化 | `createInitialState` + 初始字段 | 按需要扩展 onboarding/save 字段 |
 | T45-04 | done | `dispatch` 基础命令入口 | 建造/借贷/广告/研发已接入 | 后续补更严格 payload 校验 |
 | T45-05 | done | `settleNextMonth` M1-M14 骨架 | 固定 14 步报告 + 推月 | 保持步骤顺序快照稳定 |
-| T45-06 | partial | M4 供能重算落地 | 已支持跨城统一分配、净受入、环保上限因子与测试 | 后续接真实电网连通分量（M2 链路） |
+| T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
 | T45-07 | partial | M9/M10/M13/M14 落地 | SV/升级/破产/通关主路径已接入 | 补边界用例与配置一致性 |
 | T45-08 | done | modules 编排层 | `runController` + 统一入口 | 增加 UI 契约扫描测试 |
 | T45-09 | todo | 城市页最小闭环 | — | 接 UI 壳层建造+推月 |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-06`
-- 任务标题：M4 供能重算升级（并网岛语义对齐）
+- 当前任务 ID：`T45-07`
+- 任务标题：M9/M10/M13/M14 边界与配置一致性收口
 - 状态：`doing`
 - 开始时间：2026-05-28
-- 完成定义（本轮）：在现有可运行基础上，补齐跨城/并网岛语义与测试覆盖（已完成本轮目标）
+- 完成定义（本轮）：补齐等级/破产/胜利边界用例与状态机约束
 
 ---
 
@@ -71,6 +71,7 @@ open_questions: []
 | 2026-05-28 | 补齐 `start_research` 命令与 `M3_research_progress` 实现，研发可入队并点亮 | `src/sim/types/commands.ts` `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（5/5） |
 | 2026-05-28 | 新增项目级任务看板，用于每轮对话实时续航 | `docs/design/engineering/PROJECT-TASK-BOARD.md` | 文档新增 |
 | 2026-05-28 | 推进 `T45-06`：M4 升级为跨城统一供能分配，新增 `effectiveSupply/netImport/ecoCap` 字段与两条并网语义测试 | `src/sim/core/settleNextMonth.ts` `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/config/configRepo.ts` `tests/sim/settle.test.ts` | `npm test` 通过（7/7） |
+| 2026-05-28 | 完成 `T45-06`：新增 `queue_grid_link`、M2 链路完工推进、M4 按连通分岛分配供能；测试覆盖未连通/已连通场景 | `src/sim/types/commands.ts` `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（8/8） |
 
 ---
 
@@ -89,3 +90,4 @@ open_questions: []
 |------|------|------|
 | 0.1.0 | 2026-05-28 | 初版：建立项目级任务看板，覆盖 T45-01~16 状态与会话续航机制 |
 | 0.1.1 | 2026-05-28 | 新增提交策略；记录 T45-06 本轮进展与验证结果 |
+| 0.1.2 | 2026-05-28 | T45-06 标记完成，当前任务切到 T45-07，并记录 M2+M4 连通分岛进展 |

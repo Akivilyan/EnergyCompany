@@ -142,6 +142,42 @@ describe("settleNextMonth", () => {
 
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = withSecondCity(createInitialState(config), config);
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 920,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    const link = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(link.ok).toBe(true);
+    if (!link.ok) return;
+    state = link.value.state;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    const next = month.value.state;
+    expect(next.cities["CITY-START"].supplyRatio).toBe(0.5);
+    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0.5);
+    expect(next.cities["CITY-MAP01-02"].netImportMw).toBeGreaterThan(0);
+  });
+
+  it("M4 keeps cities isolated when no finished link exists", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     const state = withSecondCity(createInitialState(config), config);
     state.facilities["fac-a"] = {
       id: "fac-a",
@@ -157,14 +193,14 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     const next = month.value.state;
-    expect(next.cities["CITY-START"].supplyRatio).toBe(0.5);
-    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0.5);
-    expect(next.cities["CITY-MAP01-02"].netImportMw).toBeGreaterThan(0);
+    expect(next.cities["CITY-START"].supplyRatio).toBe(0.69);
+    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0);
+    expect(next.cities["CITY-MAP01-02"].netImportMw).toBe(0);
   });
 
   it("M4 marks city non-eco even with net import", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
-    const state = withSecondCity(createInitialState(config), config);
+    let state = withSecondCity(createInitialState(config), config);
     state.facilities["fac-thermal"] = {
       id: "fac-thermal",
       cityId: "CITY-START",
@@ -183,6 +219,20 @@ describe("settleNextMonth", () => {
       monthlyOpex: 0,
       monthlyFuel: 0
     };
+    const link = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(link.ok).toBe(true);
+    if (!link.ok) return;
+    state = link.value.state;
 
     const month = settleNextMonth(state, config, defaultPorts);
     expect(month.ok).toBe(true);
