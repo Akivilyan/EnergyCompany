@@ -288,4 +288,26 @@ describe("settleNextMonth", () => {
     expect(month.value.state.phase).toBe("run_result");
     expect(month.value.report.result).toBe("victory");
   });
+
+  it("returns config_missing when final disaster is absent", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    config.bundle.disasters = config.bundle.disasters.filter((d) => !d.is_final);
+    const state = createInitialState(config);
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(false);
+    if (month.ok) return;
+    expect(month.error).toBe("config_missing");
+  });
+
+  it("returns config_missing when bankrupt threshold is invalid", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    config.bundle.runConfig.bankrupt_consecutive_months = 0;
+    const state = createInitialState(config);
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(false);
+    if (month.ok) return;
+    expect(month.error).toBe("config_missing");
+  });
 });

@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.3
+version: 0.1.4
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -40,7 +40,7 @@ open_questions: []
 | T45-04 | done | `dispatch` 基础命令入口 | 建造/借贷/广告/研发已接入 | 后续补更严格 payload 校验 |
 | T45-05 | done | `settleNextMonth` M1-M14 骨架 | 固定 14 步报告 + 推月 | 保持步骤顺序快照稳定 |
 | T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
-| T45-07 | partial | M9/M10/M13/M14 落地 | 已补只升不降、破产重置、终局胜利边界测试 | 补配置一致性与异常路径用例 |
+| T45-07 | partial | M9/M10/M13/M14 落地 | 已补边界回归 + 结算配置守卫（缺最终灾害/非法阈值报错） | 补更多异常输入与日志上下文 |
 | T45-08 | done | modules 编排层 | `runController` + 统一入口 | 增加 UI 契约扫描测试 |
 | T45-09 | todo | 城市页最小闭环 | — | 接 UI 壳层建造+推月 |
 | T45-10 | todo | 等级解锁与 region 流程 | — | 先打通 II 级解锁 |
@@ -73,6 +73,7 @@ open_questions: []
 | 2026-05-28 | 推进 `T45-06`：M4 升级为跨城统一供能分配，新增 `effectiveSupply/netImport/ecoCap` 字段与两条并网语义测试 | `src/sim/core/settleNextMonth.ts` `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/config/configRepo.ts` `tests/sim/settle.test.ts` | `npm test` 通过（7/7） |
 | 2026-05-28 | 完成 `T45-06`：新增 `queue_grid_link`、M2 链路完工推进、M4 按连通分岛分配供能；测试覆盖未连通/已连通场景 | `src/sim/types/commands.ts` `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（8/8） |
 | 2026-05-28 | 推进 `T45-07`：补齐 M10/M13/M14 边界回归（只升不降、破产重置、终局胜利触发） | `tests/sim/settle.test.ts` | `npm test` 通过（11/11） |
+| 2026-05-28 | 推进 `T45-07`：为月结增加配置一致性守卫（company level/破产阈值/目标月/最终灾害），并补 `config_missing` 异常路径用例 | `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（13/13） |
 
 ---
 
@@ -93,3 +94,4 @@ open_questions: []
 | 0.1.1 | 2026-05-28 | 新增提交策略；记录 T45-06 本轮进展与验证结果 |
 | 0.1.2 | 2026-05-28 | T45-06 标记完成，当前任务切到 T45-07，并记录 M2+M4 连通分岛进展 |
 | 0.1.3 | 2026-05-28 | 记录 T45-07 边界回归进展（M10/M13/M14） |
+| 0.1.4 | 2026-05-28 | 记录 T45-07 配置守卫与异常路径回归进展 |

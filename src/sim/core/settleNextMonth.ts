@@ -14,6 +14,23 @@ export interface SettleOutput {
   report: SettlementReport;
 }
 
+function validateSettlementConfig(config: ConfigRepo): SimResult<true> {
+  if (config.bundle.companyLevels.length === 0) {
+    return err("config_missing", "company level config is empty");
+  }
+  if (config.bundle.runConfig.bankrupt_consecutive_months < 1) {
+    return err("config_missing", "bankrupt_consecutive_months must be >= 1");
+  }
+  if (config.bundle.runConfig.campaign_run_target_months < 1) {
+    return err("config_missing", "campaign_run_target_months must be >= 1");
+  }
+  const hasFinalDisaster = config.bundle.disasters.some((d) => d.is_final);
+  if (!hasFinalDisaster) {
+    return err("config_missing", "missing final disaster for victory check");
+  }
+  return ok(true);
+}
+
 function step(
   stepId: SettlementStepReport["stepId"],
   summary: string,
@@ -180,6 +197,10 @@ export function settleNextMonth(
   }
   if (state.runResult !== null) {
     return err("invalid_phase", "run already finished");
+  }
+  const configCheck = validateSettlementConfig(config);
+  if (!configCheck.ok) {
+    return configCheck;
   }
 
   const next: GameState = structuredClone(state);
