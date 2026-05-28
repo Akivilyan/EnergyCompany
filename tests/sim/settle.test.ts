@@ -353,4 +353,35 @@ describe("settleNextMonth", () => {
     if (month.ok) return;
     expect(month.error).toBe("state_invariant_broken");
   });
+
+  it("dispatch rejects commands when playable subphase is blocked", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.playableSubPhase = "blocked";
+    const result = dispatch(
+      state,
+      { type: "claim_ad_reward", adType: "cash" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("blocked_by_tutorial");
+  });
+
+  it("dispatch rejects run_result phase", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.phase = "run_result";
+    state.runResult = "victory";
+    const result = dispatch(
+      state,
+      { type: "claim_ad_reward", adType: "cash" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("invalid_phase");
+  });
 });

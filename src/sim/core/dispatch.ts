@@ -40,6 +40,15 @@ export function dispatch(
   if (state.phase !== "run_playable" || state.runResult !== null) {
     return err("invalid_phase", "commands only allowed in run_playable without result");
   }
+  if (state.playableSubPhase === null) {
+    return err("state_invariant_broken", "playableSubPhase must not be null in run_playable");
+  }
+  if (state.playableSubPhase === "blocked") {
+    return err("blocked_by_tutorial", "commands are blocked by tutorial gate", {
+      playable_sub_phase: state.playableSubPhase,
+      command_type: command.type
+    });
+  }
   if (state.adsRemaining < 0) {
     return err("state_invariant_broken", "adsRemaining must be >= 0", {
       ads_remaining: state.adsRemaining
