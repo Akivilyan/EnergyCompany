@@ -2,7 +2,7 @@
 id: ui/events
 title: 事件面板与弹窗
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/features/events.md
   - docs/design/gdd/08-events.md
@@ -90,6 +90,22 @@ open_questions: []
 | `no_pending_modal` | `events_panel.error.no_pending_modal` | `events_panel.action.close_panel` | 无待确认弹窗，允许关闭 |
 | `action_failed` | `events_panel.error.action_failed` | `events_panel.action.retry` | 兜底错误，提示重试 |
 
+## 7.2 全屏弹窗内容键契约
+
+`screenEventsPanel.getPendingFullscreenModal()` 返回待确认事件与文案键，UI 通过 key 拉取标题/摘要/影响文案。
+
+| 字段 | 规则 | 示例 |
+|---|---|---|
+| `titleKey` | `events.modal.{event_id}.title` | `events.modal.disaster_exam_1.title` |
+| `summaryKey` | `events.modal.{event_id}.summary` | `events.modal.disaster_exam_1.summary` |
+| `impactKey` | `events.modal.{event_id}.impact` | `events.modal.disaster_exam_1.impact` |
+| `acknowledgeButtonKey` | 普通灾害：`events.modal.action.acknowledge`；最终灾害：`events.modal.action.acknowledge_final` | `events.modal.action.acknowledge_final` |
+
+说明：
+
+- 当 `pendingFullscreen` 为空时，壳层返回 `null`，UI 不展示全屏事件弹窗。
+- 事件文案 key 统一按配置中的 `event_id` 生成，不依赖硬编码映射表。
+
 ## 8. 微信小游戏
 
 - 全屏弹窗 **单按钮** 大热区；插画可静态图压缩。
@@ -106,3 +122,4 @@ open_questions: []
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T32 初稿 |
 | 0.1.1 | 2026-05-29 | 对齐 T45-12：补 `screenEventsPanel` 错误码与 `messageKey/actionKey` 清单 |
+| 0.1.2 | 2026-05-29 | 对齐 T45-12：补全屏弹窗内容键契约（title/summary/impact/acknowledge） |
