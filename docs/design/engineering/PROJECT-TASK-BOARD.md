@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.24
+version: 0.1.25
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -94,6 +94,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-10`：tutorial 升 II 门槛改由 `run_config` 提供，补配置读取回归测试 | `docs/design/data/vertical-slice-v0/run_config.json` `src/sim/config/configRepo.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（34/34） |
 | 2026-05-29 | 推进 `T45-10`：`screenRegion` 新增 `advanceOneMonth/advanceMonths`，region 冒烟改走壳层推进 | `src/modules/screenRegion.ts` `src/app/regionLoopCli.ts` `tests/modules/screenRegion.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（35/35） |
 | 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 改为正常局升级链路；level2 阈值由 `120` 下调到 `1` 以打通闭环 | `docs/design/data/vertical-slice-v0/company_levels.json` `src/app/regionLoopCli.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（36/36） |
+| 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 升级阶段改为“循环推进直到升 II/超时”，降低阈值调参导致脚本脆弱风险 | `src/app/regionLoopCli.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（36/36） |
 
 ---
 
@@ -135,3 +136,4 @@ open_questions: []
 | 0.1.22 | 2026-05-29 | 记录 T45-10 tutorial 升级阈值配置化进展 |
 | 0.1.23 | 2026-05-29 | 记录 T45-10 region 推月壳层接口进展 |
 | 0.1.24 | 2026-05-29 | 记录 T45-10 正常局升 II 链路打通进展 |
+| 0.1.25 | 2026-05-29 | 记录 T45-10 正常局升级循环推进稳健性改造 |

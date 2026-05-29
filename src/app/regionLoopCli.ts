@@ -46,18 +46,25 @@ for (let i = 0; i < 2; i += 1) {
   }
 }
 
-const levelUp = screen.advanceMonths(4);
-if (levelUp.failed && !levelUp.failed.ok) {
-  console.log(`level-up settle failed: ${levelUp.failed.error} - ${levelUp.failed.message}`);
-  process.exit(1);
+const levelUpReports: string[] = [];
+for (let i = 0; i < 12 && controller.state.companyLevel < 2; i += 1) {
+  const month = screen.advanceOneMonth();
+  if (!month.ok) {
+    console.log(`level-up settle failed: ${month.error} - ${month.message}`);
+    process.exit(1);
+  }
+  levelUpReports.push(
+    `m${i + 1}:${month.value.monthFrom}->${month.value.monthTo} level=${month.value.after.companyLevel} sv=${controller.state.socialValueCurrent}`
+  );
 }
 if (controller.state.companyLevel < 2) {
   console.log("expected company level to reach II in normal run, but it did not");
   process.exit(1);
 }
 console.log(
-  `level-up via M10(normal): month=${controller.state.currentMonth}, level=${controller.state.companyLevel}, sv=${controller.state.socialValueCurrent}, prebuild_months=${levelUp.reports.length}`
+  `level-up via M10(normal): month=${controller.state.currentMonth}, level=${controller.state.companyLevel}, sv=${controller.state.socialValueCurrent}, prebuild_months=${levelUpReports.length}`
 );
+console.log(`level-up trace: ${levelUpReports.join(" | ")}`);
 
 const unlocked = screen.queueGridLink(fromCityId, toCityId, linkType);
 if (!unlocked.result.ok) {
