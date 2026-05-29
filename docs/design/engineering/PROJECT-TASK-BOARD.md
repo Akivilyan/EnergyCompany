@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.10
+version: 0.1.11
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -40,8 +40,8 @@ open_questions: []
 | T45-04 | done | `dispatch` 基础命令入口 | 建造/借贷/广告/研发已接入 | 后续补更严格 payload 校验 |
 | T45-05 | done | `settleNextMonth` M1-M14 骨架 | 固定 14 步报告 + 推月 | 保持步骤顺序快照稳定 |
 | T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
-| T45-07 | partial | M9/M10/M13/M14 落地 | 已补 invalid_phase 错误上下文（phase/run_result/command）便于 UI 与日志定位 | 后续接真实 onboarding 状态字段 |
-| T45-08 | done | modules 编排层 | `runController` + 统一入口 | 增加 UI 契约扫描测试 |
+| T45-07 | done | M9/M10/M13/M14 落地 | 关键终局路径与异常上下文回归已覆盖（23 测试总体通过） | 后续仅按 UI 接入反馈微调 |
+| T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
 | T45-09 | todo | 城市页最小闭环 | — | 接 UI 壳层建造+推月 |
 | T45-10 | todo | 等级解锁与 region 流程 | — | 先打通 II 级解锁 |
 | T45-11 | partial | 科技树单队列 | `start_research` + M3 进度与点亮 | 接 II 级入口与取消返还 |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-07`
-- 任务标题：M9/M10/M13/M14 边界与配置一致性收口
+- 当前任务 ID：`T45-09`
+- 任务标题：城市页最小闭环（建造 + 推月）联调准备
 - 状态：`doing`
 - 开始时间：2026-05-28
-- 完成定义（本轮）：补齐等级/破产/胜利边界用例与状态机约束
+- 完成定义（本轮）：基于 `runController` 轨迹接口，准备城市页接入最小命令回路
 
 ---
 
@@ -80,6 +80,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-07`：增强 `blocked_by_tutorial` 错误上下文，返回 `blocked_command` 与 `allowed_commands_csv` 供 UI 提示 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（19/19） |
 | 2026-05-29 | 推进 `T45-07`：增强 `invalid_phase` 错误上下文（dispatch/settle），补 phase 与 command 级回归断言 | `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（20/20） |
 | 2026-05-29 | 采纳协作策略：改为“每步本地 commit，阶段性再 push”；并补 `settle` 已结束局 `invalid_phase` 上下文回归 | `docs/design/engineering/PROJECT-TASK-BOARD.md` `tests/sim/settle.test.ts` | `npm test` 通过（21/21） |
+| 2026-05-29 | 结束 T45-07 收口并切换到 T45-09 准备：`runController` 新增命令/结算轨迹（含 clear/get），补模块级测试 | `src/modules/runController.ts` `tests/modules/runController.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（23/23） |
 
 ---
 
@@ -107,3 +108,4 @@ open_questions: []
 | 0.1.8 | 2026-05-29 | 记录 T45-07 blocked 错误上下文增强进展 |
 | 0.1.9 | 2026-05-29 | 记录 T45-07 invalid_phase 错误上下文增强进展 |
 | 0.1.10 | 2026-05-29 | 采纳“本地 commit、阶段 push”策略并记录新增回归 |
+| 0.1.11 | 2026-05-29 | 标记 T45-07 完成并记录 T45-09 联调准备（runController 轨迹） |

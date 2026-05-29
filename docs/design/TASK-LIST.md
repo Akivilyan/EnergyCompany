@@ -215,3 +215,4 @@
 | 2026-05-29 | T45-07 推进：增强 `blocked_by_tutorial` 错误上下文（返回 `blocked_command` 与 `allowed_commands_csv`）以支持 UI 直接提示 |
 | 2026-05-29 | T45-07 推进：增强 `invalid_phase` 错误上下文（`phase/run_result/playable_sub_phase/command_type`），并补 dispatch/settle 回归断言 |
 | 2026-05-29 | 协作策略更新：后续采用“每步本地 commit、阶段性再 push”；补 `settle` 已结束局 `invalid_phase` 上下文回归断言 |
+| 2026-05-29 | T45-07 收口完成并切换到 T45-09 准备：`runController` 增加命令/结算轨迹输出与模块级测试 |

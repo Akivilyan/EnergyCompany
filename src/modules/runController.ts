@@ -11,10 +11,27 @@ import {
   type SimResult
 } from "../sim/index.js";
 
+export type ControllerTraceEntry =
+  | {
+      kind: "command";
+      month: number;
+      commandType: Command["type"];
+      ok: boolean;
+      error?: string;
+    }
+  | {
+      kind: "settle";
+      month: number;
+      ok: boolean;
+      result?: SettlementReport["result"];
+      error?: string;
+    };
+
 export class RunController {
   readonly config: ConfigRepo;
   readonly ports = defaultPorts;
   state: GameState;
+  private readonly trace: ControllerTraceEntry[] = [];
 
   constructor(config: ConfigRepo, state: GameState) {
     this.config = config;
@@ -29,6 +46,13 @@ export class RunController {
 
   runCommand(command: Command): SimResult<{ state: GameState }> {
     const result = dispatch(this.state, command, this.config, this.ports);
+    this.trace.push({
+      kind: "command",
+      month: this.state.currentMonth,
+      commandType: command.type,
+      ok: result.ok,
+      error: result.ok ? undefined : result.error
+    });
     if (result.ok) {
       this.state = result.value.state;
     }
@@ -37,10 +61,25 @@ export class RunController {
 
   runNextMonth(): SimResult<{ state: GameState; report: SettlementReport }> {
     const result = settleNextMonth(this.state, this.config, this.ports);
+    this.trace.push({
+      kind: "settle",
+      month: this.state.currentMonth,
+      ok: result.ok,
+      result: result.ok ? result.value.report.result : undefined,
+      error: result.ok ? undefined : result.error
+    });
     if (result.ok) {
       this.state = result.value.state;
     }
     return result;
+  }
+
+  getTrace(): readonly ControllerTraceEntry[] {
+    return this.trace;
+  }
+
+  clearTrace(): void {
+    this.trace.length = 0;
   }
 
   /** 主流程联调：自动补一座风电后连续推月直到终局或破产 */
