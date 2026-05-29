@@ -12,6 +12,8 @@ export function createInitialState(
   options: NewRunOptions = {}
 ): GameState {
   const difficultyId = options.difficultyId ?? "simple";
+  const doctrineId = options.doctrineId ?? "tech";
+  const isTutorialRun = doctrineId === "tutorial";
   const startCity = config.getCity("CITY-START");
   if (!startCity) {
     throw new Error("config_missing: CITY-START");
@@ -35,14 +37,19 @@ export function createInitialState(
     version: 1,
     runId: `run-${Date.now()}`,
     phase: "run_playable",
-    playableSubPhase: "navigating",
+    playableSubPhase: isTutorialRun ? "blocked" : "navigating",
     currentMonth: 1,
     funds: config.getStartingCash(difficultyId),
     companyLevel: 1,
     socialValueCurrent: 0,
-    doctrineId: options.doctrineId ?? "tech",
+    doctrineId,
     difficultyId,
     campaignId: options.campaignId ?? "main_v0",
+    isTutorialRun,
+    onboardingCurrentStepId: isTutorialRun ? "onb_01_welcome" : "onb_done",
+    onboardingStepsDone: [],
+    onboardingSkipped: false,
+    tutorialDoctrineCleared: false,
     bankruptConsecutiveMonths: 0,
     runResult: null,
     cities,

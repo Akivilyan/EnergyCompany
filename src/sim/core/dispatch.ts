@@ -12,6 +12,16 @@ const RESEARCH_COST = 60;
 const RESEARCH_MONTHS = 3;
 const GRID_LINK_COST = 8;
 const GRID_LINK_BUILD_MONTHS = 1;
+const ONBOARDING_FLOW: GameState["onboardingCurrentStepId"][] = [
+  "onb_01_welcome",
+  "onb_02_build",
+  "onb_03_next_month",
+  "onb_04_read_dashboard",
+  "onb_05_push_to_finish",
+  "onb_06_company",
+  "onb_07_tech_ii",
+  "onb_done"
+];
 
 function cloneState(state: GameState): GameState {
   return structuredClone(state);
@@ -33,6 +43,14 @@ function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResul
 
 function isBlockedAllowedCommand(command: Command): boolean {
   return command.type === "advance_onboarding" || command.type === "skip_onboarding";
+}
+
+function nextOnboardingStep(
+  currentStep: GameState["onboardingCurrentStepId"]
+): GameState["onboardingCurrentStepId"] {
+  const idx = ONBOARDING_FLOW.indexOf(currentStep);
+  if (idx < 0 || idx + 1 >= ONBOARDING_FLOW.length) return "onb_done";
+  return ONBOARDING_FLOW[idx + 1];
 }
 
 export function dispatch(
@@ -185,10 +203,29 @@ export function dispatch(
       break;
     }
     case "advance_onboarding": {
-      next.playableSubPhase = "navigating";
+      if (!next.isTutorialRun) {
+        return err("invalid_command_payload", "advance_onboarding is tutorial-only");
+      }
+      if (next.onboardingCurrentStepId !== "onb_done") {
+        if (!next.onboardingStepsDone.includes(next.onboardingCurrentStepId)) {
+          next.onboardingStepsDone.push(next.onboardingCurrentStepId);
+        }
+        next.onboardingCurrentStepId = nextOnboardingStep(next.onboardingCurrentStepId);
+      }
+      if (next.onboardingCurrentStepId === "onb_done") {
+        next.tutorialDoctrineCleared = true;
+        next.playableSubPhase = "navigating";
+      } else {
+        next.playableSubPhase = "blocked";
+      }
       return ok({ state: next });
     }
     case "skip_onboarding": {
+      if (!next.isTutorialRun) {
+        return err("invalid_command_payload", "skip_onboarding is tutorial-only");
+      }
+      next.onboardingSkipped = true;
+      next.onboardingCurrentStepId = "onb_done";
       next.playableSubPhase = "navigating";
       return ok({ state: next });
     }

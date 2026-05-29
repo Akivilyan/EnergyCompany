@@ -525,9 +525,9 @@ describe("settleNextMonth", () => {
     expect(result.context?.allowed_commands_csv).toBe("advance_onboarding,skip_onboarding");
   });
 
-  it("dispatch allows onboarding commands when blocked", () => {
+  it("dispatch allows onboarding advance command when blocked", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
-    const state = createInitialState(config);
+    const state = createInitialState(config, { doctrineId: "tutorial" });
     state.playableSubPhase = "blocked";
     const result = dispatch(
       state,
@@ -537,7 +537,49 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.state.playableSubPhase).toBe("navigating");
+    expect(result.value.state.onboardingCurrentStepId).toBe("onb_02_build");
+    expect(result.value.state.tutorialDoctrineCleared).toBe(false);
+    expect(result.value.state.playableSubPhase).toBe("blocked");
+  });
+
+  it("tutorial run starts in blocked step and can advance to done", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config, { doctrineId: "tutorial" });
+    expect(state.isTutorialRun).toBe(true);
+    expect(state.onboardingCurrentStepId).toBe("onb_01_welcome");
+    expect(state.playableSubPhase).toBe("blocked");
+
+    for (let i = 0; i < 7; i += 1) {
+      const step = dispatch(state, { type: "advance_onboarding" }, config, defaultPorts);
+      expect(step.ok).toBe(true);
+      if (!step.ok) return;
+      state = step.value.state;
+    }
+    expect(state.onboardingCurrentStepId).toBe("onb_done");
+    expect(state.tutorialDoctrineCleared).toBe(true);
+    expect(state.playableSubPhase).toBe("navigating");
+    expect(state.onboardingStepsDone).toContain("onb_07_tech_ii");
+  });
+
+  it("skip_onboarding marks tutorial skipped without cleared flag", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config, { doctrineId: "tutorial" });
+    const skip = dispatch(state, { type: "skip_onboarding" }, config, defaultPorts);
+    expect(skip.ok).toBe(true);
+    if (!skip.ok) return;
+    expect(skip.value.state.onboardingSkipped).toBe(true);
+    expect(skip.value.state.onboardingCurrentStepId).toBe("onb_done");
+    expect(skip.value.state.tutorialDoctrineCleared).toBe(false);
+    expect(skip.value.state.playableSubPhase).toBe("navigating");
+  });
+
+  it("rejects onboarding commands for non-tutorial runs", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config, { doctrineId: "tech" });
+    const advance = dispatch(state, { type: "advance_onboarding" }, config, defaultPorts);
+    expect(advance.ok).toBe(false);
+    if (advance.ok) return;
+    expect(advance.error).toBe("invalid_command_payload");
   });
 
   it("dispatch rejects run_result phase", () => {

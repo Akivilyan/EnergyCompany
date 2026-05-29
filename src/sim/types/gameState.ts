@@ -13,6 +13,16 @@ export type PlayableSubPhase =
 
 export type RunResult = null | "victory" | "bankrupt";
 
+export type OnboardingStepId =
+  | "onb_01_welcome"
+  | "onb_02_build"
+  | "onb_03_next_month"
+  | "onb_04_read_dashboard"
+  | "onb_05_push_to_finish"
+  | "onb_06_company"
+  | "onb_07_tech_ii"
+  | "onb_done";
+
 export interface ActiveDebuff {
   disasterSeq: number;
   monthsRemaining: number;
@@ -92,6 +102,11 @@ export interface GameState {
   doctrineId: "tech" | "renewable" | "hydro" | "thermal" | "tutorial";
   difficultyId: "simple" | "normal";
   campaignId: string;
+  isTutorialRun: boolean;
+  onboardingCurrentStepId: OnboardingStepId;
+  onboardingStepsDone: OnboardingStepId[];
+  onboardingSkipped: boolean;
+  tutorialDoctrineCleared: boolean;
 
   bankruptConsecutiveMonths: number;
   runResult: RunResult;
