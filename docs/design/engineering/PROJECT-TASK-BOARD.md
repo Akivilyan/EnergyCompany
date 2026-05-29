@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.34
+version: 0.1.35
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -45,7 +45,7 @@ open_questions: []
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
 | T45-10 | done | 等级解锁与 region 流程 | 回填升 II 阈值平衡检查：补 `M10` 配置读取回归与检查点文档（normal/tutorial 双口径） | 转 T45-12 接 UI 事件面板/弹窗 |
 | T45-11 | done | 科技树单队列 | `screenTechTree` 补齐 `uiErrorCode -> messageKey/actionKey` 契约并同步 UI 文档清单 | 转 T45-12 接事件面板/弹窗与科技提示呈现 |
-| T45-12 | partial | 固定灾害轴与事件面板 | 新增 `screenEventsPanel` 弹窗内容键契约（title/summary/impact/acknowledge）并补回归 | 接 UI 事件面板/弹窗呈现层 + 多场叠加策略 |
+| T45-12 | done | 固定灾害轴与事件面板 | `screenEventsPanel` 已补弹窗内容键 + 多场叠加分槽与优先级队列契约，并有 CLI 冒烟 | 转 T45-13 公司屏、借贷、终局页 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
 | T45-15 | todo | 存档与恢复 | — | 定义 serialize/deserialize |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-12`
-- 任务标题：固定灾害轴与事件面板
+- 当前任务 ID：`T45-13`
+- 任务标题：公司屏、借贷、终局页
 - 状态：`doing`
 - 开始时间：2026-05-29
-- 完成定义（本轮）：接通首场固定灾害 UI 事件面板/弹窗链路
+- 完成定义（本轮）：补终局态禁命令回归并打通公司屏最小快照
 
 ---
 
@@ -107,6 +107,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-12`：新增 `sim:events-loop` 冒烟脚本，验证 M22 触发 -> 确认 -> M34 expired 链路 | `src/app/eventsLoopCli.ts` `package.json` | `npm run sim:events-loop` 通过；`npm test` 通过（51/51） |
 | 2026-05-29 | 推进 `T45-12`：补 `screenEventsPanel` UI 错误码与 `messageKey/actionKey` 清单到 events UI 文档 | `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（51/51） |
 | 2026-05-29 | 推进 `T45-12`：新增 `screenEventsPanel` 全屏弹窗内容键接口并补 final 场景回归；`events-loop` 输出文案键冒烟 | `src/modules/screenEventsPanel.ts` `tests/modules/screenEventsPanel.test.ts` `src/app/eventsLoopCli.ts` `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:events-loop` 通过；`npm test` 通过（52/52） |
+| 2026-05-29 | 收口 `T45-12`：补多场事件叠加分槽（visible/hidden/overflow）与全屏确认队列优先级，新增 overlap 回归 | `src/modules/screenEventsPanel.ts` `tests/modules/screenEventsPanel.test.ts` `src/app/eventsLoopCli.ts` `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:events-loop` 通过；`npm test` 通过（53/53） |
 
 ---
 
@@ -158,3 +159,4 @@ open_questions: []
 | 0.1.32 | 2026-05-29 | 标记 T45-10 完成：回填升 II 阈值平衡检查与 normal/tutorial 口径回归 |
 | 0.1.33 | 2026-05-29 | 记录 T45-12 阶段进展：事件面板壳层 + 冒烟 + UI 文案键清单 |
 | 0.1.34 | 2026-05-29 | 记录 T45-12 进展：补全屏弹窗内容键契约与 final 场景回归 |
+| 0.1.35 | 2026-05-29 | 标记 T45-12 完成：补多场叠加分槽与全屏确认队列优先级契约 |

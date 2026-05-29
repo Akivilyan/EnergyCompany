@@ -2,7 +2,7 @@
 id: ui/events
 title: 事件面板与弹窗
 status: draft
-version: 0.1.2
+version: 0.1.3
 sources:
   - docs/design/features/events.md
   - docs/design/gdd/08-events.md
@@ -106,6 +106,25 @@ open_questions: []
 - 当 `pendingFullscreen` 为空时，壳层返回 `null`，UI 不展示全屏事件弹窗。
 - 事件文案 key 统一按配置中的 `event_id` 生成，不依赖硬编码映射表。
 
+## 7.3 多场叠加与优先级契约
+
+`screenEventsPanel.getSnapshot()` 在 `active` 基础上提供分槽展示与确认队列，避免多场事件同月时 UI 自行重排。
+
+| 字段 | 说明 |
+|---|---|
+| `activeSlotLimit` | 固定为 `3`，对应面板“进行中 (x/3 槽)”文案 |
+| `visibleActive` | 当前月可视槽位内事件（最多 3 条） |
+| `hiddenActive` | 超出槽位的事件（折叠/“更多”） |
+| `activeOverflowCount` | `hiddenActive.length`，用于角标与提示 |
+| `pendingFullscreenQueue` | 待确认全屏弹窗队列，`pendingFullscreen` 取首项 |
+
+排序优先级（高 -> 低）：
+
+1. 最终灾害优先（`isFinal=true`）
+2. `examTier` 高优先
+3. `triggerMonth` 早优先
+4. `seq` 小优先（兜底稳定排序）
+
 ## 8. 微信小游戏
 
 - 全屏弹窗 **单按钮** 大热区；插画可静态图压缩。
@@ -123,3 +142,4 @@ open_questions: []
 | 0.1.0 | 2026-05-27 | T32 初稿 |
 | 0.1.1 | 2026-05-29 | 对齐 T45-12：补 `screenEventsPanel` 错误码与 `messageKey/actionKey` 清单 |
 | 0.1.2 | 2026-05-29 | 对齐 T45-12：补全屏弹窗内容键契约（title/summary/impact/acknowledge） |
+| 0.1.3 | 2026-05-29 | 对齐 T45-12：补多场叠加分槽与弹窗队列优先级契约 |
