@@ -130,6 +130,26 @@ export function dispatch(
       if (!toUnlocked.ok) {
         return toUnlocked;
       }
+      const fromRegionId = from.region_id ?? "unknown";
+      const toRegionId = to.region_id ?? "unknown";
+      if (command.linkType === "region" && fromRegionId !== toRegionId) {
+        return err("invalid_command_payload", "region link must stay in same region", {
+          from_city_id: command.fromCityId,
+          to_city_id: command.toCityId,
+          from_region_id: fromRegionId,
+          to_region_id: toRegionId,
+          expected_link_type: "trunk"
+        });
+      }
+      if (command.linkType === "trunk" && fromRegionId === toRegionId) {
+        return err("invalid_command_payload", "trunk link must connect different regions", {
+          from_city_id: command.fromCityId,
+          to_city_id: command.toCityId,
+          from_region_id: fromRegionId,
+          to_region_id: toRegionId,
+          expected_link_type: "region"
+        });
+      }
       const linkKey = makeUndirectedLinkKey(command.fromCityId, command.toCityId);
       if (next.gridLinks[linkKey]) {
         return err("conflict_in_progress", "grid link already exists");

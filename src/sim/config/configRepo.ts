@@ -40,6 +40,7 @@ export interface FacilityConfig {
 
 export interface CityConfig {
   city_id: string;
+  region_id?: string;
   base_demand_mw: number;
   city_base_social_value: number;
   has_river: boolean;

@@ -7,10 +7,10 @@ import type { GameState } from "../../src/sim/index.js";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("settleNextMonth", () => {
-  function withSecondCity(state: GameState, config: ConfigRepo): GameState {
-    const city = config.getCity("CITY-MAP01-02");
+  function withCity(state: GameState, config: ConfigRepo, cityId: string): GameState {
+    const city = config.getCity(cityId);
     if (!city) {
-      throw new Error("missing CITY-MAP01-02");
+      throw new Error(`missing ${cityId}`);
     }
     state.cities[city.city_id] = {
       cityId: city.city_id,
@@ -24,6 +24,10 @@ describe("settleNextMonth", () => {
       cityBaseSocialValue: city.city_base_social_value
     };
     return state;
+  }
+
+  function withSecondCity(state: GameState, config: ConfigRepo): GameState {
+    return withCity(state, config, "CITY-MAP01-02");
   }
 
   it("runs M1-M14 in order", () => {
@@ -285,6 +289,69 @@ describe("settleNextMonth", () => {
     expect(next.cities["CITY-START"].supplyRatio).toBe(0.69);
     expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0);
     expect(next.cities["CITY-MAP01-02"].netImportMw).toBe(0);
+  });
+
+  it("dispatch rejects region link across different regions", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = withCity(createInitialState(config), config, "CITY-MAP02-01");
+    state.companyLevel = 3;
+    const out = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP02-01",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(out.ok).toBe(false);
+    if (out.ok) return;
+    expect(out.error).toBe("invalid_command_payload");
+    expect(out.message).toContain("same region");
+  });
+
+  it("dispatch allows trunk link across different regions", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = withCity(createInitialState(config), config, "CITY-MAP02-01");
+    state.companyLevel = 3;
+    const out = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP02-01",
+        linkType: "trunk"
+      },
+      config,
+      defaultPorts
+    );
+    expect(out.ok).toBe(true);
+    if (!out.ok) return;
+    const key = "CITY-MAP02-01::CITY-START";
+    expect(out.value.state.gridLinks[key]?.linkType).toBe("trunk");
+  });
+
+  it("dispatch rejects trunk link inside same region", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 2;
+    const out = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "trunk"
+      },
+      config,
+      defaultPorts
+    );
+    expect(out.ok).toBe(false);
+    if (out.ok) return;
+    expect(out.error).toBe("invalid_command_payload");
+    expect(out.message).toContain("different regions");
   });
 
   it("M4 marks city non-eco even with net import", () => {
