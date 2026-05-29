@@ -2,6 +2,7 @@ export type Command =
   | { type: "queue_construction"; cityId: string; facilityId: string; tier: number }
   | { type: "queue_grid_link"; fromCityId: string; toCityId: string; linkType: "region" | "trunk" }
   | { type: "start_research"; techId: string }
+  | { type: "cancel_research"; researchId: string }
   | { type: "apply_loan"; loanId: string }
   | { type: "advance_onboarding" }
   | { type: "skip_onboarding" }

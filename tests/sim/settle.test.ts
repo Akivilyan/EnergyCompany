@@ -117,6 +117,50 @@ describe("settleNextMonth", () => {
     expect(second.error).toBe("conflict_in_progress");
   });
 
+  it("dispatch supports cancel_research with full refund", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config);
+    state.companyLevel = 2;
+    const initialFunds = state.funds;
+    const start = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(start.ok).toBe(true);
+    if (!start.ok) return;
+    state = start.value.state;
+    const research = state.researches["storage_system_1"];
+    expect(research).toBeTruthy();
+
+    const cancel = dispatch(
+      state,
+      { type: "cancel_research", researchId: research.researchId },
+      config,
+      defaultPorts
+    );
+    expect(cancel.ok).toBe(true);
+    if (!cancel.ok) return;
+    expect(cancel.value.state.funds).toBe(initialFunds);
+    expect(Object.keys(cancel.value.state.researches)).toHaveLength(0);
+  });
+
+  it("dispatch cancel_research returns not_found for unknown id", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    const result = dispatch(
+      state,
+      { type: "cancel_research", researchId: "rq-missing" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_found");
+  });
+
   it("M3 progresses research and lights tech on completion", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config);

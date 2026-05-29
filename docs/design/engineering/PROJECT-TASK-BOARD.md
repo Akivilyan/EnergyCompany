@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.25
+version: 0.1.26
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -44,7 +44,7 @@ open_questions: []
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
 | T45-10 | partial | 等级解锁与 region 流程 | `sim:region-loop` 已改为正常局升 II 路径（双风电补供能 -> M10 升级 -> 铺线） | 评估并回填 level2 阈值调低后的平衡影响说明 |
-| T45-11 | partial | 科技树单队列 | `start_research` + M3 进度与点亮 | 接 II 级入口与取消返还 |
+| T45-11 | partial | 科技树单队列 | 已支持 `start_research` + `cancel_research`（全额返还）+ M3 点亮 | 接 II 级入口 UI 壳层与取消按钮联调 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
@@ -95,6 +95,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-10`：`screenRegion` 新增 `advanceOneMonth/advanceMonths`，region 冒烟改走壳层推进 | `src/modules/screenRegion.ts` `src/app/regionLoopCli.ts` `tests/modules/screenRegion.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（35/35） |
 | 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 改为正常局升级链路；level2 阈值由 `120` 下调到 `1` 以打通闭环 | `docs/design/data/vertical-slice-v0/company_levels.json` `src/app/regionLoopCli.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（36/36） |
 | 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 升级阶段改为“循环推进直到升 II/超时”，降低阈值调参导致脚本脆弱风险 | `src/app/regionLoopCli.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（36/36） |
+| 2026-05-29 | 推进 `T45-11`：新增 `cancel_research` 命令语义（全额返还），补取消成功/ID 不存在回归 | `src/sim/types/commands.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（38/38） |
 
 ---
 
@@ -137,3 +138,4 @@ open_questions: []
 | 0.1.23 | 2026-05-29 | 记录 T45-10 region 推月壳层接口进展 |
 | 0.1.24 | 2026-05-29 | 记录 T45-10 正常局升 II 链路打通进展 |
 | 0.1.25 | 2026-05-29 | 记录 T45-10 正常局升级循环推进稳健性改造 |
+| 0.1.26 | 2026-05-29 | 记录 T45-11 研发取消返还命令落地进展 |

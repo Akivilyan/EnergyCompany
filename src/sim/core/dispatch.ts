@@ -169,6 +169,21 @@ export function dispatch(
       };
       break;
     }
+    case "cancel_research": {
+      let foundTechId: string | null = null;
+      for (const [techId, research] of Object.entries(next.researches)) {
+        if (research.researchId === command.researchId) {
+          foundTechId = techId;
+          break;
+        }
+      }
+      if (!foundTechId) {
+        return err("not_found", "research item not found");
+      }
+      delete next.researches[foundTechId];
+      next.funds += RESEARCH_COST;
+      break;
+    }
     case "advance_onboarding": {
       next.playableSubPhase = "navigating";
       return ok({ state: next });
