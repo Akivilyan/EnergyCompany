@@ -8,6 +8,7 @@
     "sim:demo": "tsx src/app/cli.ts",
     "sim:city-loop": "tsx src/app/cityLoopCli.ts",
     "sim:region-loop": "tsx src/app/regionLoopCli.ts",
+    "sim:tech-loop": "tsx src/app/techLoopCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {
