@@ -11,6 +11,7 @@
     "sim:tech-loop": "tsx src/app/techLoopCli.ts",
     "sim:events-loop": "tsx src/app/eventsLoopCli.ts",
     "sim:result-loop": "tsx src/app/resultLoopCli.ts",
+    "sim:tutorial-loop": "tsx src/app/tutorialLoopCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {
