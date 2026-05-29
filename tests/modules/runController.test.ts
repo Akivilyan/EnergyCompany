@@ -57,4 +57,14 @@ describe("RunController trace", () => {
     expect(step.afterSettle?.month).toBe(2);
     expect(controller.getTrace()).toHaveLength(2);
   });
+
+  it("supports multi-month advance helper", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const out = controller.advanceMonths(3);
+    expect(out.failed).toBeNull();
+    expect(out.reports).toHaveLength(3);
+    expect(controller.state.currentMonth).toBe(4);
+    const settleTraceCount = controller.getTrace().filter((t) => t.kind === "settle").length;
+    expect(settleTraceCount).toBe(3);
+  });
 });

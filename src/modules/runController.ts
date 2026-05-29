@@ -49,6 +49,11 @@ export interface BuildAndAdvanceOutput {
   settleResult: SimResult<{ state: GameState; report: SettlementReport }> | null;
 }
 
+export interface AdvanceMonthsOutput {
+  reports: SettlementReport[];
+  failed: SimResult<{ state: GameState; report: SettlementReport }> | null;
+}
+
 export class RunController {
   readonly config: ConfigRepo;
   readonly ports = defaultPorts;
@@ -161,6 +166,21 @@ export class RunController {
       buildResult,
       settleResult
     };
+  }
+
+  advanceMonths(maxMonths: number): AdvanceMonthsOutput {
+    const reports: SettlementReport[] = [];
+    let failed: SimResult<{ state: GameState; report: SettlementReport }> | null = null;
+    for (let i = 0; i < maxMonths; i += 1) {
+      if (this.state.runResult !== null) break;
+      const month = this.runNextMonth();
+      if (!month.ok) {
+        failed = month;
+        break;
+      }
+      reports.push(month.value.report);
+    }
+    return { reports, failed };
   }
 
   /** 主流程联调：自动补一座风电后连续推月直到终局或破产 */
