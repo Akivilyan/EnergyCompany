@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.12
+version: 0.1.13
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -42,7 +42,7 @@ open_questions: []
 | T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
 | T45-07 | done | M9/M10/M13/M14 落地 | 关键终局路径与异常上下文回归已覆盖（23 测试总体通过） | 后续仅按 UI 接入反馈微调 |
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
-| T45-09 | partial | 城市页最小闭环 | `runController` 新增城市快照与 buildAndAdvance 组合接口，含模块测试 | 接 UI 壳层并加冒烟脚本 |
+| T45-09 | partial | 城市页最小闭环 | 已新增 `sim:city-loop` 冒烟 CLI（建造->推月->快照输出）并验证 | 接 UI 壳层并补 3 次推进冒烟 |
 | T45-10 | todo | 等级解锁与 region 流程 | — | 先打通 II 级解锁 |
 | T45-11 | partial | 科技树单队列 | `start_research` + M3 进度与点亮 | 接 II 级入口与取消返还 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
@@ -82,6 +82,7 @@ open_questions: []
 | 2026-05-29 | 采纳协作策略：改为“每步本地 commit，阶段性再 push”；并补 `settle` 已结束局 `invalid_phase` 上下文回归 | `docs/design/engineering/PROJECT-TASK-BOARD.md` `tests/sim/settle.test.ts` | `npm test` 通过（21/21） |
 | 2026-05-29 | 结束 T45-07 收口并切换到 T45-09 准备：`runController` 新增命令/结算轨迹（含 clear/get），补模块级测试 | `src/modules/runController.ts` `tests/modules/runController.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（23/23） |
 | 2026-05-29 | 推进 `T45-09`：`runController` 新增 `getCitySnapshot` 与 `buildAndAdvance`，完成城市最小闭环接口与模块测试 | `src/modules/runController.ts` `tests/modules/runController.test.ts` | `npm test` 通过（25/25） |
+| 2026-05-29 | 推进 `T45-09`：新增 `sim:city-loop` CLI 冒烟路径，验证城市建造+单月推进+快照输出链路 | `src/app/cityLoopCli.ts` `package.json` | `npm run sim:city-loop` 通过；`npm test` 通过（25/25） |
 
 ---
 
@@ -111,3 +112,4 @@ open_questions: []
 | 0.1.10 | 2026-05-29 | 采纳“本地 commit、阶段 push”策略并记录新增回归 |
 | 0.1.11 | 2026-05-29 | 标记 T45-07 完成并记录 T45-09 联调准备（runController 轨迹） |
 | 0.1.12 | 2026-05-29 | 记录 T45-09 城市快照与 build+settle 组合接口进展 |
+| 0.1.13 | 2026-05-29 | 记录 T45-09 城市闭环 CLI 冒烟路径进展 |

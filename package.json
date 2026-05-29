@@ -6,6 +6,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "sim:demo": "tsx src/app/cli.ts",
+    "sim:city-loop": "tsx src/app/cityLoopCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {
