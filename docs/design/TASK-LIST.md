@@ -216,3 +216,4 @@
 | 2026-05-29 | T45-07 推进：增强 `invalid_phase` 错误上下文（`phase/run_result/playable_sub_phase/command_type`），并补 dispatch/settle 回归断言 |
 | 2026-05-29 | 协作策略更新：后续采用“每步本地 commit、阶段性再 push”；补 `settle` 已结束局 `invalid_phase` 上下文回归断言 |
 | 2026-05-29 | T45-07 收口完成并切换到 T45-09 准备：`runController` 增加命令/结算轨迹输出与模块级测试 |
+| 2026-05-29 | T45-09 推进：`runController` 增加城市快照与 `buildAndAdvance` 组合接口，形成城市建造+推月最小闭环调用 |

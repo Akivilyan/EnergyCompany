@@ -27,6 +27,28 @@ export type ControllerTraceEntry =
       error?: string;
     };
 
+export interface CitySnapshot {
+  cityId: string;
+  month: number;
+  funds: number;
+  socialValue: number;
+  runResult: GameState["runResult"];
+  localSupplyMw: number;
+  effectiveSupplyMw: number;
+  netImportMw: number;
+  supplyRatio: number;
+  facilityCountInCity: number;
+  constructionQueueInCity: number;
+}
+
+export interface BuildAndAdvanceOutput {
+  before: CitySnapshot | null;
+  afterBuild: CitySnapshot | null;
+  afterSettle: CitySnapshot | null;
+  buildResult: SimResult<{ state: GameState }>;
+  settleResult: SimResult<{ state: GameState; report: SettlementReport }> | null;
+}
+
 export class RunController {
   readonly config: ConfigRepo;
   readonly ports = defaultPorts;
@@ -80,6 +102,65 @@ export class RunController {
 
   clearTrace(): void {
     this.trace.length = 0;
+  }
+
+  getCitySnapshot(cityId: string): CitySnapshot | null {
+    const city = this.state.cities[cityId];
+    if (!city) return null;
+    let facilityCountInCity = 0;
+    for (const fac of Object.values(this.state.facilities)) {
+      if (fac.cityId === cityId) {
+        facilityCountInCity += 1;
+      }
+    }
+    let constructionQueueInCity = 0;
+    for (const item of this.state.constructionQueue) {
+      if (item.cityId === cityId) {
+        constructionQueueInCity += 1;
+      }
+    }
+    return {
+      cityId,
+      month: this.state.currentMonth,
+      funds: this.state.funds,
+      socialValue: this.state.socialValueCurrent,
+      runResult: this.state.runResult,
+      localSupplyMw: city.localSupplyMw,
+      effectiveSupplyMw: city.effectiveSupplyMw,
+      netImportMw: city.netImportMw,
+      supplyRatio: city.supplyRatio,
+      facilityCountInCity,
+      constructionQueueInCity
+    };
+  }
+
+  buildAndAdvance(
+    cityId: string,
+    facilityId: string,
+    tier = 1,
+    autoAdvance = true
+  ): BuildAndAdvanceOutput {
+    const before = this.getCitySnapshot(cityId);
+    const buildResult = this.runCommand({
+      type: "queue_construction",
+      cityId,
+      facilityId,
+      tier
+    });
+    const afterBuild = this.getCitySnapshot(cityId);
+    let settleResult: BuildAndAdvanceOutput["settleResult"] = null;
+    let afterSettle: CitySnapshot | null = afterBuild;
+    if (autoAdvance && buildResult.ok) {
+      settleResult = this.runNextMonth();
+      afterSettle = this.getCitySnapshot(cityId);
+    }
+    return {
+      before,
+      afterBuild,
+      afterSettle,
+      buildResult,
+      settleResult
+    };
   }
 
   /** 主流程联调：自动补一座风电后连续推月直到终局或破产 */

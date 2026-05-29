@@ -37,4 +37,24 @@ describe("RunController trace", () => {
     controller.clearTrace();
     expect(controller.getTrace()).toHaveLength(0);
   });
+
+  it("returns city snapshot for UI wiring", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const snapshot = controller.getCitySnapshot("CITY-START");
+    expect(snapshot).not.toBeNull();
+    if (!snapshot) return;
+    expect(snapshot.cityId).toBe("CITY-START");
+    expect(snapshot.month).toBe(1);
+    expect(snapshot.facilityCountInCity).toBe(0);
+  });
+
+  it("supports build-and-advance helper for city loop", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const step = controller.buildAndAdvance("CITY-START", "wind", 1, true);
+    expect(step.buildResult.ok).toBe(true);
+    expect(step.settleResult?.ok).toBe(true);
+    expect(step.before?.month).toBe(1);
+    expect(step.afterSettle?.month).toBe(2);
+    expect(controller.getTrace()).toHaveLength(2);
+  });
 });
