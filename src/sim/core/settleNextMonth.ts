@@ -278,6 +278,7 @@ export function settleNextMonth(
   next.funds += netIncome;
   steps.push(
     step("M5_income_settlement", `income=${netIncome}`, {
+      income: netIncome,
       gross_income: grossIncome,
       income_mult_num: incomeMult.num,
       income_mult_den: incomeMult.den

@@ -65,6 +65,7 @@ export class RunController {
   readonly ports = defaultPorts;
   state: GameState;
   private readonly trace: ControllerTraceEntry[] = [];
+  private readonly settleHistory: SettlementReport[] = [];
 
   constructor(config: ConfigRepo, state: GameState) {
     this.config = config;
@@ -107,6 +108,7 @@ export class RunController {
     });
     if (result.ok) {
       this.state = result.value.state;
+      this.settleHistory.push(result.value.report);
     }
     return result;
   }
@@ -117,6 +119,15 @@ export class RunController {
 
   clearTrace(): void {
     this.trace.length = 0;
+  }
+
+  getRecentSettlementReports(limit = 6): readonly SettlementReport[] {
+    if (limit <= 0) return [];
+    return this.settleHistory.slice(-limit);
+  }
+
+  clearSettlementHistory(): void {
+    this.settleHistory.length = 0;
   }
 
   getCitySnapshot(cityId: string): CitySnapshot | null {

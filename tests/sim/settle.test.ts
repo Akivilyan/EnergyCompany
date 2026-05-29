@@ -559,6 +559,25 @@ describe("settleNextMonth", () => {
     expect(result.context?.run_result).toBe("victory");
   });
 
+  it("dispatch rejects commands after bankrupt result", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.phase = "run_result";
+    state.runResult = "bankrupt";
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("invalid_phase");
+    expect(result.context?.phase).toBe("run_result");
+    expect(result.context?.command_type).toBe("queue_construction");
+    expect(result.context?.run_result).toBe("bankrupt");
+  });
+
   it("settle invalid_phase includes context when called from wrong phase", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     const state = createInitialState(config);

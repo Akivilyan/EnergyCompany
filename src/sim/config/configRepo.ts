@@ -53,8 +53,10 @@ export interface CompanyLevelConfig {
 
 export interface LoanTierConfig {
   loan_id: string;
+  unlock_level?: number;
   principal: number;
   terms: number;
+  total_interest?: number;
   monthly_payment_approx: number;
 }
 
