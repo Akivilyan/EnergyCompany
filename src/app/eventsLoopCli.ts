@@ -48,11 +48,16 @@ function settleTo(target: number): void {
 settleTo(triggerMonth);
 const afterTrigger = panel.getSnapshot();
 console.log(
-  `after-trigger month=${afterTrigger.month}, active=${afterTrigger.active.length}, pending=${afterTrigger.pendingFullscreen?.seq ?? "none"}`
+  `after-trigger month=${afterTrigger.month}, active=${afterTrigger.active.length}, visible=${afterTrigger.visibleActive.length}, overflow=${afterTrigger.activeOverflowCount}, pending=${afterTrigger.pendingFullscreen?.seq ?? "none"}`
 );
 for (const item of afterTrigger.active) {
   console.log(
     `  active seq=${item.seq} remaining=${item.monthsRemaining} pending=${item.needsAcknowledgement} income=${item.incomeMultNum}/${item.incomeMultDen}`
+  );
+}
+if (afterTrigger.pendingFullscreenQueue.length > 0) {
+  console.log(
+    `pending queue: ${afterTrigger.pendingFullscreenQueue.map((item) => item.seq).join(" -> ")}`
   );
 }
 

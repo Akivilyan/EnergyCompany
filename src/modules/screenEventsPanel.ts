@@ -19,6 +19,7 @@ export interface ActiveDisasterEntry {
   seq: number;
   eventId: string;
   triggerMonth: number;
+  examTier: number;
   monthsRemaining: number;
   isFinal: boolean;
   incomeMultNum: number;
@@ -43,9 +44,13 @@ export interface EventsPanelSnapshot {
   month: number;
   activeCount: number;
   activeSlotLimit: number;
+  activeOverflowCount: number;
+  visibleActive: ActiveDisasterEntry[];
+  hiddenActive: ActiveDisasterEntry[];
   upcoming: UpcomingDisasterEntry[];
   active: ActiveDisasterEntry[];
   expired: ExpiredDisasterEntry[];
+  pendingFullscreenQueue: ActiveDisasterEntry[];
   pendingFullscreen: ActiveDisasterEntry | null;
 }
 
@@ -119,6 +124,13 @@ function buildEventModalCopy(eventId: string, isFinal: boolean): EventModalCopyS
   };
 }
 
+function compareActivePriority(a: ActiveDisasterEntry, b: ActiveDisasterEntry): number {
+  if (a.isFinal !== b.isFinal) return a.isFinal ? -1 : 1;
+  if (a.examTier !== b.examTier) return b.examTier - a.examTier;
+  if (a.triggerMonth !== b.triggerMonth) return a.triggerMonth - b.triggerMonth;
+  return a.seq - b.seq;
+}
+
 export class ScreenEventsPanel {
   constructor(private readonly controller: RunController) {}
 
@@ -156,6 +168,7 @@ export class ScreenEventsPanel {
           seq: disaster.seq,
           eventId: disaster.event_id ?? `disaster_${disaster.seq}`,
           triggerMonth: disaster.trigger_month,
+          examTier: disaster.exam_tier,
           monthsRemaining: activeDebuff.monthsRemaining,
           isFinal: disaster.is_final ?? false,
           incomeMultNum: activeDebuff.incomeMultNum,
@@ -178,18 +191,25 @@ export class ScreenEventsPanel {
     }
 
     upcoming.sort((a, b) => a.monthsUntilTrigger - b.monthsUntilTrigger);
-    active.sort((a, b) => a.triggerMonth - b.triggerMonth);
+    active.sort(compareActivePriority);
     expired.sort((a, b) => a.triggerMonth - b.triggerMonth);
 
-    const pendingFullscreen = active.find((entry) => entry.needsAcknowledgement) ?? null;
+    const pendingFullscreenQueue = active.filter((entry) => entry.needsAcknowledgement);
+    const pendingFullscreen = pendingFullscreenQueue[0] ?? null;
+    const visibleActive = active.slice(0, ACTIVE_SLOT_LIMIT);
+    const hiddenActive = active.slice(ACTIVE_SLOT_LIMIT);
 
     return {
       month,
       activeCount: active.length,
       activeSlotLimit: ACTIVE_SLOT_LIMIT,
+      activeOverflowCount: hiddenActive.length,
+      visibleActive,
+      hiddenActive,
       upcoming,
       active,
       expired,
+      pendingFullscreenQueue,
       pendingFullscreen
     };
   }

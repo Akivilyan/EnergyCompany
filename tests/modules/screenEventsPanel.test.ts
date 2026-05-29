@@ -25,7 +25,11 @@ describe("ScreenEventsPanel", () => {
     expect(snapshot.upcoming[0].monthsUntilTrigger).toBe(21);
     expect(snapshot.upcoming[3].isFinal).toBe(true);
     expect(snapshot.active).toHaveLength(0);
+    expect(snapshot.visibleActive).toHaveLength(0);
+    expect(snapshot.hiddenActive).toHaveLength(0);
+    expect(snapshot.activeOverflowCount).toBe(0);
     expect(snapshot.expired).toHaveLength(0);
+    expect(snapshot.pendingFullscreenQueue).toHaveLength(0);
     expect(snapshot.pendingFullscreen).toBeNull();
     expect(snapshot.activeSlotLimit).toBe(3);
   });
@@ -40,6 +44,7 @@ describe("ScreenEventsPanel", () => {
     expect(first).toBeDefined();
     if (!first) return;
     expect(first.needsAcknowledgement).toBe(true);
+    expect(snapshot.pendingFullscreenQueue.map((e) => e.seq)).toEqual([1]);
     expect(snapshot.pendingFullscreen?.seq).toBe(1);
     expect(snapshot.upcoming.map((e) => e.seq)).toEqual([2, 3, 4]);
     const modal = panel.getPendingFullscreenModal();
@@ -116,5 +121,32 @@ describe("ScreenEventsPanel", () => {
       impactKey: "events.modal.disaster_exam_final.impact",
       acknowledgeButtonKey: "events.modal.action.acknowledge_final"
     });
+  });
+
+  it("applies active slot window and priority ordering when disasters overlap", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    controller.state.funds = 10000;
+    const disasters = controller.config.bundle.disasters;
+    const second = disasters.find((d) => d.seq === 2);
+    const third = disasters.find((d) => d.seq === 3);
+    const final = disasters.find((d) => d.seq === 4);
+    expect(second && third && final).toBeTruthy();
+    if (!second || !third || !final) return;
+    second.trigger_month = 23;
+    second.debuff_duration_months = 12;
+    third.trigger_month = 24;
+    third.debuff_duration_months = 12;
+    final.trigger_month = 25;
+    final.debuff_duration_months = 12;
+
+    settleTo(controller, 26);
+    const panel = createScreenEventsPanel(controller);
+    const snapshot = panel.getSnapshot();
+    expect(snapshot.activeCount).toBe(4);
+    expect(snapshot.visibleActive.map((e) => e.seq)).toEqual([4, 2, 3]);
+    expect(snapshot.hiddenActive.map((e) => e.seq)).toEqual([1]);
+    expect(snapshot.activeOverflowCount).toBe(1);
+    expect(snapshot.pendingFullscreenQueue.map((e) => e.seq)).toEqual([4, 2, 3, 1]);
+    expect(snapshot.pendingFullscreen?.seq).toBe(4);
   });
 });
