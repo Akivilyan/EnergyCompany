@@ -42,6 +42,15 @@ describe("ScreenEventsPanel", () => {
     expect(first.needsAcknowledgement).toBe(true);
     expect(snapshot.pendingFullscreen?.seq).toBe(1);
     expect(snapshot.upcoming.map((e) => e.seq)).toEqual([2, 3, 4]);
+    const modal = panel.getPendingFullscreenModal();
+    expect(modal).not.toBeNull();
+    if (!modal) return;
+    expect(modal.copy).toEqual({
+      titleKey: "events.modal.disaster_exam_1.title",
+      summaryKey: "events.modal.disaster_exam_1.summary",
+      impactKey: "events.modal.disaster_exam_1.impact",
+      acknowledgeButtonKey: "events.modal.action.acknowledge"
+    });
   });
 
   it("acknowledge clears pending fullscreen flag", () => {
@@ -55,6 +64,7 @@ describe("ScreenEventsPanel", () => {
     expect(ack.uiCopy).toBeNull();
     expect(ack.after.pendingFullscreen).toBeNull();
     expect(controller.state.acknowledgedDisasterSeqs).toContain(1);
+    expect(panel.getPendingFullscreenModal()).toBeNull();
     const repeat = panel.acknowledgeNextPending();
     expect(repeat.ok).toBe(false);
     expect(repeat.uiErrorCode).toBe("no_pending_modal");
@@ -94,5 +104,17 @@ describe("ScreenEventsPanel", () => {
     const after = panel.getSnapshot();
     expect(after.active.find((e) => e.seq === 1)).toBeUndefined();
     expect(after.expired.find((e) => e.seq === 1)).toBeDefined();
+  });
+
+  it("returns final-disaster acknowledge button key for final modal", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const panel = createScreenEventsPanel(controller);
+    const finalCopy = panel.getEventModalCopyBySeq(4);
+    expect(finalCopy).toEqual({
+      titleKey: "events.modal.disaster_exam_final.title",
+      summaryKey: "events.modal.disaster_exam_final.summary",
+      impactKey: "events.modal.disaster_exam_final.impact",
+      acknowledgeButtonKey: "events.modal.action.acknowledge_final"
+    });
   });
 });

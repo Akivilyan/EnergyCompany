@@ -56,6 +56,13 @@ for (const item of afterTrigger.active) {
   );
 }
 
+const modalCopy = panel.getPendingFullscreenModal();
+if (modalCopy) {
+  console.log(
+    `pending modal copy: title=${modalCopy.copy.titleKey}, summary=${modalCopy.copy.summaryKey}, impact=${modalCopy.copy.impactKey}, action=${modalCopy.copy.acknowledgeButtonKey}`
+  );
+}
+
 const ack = panel.acknowledgeNextPending();
 if (!ack.ok) {
   console.log(`acknowledge failed: ${ack.uiErrorCode}`);

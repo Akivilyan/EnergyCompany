@@ -49,6 +49,18 @@ export interface EventsPanelSnapshot {
   pendingFullscreen: ActiveDisasterEntry | null;
 }
 
+export interface EventModalCopySpec {
+  titleKey: string;
+  summaryKey: string;
+  impactKey: string;
+  acknowledgeButtonKey: string;
+}
+
+export interface PendingFullscreenModal {
+  entry: ActiveDisasterEntry;
+  copy: EventModalCopySpec;
+}
+
 export type EventsPanelUiErrorCode =
   | "event_not_found"
   | "event_not_active"
@@ -94,6 +106,17 @@ function resolveUiCopy(
 ): EventsPanelUiCopySpec | null {
   if (!code) return null;
   return EVENTS_PANEL_UI_COPY[code];
+}
+
+function buildEventModalCopy(eventId: string, isFinal: boolean): EventModalCopySpec {
+  return {
+    titleKey: `events.modal.${eventId}.title`,
+    summaryKey: `events.modal.${eventId}.summary`,
+    impactKey: `events.modal.${eventId}.impact`,
+    acknowledgeButtonKey: isFinal
+      ? "events.modal.action.acknowledge_final"
+      : "events.modal.action.acknowledge"
+  };
 }
 
 export class ScreenEventsPanel {
@@ -230,6 +253,23 @@ export class ScreenEventsPanel {
       };
     }
     return this.acknowledgeFullscreen(next.seq);
+  }
+
+  getEventModalCopyBySeq(seq: number): EventModalCopySpec | null {
+    const disaster = this.controller.config.bundle.disasters.find((item) => item.seq === seq);
+    if (!disaster) return null;
+    return buildEventModalCopy(
+      disaster.event_id ?? `disaster_${disaster.seq}`,
+      disaster.is_final ?? false
+    );
+  }
+
+  getPendingFullscreenModal(): PendingFullscreenModal | null {
+    const snapshot = this.getSnapshot();
+    if (!snapshot.pendingFullscreen) return null;
+    const copy = this.getEventModalCopyBySeq(snapshot.pendingFullscreen.seq);
+    if (!copy) return null;
+    return { entry: snapshot.pendingFullscreen, copy };
   }
 }
 
