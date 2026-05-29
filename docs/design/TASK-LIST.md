@@ -226,3 +226,4 @@
 | 2026-05-29 | T45-10 推进：`sim:region-loop` 去除 `companyLevel` 直接注入，改为通过 M10 升级链路后执行区域铺线 |
 | 2026-05-29 | 协作策略固化：新增 `.cursor/rules/commit-push-rhythm.mdc`，默认每步本地 commit、阶段性 push |
 | 2026-05-29 | T45-10 推进：M10 增加 tutorial 升 II 门槛策略，`sim:region-loop` 改为 tutorial 真实升级链路 |
+| 2026-05-29 | T45-10 推进：tutorial 升 II 门槛改由 `run_config.tutorial_level2_sv_threshold` 配置驱动 |

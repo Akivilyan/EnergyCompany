@@ -3,6 +3,7 @@
   "starting_cash_base": 90,
   "doctrine_lit_budget": 15,
   "bankrupt_consecutive_months": 2,
+  "tutorial_level2_sv_threshold": 0,
   "allow_decimal_in_config": true,
   "settlement_rounding_mode": "truncate_to_int"
 }

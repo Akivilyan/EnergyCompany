@@ -66,10 +66,15 @@ function step(
   return { stepId, ok: true, summary, metrics };
 }
 
-function getEffectiveSvThreshold(state: GameState, level: number, baseThreshold: number): number {
+function getEffectiveSvThreshold(
+  state: GameState,
+  config: ConfigRepo,
+  level: number,
+  baseThreshold: number
+): number {
   // 教学局最小闭环：降低升 II 门槛，便于引导阶段快速解锁 region 操作。
   if (state.doctrineId === "tutorial" && level === 2) {
-    return 0;
+    return config.bundle.runConfig.tutorial_level2_sv_threshold ?? 0;
   }
   return baseThreshold;
 }
@@ -311,7 +316,7 @@ export function settleNextMonth(
 
   let newLevel = next.companyLevel;
   for (const row of config.bundle.companyLevels) {
-    const threshold = getEffectiveSvThreshold(next, row.level, row.sv_threshold);
+    const threshold = getEffectiveSvThreshold(next, config, row.level, row.sv_threshold);
     if (next.socialValueCurrent >= threshold && row.level > newLevel) {
       newLevel = row.level;
     }

@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.21
+version: 0.1.22
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -43,7 +43,7 @@ open_questions: []
 | T45-07 | done | M9/M10/M13/M14 落地 | 关键终局路径与异常上下文回归已覆盖（23 测试总体通过） | 后续仅按 UI 接入反馈微调 |
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
-| T45-10 | doing | 等级解锁与 region 流程 | `sim:region-loop` 改为 tutorial M10 升级链路（不再脚本注入 level/阈值） | 将 tutorial 升级门槛策略沉淀到配置层，而非结算特判 |
+| T45-10 | doing | 等级解锁与 region 流程 | tutorial 升 II 门槛已迁移到 `run_config`（`tutorial_level2_sv_threshold`） | 打通非 tutorial 正常局到 II 级的最小可玩路径 |
 | T45-11 | partial | 科技树单队列 | `start_research` + M3 进度与点亮 | 接 II 级入口与取消返还 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
@@ -91,6 +91,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 去除 `companyLevel` 直接注入，改为经 M10 结算升级后再铺线 | `src/app/regionLoopCli.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（32/32） |
 | 2026-05-29 | 协作策略固化：新增 always-apply 规则，默认“每步本地 commit、阶段性 push” | `.cursor/rules/commit-push-rhythm.mdc` | 规则文件新增 |
 | 2026-05-29 | 推进 `T45-10`：M10 增加 tutorial 升 II 门槛策略，`region-loop` 改为 tutorial 真实升级路径 | `src/sim/core/settleNextMonth.ts` `src/modules/runController.ts` `src/app/regionLoopCli.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（33/33） |
+| 2026-05-29 | 推进 `T45-10`：tutorial 升 II 门槛改由 `run_config` 提供，补配置读取回归测试 | `docs/design/data/vertical-slice-v0/run_config.json` `src/sim/config/configRepo.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（34/34） |
 
 ---
 
@@ -129,3 +130,4 @@ open_questions: []
 | 0.1.19 | 2026-05-29 | 记录 T45-10 region 冒烟改为 M10 升级链路进展 |
 | 0.1.20 | 2026-05-29 | 记录协作策略规则固化（commit/push 节奏） |
 | 0.1.21 | 2026-05-29 | 记录 T45-10 tutorial 升级链路替换进展 |
+| 0.1.22 | 2026-05-29 | 记录 T45-10 tutorial 升级阈值配置化进展 |

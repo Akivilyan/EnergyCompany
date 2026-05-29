@@ -6,6 +6,7 @@ export interface RunConfig {
   starting_cash_base: number;
   doctrine_lit_budget: number;
   bankrupt_consecutive_months: number;
+  tutorial_level2_sv_threshold?: number;
 }
 
 export interface DisasterConfig {
