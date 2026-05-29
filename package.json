@@ -14,6 +14,7 @@
     "sim:tutorial-loop": "tsx src/app/tutorialLoopCli.ts",
     "sim:save-loop": "tsx src/app/saveLoopCli.ts",
     "sim:regression": "tsx src/app/regressionCli.ts",
+    "sim:telemetry-export": "tsx src/app/telemetryExportCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {

@@ -126,6 +126,10 @@ export class RunController {
     return this.settleHistory.slice(-limit);
   }
 
+  getSettlementHistory(): readonly SettlementReport[] {
+    return this.settleHistory;
+  }
+
   clearSettlementHistory(): void {
     this.settleHistory.length = 0;
   }
