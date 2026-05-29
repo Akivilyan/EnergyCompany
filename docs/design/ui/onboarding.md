@@ -2,7 +2,7 @@
 id: ui/onboarding
 title: 新手引导 UI
 status: draft
-version: 0.1.0
+version: 0.1.1
 sources:
   - docs/design/features/onboarding.md
   - docs/design/gdd/10-onboarding.md#遮罩交互
@@ -76,6 +76,29 @@ open_questions: []
 | 首访 | 教学卡描边/「新玩家由此开始」 |
 | 四方针 | 无遮罩 |
 
+## 6.1 壳层契约（T45-14）
+
+`screenOnboarding` 最小壳层已提供：
+
+- `getSnapshot()`：`isTutorialRun/currentStepId/stepsDone/skipped/cleared/playableSubPhase`
+- `advanceStep()`：封装 `advance_onboarding`，返回 `before/after/result/uiErrorCode/uiCopy`
+- `skipAll()`：封装 `skip_onboarding`，返回同结构
+
+教学最小链路（当前实现）：
+
+1. tutorial 开局：`isTutorialRun=true`，`currentStepId=onb_01_welcome`，`playableSubPhase=blocked`
+2. 连续 7 次 `advance_onboarding`：步进到 `onb_done` 并写 `tutorialDoctrineCleared=true`
+3. `skip_onboarding`：直接到 `onb_done`，并写 `onboardingSkipped=true`（不写 cleared）
+
+错误码映射：
+
+| `uiErrorCode` | `messageKey` | `actionKey` |
+|---|---|---|
+| `not_tutorial_run` | `onboarding.error.not_tutorial_run` | `onboarding.action.start_tutorial_run` |
+| `action_blocked` | `onboarding.error.action_blocked` | `onboarding.action.follow_current_step` |
+| `action_invalid` | `onboarding.error.action_invalid` | `onboarding.action.retry` |
+| `action_failed` | `onboarding.error.action_failed` | `onboarding.action.retry` |
+
 ## 7. 微信小游戏
 
 - 挖洞区域 **扩大热区** 8px。
@@ -90,3 +113,4 @@ open_questions: []
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T35a 初稿 |
+| 0.1.1 | 2026-05-29 | 对齐 T45-14：补 `screenOnboarding` 壳层契约、最小步骤推进链路与错误码映射 |

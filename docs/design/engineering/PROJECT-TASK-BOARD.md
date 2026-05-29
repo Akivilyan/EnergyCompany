@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.36
+version: 0.1.37
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -47,7 +47,7 @@ open_questions: []
 | T45-11 | done | 科技树单队列 | `screenTechTree` 补齐 `uiErrorCode -> messageKey/actionKey` 契约并同步 UI 文档清单 | 转 T45-12 接事件面板/弹窗与科技提示呈现 |
 | T45-12 | done | 固定灾害轴与事件面板 | `screenEventsPanel` 已补弹窗内容键 + 多场叠加分槽与优先级队列契约，并有 CLI 冒烟 | 转 T45-13 公司屏、借贷、终局页 |
 | T45-13 | done | 公司屏、借贷、终局页 | 新增 `screenCompany`/`screenRunResult` 壳层，双分支终局冒烟通过并覆盖终局禁命令回归 | 转 T45-14 教学局与引导遮罩 |
-| T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
+| T45-14 | done | 教学局与引导遮罩 | 教学局状态机与 `screenOnboarding` 壳层已落地，`sim:tutorial-loop` 覆盖推进/跳过双分支 | 转 T45-15 存档与恢复 |
 | T45-15 | todo | 存档与恢复 | — | 定义 serialize/deserialize |
 | T45-16 | todo | 广告 stub 与全链路回归 | 广告 cash stub 已有 | 建 E1-E6 回归脚本 |
 
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-14`
-- 任务标题：教学局与引导遮罩
+- 当前任务 ID：`T45-15`
+- 任务标题：存档与恢复
 - 状态：`doing`
 - 开始时间：2026-05-29
-- 完成定义（本轮）：落地教学局步骤推进与跳过最小链路
+- 完成定义（本轮）：定义 serialize/deserialize 最小接口与版本校验
 
 ---
 
@@ -111,6 +111,9 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-13`：新增 `screenCompany` 壳层（快照/近月流水/贷款动作）与 `screenRunResult` 壳层（victory/bankrupt 快照） | `src/modules/screenCompany.ts` `src/modules/screenRunResult.ts` `src/modules/runController.ts` `src/sim/core/settleNextMonth.ts` `tests/modules/screenCompany.test.ts` `tests/modules/screenRunResult.test.ts` `tests/sim/settle.test.ts` | `npm test` 通过（60/60） |
 | 2026-05-29 | 推进 `T45-13`：新增 `sim:result-loop` 双分支冒烟（victory/bankrupt）并验证终局态命令拦截 | `src/app/resultLoopCli.ts` `package.json` | `npm run sim:result-loop` 通过；`npm test` 通过（60/60） |
 | 2026-05-29 | 收口 `T45-13`：补公司屏/终局页 UI 契约文档并切换当前任务到 `T45-14` | `docs/design/ui/company.md` `docs/design/ui/run-result.md` `docs/design/ui/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 文档与看板更新 |
+| 2026-05-29 | 推进 `T45-14`：新增 tutorial 引导状态字段与命令状态机（advance/skip），补 tutorial/非 tutorial 回归 | `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（66/66） |
+| 2026-05-29 | 推进 `T45-14`：新增 `screenOnboarding` 壳层与模块测试，补 `sim:tutorial-loop` 推进/跳过双分支冒烟 | `src/modules/screenOnboarding.ts` `tests/modules/screenOnboarding.test.ts` `src/app/tutorialLoopCli.ts` `package.json` | `npm run sim:tutorial-loop` 通过；`npm test` 通过（66/66） |
+| 2026-05-29 | 收口 `T45-14`：补 onboarding UI 壳层契约文档并切换当前任务到 `T45-15` | `docs/design/ui/onboarding.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 文档与看板更新 |
 
 ---
 
@@ -164,3 +167,4 @@ open_questions: []
 | 0.1.34 | 2026-05-29 | 记录 T45-12 进展：补全屏弹窗内容键契约与 final 场景回归 |
 | 0.1.35 | 2026-05-29 | 标记 T45-12 完成：补多场叠加分槽与全屏确认队列优先级契约 |
 | 0.1.36 | 2026-05-29 | 标记 T45-13 完成：公司屏/终局页壳层、双分支冒烟与终局禁命令回归落地 |
+| 0.1.37 | 2026-05-29 | 标记 T45-14 完成：教学局状态机、onboarding 壳层与双分支冒烟落地 |
