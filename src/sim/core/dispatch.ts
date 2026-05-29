@@ -198,6 +198,15 @@ export function dispatch(
       }
       if (command.adType === "cash") {
         next.funds += config.getAdReward(next.companyLevel);
+      } else if (command.adType === "speedup") {
+        const activeResearch = Object.values(next.researches)[0];
+        if (!activeResearch) {
+          return err("conflict_in_progress", "no active research");
+        }
+        delete next.researches[activeResearch.techId];
+        if (!next.litTechIds.includes(activeResearch.techId)) {
+          next.litTechIds.push(activeResearch.techId);
+        }
       }
       next.adsRemaining -= 1;
       break;

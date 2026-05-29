@@ -161,6 +161,48 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("not_found");
   });
 
+  it("dispatch claim_ad_reward speedup lights active research", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config);
+    state.companyLevel = 2;
+    const start = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(start.ok).toBe(true);
+    if (!start.ok) return;
+    state = start.value.state;
+    const beforeAds = state.adsRemaining;
+
+    const speedup = dispatch(
+      state,
+      { type: "claim_ad_reward", adType: "speedup" },
+      config,
+      defaultPorts
+    );
+    expect(speedup.ok).toBe(true);
+    if (!speedup.ok) return;
+    expect(speedup.value.state.litTechIds).toContain("storage_system_1");
+    expect(Object.keys(speedup.value.state.researches)).toHaveLength(0);
+    expect(speedup.value.state.adsRemaining).toBe(beforeAds - 1);
+  });
+
+  it("dispatch claim_ad_reward speedup fails without active research", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    const speedup = dispatch(
+      state,
+      { type: "claim_ad_reward", adType: "speedup" },
+      config,
+      defaultPorts
+    );
+    expect(speedup.ok).toBe(false);
+    if (speedup.ok) return;
+    expect(speedup.error).toBe("conflict_in_progress");
+  });
+
   it("M3 progresses research and lights tech on completion", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config);

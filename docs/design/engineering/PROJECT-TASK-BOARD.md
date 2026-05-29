@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.28
+version: 0.1.29
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -44,7 +44,7 @@ open_questions: []
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
 | T45-10 | partial | 等级解锁与 region 流程 | `sim:region-loop` 已改为正常局升 II 路径（双风电补供能 -> M10 升级 -> 铺线） | 评估并回填 level2 阈值调低后的平衡影响说明 |
-| T45-11 | partial | 科技树单队列 | 已新增 `sim:tech-loop`，跑通“开研->取消返还->再开研->点亮” | 补 `ad_instant_research` 与科技壳层联调 |
+| T45-11 | partial | 科技树单队列 | 已支持 `claim_ad_reward(speedup)` 秒完成在研，科技链路闭环更完整 | 补 tech-tree UI 按钮联调与文案错误码对齐 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
@@ -98,6 +98,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-11`：新增 `cancel_research` 命令语义（全额返还），补取消成功/ID 不存在回归 | `src/sim/types/commands.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（38/38） |
 | 2026-05-29 | 推进 `T45-11`：新增 `screenTechTree` 壳层（开研/取消/在研快照），补模块级回归 | `src/modules/screenTechTree.ts` `tests/modules/screenTechTree.test.ts` | `npm test` 通过（41/41） |
 | 2026-05-29 | 推进 `T45-11`：新增 `sim:tech-loop` 冒烟脚本，跑通开研->取消返还->再开研->M3 点亮 | `src/app/techLoopCli.ts` `package.json` | `npm run sim:tech-loop -- storage_system_1` 通过；`npm test` 通过（41/41） |
+| 2026-05-29 | 推进 `T45-11`：`claim_ad_reward(speedup)` 接入“在研秒完成并点亮”，补有/无在研回归 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（43/43） |
 
 ---
 
@@ -143,3 +144,4 @@ open_questions: []
 | 0.1.26 | 2026-05-29 | 记录 T45-11 研发取消返还命令落地进展 |
 | 0.1.27 | 2026-05-29 | 记录 T45-11 科技树壳层模块进展 |
 | 0.1.28 | 2026-05-29 | 记录 T45-11 科技树冒烟脚本进展 |
+| 0.1.29 | 2026-05-29 | 记录 T45-11 研发广告加速闭环进展 |
