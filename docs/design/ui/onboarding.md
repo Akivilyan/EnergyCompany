@@ -2,7 +2,7 @@
 id: ui/onboarding
 title: 新手引导 UI
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/features/onboarding.md
   - docs/design/gdd/10-onboarding.md#遮罩交互
@@ -99,6 +99,16 @@ open_questions: []
 | `action_invalid` | `onboarding.error.action_invalid` | `onboarding.action.retry` |
 | `action_failed` | `onboarding.error.action_failed` | `onboarding.action.retry` |
 
+## 6.2 图鉴壳层契约（T45-P1-01）
+
+`overlay_codex` 的 v0 简版已提供 `screenCodex` 只读壳层：
+
+- `getSnapshot(activePageId?)`：读取当前图鉴上下文与页面列表（`codex_core/codex_ads`）
+- `openPage(pageId)`：按页签读取，不存在返回 `not_found`
+- `tryOpenPage(pageId)`：失败时映射 `page_not_found -> codex.error.page_not_found`
+
+详细字段见 [codex](./codex.md)。
+
 ## 7. 微信小游戏
 
 - 挖洞区域 **扩大热区** 8px。
@@ -114,3 +124,4 @@ open_questions: []
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T35a 初稿 |
 | 0.1.1 | 2026-05-29 | 对齐 T45-14：补 `screenOnboarding` 壳层契约、最小步骤推进链路与错误码映射 |
+| 0.1.2 | 2026-05-29 | 对齐 T45-P1-01：补 `overlay_codex` 简版壳层入口说明与索引链接 |

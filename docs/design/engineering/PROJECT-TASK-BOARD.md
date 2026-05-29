@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.39
+version: 0.1.40
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-16`
-- 任务标题：广告 stub 与全链路回归
+- 当前任务 ID：`T45-P1-01`
+- 任务标题：`overlay_codex` 简版词条（1-2 页）
 - 状态：`done`
 - 开始时间：2026-05-29
-- 完成定义（本轮）：E1-E6 回归脚本落地并输出通过率/失败案例
+- 完成定义（本轮）：新增 `screenCodex` 只读壳层（2 页）+ 测试与 UI 文档
 
 ---
 
@@ -118,6 +118,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-15`：新增 `infra/storage` 适配接口与 `runPersistence` 编排层，补缺槽/坏档回归 | `src/infra/storage/stateStorage.ts` `src/modules/runPersistence.ts` `tests/modules/runPersistence.test.ts` | `npm test` 通过（72/72） |
 | 2026-05-29 | 收口 `T45-15`：新增 `sim:save-loop` 冒烟验证“保存->篡改->恢复->继续推进”，并切换当前任务到 `T45-16` | `src/app/saveLoopCli.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:save-loop` 通过；`npm test` 通过（72/72） |
 | 2026-05-29 | 收口 `T45-16`：新增 `sim:regression` 聚合回归（E1-E6 + 广告 cash/speedup），输出通过率与失败案例 | `src/app/regressionCli.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:regression` 通过；`npm test` 通过（72/72） |
+| 2026-05-29 | 推进 `T45-P1-01`：新增 `screenCodex` 简版 2 页（core/ads）只读壳层，补模块回归与 UI 文档索引 | `src/modules/screenCodex.ts` `tests/modules/screenCodex.test.ts` `docs/design/ui/codex.md` `docs/design/ui/README.md` `docs/design/ui/onboarding.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（待本轮执行） |
 
 ---
 
@@ -174,3 +175,4 @@ open_questions: []
 | 0.1.37 | 2026-05-29 | 标记 T45-14 完成：教学局状态机、onboarding 壳层与双分支冒烟落地 |
 | 0.1.38 | 2026-05-29 | 标记 T45-15 完成：存档序列化、恢复校验、storage 接入与恢复冒烟落地 |
 | 0.1.39 | 2026-05-29 | 标记 T45-16 完成：补 E1-E6 聚合回归脚本并输出通过率/失败案例 |
+| 0.1.40 | 2026-05-29 | 推进 T45-P1-01：新增 `overlay_codex` 简版壳层（2 页）与文档索引 |

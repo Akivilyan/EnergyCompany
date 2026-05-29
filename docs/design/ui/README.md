@@ -2,7 +2,7 @@
 id: ui/README
 title: UI Spec 索引
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/TASK-LIST.md#T35
   - docs/design/META.md#6-ui-spec-模板
@@ -39,6 +39,7 @@ open_questions:
 | [events](./events.md) | T32 | `panel_events` + 事件全屏 |
 | [milestones](./milestones.md) | T34 | 跨屏反馈组件 |
 | [onboarding](./onboarding.md) | T35a | 引导遮罩 / 图鉴 |
+| [codex](./codex.md) | T45-P1-01 | `overlay_codex`（简版） |
 | [run-result](./run-result.md) | T45-13 | `screen_run_result` |
 
 流程屏（`screen_main_menu`、`screen_new_game*`、`screen_run_result`）见 [00-screen-map](./00-screen-map.md) §4，细节在实现层按 Feature 00 / 11 落地。
@@ -86,3 +87,4 @@ open_questions:
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T35 初稿：索引、共享组件与 Toast/安全区 |
 | 0.1.1 | 2026-05-29 | 新增 `screen_run_result` UI 文档索引入口 |
+| 0.1.2 | 2026-05-29 | 新增 `overlay_codex` 简版文档索引（T45-P1-01） |
