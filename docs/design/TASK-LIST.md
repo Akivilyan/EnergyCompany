@@ -212,3 +212,4 @@
 | 2026-05-28 | T45-07 推进：新增状态不变量校验（`state_invariant_broken`）与命令解锁防御（城市/科研），错误返回补充上下文字段 |
 | 2026-05-28 | T45-07 推进：新增 `run_playable.blocked` 命令拦截与 `run_result` 命令拒绝回归测试，状态机异常路径继续收口 |
 | 2026-05-29 | T45-07 推进：新增 `blocked` 白名单策略（仅 onboarding 命令放行），并补 blocked 放行/拒绝回归测试 |
+| 2026-05-29 | T45-07 推进：增强 `blocked_by_tutorial` 错误上下文（返回 `blocked_command` 与 `allowed_commands_csv`）以支持 UI 直接提示 |

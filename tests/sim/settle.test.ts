@@ -367,6 +367,8 @@ describe("settleNextMonth", () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error).toBe("blocked_by_tutorial");
+    expect(result.context?.blocked_command).toBe("claim_ad_reward");
+    expect(result.context?.allowed_commands_csv).toBe("advance_onboarding,skip_onboarding");
   });
 
   it("dispatch allows onboarding commands when blocked", () => {

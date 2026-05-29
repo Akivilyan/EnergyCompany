@@ -50,7 +50,8 @@ export function dispatch(
   if (state.playableSubPhase === "blocked" && !isBlockedAllowedCommand(command)) {
     return err("blocked_by_tutorial", "commands are blocked by tutorial gate", {
       playable_sub_phase: state.playableSubPhase,
-      command_type: command.type
+      blocked_command: command.type,
+      allowed_commands_csv: "advance_onboarding,skip_onboarding"
     });
   }
   if (state.adsRemaining < 0) {

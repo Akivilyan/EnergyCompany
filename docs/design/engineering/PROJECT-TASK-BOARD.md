@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.7
+version: 0.1.8
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -40,7 +40,7 @@ open_questions: []
 | T45-04 | done | `dispatch` 基础命令入口 | 建造/借贷/广告/研发已接入 | 后续补更严格 payload 校验 |
 | T45-05 | done | `settleNextMonth` M1-M14 骨架 | 固定 14 步报告 + 推月 | 保持步骤顺序快照稳定 |
 | T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
-| T45-07 | partial | M9/M10/M13/M14 落地 | 已补 blocked 白名单策略（仅 onboarding 命令放行）与回归 | 后续接真实 onboarding 状态字段 |
+| T45-07 | partial | M9/M10/M13/M14 落地 | 已补 blocked 错误上下文（blocked_command + allowed_commands）可直接喂 UI | 后续接真实 onboarding 状态字段 |
 | T45-08 | done | modules 编排层 | `runController` + 统一入口 | 增加 UI 契约扫描测试 |
 | T45-09 | todo | 城市页最小闭环 | — | 接 UI 壳层建造+推月 |
 | T45-10 | todo | 等级解锁与 region 流程 | — | 先打通 II 级解锁 |
@@ -77,6 +77,7 @@ open_questions: []
 | 2026-05-28 | 推进 `T45-07`：补状态不变量校验与错误上下文；`dispatch` 增加城市解锁/科研解锁防御，`settle` 增加 `state_invariant_broken` 防御 | `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（16/16） |
 | 2026-05-28 | 推进 `T45-07`：补 `run_playable.blocked` 命令拦截与 `run_result` 期命令拒绝回归，状态机异常路径进一步收口 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（18/18） |
 | 2026-05-29 | 推进 `T45-07`：实现 `blocked` 白名单策略（`advance_onboarding/skip_onboarding` 可放行），补放行与拒绝回归 | `src/sim/types/commands.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（19/19） |
+| 2026-05-29 | 推进 `T45-07`：增强 `blocked_by_tutorial` 错误上下文，返回 `blocked_command` 与 `allowed_commands_csv` 供 UI 提示 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（19/19） |
 
 ---
 
@@ -101,3 +102,4 @@ open_questions: []
 | 0.1.5 | 2026-05-28 | 记录 T45-07 状态不变量/命令解锁防御与错误上下文进展 |
 | 0.1.6 | 2026-05-28 | 记录 T45-07 blocked/run_result 状态机异常路径收口进展 |
 | 0.1.7 | 2026-05-29 | 记录 T45-07 blocked 白名单策略与回归进展 |
+| 0.1.8 | 2026-05-29 | 记录 T45-07 blocked 错误上下文增强进展 |
