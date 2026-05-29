@@ -52,17 +52,42 @@ if (!step.buildResult.ok) {
   process.exit(1);
 }
 
-const advance = controller.advanceMonths(months);
-if (advance.failed && !advance.failed.ok) {
-  console.log(`settle failed: ${advance.failed.error} - ${advance.failed.message}`);
-  process.exit(1);
+console.log(`monthly advance detail (target=${months}):`);
+
+let advanced = 0;
+for (let i = 0; i < months; i += 1) {
+  const beforeMonth = controller.getCitySnapshot(cityId);
+  const settle = controller.runNextMonth();
+  if (!settle.ok) {
+    console.log(`settle failed: ${settle.error} - ${settle.message}`);
+    process.exit(1);
+  }
+  const afterMonth = controller.getCitySnapshot(cityId);
+  if (!beforeMonth || !afterMonth) {
+    console.log("city snapshot missing during monthly advance");
+    process.exit(1);
+  }
+  advanced += 1;
+  const fundsDelta = afterMonth.funds - beforeMonth.funds;
+  const svDelta = afterMonth.socialValue - beforeMonth.socialValue;
+  const localSupplyDelta = afterMonth.localSupplyMw - beforeMonth.localSupplyMw;
+  const effectiveSupplyDelta =
+    afterMonth.effectiveSupplyMw - beforeMonth.effectiveSupplyMw;
+  const ratioDelta = afterMonth.supplyRatio - beforeMonth.supplyRatio;
+  console.log(
+    `m${advanced}: ${beforeMonth.month}->${afterMonth.month}, funds ${beforeMonth.funds}->${afterMonth.funds} (${fundsDelta >= 0 ? "+" : ""}${fundsDelta}), sv ${beforeMonth.socialValue}->${afterMonth.socialValue} (${svDelta >= 0 ? "+" : ""}${svDelta}), supply local ${beforeMonth.localSupplyMw}->${afterMonth.localSupplyMw} (${localSupplyDelta >= 0 ? "+" : ""}${localSupplyDelta}), effective ${beforeMonth.effectiveSupplyMw}->${afterMonth.effectiveSupplyMw} (${effectiveSupplyDelta >= 0 ? "+" : ""}${effectiveSupplyDelta}), ratio ${beforeMonth.supplyRatio.toFixed(2)}->${afterMonth.supplyRatio.toFixed(2)} (${ratioDelta >= 0 ? "+" : ""}${ratioDelta.toFixed(2)}), settle=${settle.value.report.result}`
+  );
+  if (settle.value.report.result !== "continue") {
+    break;
+  }
 }
 
 const finalSnapshot = controller.getCitySnapshot(cityId);
 console.log(
   `after-settle: month=${finalSnapshot?.month ?? "n/a"}, funds=${finalSnapshot?.funds ?? "n/a"}, sv=${finalSnapshot?.socialValue ?? "n/a"}, ratio=${finalSnapshot?.supplyRatio ?? "n/a"}`
 );
-const lastReport = advance.reports[advance.reports.length - 1];
+const settleTrace = controller.getTrace().filter((entry) => entry.kind === "settle");
+const lastReport = settleTrace[settleTrace.length - 1];
 console.log(
-  `settle reports: count=${advance.reports.length}, last_result=${lastReport?.result ?? "n/a"}, steps=${lastReport?.steps.length ?? 0}`
+  `settle reports: count=${settleTrace.length}, advanced=${advanced}, last_result=${lastReport?.result ?? "n/a"}`
 );

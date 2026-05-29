@@ -84,6 +84,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-09`：`runController` 新增 `getCitySnapshot` 与 `buildAndAdvance`，完成城市最小闭环接口与模块测试 | `src/modules/runController.ts` `tests/modules/runController.test.ts` | `npm test` 通过（25/25） |
 | 2026-05-29 | 推进 `T45-09`：新增 `sim:city-loop` CLI 冒烟路径，验证城市建造+单月推进+快照输出链路 | `src/app/cityLoopCli.ts` `package.json` | `npm run sim:city-loop` 通过；`npm test` 通过（25/25） |
 | 2026-05-29 | 推进 `T45-09`：`runController` 新增 `advanceMonths`，`sim:city-loop` 支持多月推进输出，补多月回归测试 | `src/modules/runController.ts` `src/app/cityLoopCli.ts` `tests/modules/runController.test.ts` | `npm run sim:city-loop -- CITY-START wind 1 3` 通过；`npm test` 通过（26/26） |
+| 2026-05-29 | 推进 `T45-09`：`sim:city-loop` 增加 3 次推进逐月明细输出（每月资金/SV/供能变化与增量） | `src/app/cityLoopCli.ts` | `npm run sim:city-loop -- CITY-START wind 1 3` 通过；`npm test` 通过（26/26） |
 
 ---
 
@@ -115,3 +116,4 @@ open_questions: []
 | 0.1.12 | 2026-05-29 | 记录 T45-09 城市快照与 build+settle 组合接口进展 |
 | 0.1.13 | 2026-05-29 | 记录 T45-09 城市闭环 CLI 冒烟路径进展 |
 | 0.1.14 | 2026-05-29 | 记录 T45-09 多月推进接口与 CLI 冒烟进展 |
+| 0.1.15 | 2026-05-29 | 记录 T45-09 城市闭环 CLI 逐月明细输出进展 |
