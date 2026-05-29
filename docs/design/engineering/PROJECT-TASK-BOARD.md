@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.9
+version: 0.1.10
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -24,7 +24,7 @@ open_questions: []
 - 当前阶段：`T45` 编码闭环（P0 优先）
 - 执行策略：先 coding 健壮性与可玩闭环，再做数值精调
 - 本看板维护频率：每次对话结束时实时更新
-- 提交策略：每个阶段性可验收节点完成后执行 `commit + push`
+- 提交策略：每步本地 `commit`；累计到阶段节点后再统一 `push`
 
 ---
 
@@ -79,6 +79,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-07`：实现 `blocked` 白名单策略（`advance_onboarding/skip_onboarding` 可放行），补放行与拒绝回归 | `src/sim/types/commands.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（19/19） |
 | 2026-05-29 | 推进 `T45-07`：增强 `blocked_by_tutorial` 错误上下文，返回 `blocked_command` 与 `allowed_commands_csv` 供 UI 提示 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（19/19） |
 | 2026-05-29 | 推进 `T45-07`：增强 `invalid_phase` 错误上下文（dispatch/settle），补 phase 与 command 级回归断言 | `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm test` 通过（20/20） |
+| 2026-05-29 | 采纳协作策略：改为“每步本地 commit，阶段性再 push”；并补 `settle` 已结束局 `invalid_phase` 上下文回归 | `docs/design/engineering/PROJECT-TASK-BOARD.md` `tests/sim/settle.test.ts` | `npm test` 通过（21/21） |
 
 ---
 
@@ -105,3 +106,4 @@ open_questions: []
 | 0.1.7 | 2026-05-29 | 记录 T45-07 blocked 白名单策略与回归进展 |
 | 0.1.8 | 2026-05-29 | 记录 T45-07 blocked 错误上下文增强进展 |
 | 0.1.9 | 2026-05-29 | 记录 T45-07 invalid_phase 错误上下文增强进展 |
+| 0.1.10 | 2026-05-29 | 采纳“本地 commit、阶段 push”策略并记录新增回归 |

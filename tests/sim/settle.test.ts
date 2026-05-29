@@ -416,4 +416,18 @@ describe("settleNextMonth", () => {
     expect(month.context?.phase).toBe("main_menu");
     expect(month.context?.run_result).toBe("null");
   });
+
+  it("settle invalid_phase includes run result when run already finished", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.runResult = "bankrupt";
+    state.phase = "run_result";
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(false);
+    if (month.ok) return;
+    expect(month.error).toBe("invalid_phase");
+    expect(month.context?.phase).toBe("run_result");
+    expect(month.context?.run_result).toBe("bankrupt");
+  });
 });
