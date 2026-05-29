@@ -54,6 +54,7 @@ export function createInitialState(
     loans: {},
     activeDebuffs: [],
     disastersTriggered: [],
+    acknowledgedDisasterSeqs: [],
     adsRemaining: 10,
     incomePricePerMw: 1
   };

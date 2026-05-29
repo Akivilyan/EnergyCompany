@@ -105,6 +105,7 @@ export interface GameState {
   loans: Record<string, LoanRuntime>;
   activeDebuffs: ActiveDebuff[];
   disastersTriggered: number[];
+  acknowledgedDisasterSeqs: number[];
 
   adsRemaining: number;
   incomePricePerMw: number;
