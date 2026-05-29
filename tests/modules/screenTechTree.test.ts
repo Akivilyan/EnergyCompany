@@ -1,0 +1,52 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+import { RunController } from "../../src/modules/runController.js";
+import { createScreenTechTree } from "../../src/modules/screenTechTree.js";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+describe("ScreenTechTree", () => {
+  it("blocks research entry below level II", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const screen = createScreenTechTree(controller);
+
+    const start = screen.startResearch("storage_system_1");
+    expect(start.result.ok).toBe(false);
+    if (!start.result.ok) {
+      expect(start.result.error).toBe("not_unlocked");
+    }
+    expect(start.before.canOpen).toBe(false);
+  });
+
+  it("supports start and cancel research with fund refund", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenTechTree(controller);
+    const start = screen.startResearch("storage_system_1");
+    expect(start.result.ok).toBe(true);
+    const active = screen.getSnapshot().activeResearch;
+    expect(active).not.toBeNull();
+    if (!active) return;
+
+    const cancel = screen.cancelResearch(active.researchId);
+    expect(cancel.result.ok).toBe(true);
+    if (!cancel.result.ok) return;
+    expect(cancel.after.activeResearch).toBeNull();
+    expect(cancel.after.funds).toBe(cancel.before.funds + 60);
+  });
+
+  it("research can complete to lit through monthly settle", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenTechTree(controller);
+    const start = screen.startResearch("storage_system_1");
+    expect(start.result.ok).toBe(true);
+
+    const advance = controller.advanceMonths(3);
+    expect(advance.failed).toBeNull();
+    const after = screen.getSnapshot();
+    expect(after.activeResearch).toBeNull();
+    expect(after.litTechIds).toContain("storage_system_1");
+  });
+});
