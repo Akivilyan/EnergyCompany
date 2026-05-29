@@ -42,4 +42,21 @@ describe("ScreenRegion", () => {
     const linkId = "CITY-MAP01-02::CITY-START";
     expect(action.after.gridLinks.some((link) => link.linkId === linkId)).toBe(true);
   });
+
+  it("advances month and finishes queued region link", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenRegion(controller);
+
+    const queue = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
+    expect(queue.result.ok).toBe(true);
+
+    const advance = screen.advanceMonths(1);
+    expect(advance.failed).toBeNull();
+    expect(advance.reports).toHaveLength(1);
+    const linkId = "CITY-MAP01-02::CITY-START";
+    const link = advance.reports[0].after.gridLinks.find((item) => item.linkId === linkId);
+    expect(link?.status).toBe("finished");
+    expect(link?.monthsRemaining).toBe(0);
+  });
 });

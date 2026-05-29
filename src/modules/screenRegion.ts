@@ -1,4 +1,4 @@
-import type { GameState, SimResult } from "../sim/index.js";
+import type { GameState, SettlementReport, SimResult } from "../sim/index.js";
 import type { RunController } from "./runController.js";
 
 export interface RegionCityItem {
@@ -32,6 +32,19 @@ export interface RegionQueueGridLinkOutput {
   before: ScreenRegionSnapshot;
   after: ScreenRegionSnapshot;
   result: SimResult<{ state: GameState }>;
+}
+
+export interface RegionAdvanceMonthDetail {
+  monthFrom: number;
+  monthTo: number;
+  before: ScreenRegionSnapshot;
+  after: ScreenRegionSnapshot;
+  settleResult: SettlementReport["result"];
+}
+
+export interface RegionAdvanceMonthsOutput {
+  reports: RegionAdvanceMonthDetail[];
+  failed: SimResult<RegionAdvanceMonthDetail> | null;
 }
 
 export class ScreenRegion {
@@ -87,6 +100,40 @@ export class ScreenRegion {
     });
     const after = this.getSnapshot();
     return { before, after, result };
+  }
+
+  advanceOneMonth(): SimResult<RegionAdvanceMonthDetail> {
+    const before = this.getSnapshot();
+    const settle = this.controller.runNextMonth();
+    if (!settle.ok) return settle;
+    const after = this.getSnapshot();
+    return {
+      ok: true,
+      value: {
+        monthFrom: before.month,
+        monthTo: after.month,
+        before,
+        after,
+        settleResult: settle.value.report.result
+      }
+    };
+  }
+
+  advanceMonths(maxMonths: number): RegionAdvanceMonthsOutput {
+    const reports: RegionAdvanceMonthDetail[] = [];
+    let failed: SimResult<RegionAdvanceMonthDetail> | null = null;
+    for (let i = 0; i < maxMonths; i += 1) {
+      const month = this.advanceOneMonth();
+      if (!month.ok) {
+        failed = month;
+        break;
+      }
+      reports.push(month.value);
+      if (month.value.settleResult !== "continue") {
+        break;
+      }
+    }
+    return { reports, failed };
   }
 }
 

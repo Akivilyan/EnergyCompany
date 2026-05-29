@@ -58,11 +58,12 @@ console.log(
   `level II queue success: links=${unlocked.after.gridLinks.length}, funds=${unlocked.after.funds}`
 );
 
-const settle = controller.runNextMonth();
-if (!settle.ok) {
-  console.log(`settle failed: ${settle.error} - ${settle.message}`);
+const advance = screen.advanceMonths(1);
+if (advance.failed && !advance.failed.ok) {
+  console.log(`settle failed: ${advance.failed.error} - ${advance.failed.message}`);
   process.exit(1);
 }
+const lastMonth = advance.reports[advance.reports.length - 1];
 const afterSettle = screen.getSnapshot();
 const latestLink = afterSettle.gridLinks.find(
   (link) =>
@@ -70,5 +71,5 @@ const latestLink = afterSettle.gridLinks.find(
     (link.fromCityId === toCityId && link.toCityId === fromCityId)
 );
 console.log(
-  `after-settle: month=${afterSettle.month}, link_status=${latestLink?.status ?? "n/a"}, months_remaining=${latestLink?.monthsRemaining ?? "n/a"}, settle=${settle.value.report.result}`
+  `after-settle: month=${afterSettle.month}, link_status=${latestLink?.status ?? "n/a"}, months_remaining=${latestLink?.monthsRemaining ?? "n/a"}, settle=${lastMonth?.settleResult ?? "n/a"}`
 );
