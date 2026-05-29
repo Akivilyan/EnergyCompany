@@ -278,6 +278,39 @@ describe("settleNextMonth", () => {
     expect(month.value.state.companyLevel).toBe(1);
   });
 
+  it("M10 can upgrade normal run to level II after initial wind buildout", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    let state = createInitialState(config, { doctrineId: "tech" });
+
+    const build1 = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(build1.ok).toBe(true);
+    if (!build1.ok) return;
+    state = build1.value.state;
+
+    const build2 = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(build2.ok).toBe(true);
+    if (!build2.ok) return;
+    state = build2.value.state;
+
+    for (let i = 0; i < 4 && state.companyLevel < 2; i += 1) {
+      const month = settleNextMonth(state, config, defaultPorts);
+      expect(month.ok).toBe(true);
+      if (!month.ok) return;
+      state = month.value.state;
+    }
+    expect(state.companyLevel).toBe(2);
+  });
+
   it("M13 resets bankrupt streak when funds recover", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     const state = createInitialState(config);

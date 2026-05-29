@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * region 页最小闭环 CLI 冒烟：
- * Lv1 铺线拦截 -> tutorial M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工
+ * Lv1 铺线拦截 -> 正常局建造补供能并 M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工
  *
  * 用法：
  *   npm run sim:region-loop
@@ -15,7 +15,7 @@ const toCityId = process.argv[3] ?? "CITY-MAP01-02";
 const linkTypeRaw = process.argv[4] ?? "region";
 const linkType = linkTypeRaw === "trunk" ? "trunk" : "region";
 
-const controller = createController(process.cwd(), { doctrineId: "tutorial" });
+const controller = createController(process.cwd(), { doctrineId: "tech" });
 const screen = createScreenRegion(controller);
 
 console.log("=== Energy Company region loop smoke ===");
@@ -32,19 +32,31 @@ console.log(
   `level I queue: ${blocked.result.error} - ${blocked.result.message}`
 );
 
-const levelUpSettle = controller.runNextMonth();
-if (!levelUpSettle.ok) {
-  console.log(
-    `level-up settle failed: ${levelUpSettle.error} - ${levelUpSettle.message}`
-  );
+// 正常局最小升级路径：先补两座风电，再通过 M10 升至 II 级。
+for (let i = 0; i < 2; i += 1) {
+  const build = controller.runCommand({
+    type: "queue_construction",
+    cityId: "CITY-START",
+    facilityId: "wind",
+    tier: 1
+  });
+  if (!build.ok) {
+    console.log(`prebuild failed: ${build.error} - ${build.message}`);
+    process.exit(1);
+  }
+}
+
+const levelUp = screen.advanceMonths(4);
+if (levelUp.failed && !levelUp.failed.ok) {
+  console.log(`level-up settle failed: ${levelUp.failed.error} - ${levelUp.failed.message}`);
   process.exit(1);
 }
 if (controller.state.companyLevel < 2) {
-  console.log("expected company level to reach II via M10, but it did not");
+  console.log("expected company level to reach II in normal run, but it did not");
   process.exit(1);
 }
 console.log(
-  `level-up via M10(tutorial): month=${controller.state.currentMonth}, level=${controller.state.companyLevel}, sv=${controller.state.socialValueCurrent}`
+  `level-up via M10(normal): month=${controller.state.currentMonth}, level=${controller.state.companyLevel}, sv=${controller.state.socialValueCurrent}, prebuild_months=${levelUp.reports.length}`
 );
 
 const unlocked = screen.queueGridLink(fromCityId, toCityId, linkType);

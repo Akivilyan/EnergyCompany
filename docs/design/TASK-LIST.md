@@ -228,3 +228,4 @@
 | 2026-05-29 | T45-10 推进：M10 增加 tutorial 升 II 门槛策略，`sim:region-loop` 改为 tutorial 真实升级链路 |
 | 2026-05-29 | T45-10 推进：tutorial 升 II 门槛改由 `run_config.tutorial_level2_sv_threshold` 配置驱动 |
 | 2026-05-29 | T45-10 推进：`screenRegion` 增加逐月推进壳层接口，`sim:region-loop` 改走壳层推进链路 |
+| 2026-05-29 | T45-10 推进：`sim:region-loop` 改为正常局升 II 路径；`company_levels` 的 level2 阈值由 120 下调至 1 |
