@@ -3,6 +3,8 @@ export type Command =
   | { type: "queue_grid_link"; fromCityId: string; toCityId: string; linkType: "region" | "trunk" }
   | { type: "start_research"; techId: string }
   | { type: "apply_loan"; loanId: string }
+  | { type: "advance_onboarding" }
+  | { type: "skip_onboarding" }
   | {
       type: "claim_ad_reward";
       adType: "cash" | "speedup" | "shield";

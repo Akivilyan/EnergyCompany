@@ -369,6 +369,21 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("blocked_by_tutorial");
   });
 
+  it("dispatch allows onboarding commands when blocked", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.playableSubPhase = "blocked";
+    const result = dispatch(
+      state,
+      { type: "advance_onboarding" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.playableSubPhase).toBe("navigating");
+  });
+
   it("dispatch rejects run_result phase", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     const state = createInitialState(config);

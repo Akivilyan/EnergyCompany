@@ -31,6 +31,10 @@ function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResul
   return ok(true);
 }
 
+function isBlockedAllowedCommand(command: Command): boolean {
+  return command.type === "advance_onboarding" || command.type === "skip_onboarding";
+}
+
 export function dispatch(
   state: GameState,
   command: Command,
@@ -43,7 +47,7 @@ export function dispatch(
   if (state.playableSubPhase === null) {
     return err("state_invariant_broken", "playableSubPhase must not be null in run_playable");
   }
-  if (state.playableSubPhase === "blocked") {
+  if (state.playableSubPhase === "blocked" && !isBlockedAllowedCommand(command)) {
     return err("blocked_by_tutorial", "commands are blocked by tutorial gate", {
       playable_sub_phase: state.playableSubPhase,
       command_type: command.type
@@ -158,6 +162,14 @@ export function dispatch(
         monthsRemaining: RESEARCH_MONTHS
       };
       break;
+    }
+    case "advance_onboarding": {
+      next.playableSubPhase = "navigating";
+      return ok({ state: next });
+    }
+    case "skip_onboarding": {
+      next.playableSubPhase = "navigating";
+      return ok({ state: next });
     }
     case "claim_ad_reward": {
       if (next.adsRemaining <= 0) {
