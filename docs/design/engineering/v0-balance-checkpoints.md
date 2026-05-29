@@ -20,6 +20,14 @@
 
 ## 节点记录（关键月份）
 
+### M1~M4（Level II 解锁检查）
+
+- 记录：`social_value_current`、`company_level`、是否已进入 `MAP-01`。
+- 期望：
+  - 正常局（非 tutorial）升 II 阈值读取 `company_levels.level=2.sv_threshold`；
+  - tutorial 局升 II 阈值读取 `run_config.tutorial_level2_sv_threshold`；
+  - 当前数据包下（normal 阈值=1）应在前 1~4 月可稳定进入 II 级，不依赖广告。
+
 ### 月 6（首轮成型）
 
 - 记录：`funds`、在建数量、研发状态、`CITY-START` 满足率

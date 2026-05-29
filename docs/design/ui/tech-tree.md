@@ -2,7 +2,7 @@
 id: ui/tech-tree
 title: 科技树界面
 status: draft
-version: 0.1.0
+version: 0.1.1
 sources:
   - docs/design/features/tech-tree.md
   - docs/design/gdd/07-tech.md
@@ -66,9 +66,20 @@ open_questions: []
 | 当月 M3 点亮 | 节点变 `lit` + 城市屏 `InlineHintStrip` |
 | 研发中 | 节点脉冲 + `ResearchQueueBadge` |
 
-## 7. 异常态
+## 7. 异常态（错误码与文案键）
 
-`research_queue_full`、`lit_budget_exhausted`、`doctrine_line_locked` → Drawer 内文案 + 灰显按钮。
+`screenTechTree` 壳层统一返回 `uiErrorCode + uiCopy`（`messageKey/actionKey`），UI 不再依赖底层错误文案字符串判断。
+
+| `uiErrorCode` | `messageKey` | `actionKey` | 建议交互 |
+|---|---|---|---|
+| `tech_locked` | `tech_tree.error.tech_locked` | `tech_tree.action.go_company_upgrade` | 提示“公司 II 级起开放”，保留返回按钮 |
+| `insufficient_funds` | `tech_tree.error.insufficient_funds` | `tech_tree.action.go_finance` | Drawer 内提示资金不足，保留开研按钮灰显 |
+| `research_queue_full` | `tech_tree.error.research_queue_full` | `tech_tree.action.cancel_or_wait` | 显示在研占位，给“取消/等待”二选一 |
+| `research_not_found` | `tech_tree.error.research_not_found` | `tech_tree.action.refresh_list` | 提示状态已变化，刷新当前列表 |
+| `no_active_research` | `tech_tree.error.no_active_research` | `tech_tree.action.start_research_first` | 广告加速前置提示：先有在研项目 |
+| `action_blocked` | `tech_tree.error.action_blocked` | `tech_tree.action.follow_tutorial` | 教学阶段拦截，按引导步骤继续 |
+| `action_invalid` | `tech_tree.error.action_invalid` | `tech_tree.action.retry_after_settle` | 结算拍或 payload 异常，建议稍后重试 |
+| `action_failed` | `tech_tree.error.action_failed` | `tech_tree.action.retry` | 未归类兜底错误，提示重试 |
 
 ## 8. 导航
 
@@ -88,3 +99,4 @@ open_questions: []
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T31 初稿 |
+| 0.1.1 | 2026-05-29 | 对齐 T45-11：补 `uiErrorCode` 对应 `messageKey/actionKey` 清单，统一壳层错误提示契约 |

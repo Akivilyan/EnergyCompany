@@ -364,6 +364,22 @@ describe("settleNextMonth", () => {
     expect(month.value.state.companyLevel).toBe(1);
   });
 
+  it("M10 normal level-II threshold reads from company level config", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const level2 = config.bundle.companyLevels.find((row) => row.level === 2);
+    expect(level2).toBeTruthy();
+    if (!level2) return;
+    level2.sv_threshold = 5;
+    const state = createInitialState(config, { doctrineId: "tech" });
+    state.facilities = {};
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.socialValueCurrent).toBe(0);
+    expect(month.value.state.companyLevel).toBe(1);
+  });
+
   it("M10 can upgrade normal run to level II after initial wind buildout", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     let state = createInitialState(config, { doctrineId: "tech" });

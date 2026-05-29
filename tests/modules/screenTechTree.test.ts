@@ -17,6 +17,10 @@ describe("ScreenTechTree", () => {
       expect(start.result.error).toBe("not_unlocked");
     }
     expect(start.uiErrorCode).toBe("tech_locked");
+    expect(start.uiCopy).toEqual({
+      messageKey: "tech_tree.error.tech_locked",
+      actionKey: "tech_tree.action.go_company_upgrade"
+    });
     expect(start.before.canOpen).toBe(false);
   });
 
@@ -34,6 +38,7 @@ describe("ScreenTechTree", () => {
     expect(cancel.result.ok).toBe(true);
     if (!cancel.result.ok) return;
     expect(cancel.uiErrorCode).toBeNull();
+    expect(cancel.uiCopy).toBeNull();
     expect(cancel.after.activeResearch).toBeNull();
     expect(cancel.after.funds).toBe(cancel.before.funds + 60);
   });
@@ -60,12 +65,17 @@ describe("ScreenTechTree", () => {
     const noActive = screen.speedupResearchByAd();
     expect(noActive.result.ok).toBe(false);
     expect(noActive.uiErrorCode).toBe("no_active_research");
+    expect(noActive.uiCopy).toEqual({
+      messageKey: "tech_tree.error.no_active_research",
+      actionKey: "tech_tree.action.start_research_first"
+    });
 
     const start = screen.startResearch("storage_system_1");
     expect(start.result.ok).toBe(true);
     const speedup = screen.speedupResearchByAd();
     expect(speedup.result.ok).toBe(true);
     expect(speedup.uiErrorCode).toBeNull();
+    expect(speedup.uiCopy).toBeNull();
     expect(speedup.after.activeResearch).toBeNull();
     expect(speedup.after.litTechIds).toContain("storage_system_1");
   });

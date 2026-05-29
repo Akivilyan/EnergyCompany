@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.30
+version: 0.1.32
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -43,8 +43,8 @@ open_questions: []
 | T45-07 | done | M9/M10/M13/M14 落地 | 关键终局路径与异常上下文回归已覆盖（23 测试总体通过） | 后续仅按 UI 接入反馈微调 |
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
-| T45-10 | partial | 等级解锁与 region 流程 | `sim:region-loop` 已改为正常局升 II 路径（双风电补供能 -> M10 升级 -> 铺线） | 评估并回填 level2 阈值调低后的平衡影响说明 |
-| T45-11 | partial | 科技树单队列 | `screenTechTree` 已补 UI 错误映射（开研/取消/广告加速） | 对齐 tech-tree 交互文案与错误提示清单 |
+| T45-10 | done | 等级解锁与 region 流程 | 回填升 II 阈值平衡检查：补 `M10` 配置读取回归与检查点文档（normal/tutorial 双口径） | 转 T45-12 接 UI 事件面板/弹窗 |
+| T45-11 | done | 科技树单队列 | `screenTechTree` 补齐 `uiErrorCode -> messageKey/actionKey` 契约并同步 UI 文档清单 | 转 T45-12 接事件面板/弹窗与科技提示呈现 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-10`
-- 任务标题：等级解锁与 region 流程
+- 当前任务 ID：`T45-12`
+- 任务标题：固定灾害轴与事件面板
 - 状态：`doing`
 - 开始时间：2026-05-29
-- 完成定义（本轮）：打通 II 级解锁与 region 最小动作链路
+- 完成定义（本轮）：接通首场固定灾害 UI 事件面板/弹窗链路
 
 ---
 
@@ -100,6 +100,8 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-11`：新增 `sim:tech-loop` 冒烟脚本，跑通开研->取消返还->再开研->M3 点亮 | `src/app/techLoopCli.ts` `package.json` | `npm run sim:tech-loop -- storage_system_1` 通过；`npm test` 通过（41/41） |
 | 2026-05-29 | 推进 `T45-11`：`claim_ad_reward(speedup)` 接入“在研秒完成并点亮”，补有/无在研回归 | `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` | `npm test` 通过（43/43） |
 | 2026-05-29 | 推进 `T45-11`：`screenTechTree` 增加 UI 错误码映射与 `speedupResearchByAd` 壳层动作 | `src/modules/screenTechTree.ts` `tests/modules/screenTechTree.test.ts` | `npm test` 通过（44/44） |
+| 2026-05-29 | 收口 `T45-11`：补科技树 UI 文案键契约（`messageKey/actionKey`）并对齐异常提示清单文档 | `src/modules/screenTechTree.ts` `tests/modules/screenTechTree.test.ts` `docs/design/ui/tech-tree.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（44/44） |
+| 2026-05-29 | 收口 `T45-10`：回填升 II 阈值平衡影响说明，补 normal/tutorial 双阈值口径检查与回归测试 | `tests/sim/settle.test.ts` `docs/design/engineering/v0-balance-checkpoints.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（45/45） |
 
 ---
 
@@ -147,3 +149,5 @@ open_questions: []
 | 0.1.28 | 2026-05-29 | 记录 T45-11 科技树冒烟脚本进展 |
 | 0.1.29 | 2026-05-29 | 记录 T45-11 研发广告加速闭环进展 |
 | 0.1.30 | 2026-05-29 | 记录 T45-11 科技树 UI 错误映射进展 |
+| 0.1.31 | 2026-05-29 | 标记 T45-11 完成：补文案键契约并同步异常提示清单 |
+| 0.1.32 | 2026-05-29 | 标记 T45-10 完成：回填升 II 阈值平衡检查与 normal/tutorial 口径回归 |

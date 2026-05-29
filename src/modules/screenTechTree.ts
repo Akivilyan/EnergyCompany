@@ -11,6 +11,53 @@ export type TechTreeUiErrorCode =
   | "action_invalid"
   | "action_failed";
 
+export interface TechTreeUiCopySpec {
+  messageKey: string;
+  actionKey: string;
+}
+
+export const TECH_TREE_UI_COPY: Record<TechTreeUiErrorCode, TechTreeUiCopySpec> = {
+  tech_locked: {
+    messageKey: "tech_tree.error.tech_locked",
+    actionKey: "tech_tree.action.go_company_upgrade"
+  },
+  insufficient_funds: {
+    messageKey: "tech_tree.error.insufficient_funds",
+    actionKey: "tech_tree.action.go_finance"
+  },
+  research_queue_full: {
+    messageKey: "tech_tree.error.research_queue_full",
+    actionKey: "tech_tree.action.cancel_or_wait"
+  },
+  research_not_found: {
+    messageKey: "tech_tree.error.research_not_found",
+    actionKey: "tech_tree.action.refresh_list"
+  },
+  no_active_research: {
+    messageKey: "tech_tree.error.no_active_research",
+    actionKey: "tech_tree.action.start_research_first"
+  },
+  action_blocked: {
+    messageKey: "tech_tree.error.action_blocked",
+    actionKey: "tech_tree.action.follow_tutorial"
+  },
+  action_invalid: {
+    messageKey: "tech_tree.error.action_invalid",
+    actionKey: "tech_tree.action.retry_after_settle"
+  },
+  action_failed: {
+    messageKey: "tech_tree.error.action_failed",
+    actionKey: "tech_tree.action.retry"
+  }
+};
+
+export function resolveTechTreeUiCopy(
+  uiErrorCode: TechTreeUiErrorCode | null
+): TechTreeUiCopySpec | null {
+  if (!uiErrorCode) return null;
+  return TECH_TREE_UI_COPY[uiErrorCode];
+}
+
 export interface TechTreeSnapshot {
   month: number;
   companyLevel: number;
@@ -29,6 +76,7 @@ export interface TechTreeActionOutput {
   after: TechTreeSnapshot;
   result: SimResult<{ state: GameState }>;
   uiErrorCode: TechTreeUiErrorCode | null;
+  uiCopy: TechTreeUiCopySpec | null;
 }
 
 function mapUiError(result: TechTreeActionOutput["result"]): TechTreeUiErrorCode | null {
@@ -72,14 +120,16 @@ export class ScreenTechTree {
     const before = this.getSnapshot();
     const result = this.controller.runCommand({ type: "start_research", techId });
     const after = this.getSnapshot();
-    return { before, after, result, uiErrorCode: mapUiError(result) };
+    const uiErrorCode = mapUiError(result);
+    return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
   }
 
   cancelResearch(researchId: string): TechTreeActionOutput {
     const before = this.getSnapshot();
     const result = this.controller.runCommand({ type: "cancel_research", researchId });
     const after = this.getSnapshot();
-    return { before, after, result, uiErrorCode: mapUiError(result) };
+    const uiErrorCode = mapUiError(result);
+    return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
   }
 
   speedupResearchByAd(): TechTreeActionOutput {
@@ -89,7 +139,8 @@ export class ScreenTechTree {
       adType: "speedup"
     });
     const after = this.getSnapshot();
-    return { before, after, result, uiErrorCode: mapUiError(result) };
+    const uiErrorCode = mapUiError(result);
+    return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
   }
 }
 
