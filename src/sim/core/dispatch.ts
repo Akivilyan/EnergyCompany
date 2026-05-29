@@ -42,7 +42,12 @@ export function dispatch(
   _ports: SimPorts
 ): SimResult<DispatchOutput> {
   if (state.phase !== "run_playable" || state.runResult !== null) {
-    return err("invalid_phase", "commands only allowed in run_playable without result");
+    return err("invalid_phase", "commands only allowed in run_playable without result", {
+      phase: state.phase,
+      run_result: state.runResult ?? "null",
+      playable_sub_phase: state.playableSubPhase ?? "null",
+      command_type: command.type
+    });
   }
   if (state.playableSubPhase === null) {
     return err("state_invariant_broken", "playableSubPhase must not be null in run_playable");

@@ -220,10 +220,16 @@ export function settleNextMonth(
   _ports: SimPorts
 ): SimResult<SettleOutput> {
   if (state.phase !== "run_playable" && state.phase !== "month_settling") {
-    return err("invalid_phase", "settle only from run_playable");
+    return err("invalid_phase", "settle only from run_playable", {
+      phase: state.phase,
+      run_result: state.runResult ?? "null"
+    });
   }
   if (state.runResult !== null) {
-    return err("invalid_phase", "run already finished");
+    return err("invalid_phase", "run already finished", {
+      phase: state.phase,
+      run_result: state.runResult
+    });
   }
   const configCheck = validateSettlementConfig(config);
   if (!configCheck.ok) {

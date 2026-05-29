@@ -400,5 +400,20 @@ describe("settleNextMonth", () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error).toBe("invalid_phase");
+    expect(result.context?.phase).toBe("run_result");
+    expect(result.context?.command_type).toBe("claim_ad_reward");
+    expect(result.context?.run_result).toBe("victory");
+  });
+
+  it("settle invalid_phase includes context when called from wrong phase", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config);
+    state.phase = "main_menu";
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(false);
+    if (month.ok) return;
+    expect(month.error).toBe("invalid_phase");
+    expect(month.context?.phase).toBe("main_menu");
+    expect(month.context?.run_result).toBe("null");
   });
 });
