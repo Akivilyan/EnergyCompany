@@ -2,7 +2,7 @@
 id: ui/company
 title: 公司管理界面
 status: draft
-version: 0.1.0
+version: 0.1.1
 sources:
   - docs/design/features/company-management.md
   - docs/design/gdd/09-year-end-and-monetization.md#公司经营界面大理石式快照
@@ -92,6 +92,24 @@ open_questions: []
 | 秒完工无在建 | 类型不可选 + 说明 |
 | 教学 `onb_06` 前 | 公司入口由遮罩控制（T35a） |
 
+## 7.1 壳层契约（T45-13）
+
+`screenCompany` 最小壳层已提供：
+
+- `getSnapshot()`：`funds/companyLevel/socialValue/runResult/adsRemaining`、当前贷款、可申请贷款档位（含 `unlockLevel/unlocked`）。
+- `getRecentCashflows(limit)`：按近月结算报告输出 `income/opex/fuel/loanPaid/netCashflow`，用于“近月流水”列表。
+- `applyLoan(loanId)`：调用 `apply_loan` 并返回 `before/after/result/uiErrorCode/uiCopy`。
+
+贷款动作错误码映射（`uiErrorCode -> messageKey/actionKey`）：
+
+| `uiErrorCode` | `messageKey` | `actionKey` |
+|---|---|---|
+| `loan_not_found` | `company.error.loan_not_found` | `company.action.refresh_loan_tiers` |
+| `loan_tier_locked` | `company.error.loan_tier_locked` | `company.action.level_up_first` |
+| `loan_already_active` | `company.error.loan_already_active` | `company.action.wait_or_repay` |
+| `action_invalid` | `company.error.action_invalid` | `company.action.return_to_playable` |
+| `action_failed` | `company.error.action_failed` | `company.action.retry` |
+
 ## 8. 导航
 
 `back_screen` → 推月前上下文。无 `下一月`。
@@ -110,3 +128,4 @@ open_questions: []
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T29 初稿 |
+| 0.1.1 | 2026-05-29 | 对齐 T45-13：补 `screenCompany` 快照/近月流水/贷款动作壳层契约与错误码映射 |

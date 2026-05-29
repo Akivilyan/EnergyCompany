@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.35
+version: 0.1.36
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -46,7 +46,7 @@ open_questions: []
 | T45-10 | done | 等级解锁与 region 流程 | 回填升 II 阈值平衡检查：补 `M10` 配置读取回归与检查点文档（normal/tutorial 双口径） | 转 T45-12 接 UI 事件面板/弹窗 |
 | T45-11 | done | 科技树单队列 | `screenTechTree` 补齐 `uiErrorCode -> messageKey/actionKey` 契约并同步 UI 文档清单 | 转 T45-12 接事件面板/弹窗与科技提示呈现 |
 | T45-12 | done | 固定灾害轴与事件面板 | `screenEventsPanel` 已补弹窗内容键 + 多场叠加分槽与优先级队列契约，并有 CLI 冒烟 | 转 T45-13 公司屏、借贷、终局页 |
-| T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
+| T45-13 | done | 公司屏、借贷、终局页 | 新增 `screenCompany`/`screenRunResult` 壳层，双分支终局冒烟通过并覆盖终局禁命令回归 | 转 T45-14 教学局与引导遮罩 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
 | T45-15 | todo | 存档与恢复 | — | 定义 serialize/deserialize |
 | T45-16 | todo | 广告 stub 与全链路回归 | 广告 cash stub 已有 | 建 E1-E6 回归脚本 |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-13`
-- 任务标题：公司屏、借贷、终局页
+- 当前任务 ID：`T45-14`
+- 任务标题：教学局与引导遮罩
 - 状态：`doing`
 - 开始时间：2026-05-29
-- 完成定义（本轮）：补终局态禁命令回归并打通公司屏最小快照
+- 完成定义（本轮）：落地教学局步骤推进与跳过最小链路
 
 ---
 
@@ -108,6 +108,9 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-12`：补 `screenEventsPanel` UI 错误码与 `messageKey/actionKey` 清单到 events UI 文档 | `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（51/51） |
 | 2026-05-29 | 推进 `T45-12`：新增 `screenEventsPanel` 全屏弹窗内容键接口并补 final 场景回归；`events-loop` 输出文案键冒烟 | `src/modules/screenEventsPanel.ts` `tests/modules/screenEventsPanel.test.ts` `src/app/eventsLoopCli.ts` `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:events-loop` 通过；`npm test` 通过（52/52） |
 | 2026-05-29 | 收口 `T45-12`：补多场事件叠加分槽（visible/hidden/overflow）与全屏确认队列优先级，新增 overlap 回归 | `src/modules/screenEventsPanel.ts` `tests/modules/screenEventsPanel.test.ts` `src/app/eventsLoopCli.ts` `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:events-loop` 通过；`npm test` 通过（53/53） |
+| 2026-05-29 | 推进 `T45-13`：新增 `screenCompany` 壳层（快照/近月流水/贷款动作）与 `screenRunResult` 壳层（victory/bankrupt 快照） | `src/modules/screenCompany.ts` `src/modules/screenRunResult.ts` `src/modules/runController.ts` `src/sim/core/settleNextMonth.ts` `tests/modules/screenCompany.test.ts` `tests/modules/screenRunResult.test.ts` `tests/sim/settle.test.ts` | `npm test` 通过（60/60） |
+| 2026-05-29 | 推进 `T45-13`：新增 `sim:result-loop` 双分支冒烟（victory/bankrupt）并验证终局态命令拦截 | `src/app/resultLoopCli.ts` `package.json` | `npm run sim:result-loop` 通过；`npm test` 通过（60/60） |
+| 2026-05-29 | 收口 `T45-13`：补公司屏/终局页 UI 契约文档并切换当前任务到 `T45-14` | `docs/design/ui/company.md` `docs/design/ui/run-result.md` `docs/design/ui/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 文档与看板更新 |
 
 ---
 
@@ -160,3 +163,4 @@ open_questions: []
 | 0.1.33 | 2026-05-29 | 记录 T45-12 阶段进展：事件面板壳层 + 冒烟 + UI 文案键清单 |
 | 0.1.34 | 2026-05-29 | 记录 T45-12 进展：补全屏弹窗内容键契约与 final 场景回归 |
 | 0.1.35 | 2026-05-29 | 标记 T45-12 完成：补多场叠加分槽与全屏确认队列优先级契约 |
+| 0.1.36 | 2026-05-29 | 标记 T45-13 完成：公司屏/终局页壳层、双分支冒烟与终局禁命令回归落地 |
