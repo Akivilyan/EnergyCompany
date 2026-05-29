@@ -12,6 +12,7 @@
     "sim:events-loop": "tsx src/app/eventsLoopCli.ts",
     "sim:result-loop": "tsx src/app/resultLoopCli.ts",
     "sim:tutorial-loop": "tsx src/app/tutorialLoopCli.ts",
+    "sim:save-loop": "tsx src/app/saveLoopCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {
