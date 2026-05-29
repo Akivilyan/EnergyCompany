@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.32
+version: 0.1.33
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -45,7 +45,7 @@ open_questions: []
 | T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
 | T45-10 | done | 等级解锁与 region 流程 | 回填升 II 阈值平衡检查：补 `M10` 配置读取回归与检查点文档（normal/tutorial 双口径） | 转 T45-12 接 UI 事件面板/弹窗 |
 | T45-11 | done | 科技树单队列 | `screenTechTree` 补齐 `uiErrorCode -> messageKey/actionKey` 契约并同步 UI 文档清单 | 转 T45-12 接事件面板/弹窗与科技提示呈现 |
-| T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
+| T45-12 | partial | 固定灾害轴与事件面板 | 新增 `screenEventsPanel` 壳层（upcoming/active/expired + 全屏确认）与 `sim:events-loop` 冒烟 | 接 UI 事件面板/弹窗呈现层 + 多场叠加策略 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
 | T45-14 | todo | 教学局与引导遮罩 | — | 建教程存档标记 |
 | T45-15 | todo | 存档与恢复 | — | 定义 serialize/deserialize |
@@ -102,6 +102,10 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-11`：`screenTechTree` 增加 UI 错误码映射与 `speedupResearchByAd` 壳层动作 | `src/modules/screenTechTree.ts` `tests/modules/screenTechTree.test.ts` | `npm test` 通过（44/44） |
 | 2026-05-29 | 收口 `T45-11`：补科技树 UI 文案键契约（`messageKey/actionKey`）并对齐异常提示清单文档 | `src/modules/screenTechTree.ts` `tests/modules/screenTechTree.test.ts` `docs/design/ui/tech-tree.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（44/44） |
 | 2026-05-29 | 收口 `T45-10`：回填升 II 阈值平衡影响说明，补 normal/tutorial 双阈值口径检查与回归测试 | `tests/sim/settle.test.ts` `docs/design/engineering/v0-balance-checkpoints.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（45/45） |
+| 2026-05-29 | 推进 `T45-12`：扩展 `GameState.acknowledgedDisasterSeqs` 字段，用于事件面板全屏弹窗确认追踪 | `src/sim/types/gameState.ts` `src/sim/core/createInitialState.ts` | `npm test` 通过（45/45） |
+| 2026-05-29 | 推进 `T45-12`：新增 `screenEventsPanel` 壳层（upcoming/active/expired + 全屏确认 + UI 文案键）与模块测试 | `src/modules/screenEventsPanel.ts` `tests/modules/screenEventsPanel.test.ts` | `npm test` 通过（51/51） |
+| 2026-05-29 | 推进 `T45-12`：新增 `sim:events-loop` 冒烟脚本，验证 M22 触发 -> 确认 -> M34 expired 链路 | `src/app/eventsLoopCli.ts` `package.json` | `npm run sim:events-loop` 通过；`npm test` 通过（51/51） |
+| 2026-05-29 | 推进 `T45-12`：补 `screenEventsPanel` UI 错误码与 `messageKey/actionKey` 清单到 events UI 文档 | `docs/design/ui/events.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（51/51） |
 
 ---
 
@@ -151,3 +155,4 @@ open_questions: []
 | 0.1.30 | 2026-05-29 | 记录 T45-11 科技树 UI 错误映射进展 |
 | 0.1.31 | 2026-05-29 | 标记 T45-11 完成：补文案键契约并同步异常提示清单 |
 | 0.1.32 | 2026-05-29 | 标记 T45-10 完成：回填升 II 阈值平衡检查与 normal/tutorial 口径回归 |
+| 0.1.33 | 2026-05-29 | 记录 T45-12 阶段进展：事件面板壳层 + 冒烟 + UI 文案键清单 |

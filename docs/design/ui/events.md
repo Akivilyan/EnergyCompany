@@ -2,7 +2,7 @@
 id: ui/events
 title: 事件面板与弹窗
 status: draft
-version: 0.1.0
+version: 0.1.1
 sources:
   - docs/design/features/events.md
   - docs/design/gdd/08-events.md
@@ -79,6 +79,17 @@ open_questions: []
 
 `modal_event_fullscreen` > `overlay_onboarding`（引导暂停）。
 
+## 7.1 壳层错误码与文案键
+
+`screenEventsPanel` 返回 `uiErrorCode + uiCopy(messageKey/actionKey)`，UI 按键取文案，不解析底层字符串。
+
+| `uiErrorCode` | `messageKey` | `actionKey` | 建议交互 |
+|---|---|---|---|
+| `event_not_found` | `events_panel.error.event_not_found` | `events_panel.action.refresh_list` | 提示事件 ID 不存在，刷新面板 |
+| `event_not_active` | `events_panel.error.event_not_active` | `events_panel.action.refresh_list` | 该事件尚未触发或已结束，刷新面板 |
+| `no_pending_modal` | `events_panel.error.no_pending_modal` | `events_panel.action.close_panel` | 无待确认弹窗，允许关闭 |
+| `action_failed` | `events_panel.error.action_failed` | `events_panel.action.retry` | 兜底错误，提示重试 |
+
 ## 8. 微信小游戏
 
 - 全屏弹窗 **单按钮** 大热区；插画可静态图压缩。
@@ -94,3 +105,4 @@ open_questions: []
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T32 初稿 |
+| 0.1.1 | 2026-05-29 | 对齐 T45-12：补 `screenEventsPanel` 错误码与 `messageKey/actionKey` 清单 |
