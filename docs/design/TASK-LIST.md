@@ -220,3 +220,9 @@
 | 2026-05-29 | T45-09 推进：新增 `sim:city-loop` 冒烟脚本（建造→推月→快照输出），用于城市页接入前联调验证 |
 | 2026-05-29 | T45-09 推进：`runController` 增加 `advanceMonths` 多月推进接口，`sim:city-loop` 支持 3 月冒烟输出 |
 | 2026-05-29 | T45-09 推进：`sim:city-loop` 增加 3 次推进逐月明细输出，包含每月资金/SV/供能变化与增量 |
+| 2026-05-29 | T45-09 收口：新增 `screenCityDetail` 壳层接口（建造/推月/逐月资源变化），`sim:city-loop` 改经壳层调用并补测试 |
+| 2026-05-29 | T45-10 推进：新增 `screenRegion` 壳层接口（城市解锁态快照、区域铺线动作），补 level I/II 解锁与铺线回归 |
+| 2026-05-29 | T45-10 推进：新增 `sim:region-loop` 冒烟脚本，验证 Lv1 拦截、Lv2 铺线与推月完工最小链路 |
+| 2026-05-29 | T45-10 推进：`sim:region-loop` 去除 `companyLevel` 直接注入，改为通过 M10 升级链路后执行区域铺线 |
+| 2026-05-29 | 协作策略固化：新增 `.cursor/rules/commit-push-rhythm.mdc`，默认每步本地 commit、阶段性 push |
+| 2026-05-29 | T45-10 推进：M10 增加 tutorial 升 II 门槛策略，`sim:region-loop` 改为 tutorial 真实升级链路 |

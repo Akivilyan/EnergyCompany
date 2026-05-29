@@ -66,6 +66,14 @@ function step(
   return { stepId, ok: true, summary, metrics };
 }
 
+function getEffectiveSvThreshold(state: GameState, level: number, baseThreshold: number): number {
+  // 教学局最小闭环：降低升 II 门槛，便于引导阶段快速解锁 region 操作。
+  if (state.doctrineId === "tutorial" && level === 2) {
+    return 0;
+  }
+  return baseThreshold;
+}
+
 function buildIslands(state: GameState): string[][] {
   const cityIds = Object.keys(state.cities);
   const adj = new Map<string, Set<string>>();
@@ -303,7 +311,8 @@ export function settleNextMonth(
 
   let newLevel = next.companyLevel;
   for (const row of config.bundle.companyLevels) {
-    if (next.socialValueCurrent >= row.sv_threshold && row.level > newLevel) {
+    const threshold = getEffectiveSvThreshold(next, row.level, row.sv_threshold);
+    if (next.socialValueCurrent >= threshold && row.level > newLevel) {
       newLevel = row.level;
     }
   }

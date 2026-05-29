@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.14
+version: 0.1.21
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -42,8 +42,8 @@ open_questions: []
 | T45-06 | done | M4 供能重算落地 | 已接入 M2 链路进度与连通分岛计算，覆盖未连通/已连通差异测试 | 后续补线损参数化与主干规则 |
 | T45-07 | done | M9/M10/M13/M14 落地 | 关键终局路径与异常上下文回归已覆盖（23 测试总体通过） | 后续仅按 UI 接入反馈微调 |
 | T45-08 | done | modules 编排层 | 增加 `runController` 轨迹输出（command/settle），便于 UI 壳层接入与排障 | 补 UI 契约扫描测试 |
-| T45-09 | partial | 城市页最小闭环 | 已支持 `buildAndAdvance` + `advanceMonths` + `sim:city-loop` 多月冒烟 | 接 UI 壳层并做 3 次推进截图化冒烟 |
-| T45-10 | todo | 等级解锁与 region 流程 | — | 先打通 II 级解锁 |
+| T45-09 | done | 城市页最小闭环 | 新增 `screenCityDetail` 壳层（建造/推月/资源增量）并接入 `sim:city-loop` 逐月明细 | 后续做截图化冒烟留档 |
+| T45-10 | doing | 等级解锁与 region 流程 | `sim:region-loop` 改为 tutorial M10 升级链路（不再脚本注入 level/阈值） | 将 tutorial 升级门槛策略沉淀到配置层，而非结算特判 |
 | T45-11 | partial | 科技树单队列 | `start_research` + M3 进度与点亮 | 接 II 级入口与取消返还 |
 | T45-12 | partial | 固定灾害轴与事件面板 | M11 固定灾害与 debuff 生效 | 接 UI 事件面板/弹窗 |
 | T45-13 | todo | 公司屏、借贷、终局页 | — | 先补终局态禁命令回归 |
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-09`
-- 任务标题：城市页最小闭环（建造 + 推月）联调
+- 当前任务 ID：`T45-10`
+- 任务标题：等级解锁与 region 流程
 - 状态：`doing`
-- 开始时间：2026-05-28
-- 完成定义（本轮）：打通城市快照 + 建造 + 推月一体化调用并验证
+- 开始时间：2026-05-29
+- 完成定义（本轮）：打通 II 级解锁与 region 最小动作链路
 
 ---
 
@@ -85,6 +85,12 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-09`：新增 `sim:city-loop` CLI 冒烟路径，验证城市建造+单月推进+快照输出链路 | `src/app/cityLoopCli.ts` `package.json` | `npm run sim:city-loop` 通过；`npm test` 通过（25/25） |
 | 2026-05-29 | 推进 `T45-09`：`runController` 新增 `advanceMonths`，`sim:city-loop` 支持多月推进输出，补多月回归测试 | `src/modules/runController.ts` `src/app/cityLoopCli.ts` `tests/modules/runController.test.ts` | `npm run sim:city-loop -- CITY-START wind 1 3` 通过；`npm test` 通过（26/26） |
 | 2026-05-29 | 推进 `T45-09`：`sim:city-loop` 增加 3 次推进逐月明细输出（每月资金/SV/供能变化与增量） | `src/app/cityLoopCli.ts` | `npm run sim:city-loop -- CITY-START wind 1 3` 通过；`npm test` 通过（26/26） |
+| 2026-05-29 | 收口 `T45-09`：新增 `screenCityDetail` UI 壳层接口（建造/推月/逐月增量）并让 `sim:city-loop` 改走壳层 | `src/modules/screenCityDetail.ts` `src/app/cityLoopCli.ts` `tests/modules/screenCityDetail.test.ts` | `npm run sim:city-loop -- CITY-START wind 1 3` 通过；`npm test` 通过（29/29） |
+| 2026-05-29 | 推进 `T45-10`：新增 `screenRegion` 壳层（城市解锁态快照/`queue_grid_link` 动作）并补 level I/II 铺线回归 | `src/modules/screenRegion.ts` `tests/modules/screenRegion.test.ts` | `npm test` 通过（32/32） |
+| 2026-05-29 | 推进 `T45-10`：新增 `sim:region-loop` 冒烟脚本，串起 Lv1 拦截 -> Lv2 铺线 -> 推月完工最小链路 | `src/app/regionLoopCli.ts` `package.json` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（32/32） |
+| 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 去除 `companyLevel` 直接注入，改为经 M10 结算升级后再铺线 | `src/app/regionLoopCli.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（32/32） |
+| 2026-05-29 | 协作策略固化：新增 always-apply 规则，默认“每步本地 commit、阶段性 push” | `.cursor/rules/commit-push-rhythm.mdc` | 规则文件新增 |
+| 2026-05-29 | 推进 `T45-10`：M10 增加 tutorial 升 II 门槛策略，`region-loop` 改为 tutorial 真实升级路径 | `src/sim/core/settleNextMonth.ts` `src/modules/runController.ts` `src/app/regionLoopCli.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（33/33） |
 
 ---
 
@@ -117,3 +123,9 @@ open_questions: []
 | 0.1.13 | 2026-05-29 | 记录 T45-09 城市闭环 CLI 冒烟路径进展 |
 | 0.1.14 | 2026-05-29 | 记录 T45-09 多月推进接口与 CLI 冒烟进展 |
 | 0.1.15 | 2026-05-29 | 记录 T45-09 城市闭环 CLI 逐月明细输出进展 |
+| 0.1.16 | 2026-05-29 | 标记 T45-09 完成并切换当前任务到 T45-10 |
+| 0.1.17 | 2026-05-29 | 记录 T45-10 `screenRegion` 壳层与解锁回归进展 |
+| 0.1.18 | 2026-05-29 | 记录 T45-10 region 冒烟 CLI 进展（含 Lv1/Lv2 链路） |
+| 0.1.19 | 2026-05-29 | 记录 T45-10 region 冒烟改为 M10 升级链路进展 |
+| 0.1.20 | 2026-05-29 | 记录协作策略规则固化（commit/push 节奏） |
+| 0.1.21 | 2026-05-29 | 记录 T45-10 tutorial 升级链路替换进展 |

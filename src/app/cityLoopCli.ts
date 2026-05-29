@@ -8,6 +8,7 @@
  *   npm run sim:city-loop -- CITY-START wind 1 3
  */
 import { createController } from "../modules/runController.js";
+import { createScreenCityDetail } from "../modules/screenCityDetail.js";
 
 const cityId = process.argv[2] ?? "CITY-START";
 const facilityId = process.argv[3] ?? "wind";
@@ -26,60 +27,57 @@ if (!Number.isInteger(months) || months < 1) {
 }
 
 const controller = createController();
-const step = controller.buildAndAdvance(cityId, facilityId, tier, false);
+const screen = createScreenCityDetail(controller, cityId);
+const before = screen.getSnapshot();
 
 console.log("=== Energy Company city loop smoke ===");
 console.log(
   `target city=${cityId}, facility=${facilityId}, tier=${tier}, months=${months}`
 );
 
-if (!step.before) {
+if (!before) {
   console.log("before snapshot: city not found");
   process.exit(1);
 }
 
 console.log(
-  `before: month=${step.before.month}, funds=${step.before.funds}, sv=${step.before.socialValue}, ratio=${step.before.supplyRatio}`
+  `before: month=${before.month}, funds=${before.funds}, sv=${before.socialValue}, ratio=${before.supplyRatio}`
 );
+const build = screen.queueConstruction(facilityId, tier);
 console.log(
-  `after-build: month=${step.afterBuild?.month ?? "n/a"}, funds=${step.afterBuild?.funds ?? "n/a"}, queue_in_city=${step.afterBuild?.constructionQueueInCity ?? "n/a"}`
+  `after-build: month=${build.ok ? build.value.after.month : "n/a"}, funds=${build.ok ? build.value.after.funds : "n/a"}, queue_in_city=${build.ok ? build.value.after.constructionQueueInCity : "n/a"}`
 );
 
-if (!step.buildResult.ok) {
+if (!build.ok) {
+  console.log(`build failed: ${build.error} - ${build.message}`);
+  process.exit(1);
+}
+
+if (!build.value.result.ok) {
   console.log(
-    `build failed: ${step.buildResult.error} - ${step.buildResult.message}`
+    `build failed: ${build.value.result.error} - ${build.value.result.message}`
   );
   process.exit(1);
 }
 
 console.log(`monthly advance detail (target=${months}):`);
-
-let advanced = 0;
-for (let i = 0; i < months; i += 1) {
-  const beforeMonth = controller.getCitySnapshot(cityId);
-  const settle = controller.runNextMonth();
-  if (!settle.ok) {
-    console.log(`settle failed: ${settle.error} - ${settle.message}`);
-    process.exit(1);
-  }
-  const afterMonth = controller.getCitySnapshot(cityId);
-  if (!beforeMonth || !afterMonth) {
-    console.log("city snapshot missing during monthly advance");
-    process.exit(1);
-  }
-  advanced += 1;
-  const fundsDelta = afterMonth.funds - beforeMonth.funds;
-  const svDelta = afterMonth.socialValue - beforeMonth.socialValue;
-  const localSupplyDelta = afterMonth.localSupplyMw - beforeMonth.localSupplyMw;
-  const effectiveSupplyDelta =
-    afterMonth.effectiveSupplyMw - beforeMonth.effectiveSupplyMw;
-  const ratioDelta = afterMonth.supplyRatio - beforeMonth.supplyRatio;
+const advance = screen.advanceMonths(months);
+if (advance.failed && !advance.failed.ok) {
+  console.log(`settle failed: ${advance.failed.error} - ${advance.failed.message}`);
+  process.exit(1);
+}
+for (const [index, month] of advance.reports.entries()) {
+  const advanced = index + 1;
+  const beforeMonth = month.before;
+  const afterMonth = month.after;
+  const fundsDelta = month.delta.funds;
+  const svDelta = month.delta.socialValue;
+  const localSupplyDelta = month.delta.localSupplyMw;
+  const effectiveSupplyDelta = month.delta.effectiveSupplyMw;
+  const ratioDelta = month.delta.supplyRatio;
   console.log(
-    `m${advanced}: ${beforeMonth.month}->${afterMonth.month}, funds ${beforeMonth.funds}->${afterMonth.funds} (${fundsDelta >= 0 ? "+" : ""}${fundsDelta}), sv ${beforeMonth.socialValue}->${afterMonth.socialValue} (${svDelta >= 0 ? "+" : ""}${svDelta}), supply local ${beforeMonth.localSupplyMw}->${afterMonth.localSupplyMw} (${localSupplyDelta >= 0 ? "+" : ""}${localSupplyDelta}), effective ${beforeMonth.effectiveSupplyMw}->${afterMonth.effectiveSupplyMw} (${effectiveSupplyDelta >= 0 ? "+" : ""}${effectiveSupplyDelta}), ratio ${beforeMonth.supplyRatio.toFixed(2)}->${afterMonth.supplyRatio.toFixed(2)} (${ratioDelta >= 0 ? "+" : ""}${ratioDelta.toFixed(2)}), settle=${settle.value.report.result}`
+    `m${advanced}: ${month.monthFrom}->${month.monthTo}, funds ${beforeMonth.funds}->${afterMonth.funds} (${fundsDelta >= 0 ? "+" : ""}${fundsDelta}), sv ${beforeMonth.socialValue}->${afterMonth.socialValue} (${svDelta >= 0 ? "+" : ""}${svDelta}), supply local ${beforeMonth.localSupplyMw}->${afterMonth.localSupplyMw} (${localSupplyDelta >= 0 ? "+" : ""}${localSupplyDelta}), effective ${beforeMonth.effectiveSupplyMw}->${afterMonth.effectiveSupplyMw} (${effectiveSupplyDelta >= 0 ? "+" : ""}${effectiveSupplyDelta}), ratio ${beforeMonth.supplyRatio.toFixed(2)}->${afterMonth.supplyRatio.toFixed(2)} (${ratioDelta >= 0 ? "+" : ""}${ratioDelta.toFixed(2)}), settle=${month.settleResult}`
   );
-  if (settle.value.report.result !== "continue") {
-    break;
-  }
 }
 
 const finalSnapshot = controller.getCitySnapshot(cityId);
@@ -89,5 +87,5 @@ console.log(
 const settleTrace = controller.getTrace().filter((entry) => entry.kind === "settle");
 const lastReport = settleTrace[settleTrace.length - 1];
 console.log(
-  `settle reports: count=${settleTrace.length}, advanced=${advanced}, last_result=${lastReport?.result ?? "n/a"}`
+  `settle reports: count=${settleTrace.length}, advanced=${advance.reports.length}, last_result=${lastReport?.result ?? "n/a"}`
 );

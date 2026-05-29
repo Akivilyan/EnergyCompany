@@ -54,6 +54,12 @@ export interface AdvanceMonthsOutput {
   failed: SimResult<{ state: GameState; report: SettlementReport }> | null;
 }
 
+export interface ControllerInitOptions {
+  doctrineId?: GameState["doctrineId"];
+  difficultyId?: GameState["difficultyId"];
+  campaignId?: string;
+}
+
 export class RunController {
   readonly config: ConfigRepo;
   readonly ports = defaultPorts;
@@ -65,9 +71,13 @@ export class RunController {
     this.state = state;
   }
 
-  static fromRepoRoot(repoRoot: string): RunController {
+  static fromRepoRoot(repoRoot: string, options: ControllerInitOptions = {}): RunController {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
-    const state = createInitialState(config, { difficultyId: "simple", doctrineId: "tech" });
+    const state = createInitialState(config, {
+      difficultyId: options.difficultyId ?? "simple",
+      doctrineId: options.doctrineId ?? "tech",
+      campaignId: options.campaignId
+    });
     return new RunController(config, state);
   }
 
@@ -205,6 +215,9 @@ export class RunController {
   }
 }
 
-export function createController(repoRoot = process.cwd()): RunController {
-  return RunController.fromRepoRoot(path.resolve(repoRoot));
+export function createController(
+  repoRoot = process.cwd(),
+  options: ControllerInitOptions = {}
+): RunController {
+  return RunController.fromRepoRoot(path.resolve(repoRoot), options);
 }

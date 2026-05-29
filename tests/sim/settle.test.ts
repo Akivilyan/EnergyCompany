@@ -259,6 +259,15 @@ describe("settleNextMonth", () => {
     expect(month.value.state.companyLevel).toBe(3);
   });
 
+  it("M10 promotes tutorial run to level II with lowered threshold", () => {
+    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const state = createInitialState(config, { doctrineId: "tutorial" });
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.companyLevel).toBe(2);
+  });
+
   it("M13 resets bankrupt streak when funds recover", () => {
     const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
     const state = createInitialState(config);
