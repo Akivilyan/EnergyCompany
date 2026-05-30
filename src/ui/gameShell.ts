@@ -17,6 +17,13 @@ export interface CityAdvanceActionResult {
   errorCode: string | null;
 }
 
+export interface PersistenceActionResult {
+  navigation: NavigationState;
+  ok: boolean;
+  errorCode: string | null;
+  savedAtUnixMs?: number;
+}
+
 function cloneNavigation(state: NavigationState): NavigationState {
   return {
     currentScreen: state.currentScreen,
@@ -93,6 +100,29 @@ export class GameShell {
       monthFrom: out.value.monthFrom,
       monthTo: out.value.monthTo,
       errorCode: null
+    };
+  }
+
+  saveSlot(slotId: string): PersistenceActionResult {
+    const out = this.app.persistence.save(slotId);
+    return {
+      navigation: this.getNavigation(),
+      ok: out.ok,
+      errorCode: out.ok ? null : out.error,
+      savedAtUnixMs: out.ok ? out.value.envelope.savedAtUnixMs : undefined
+    };
+  }
+
+  loadSlot(slotId: string): PersistenceActionResult {
+    const out = this.app.persistence.load(slotId);
+    if (out.ok && this.app.controller.state.runResult !== null) {
+      this.navigation.currentScreen = "screen_run_result";
+    }
+    return {
+      navigation: this.getNavigation(),
+      ok: out.ok,
+      errorCode: out.ok ? null : out.error,
+      savedAtUnixMs: out.ok ? out.value.envelope.savedAtUnixMs : undefined
     };
   }
 }

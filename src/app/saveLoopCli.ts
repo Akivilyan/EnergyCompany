@@ -6,44 +6,44 @@
  * 用法：
  *   npm run sim:save-loop
  */
-import { InMemoryStateStorage } from "../infra/storage/stateStorage.js";
-import { createRunPersistence } from "../modules/runPersistence.js";
-import { createController } from "../modules/runController.js";
+import { createGameApp } from "./gameApp.js";
+import { createGameShell } from "../ui/gameShell.js";
 
 console.log("=== Energy Company save loop smoke ===");
-const controller = createController();
-const storage = new InMemoryStateStorage();
-const persistence = createRunPersistence(controller, storage);
+const app = createGameApp();
+const shell = createGameShell(app);
 
-const pre = controller.advanceMonths(2);
-if (pre.failed && !pre.failed.ok) {
-  console.log(`pre-advance failed: ${pre.failed.error} - ${pre.failed.message}`);
-  process.exit(1);
+for (let i = 0; i < 2; i += 1) {
+  const month = shell.advanceMonthInCurrentCity();
+  if (!month.ok) {
+    console.log(`pre-advance failed: ${month.errorCode ?? "unknown"}`);
+    process.exit(1);
+  }
 }
 
-const save = persistence.save("slot-main");
+const save = shell.saveSlot("slot-main");
 if (!save.ok) {
-  console.log(`save failed: ${save.error} - ${save.message}`);
+  console.log(`save failed: ${save.errorCode ?? "unknown"}`);
   process.exit(1);
 }
 console.log(
-  `saved: month=${controller.state.currentMonth}, funds=${controller.state.funds}, at=${save.value.envelope.savedAtUnixMs}`
+  `saved: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}, at=${save.savedAtUnixMs ?? "unknown"}`
 );
 
-controller.state.currentMonth = 77;
-controller.state.funds = -777;
-console.log(`mutated runtime: month=${controller.state.currentMonth}, funds=${controller.state.funds}`);
+app.controller.state.currentMonth = 77;
+app.controller.state.funds = -777;
+console.log(`mutated runtime: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}`);
 
-const load = persistence.load("slot-main");
+const load = shell.loadSlot("slot-main");
 if (!load.ok) {
-  console.log(`load failed: ${load.error} - ${load.message}`);
+  console.log(`load failed: ${load.errorCode ?? "unknown"}`);
   process.exit(1);
 }
-console.log(`loaded: month=${controller.state.currentMonth}, funds=${controller.state.funds}`);
+console.log(`loaded: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}`);
 
-const post = controller.runNextMonth();
+const post = shell.advanceMonthInCurrentCity();
 if (!post.ok) {
-  console.log(`post-load advance failed: ${post.error} - ${post.message}`);
+  console.log(`post-load advance failed: ${post.errorCode ?? "unknown"}`);
   process.exit(1);
 }
-console.log(`resume: next_month=${controller.state.currentMonth}, result=${post.value.report.result}`);
+console.log(`resume: next_month=${app.controller.state.currentMonth}, screen=${shell.getNavigation().currentScreen}`);

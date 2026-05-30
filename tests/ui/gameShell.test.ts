@@ -34,4 +34,18 @@ describe("GameShell", () => {
     expect(month.monthTo).toBe(2);
     expect(app.controller.state.currentMonth).toBe(2);
   });
+
+  it("save and load slot through persistence", () => {
+    const app = createGameApp({ repoRoot });
+    const shell = createGameShell(app);
+    shell.advanceMonthInCurrentCity();
+    const save = shell.saveSlot("slot-test");
+    expect(save.ok).toBe(true);
+    expect(save.savedAtUnixMs).toBeTypeOf("number");
+
+    app.controller.state.funds = -999;
+    const load = shell.loadSlot("slot-test");
+    expect(load.ok).toBe(true);
+    expect(app.controller.state.funds).toBeGreaterThan(0);
+  });
 });
