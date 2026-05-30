@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.42
+version: 0.1.43
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-P1-03`
-- 任务标题：跨区主干逻辑预埋（无 UI 入口）
+- 当前任务 ID：`T45-P1-04`
+- 任务标题：真实广告 SDK 对接预研分支
 - 状态：`done`
-- 开始时间：2026-05-29
-- 完成定义（本轮）：补 trunk/region 链路边界校验与跨区主干回归测试
+- 开始时间：2026-05-30
+- 完成定义（本轮）：新增可替换广告 Provider 接口、预研编排服务、冒烟 CLI 与测试
 
 ---
 
@@ -121,6 +121,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-P1-01`：新增 `screenCodex` 简版 2 页（core/ads）只读壳层，补模块回归与 UI 文档索引 | `src/modules/screenCodex.ts` `tests/modules/screenCodex.test.ts` `docs/design/ui/codex.md` `docs/design/ui/README.md` `docs/design/ui/onboarding.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（待本轮执行） |
 | 2026-05-29 | 推进 `T45-P1-02`：新增 `playtestTelemetry` 结构化事件导出（command/settle）与 `sim:telemetry-export` CLI，补失败路径回归 | `src/modules/playtestTelemetry.ts` `src/modules/runController.ts` `src/app/telemetryExportCli.ts` `tests/modules/playtestTelemetry.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:telemetry-export` + `npm test` 通过（待本轮执行） |
 | 2026-05-29 | 推进 `T45-P1-03`：补 `queue_grid_link` 的 region/trunk 跨区校验，新增跨区 trunk 放行与误用拦截回归 | `src/sim/config/configRepo.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test -- tests/sim/settle.test.ts` 通过（36/36） |
+| 2026-05-30 | 推进 `T45-P1-04`：新增 `RewardedAdProvider` 适配层（stub/wechat 占位）与 `AdRewardService`，补 `sim:ad-sdk-spike` 预研冒烟与回归测试 | `src/infra/monetization/rewardedAdProvider.ts` `src/modules/adRewardService.ts` `src/app/adSdkSpikeCli.ts` `tests/modules/adRewardService.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:ad-sdk-spike` + `npm test` 通过（待本轮执行） |
 
 ---
 
@@ -180,3 +181,4 @@ open_questions: []
 | 0.1.40 | 2026-05-29 | 推进 T45-P1-01：新增 `overlay_codex` 简版壳层（2 页）与文档索引 |
 | 0.1.41 | 2026-05-29 | 推进 T45-P1-02：新增 playtest telemetry 结构化日志导出模块与 CLI |
 | 0.1.42 | 2026-05-29 | 推进 T45-P1-03：补 trunk/region 跨区边界校验与回归测试 |
+| 0.1.43 | 2026-05-30 | 推进 T45-P1-04：新增广告 Provider 预研接入骨架（stub/wechat 占位） |
