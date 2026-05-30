@@ -1,12 +1,22 @@
 import type { GameState, SimResult } from "../sim/index.js";
 import type { LoanTierConfig } from "../sim/config/configRepo.js";
 import type { SettlementReport, SettlementStepId } from "../sim/types/settlement.js";
+import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
+import {
+  createDefaultAdRewardService,
+  createAdRewardService,
+  type AdRewardService,
+  type AdRewardUiErrorCode
+} from "./adRewardService.js";
 import type { RunController } from "./runController.js";
 
 export type CompanyUiErrorCode =
   | "loan_not_found"
   | "loan_tier_locked"
   | "loan_already_active"
+  | "ad_not_completed"
+  | "ad_provider_failed"
+  | "ads_exhausted"
   | "action_invalid"
   | "action_failed";
 
@@ -27,6 +37,18 @@ export const COMPANY_UI_COPY: Record<CompanyUiErrorCode, CompanyUiCopySpec> = {
   loan_already_active: {
     messageKey: "company.error.loan_already_active",
     actionKey: "company.action.wait_or_repay"
+  },
+  ad_not_completed: {
+    messageKey: "company.error.ad_not_completed",
+    actionKey: "company.action.retry_ad"
+  },
+  ad_provider_failed: {
+    messageKey: "company.error.ad_provider_failed",
+    actionKey: "company.action.retry_ad"
+  },
+  ads_exhausted: {
+    messageKey: "company.error.ads_exhausted",
+    actionKey: "company.action.close_ad_panel"
   },
   action_invalid: {
     messageKey: "company.error.action_invalid",
@@ -85,6 +107,14 @@ export interface CompanyLoanActionOutput {
   uiCopy: CompanyUiCopySpec | null;
 }
 
+export interface CompanyAdActionOutput {
+  before: CompanySnapshot;
+  after: CompanySnapshot;
+  result: SimResult<{ state: GameState }>;
+  uiErrorCode: CompanyUiErrorCode | null;
+  uiCopy: CompanyUiCopySpec | null;
+}
+
 const DEFAULT_UNLOCK_LEVEL = 1;
 
 function metric(report: SettlementReport, stepId: SettlementStepId, key: string): number {
@@ -125,8 +155,38 @@ function mapLoanUiError(
   return "action_failed";
 }
 
+function syntheticAdBlockedResult(message: string): SimResult<{ state: GameState }> {
+  return {
+    ok: false,
+    error: "invalid_command_payload",
+    message
+  };
+}
+
+function mapAdUiError(
+  adError: AdRewardUiErrorCode | null,
+  claimResult: SimResult<{ state: GameState }> | null
+): CompanyUiErrorCode | null {
+  if (adError === "ad_not_completed") return "ad_not_completed";
+  if (adError === "ad_provider_failed") return "ad_provider_failed";
+  if (adError === "reward_rejected" && claimResult && !claimResult.ok) {
+    if (claimResult.error === "conflict_in_progress") return "ads_exhausted";
+    if (claimResult.error === "invalid_phase") return "action_invalid";
+  }
+  return "action_failed";
+}
+
 export class ScreenCompany {
-  constructor(private readonly controller: RunController) {}
+  private readonly adRewardService: AdRewardService;
+
+  constructor(controller: RunController, adProvider?: RewardedAdProvider) {
+    this.controller = controller;
+    this.adRewardService = adProvider
+      ? createAdRewardService(controller, adProvider)
+      : createDefaultAdRewardService(controller);
+  }
+
+  private readonly controller: RunController;
 
   getSnapshot(): CompanySnapshot {
     const state = this.controller.state;
@@ -189,8 +249,38 @@ export class ScreenCompany {
       uiCopy: resolveUiCopy(uiErrorCode)
     };
   }
+
+  claimCashByAd(): CompanyAdActionOutput {
+    const before = this.getSnapshot();
+    const adAction = this.adRewardService.claimRewardByAd("cash", "screen_company.cash");
+    const after = this.getSnapshot();
+    if (!adAction.rewarded) {
+      const uiErrorCode = mapAdUiError(adAction.uiErrorCode, adAction.claimResult);
+      const result =
+        adAction.claimResult ??
+        syntheticAdBlockedResult(adAction.adOutcome.message ?? "ad reward blocked");
+      return {
+        before,
+        after,
+        result,
+        uiErrorCode,
+        uiCopy: resolveUiCopy(uiErrorCode)
+      };
+    }
+    const result = adAction.claimResult!;
+    return {
+      before,
+      after,
+      result,
+      uiErrorCode: null,
+      uiCopy: null
+    };
+  }
 }
 
-export function createScreenCompany(controller: RunController): ScreenCompany {
-  return new ScreenCompany(controller);
+export function createScreenCompany(
+  controller: RunController,
+  adProvider?: RewardedAdProvider
+): ScreenCompany {
+  return new ScreenCompany(controller, adProvider);
 }

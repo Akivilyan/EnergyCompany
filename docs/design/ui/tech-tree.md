@@ -2,7 +2,7 @@
 id: ui/tech-tree
 title: 科技树界面
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/features/tech-tree.md
   - docs/design/gdd/07-tech.md
@@ -77,9 +77,13 @@ open_questions: []
 | `research_queue_full` | `tech_tree.error.research_queue_full` | `tech_tree.action.cancel_or_wait` | 显示在研占位，给“取消/等待”二选一 |
 | `research_not_found` | `tech_tree.error.research_not_found` | `tech_tree.action.refresh_list` | 提示状态已变化，刷新当前列表 |
 | `no_active_research` | `tech_tree.error.no_active_research` | `tech_tree.action.start_research_first` | 广告加速前置提示：先有在研项目 |
+| `ad_not_completed` | `tech_tree.error.ad_not_completed` | `tech_tree.action.retry_ad` | 激励未看完，不扣次数不发奖 |
+| `ad_provider_failed` | `tech_tree.error.ad_provider_failed` | `tech_tree.action.retry_ad` | SDK/网络失败，不扣次数 |
 | `action_blocked` | `tech_tree.error.action_blocked` | `tech_tree.action.follow_tutorial` | 教学阶段拦截，按引导步骤继续 |
 | `action_invalid` | `tech_tree.error.action_invalid` | `tech_tree.action.retry_after_settle` | 结算拍或 payload 异常，建议稍后重试 |
 | `action_failed` | `tech_tree.error.action_failed` | `tech_tree.action.retry` | 未归类兜底错误，提示重试 |
+
+`speedupResearchByAd()` 经 `AdRewardService` 播激励广告后调用 `claim_ad_reward(speedup)`；默认 stub 完成以保持 v0 兼容。
 
 ## 8. 导航
 
@@ -100,3 +104,4 @@ open_questions: []
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T31 初稿 |
 | 0.1.1 | 2026-05-29 | 对齐 T45-11：补 `uiErrorCode` 对应 `messageKey/actionKey` 清单，统一壳层错误提示契约 |
+| 0.1.2 | 2026-05-30 | 对齐 T45-P1-04：研发广告加速改经 `AdRewardService`，补广告错误码映射 |

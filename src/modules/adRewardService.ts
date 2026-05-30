@@ -1,9 +1,10 @@
 import type { GameState, SimResult } from "../sim/index.js";
 import type { Command } from "../sim/types/commands.js";
-import type {
-  RewardedAdOutcome,
-  RewardedAdProvider,
-  RewardedAdType
+import {
+  StubRewardedAdProvider,
+  type RewardedAdOutcome,
+  type RewardedAdProvider,
+  type RewardedAdType
 } from "../infra/monetization/rewardedAdProvider.js";
 import type { RunController } from "./runController.js";
 
@@ -98,4 +99,11 @@ export function createAdRewardService(
   adProvider: RewardedAdProvider
 ): AdRewardService {
   return new AdRewardService(controller, adProvider);
+}
+
+export function createDefaultAdRewardService(controller: RunController): AdRewardService {
+  return createAdRewardService(
+    controller,
+    new StubRewardedAdProvider({ kind: "always_complete" })
+  );
 }

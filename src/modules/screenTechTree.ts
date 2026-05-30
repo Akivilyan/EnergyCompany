@@ -1,4 +1,11 @@
 import type { GameState, SimResult } from "../sim/index.js";
+import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
+import {
+  createDefaultAdRewardService,
+  createAdRewardService,
+  type AdRewardService,
+  type AdRewardUiErrorCode
+} from "./adRewardService.js";
 import type { RunController } from "./runController.js";
 
 export type TechTreeUiErrorCode =
@@ -7,6 +14,8 @@ export type TechTreeUiErrorCode =
   | "research_queue_full"
   | "research_not_found"
   | "no_active_research"
+  | "ad_not_completed"
+  | "ad_provider_failed"
   | "action_blocked"
   | "action_invalid"
   | "action_failed";
@@ -36,6 +45,14 @@ export const TECH_TREE_UI_COPY: Record<TechTreeUiErrorCode, TechTreeUiCopySpec> 
   no_active_research: {
     messageKey: "tech_tree.error.no_active_research",
     actionKey: "tech_tree.action.start_research_first"
+  },
+  ad_not_completed: {
+    messageKey: "tech_tree.error.ad_not_completed",
+    actionKey: "tech_tree.action.retry_ad"
+  },
+  ad_provider_failed: {
+    messageKey: "tech_tree.error.ad_provider_failed",
+    actionKey: "tech_tree.action.retry_ad"
   },
   action_blocked: {
     messageKey: "tech_tree.error.action_blocked",
@@ -90,13 +107,43 @@ function mapUiError(result: TechTreeActionOutput["result"]): TechTreeUiErrorCode
   }
   if (result.error === "conflict_in_progress") {
     if (result.message.includes("no active research")) return "no_active_research";
+    if (result.message.includes("no ads remaining")) return "action_failed";
     return "research_queue_full";
   }
   return "action_failed";
 }
 
+function syntheticAdBlockedResult(message: string): SimResult<{ state: GameState }> {
+  return {
+    ok: false,
+    error: "invalid_command_payload",
+    message
+  };
+}
+
+function mapAdUiError(
+  adError: AdRewardUiErrorCode | null,
+  claimResult: SimResult<{ state: GameState }> | null
+): TechTreeUiErrorCode | null {
+  if (adError === "ad_not_completed") return "ad_not_completed";
+  if (adError === "ad_provider_failed") return "ad_provider_failed";
+  if (adError === "reward_rejected" && claimResult) {
+    return mapUiError(claimResult);
+  }
+  return "action_failed";
+}
+
 export class ScreenTechTree {
-  constructor(private readonly controller: RunController) {}
+  private readonly adRewardService: AdRewardService;
+
+  constructor(controller: RunController, adProvider?: RewardedAdProvider) {
+    this.controller = controller;
+    this.adRewardService = adProvider
+      ? createAdRewardService(controller, adProvider)
+      : createDefaultAdRewardService(controller);
+  }
+
+  private readonly controller: RunController;
 
   getSnapshot(): TechTreeSnapshot {
     const active = Object.values(this.controller.state.researches)[0];
@@ -134,16 +181,30 @@ export class ScreenTechTree {
 
   speedupResearchByAd(): TechTreeActionOutput {
     const before = this.getSnapshot();
-    const result = this.controller.runCommand({
-      type: "claim_ad_reward",
-      adType: "speedup"
-    });
+    const adAction = this.adRewardService.claimRewardByAd("speedup", "screen_tech_tree.speedup");
     const after = this.getSnapshot();
+    if (!adAction.rewarded) {
+      const result =
+        adAction.claimResult ??
+        syntheticAdBlockedResult(adAction.adOutcome.message ?? "ad reward blocked");
+      const uiErrorCode = mapAdUiError(adAction.uiErrorCode, adAction.claimResult);
+      return {
+        before,
+        after,
+        result,
+        uiErrorCode,
+        uiCopy: resolveTechTreeUiCopy(uiErrorCode)
+      };
+    }
+    const result = adAction.claimResult!;
     const uiErrorCode = mapUiError(result);
     return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
   }
 }
 
-export function createScreenTechTree(controller: RunController): ScreenTechTree {
-  return new ScreenTechTree(controller);
+export function createScreenTechTree(
+  controller: RunController,
+  adProvider?: RewardedAdProvider
+): ScreenTechTree {
+  return new ScreenTechTree(controller, adProvider);
 }

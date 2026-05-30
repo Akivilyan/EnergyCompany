@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdProvider.js";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenCompany } from "../../src/modules/screenCompany.js";
 
@@ -51,5 +52,32 @@ describe("ScreenCompany", () => {
     expect(cashflows[0].netCashflow).toBe(
       cashflows[0].income - cashflows[0].opex - cashflows[0].fuel - cashflows[0].loanPaid
     );
+  });
+
+  it("claims cash reward through ad provider by default", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const screen = createScreenCompany(controller);
+    const out = screen.claimCashByAd();
+    expect(out.result.ok).toBe(true);
+    expect(out.uiErrorCode).toBeNull();
+    expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);
+    expect(out.after.funds).toBeGreaterThan(out.before.funds);
+  });
+
+  it("maps cancelled ad playback without consuming ads", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    const screen = createScreenCompany(
+      controller,
+      new StubRewardedAdProvider({ kind: "always_cancel" })
+    );
+    const out = screen.claimCashByAd();
+    expect(out.result.ok).toBe(false);
+    expect(out.uiErrorCode).toBe("ad_not_completed");
+    expect(out.uiCopy).toEqual({
+      messageKey: "company.error.ad_not_completed",
+      actionKey: "company.action.retry_ad"
+    });
+    expect(out.after.adsRemaining).toBe(out.before.adsRemaining);
+    expect(out.after.funds).toBe(out.before.funds);
   });
 });

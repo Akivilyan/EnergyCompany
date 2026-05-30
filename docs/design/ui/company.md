@@ -2,7 +2,7 @@
 id: ui/company
 title: 公司管理界面
 status: draft
-version: 0.1.1
+version: 0.1.2
 sources:
   - docs/design/features/company-management.md
   - docs/design/gdd/09-year-end-and-monetization.md#公司经营界面大理石式快照
@@ -99,6 +99,7 @@ open_questions: []
 - `getSnapshot()`：`funds/companyLevel/socialValue/runResult/adsRemaining`、当前贷款、可申请贷款档位（含 `unlockLevel/unlocked`）。
 - `getRecentCashflows(limit)`：按近月结算报告输出 `income/opex/fuel/loanPaid/netCashflow`，用于“近月流水”列表。
 - `applyLoan(loanId)`：调用 `apply_loan` 并返回 `before/after/result/uiErrorCode/uiCopy`。
+- `claimCashByAd()`：经 `AdRewardService` 播激励广告后调用 `claim_ad_reward(cash)`；默认 stub 完成以保持 v0 兼容。
 
 贷款动作错误码映射（`uiErrorCode -> messageKey/actionKey`）：
 
@@ -109,6 +110,14 @@ open_questions: []
 | `loan_already_active` | `company.error.loan_already_active` | `company.action.wait_or_repay` |
 | `action_invalid` | `company.error.action_invalid` | `company.action.return_to_playable` |
 | `action_failed` | `company.error.action_failed` | `company.action.retry` |
+
+激励广告动作错误码映射：
+
+| `uiErrorCode` | `messageKey` | `actionKey` |
+|---|---|---|
+| `ad_not_completed` | `company.error.ad_not_completed` | `company.action.retry_ad` |
+| `ad_provider_failed` | `company.error.ad_provider_failed` | `company.action.retry_ad` |
+| `ads_exhausted` | `company.error.ads_exhausted` | `company.action.close_ad_panel` |
 
 ## 8. 导航
 
@@ -129,3 +138,4 @@ open_questions: []
 |------|------|------|
 | 0.1.0 | 2026-05-27 | T29 初稿 |
 | 0.1.1 | 2026-05-29 | 对齐 T45-13：补 `screenCompany` 快照/近月流水/贷款动作壳层契约与错误码映射 |
+| 0.1.2 | 2026-05-30 | 对齐 T45-P1-04：公司屏激励广告改经 `AdRewardService`，补广告错误码映射 |

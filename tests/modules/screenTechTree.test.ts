@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdProvider.js";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenTechTree } from "../../src/modules/screenTechTree.js";
 
@@ -78,5 +79,23 @@ describe("ScreenTechTree", () => {
     expect(speedup.uiCopy).toBeNull();
     expect(speedup.after.activeResearch).toBeNull();
     expect(speedup.after.litTechIds).toContain("storage_system_1");
+  });
+
+  it("maps cancelled ad playback without consuming ads or lighting tech", () => {
+    const controller = RunController.fromRepoRoot(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenTechTree(
+      controller,
+      new StubRewardedAdProvider({ kind: "always_cancel" })
+    );
+    const start = screen.startResearch("storage_system_1");
+    expect(start.result.ok).toBe(true);
+
+    const speedup = screen.speedupResearchByAd();
+    expect(speedup.result.ok).toBe(false);
+    expect(speedup.uiErrorCode).toBe("ad_not_completed");
+    expect(speedup.after.activeResearch).not.toBeNull();
+    expect(speedup.after.litTechIds).not.toContain("storage_system_1");
+    expect(controller.state.adsRemaining).toBe(10);
   });
 });
