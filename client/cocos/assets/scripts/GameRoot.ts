@@ -1,6 +1,11 @@
 import { director, _decorator, Component } from "cc";
 import { mountGameClient } from "../shared/src/app/gameClientEntry";
+import {
+  clearMountedGameClient,
+  setMountedGameClient
+} from "../shared/src/app/gameClientRegistry";
 import { CocosSceneHost } from "./CocosSceneHost";
+import { CityHudPanel } from "./CityHudPanel";
 import { loadConfigFromResources } from "./loadConfigFromResources";
 
 const { ccclass } = _decorator;
@@ -18,6 +23,7 @@ export class GameRoot extends Component {
   onDestroy(): void {
     this.unbindAutoSave?.();
     this.unbindAutoSave = null;
+    clearMountedGameClient();
   }
 
   private async mountGame(): Promise<void> {
@@ -26,6 +32,10 @@ export class GameRoot extends Component {
     try {
       const configRepo = await loadConfigFromResources();
       const boot = mountGameClient({ configRepo, sceneHost });
+      setMountedGameClient(boot);
+      if (!this.getComponent(CityHudPanel)) {
+        this.node.addComponent(CityHudPanel);
+      }
       this.mounted = true;
       this.unbindAutoSave = boot.clientAutoSave?.unbind ?? null;
       const resume = boot.clientResume;

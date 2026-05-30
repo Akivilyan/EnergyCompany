@@ -10,6 +10,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { resolveClientConfigDir, resolveClientSharedDir } from "./clientPaths.js";
+import {
+  cityHudAdvanceMonth,
+  cityHudBuildWind,
+  formatCityHudStatus,
+  readCityHudViewModel
+} from "./cityHudController.js";
 import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
 import type { WxHideLifecyclePort } from "../infra/lifecycle/wxLifecycle.js";
@@ -61,21 +67,23 @@ const boot1 = mountGameClient({
   autoResumeSlot: false,
   wxLifecycle: lifecycle
 });
-const { app, play } = boot1;
+const { app } = boot1;
 
 console.log("=== Energy Company client sync spike ===");
 console.log(`config: cities=${config.bundle.cities.length}, source=json-records, shared=${path.relative(repoRoot, sharedDir)}`);
+console.log(`hud: ${formatCityHudStatus(readCityHudViewModel(boot1))}`);
 
-const build = play.buildInCurrentCity("wind", 1);
+const build = cityHudBuildWind(boot1);
 if (!build.ok) {
   console.log(`build failed: ${build.errorCode ?? "unknown"}`);
   process.exit(1);
 }
-const month = play.advanceMonthInCurrentCity();
+const month = cityHudAdvanceMonth(boot1);
 if (!month.ok) {
   console.log(`advance failed: ${month.errorCode ?? "unknown"}`);
   process.exit(1);
 }
+console.log(`hud-after-play: ${formatCityHudStatus(month.view)}`);
 
 const savedMonth = app.controller.state.currentMonth;
 const savedFunds = app.controller.state.funds;
