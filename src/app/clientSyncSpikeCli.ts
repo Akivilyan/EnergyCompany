@@ -10,8 +10,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { resolveClientConfigDir, resolveClientSharedDir } from "./clientPaths.js";
+import { persistClientRun, mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
-import { mountGameClient } from "./gameClientEntry.js";
+import { InMemoryStateStorage } from "../infra/storage/stateStorage.js";
 import { LoggingSceneHost } from "../ui/sceneHost.js";
 
 const repoRoot = process.cwd();
@@ -31,8 +32,15 @@ if (!fs.existsSync(configDir)) {
 }
 
 const config = loadConfigRepoFromJsonDir(configDir);
+const storage = new InMemoryStateStorage();
 const host = new LoggingSceneHost();
-const { app, play } = mountGameClient({ configRepo: config, sceneHost: host });
+const boot1 = mountGameClient({
+  configRepo: config,
+  sceneHost: host,
+  stateStorage: storage,
+  autoResumeSlot: false
+});
+const { app, play } = boot1;
 
 console.log("=== Energy Company client sync spike ===");
 console.log(`config: cities=${config.bundle.cities.length}, source=json-records, shared=${path.relative(repoRoot, sharedDir)}`);
@@ -48,24 +56,32 @@ if (!month.ok) {
   process.exit(1);
 }
 
-const fundsBeforeSave = app.controller.state.funds;
-const save = app.persistence.save("client-spike");
+const savedMonth = app.controller.state.currentMonth;
+const savedFunds = app.controller.state.funds;
+const save = persistClientRun(play);
 if (!save.ok) {
-  console.log(`save failed: ${save.error}`);
+  console.log(`save failed: ${save.errorCode ?? "unknown"}`);
   process.exit(1);
 }
-app.controller.state.funds = -1;
-const load = app.persistence.load("client-spike");
-if (!load.ok) {
-  console.log(`load failed: ${load.error}`);
+
+const boot2 = mountGameClient({
+  configRepo: config,
+  sceneHost: host,
+  stateStorage: storage
+});
+if (!boot2.clientResume?.resumed) {
+  console.log("auto-resume failed on remount");
   process.exit(1);
 }
-if (app.controller.state.funds !== fundsBeforeSave) {
-  console.log("load did not restore saved funds");
+if (
+  boot2.app.controller.state.currentMonth !== savedMonth ||
+  boot2.app.controller.state.funds !== savedFunds
+) {
+  console.log("auto-resume did not restore saved run state");
   process.exit(1);
 }
 
 console.log(
-  `play: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}, scene=${host.getCurrentScene()}`
+  `play: month=${boot2.app.controller.state.currentMonth}, funds=${boot2.app.controller.state.funds}, scene=${host.getCurrentScene()}, resume=${boot2.clientResume.slotId}`
 );
 console.log(`manifest: ${path.relative(repoRoot, manifestPath)}`);

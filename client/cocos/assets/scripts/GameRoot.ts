@@ -21,8 +21,14 @@ export class GameRoot extends Component {
       const configRepo = await loadConfigFromResources();
       const boot = mountGameClient({ configRepo, sceneHost });
       this.mounted = true;
+      const resume = boot.clientResume;
+      const resumeLabel = resume
+        ? resume.resumed
+          ? `resumed slot=${resume.slotId} month=${boot.app.controller.state.currentMonth}`
+          : `fresh slot=${resume.slotId}`
+        : "resume=off";
       console.log(
-        `[GameRoot] mounted screen=${boot.play.getNavigation().currentScreen}, scene=${sceneHost.getCurrentScene()}`
+        `[GameRoot] mounted screen=${boot.play.getNavigation().currentScreen}, scene=${sceneHost.getCurrentScene()}, ${resumeLabel}`
       );
       director.addPersistRootNode(this.node);
     } catch (error) {
