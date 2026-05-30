@@ -8,6 +8,7 @@
  *   npm run sim:regression
  */
 import { createScreenCityDetail } from "../modules/screenCityDetail.js";
+import { createScreenCompany } from "../modules/screenCompany.js";
 import { createScreenEventsPanel } from "../modules/screenEventsPanel.js";
 import { createScreenOnboarding } from "../modules/screenOnboarding.js";
 import { createScreenRegion } from "../modules/screenRegion.js";
@@ -127,6 +128,7 @@ function promoteToLevel2(): ReturnType<typeof createController> {
 
 function runE3(): ScenarioResult {
   const controller = promoteToLevel2();
+  const company = createScreenCompany(controller);
   const tech = createScreenTechTree(controller);
   const targetTechId = "storage_system_1";
 
@@ -135,12 +137,11 @@ function runE3(): ScenarioResult {
   ensure(start.after.activeResearch !== null, "active research should exist");
   ensure(controller.state.adsRemaining >= 2, "adsRemaining should be >= 2 for cash+speedup");
 
-  const fundsBeforeCash = controller.state.funds;
   const adsBeforeCash = controller.state.adsRemaining;
-  const cash = controller.runCommand({ type: "claim_ad_reward", adType: "cash" });
-  ensure(cash.ok, "cash ad reward failed");
-  ensure(controller.state.funds > fundsBeforeCash, "cash ad should increase funds");
-  ensure(controller.state.adsRemaining === adsBeforeCash - 1, "cash ad should consume one ad");
+  const cash = company.claimCashByAd();
+  ensure(cash.result.ok, "cash ad reward failed");
+  ensure(cash.after.funds > cash.before.funds, "cash ad should increase funds");
+  ensure(cash.after.adsRemaining === adsBeforeCash - 1, "cash ad should consume one ad");
 
   const speedup = tech.speedupResearchByAd();
   ensure(speedup.result.ok, "speedup ad reward failed");

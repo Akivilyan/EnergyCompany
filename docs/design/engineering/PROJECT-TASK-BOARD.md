@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.44
+version: 0.1.45
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -21,7 +21,7 @@ open_questions: []
 
 ## 1. 当前阶段与总目标
 
-- 当前阶段：`T45` 编码闭环（P0 优先）
+- 当前阶段：`T45` 编码闭环（P0 + P1 已完成，进入收口）
 - 执行策略：先 coding 健壮性与可玩闭环，再做数值精调
 - 本看板维护频率：每次对话结束时实时更新
 - 提交策略：每步本地 `commit`；累计到阶段节点后再统一 `push`
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T45-P1-04`
-- 任务标题：真实广告 SDK 对接预研分支
+- 当前任务 ID：`T45-CLOSE`
+- 任务标题：v0 playtest 聚合回归收口
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：公司屏/科技树壳层接入 `AdRewardService`，默认 stub 兼容旧路径
+- 完成定义（本轮）：新增 `sim:playtest-bundle` 聚合脚本，回归 E3 改走 screen 壳层，补 modules 边界扫描测试
 
 ---
 
@@ -123,6 +123,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-P1-03`：补 `queue_grid_link` 的 region/trunk 跨区校验，新增跨区 trunk 放行与误用拦截回归 | `src/sim/config/configRepo.ts` `src/sim/core/dispatch.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test -- tests/sim/settle.test.ts` 通过（36/36） |
 | 2026-05-30 | 推进 `T45-P1-04`：新增 `RewardedAdProvider` 适配层（stub/wechat 占位）与 `AdRewardService`，补 `sim:ad-sdk-spike` 预研冒烟与回归测试 | `src/infra/monetization/rewardedAdProvider.ts` `src/modules/adRewardService.ts` `src/app/adSdkSpikeCli.ts` `tests/modules/adRewardService.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:ad-sdk-spike` + `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T45-P1-04`：`screenCompany/screenTechTree` 接入 `AdRewardService`（cash/speedup），补广告取消路径回归与 UI 错误码映射 | `src/modules/screenCompany.ts` `src/modules/screenTechTree.ts` `tests/modules/screenCompany.test.ts` `tests/modules/screenTechTree.test.ts` `docs/design/ui/company.md` `docs/design/ui/tech-tree.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（待本轮执行） |
+| 2026-05-30 | 收口 `T45-CLOSE`：新增 `sim:playtest-bundle`（boundaries+regression+test），E3 回归改经 screen 壳层，补 modules 边界扫描 | `src/app/playtestBundleCli.ts` `src/app/regressionCli.ts` `tests/modules/uiBoundary.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 
 ---
 
@@ -184,3 +185,4 @@ open_questions: []
 | 0.1.42 | 2026-05-29 | 推进 T45-P1-03：补 trunk/region 跨区边界校验与回归测试 |
 | 0.1.43 | 2026-05-30 | 推进 T45-P1-04：新增广告 Provider 预研接入骨架（stub/wechat 占位） |
 | 0.1.44 | 2026-05-30 | 推进 T45-P1-04：公司屏/科技树壳层接入 AdRewardService 与广告错误码映射 |
+| 0.1.45 | 2026-05-30 | 收口 T45-CLOSE：新增 playtest 聚合脚本与 modules 边界扫描测试 |
