@@ -17,6 +17,7 @@
     "sim:telemetry-export": "tsx src/app/telemetryExportCli.ts",
     "sim:ad-sdk-spike": "tsx src/app/adSdkSpikeCli.ts",
     "sim:playtest-bundle": "tsx src/app/playtestBundleCli.ts",
+    "sim:app-shell": "tsx src/app/appShellCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {

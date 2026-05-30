@@ -18,17 +18,34 @@ function walkTsFiles(dir: string, files: string[] = []): string[] {
   return files;
 }
 
-describe("modules boundary", () => {
-  it("does not import sim/core internals directly", () => {
-    const modulesDir = path.join(repoRoot, "src", "modules");
-    const files = walkTsFiles(modulesDir);
-    const violations: string[] = [];
-    for (const file of files) {
-      const text = fs.readFileSync(file, "utf8");
-      if (/from ["']\.\.\/sim\/core\//.test(text)) {
+function collectViolations(dir: string, patterns: RegExp[]): string[] {
+  const violations: string[] = [];
+  for (const file of walkTsFiles(dir)) {
+    const text = fs.readFileSync(file, "utf8");
+    for (const pattern of patterns) {
+      if (pattern.test(text)) {
         violations.push(path.relative(repoRoot, file));
       }
     }
+  }
+  return violations;
+}
+
+describe("modules boundary", () => {
+  it("does not import sim/core internals directly", () => {
+    const modulesDir = path.join(repoRoot, "src", "modules");
+    const violations = collectViolations(modulesDir, [/from ["']\.\.\/sim\/core\//]);
+    expect(violations).toEqual([]);
+  });
+});
+
+describe("ui boundary", () => {
+  it("does not import sim or app layers directly", () => {
+    const uiDir = path.join(repoRoot, "src", "ui");
+    const violations = collectViolations(uiDir, [
+      /from ["']\.\.\/sim\//,
+      /from ["']\.\.\/app\//
+    ]);
     expect(violations).toEqual([]);
   });
 });
