@@ -9,9 +9,15 @@ const { ccclass } = _decorator;
 @ccclass("GameRoot")
 export class GameRoot extends Component {
   private mounted = false;
+  private unbindAutoSave: (() => void) | null = null;
 
   onLoad(): void {
     void this.mountGame();
+  }
+
+  onDestroy(): void {
+    this.unbindAutoSave?.();
+    this.unbindAutoSave = null;
   }
 
   private async mountGame(): Promise<void> {
@@ -21,14 +27,16 @@ export class GameRoot extends Component {
       const configRepo = await loadConfigFromResources();
       const boot = mountGameClient({ configRepo, sceneHost });
       this.mounted = true;
+      this.unbindAutoSave = boot.clientAutoSave?.unbind ?? null;
       const resume = boot.clientResume;
+      const autoSaveLabel = boot.clientAutoSave?.bound ? `autosave=${boot.clientAutoSave.slotId}` : "autosave=off";
       const resumeLabel = resume
         ? resume.resumed
           ? `resumed slot=${resume.slotId} month=${boot.app.controller.state.currentMonth}`
           : `fresh slot=${resume.slotId}`
         : "resume=off";
       console.log(
-        `[GameRoot] mounted screen=${boot.play.getNavigation().currentScreen}, scene=${sceneHost.getCurrentScene()}, ${resumeLabel}`
+        `[GameRoot] mounted screen=${boot.play.getNavigation().currentScreen}, scene=${sceneHost.getCurrentScene()}, ${resumeLabel}, ${autoSaveLabel}`
       );
       director.addPersistRootNode(this.node);
     } catch (error) {

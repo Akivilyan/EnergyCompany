@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.55
+version: 0.1.56
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T49-04`
-- 任务标题：客户端挂载自动读档（default slot）
+- 当前任务 ID：`T49-05`
+- 任务标题：wx.onHide 自动存档
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`tryResumeClientRun` + `mountGameClient` 默认 `slot-main` 读档，GameRoot 日志，client-sync 覆盖 remount 恢复
+- 完成定义（本轮）：`bindClientAutoSaveOnHide` 绑定 `wx.onHide`，`mountGameClient` 默认启用，GameRoot 销毁解绑，client-sync 覆盖 hide→remount 恢复
 
 ---
 
@@ -134,6 +134,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T49-02`：`ConfigRepo.fromBundle` + Cocos `loadConfigFromResources` 异步加载，GameRoot 去掉读盘依赖 | `src/sim/config/configBundle.ts` `src/app/loadConfigRecords.ts` `client/cocos/assets/scripts/loadConfigFromResources.ts` `client/cocos/assets/scripts/GameRoot.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T49-03`：`WxStateStorage` 适配 wx 本地存储，`mountGameClient` 默认注入，client-sync 补 save/load 冒烟 | `src/infra/storage/wxStateStorage.ts` `src/app/gameApp.ts` `src/app/gameClientEntry.ts` `src/app/clientSyncSpikeCli.ts` `tests/infra/wxStateStorage.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（109/109） |
 | 2026-05-30 | 推进 `T49-04`：客户端挂载自动读档 default slot，`clientPersistence` 编排，remount 恢复冒烟 | `src/app/clientPersistence.ts` `src/app/gameClientEntry.ts` `src/app/gameBootstrap.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/clientPersistence.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（112/112） |
+| 2026-05-30 | 推进 `T49-05`：`wx.onHide` 自动存档，`clientLifecycle` 绑定与 hide→remount 冒烟 | `src/infra/lifecycle/wxLifecycle.ts` `src/app/clientLifecycle.ts` `src/app/gameClientEntry.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/clientLifecycle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（116/116） |
 
 ---
 
@@ -206,3 +207,4 @@ open_questions: []
 | 0.1.53 | 2026-05-30 | 推进 T49-02：Cocos resources 异步 config 加载与 fromBundle 构建 |
 | 0.1.54 | 2026-05-30 | 推进 T49-03：WxStateStorage 适配 wx 本地存储并接入 mountGameClient |
 | 0.1.55 | 2026-05-30 | 推进 T49-04：客户端挂载自动读档 default slot 与 remount 恢复冒烟 |
+| 0.1.56 | 2026-05-30 | 推进 T49-05：wx.onHide 自动存档绑定与 hide→remount 冒烟 |

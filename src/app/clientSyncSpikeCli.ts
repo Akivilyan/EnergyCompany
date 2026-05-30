@@ -10,10 +10,29 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { resolveClientConfigDir, resolveClientSharedDir } from "./clientPaths.js";
-import { persistClientRun, mountGameClient } from "./gameClientEntry.js";
+import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
+import type { WxHideLifecyclePort } from "../infra/lifecycle/wxLifecycle.js";
 import { InMemoryStateStorage } from "../infra/storage/stateStorage.js";
 import { LoggingSceneHost } from "../ui/sceneHost.js";
+
+class FakeWxHideLifecycle implements WxHideLifecyclePort {
+  private listeners: Array<() => void> = [];
+
+  onHide(listener: () => void): void {
+    this.listeners.push(listener);
+  }
+
+  offHide(listener: () => void): void {
+    this.listeners = this.listeners.filter((item) => item !== listener);
+  }
+
+  triggerHide(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+}
 
 const repoRoot = process.cwd();
 const sharedDir = resolveClientSharedDir(repoRoot);
@@ -34,11 +53,13 @@ if (!fs.existsSync(configDir)) {
 const config = loadConfigRepoFromJsonDir(configDir);
 const storage = new InMemoryStateStorage();
 const host = new LoggingSceneHost();
+const lifecycle = new FakeWxHideLifecycle();
 const boot1 = mountGameClient({
   configRepo: config,
   sceneHost: host,
   stateStorage: storage,
-  autoResumeSlot: false
+  autoResumeSlot: false,
+  wxLifecycle: lifecycle
 });
 const { app, play } = boot1;
 
@@ -58,16 +79,18 @@ if (!month.ok) {
 
 const savedMonth = app.controller.state.currentMonth;
 const savedFunds = app.controller.state.funds;
-const save = persistClientRun(play);
-if (!save.ok) {
-  console.log(`save failed: ${save.errorCode ?? "unknown"}`);
+if (!boot1.clientAutoSave?.bound) {
+  console.log("auto-save on hide was not bound");
   process.exit(1);
 }
+lifecycle.triggerHide();
+boot1.clientAutoSave.unbind();
 
 const boot2 = mountGameClient({
   configRepo: config,
   sceneHost: host,
-  stateStorage: storage
+  stateStorage: storage,
+  wxLifecycle: lifecycle
 });
 if (!boot2.clientResume?.resumed) {
   console.log("auto-resume failed on remount");
@@ -82,6 +105,6 @@ if (
 }
 
 console.log(
-  `play: month=${boot2.app.controller.state.currentMonth}, funds=${boot2.app.controller.state.funds}, scene=${host.getCurrentScene()}, resume=${boot2.clientResume.slotId}`
+  `play: month=${boot2.app.controller.state.currentMonth}, funds=${boot2.app.controller.state.funds}, scene=${host.getCurrentScene()}, resume=${boot2.clientResume.slotId}, hide-save=${boot1.clientAutoSave.slotId}`
 );
 console.log(`manifest: ${path.relative(repoRoot, manifestPath)}`);
