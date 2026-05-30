@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.52
+version: 0.1.53
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T49-01`
-- 任务标题：Cocos client 资源同步与挂载入口
+- 当前任务 ID：`T49-02`
+- 任务标题：Cocos resources 异步加载 config
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`build:client` 同步 shared/config、`mountGameClient` 注入 ConfigRepo、`sim:client-sync-spike` 冒烟
+- 完成定义（本轮）：`ConfigRepo.fromBundle` + `loadConfigFromResources`，GameRoot 异步挂载，client-sync 改走 JSON 记录路径
 
 ---
 
@@ -131,6 +131,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T48-05`：新增 `GameSceneBridge`/`SceneHost` 场景映射层与 `sim:cocos-scene-spike`，导出 Cocos 场景注册表 | `src/ui/sceneMap.ts` `src/ui/sceneHost.ts` `src/ui/gameSceneBridge.ts` `src/app/cocosSceneSpikeCli.ts` `client/cocos/scene-registry.json` `tests/ui/gameSceneBridge.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:cocos-scene-spike` + `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 收口 `T48-CLOSE`：新增 `createGameBootstrap` 统一装配入口，CLI 收口至 bootstrap，补 Cocos SceneHost 示例 | `src/app/gameBootstrap.ts` `src/app/appShellCli.ts` `src/app/saveLoopCli.ts` `src/app/cocosSceneSpikeCli.ts` `client/cocos/CocosSceneHost.example.ts` `tests/app/gameBootstrap.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T49-01`：`build:client` 同步 dist/config 至 Cocos 工程，`mountGameClient` 注入 ConfigRepo，补 GameRoot 占位 | `scripts/sync-client-assets.mjs` `src/app/gameClientEntry.ts` `src/app/clientSyncSpikeCli.ts` `client/cocos/project.json` `client/cocos/assets/scripts/GameRoot.ts` `tests/sim/configRepo.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（待本轮执行） |
+| 2026-05-30 | 推进 `T49-02`：`ConfigRepo.fromBundle` + Cocos `loadConfigFromResources` 异步加载，GameRoot 去掉读盘依赖 | `src/sim/config/configBundle.ts` `src/app/loadConfigRecords.ts` `client/cocos/assets/scripts/loadConfigFromResources.ts` `client/cocos/assets/scripts/GameRoot.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（待本轮执行） |
 
 ---
 
@@ -200,3 +201,4 @@ open_questions: []
 | 0.1.50 | 2026-05-30 | 推进 T48-05：Cocos 场景占位接入 GameShell 与场景注册表导出 |
 | 0.1.51 | 2026-05-30 | 收口 T48-CLOSE：createGameBootstrap 统一装配与 CLI 收口 |
 | 0.1.52 | 2026-05-30 | 推进 T49-01：Cocos client 资源同步与 mountGameClient 挂载入口 |
+| 0.1.53 | 2026-05-30 | 推进 T49-02：Cocos resources 异步 config 加载与 fromBundle 构建 |

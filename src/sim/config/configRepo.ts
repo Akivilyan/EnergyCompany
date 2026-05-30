@@ -99,7 +99,7 @@ export class ConfigRepo {
     return ConfigRepo.loadFromConfigDir(base);
   }
 
-  /** 从扁平 config 目录加载（Cocos client 同步后的 assets/resources/config/v0）。 */
+  /** 从扁平 config 目录加载（Node / 编辑器冒烟）。 */
   static loadFromConfigDir(configDir: string): ConfigRepo {
     const bundle: ConfigBundle = {
       runConfig: readJson(path.join(configDir, "run_config.json")),
@@ -111,6 +111,11 @@ export class ConfigRepo {
       difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
       adRewards: readJson(path.join(configDir, "ad_rewards.json"))
     };
+    return ConfigRepo.fromBundle(bundle);
+  }
+
+  /** 从已解析 JSON 记录构建（Cocos resources / 小游戏异步加载）。 */
+  static fromBundle(bundle: ConfigBundle): ConfigRepo {
     return new ConfigRepo(bundle);
   }
 

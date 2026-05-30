@@ -1,4 +1,11 @@
 export { ConfigRepo } from "./config/configRepo.js";
+export {
+  buildConfigBundle,
+  configRepoFromBundle,
+  V0_CONFIG_JSON_FILES,
+  V0_CONFIG_RESOURCE_BASE
+} from "./config/configBundle.js";
+export type { ConfigBundleInput } from "./config/configBundle.js";
 export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
 export { settleNextMonth } from "./core/settleNextMonth.js";
