@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.50
+version: 0.1.51
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -21,7 +21,7 @@ open_questions: []
 
 ## 1. 当前阶段与总目标
 
-- 当前阶段：`T48` app/ui 装配层（post-T45）
+- 当前阶段：`T48` 已收口（app/ui 装配层）；下一阶段待排：`T49` Cocos 工程实接或数值批次
 - 执行策略：先 coding 健壮性与可玩闭环，再做数值精调
 - 本看板维护频率：每次对话结束时实时更新
 - 提交策略：每步本地 `commit`；累计到阶段节点后再统一 `push`
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T48-05`
-- 任务标题：Cocos 场景占位接入 GameShell
+- 当前任务 ID：`T48-CLOSE`
+- 任务标题：app/ui 装配层收口
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`GameSceneBridge` 映射 screen→scene，`sim:cocos-scene-spike` 冒烟并导出 `client/cocos/scene-registry.json`
+- 完成定义（本轮）：`createGameBootstrap` 统一装配入口，CLI 收口，Cocos SceneHost 示例，T48 阶段完成
 
 ---
 
@@ -129,6 +129,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T48-03`：`GameShell` 新增 `saveSlot/loadSlot`，`sim:save-loop` 改经 `createGameApp` 装配 | `src/ui/gameShell.ts` `src/app/saveLoopCli.ts` `tests/ui/gameShell.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:save-loop` + `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T48-04`：`sim:playtest-bundle` 纳入 `sim:save-loop` 步骤，周五回归覆盖存档恢复冒烟 | `src/app/playtestBundleCli.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T48-05`：新增 `GameSceneBridge`/`SceneHost` 场景映射层与 `sim:cocos-scene-spike`，导出 Cocos 场景注册表 | `src/ui/sceneMap.ts` `src/ui/sceneHost.ts` `src/ui/gameSceneBridge.ts` `src/app/cocosSceneSpikeCli.ts` `client/cocos/scene-registry.json` `tests/ui/gameSceneBridge.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:cocos-scene-spike` + `npm test` 通过（待本轮执行） |
+| 2026-05-30 | 收口 `T48-CLOSE`：新增 `createGameBootstrap` 统一装配入口，CLI 收口至 bootstrap，补 Cocos SceneHost 示例 | `src/app/gameBootstrap.ts` `src/app/appShellCli.ts` `src/app/saveLoopCli.ts` `src/app/cocosSceneSpikeCli.ts` `client/cocos/CocosSceneHost.example.ts` `tests/app/gameBootstrap.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 
 ---
 
@@ -196,3 +197,4 @@ open_questions: []
 | 0.1.48 | 2026-05-30 | 推进 T48-03：GameShell 存档编排与 save-loop 改经 app 装配 |
 | 0.1.49 | 2026-05-30 | 推进 T48-04：playtest-bundle 纳入 save-loop 冒烟步骤 |
 | 0.1.50 | 2026-05-30 | 推进 T48-05：Cocos 场景占位接入 GameShell 与场景注册表导出 |
+| 0.1.51 | 2026-05-30 | 收口 T48-CLOSE：createGameBootstrap 统一装配与 CLI 收口 |

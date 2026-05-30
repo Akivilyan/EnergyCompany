@@ -6,22 +6,20 @@
  * 用法：
  *   npm run sim:save-loop
  */
-import { createGameApp } from "./gameApp.js";
-import { createGameShell } from "../ui/gameShell.js";
+import { createGameBootstrap } from "./gameBootstrap.js";
 
 console.log("=== Energy Company save loop smoke ===");
-const app = createGameApp();
-const shell = createGameShell(app);
+const { app, play } = createGameBootstrap();
 
 for (let i = 0; i < 2; i += 1) {
-  const month = shell.advanceMonthInCurrentCity();
+  const month = play.advanceMonthInCurrentCity();
   if (!month.ok) {
     console.log(`pre-advance failed: ${month.errorCode ?? "unknown"}`);
     process.exit(1);
   }
 }
 
-const save = shell.saveSlot("slot-main");
+const save = play.saveSlot("slot-main");
 if (!save.ok) {
   console.log(`save failed: ${save.errorCode ?? "unknown"}`);
   process.exit(1);
@@ -34,16 +32,16 @@ app.controller.state.currentMonth = 77;
 app.controller.state.funds = -777;
 console.log(`mutated runtime: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}`);
 
-const load = shell.loadSlot("slot-main");
+const load = play.loadSlot("slot-main");
 if (!load.ok) {
   console.log(`load failed: ${load.errorCode ?? "unknown"}`);
   process.exit(1);
 }
 console.log(`loaded: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}`);
 
-const post = shell.advanceMonthInCurrentCity();
+const post = play.advanceMonthInCurrentCity();
 if (!post.ok) {
   console.log(`post-load advance failed: ${post.errorCode ?? "unknown"}`);
   process.exit(1);
 }
-console.log(`resume: next_month=${app.controller.state.currentMonth}, screen=${shell.getNavigation().currentScreen}`);
+console.log(`resume: next_month=${app.controller.state.currentMonth}, screen=${play.getNavigation().currentScreen}`);
