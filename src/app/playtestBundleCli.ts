@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * v0 周五回归聚合 CLI：
- * 串行执行 boundaries + app-shell/save-loop 冒烟 + E1-E6 regression + unit tests，输出通过率摘要。
+ * 串行执行 boundaries + app 装配冒烟 + cocos 场景占位 + E1-E6 regression + unit tests，输出通过率摘要。
  *
  * 用法：
  *   npm run sim:playtest-bundle
@@ -25,6 +25,7 @@ const steps: BundleStep[] = [
   { id: "boundaries", title: "sim 边界护栏", command: "npm run lint:boundaries" },
   { id: "app-shell", title: "app/ui 装配壳层冒烟", command: "npm run sim:app-shell" },
   { id: "save-loop", title: "存档恢复冒烟", command: "npm run sim:save-loop" },
+  { id: "cocos-scene", title: "Cocos 场景占位接入", command: "npm run sim:cocos-scene-spike" },
   { id: "regression", title: "E1-E6 体验回归", command: "npm run sim:regression" },
   { id: "unit", title: "单元/模块测试", command: "npm test" }
 ];

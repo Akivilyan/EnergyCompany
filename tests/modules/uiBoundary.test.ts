@@ -48,4 +48,10 @@ describe("ui boundary", () => {
     ]);
     expect(violations).toEqual([]);
   });
+
+  it("does not import cocos engine APIs", () => {
+    const uiDir = path.join(repoRoot, "src", "ui");
+    const violations = collectViolations(uiDir, [/from ["']cc["']/, /require\(["']cc["']\)/]);
+    expect(violations).toEqual([]);
+  });
 });
