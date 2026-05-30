@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.56
+version: 0.1.57
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -21,7 +21,7 @@ open_questions: []
 
 ## 1. 当前阶段与总目标
 
-- 当前阶段：`T49` Cocos 工程实接
+- 当前阶段：`T49` 已收口（Cocos 客户端挂载 + wx 存档闭环）；下一阶段待定
 - 执行策略：先 coding 健壮性与可玩闭环，再做数值精调
 - 本看板维护频率：每次对话结束时实时更新
 - 提交策略：每步本地 `commit`；累计到阶段节点后再统一 `push`
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T49-05`
-- 任务标题：wx.onHide 自动存档
+- 当前任务 ID：`T49-CLOSE`
+- 任务标题：Cocos 客户端实接阶段收口
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`bindClientAutoSaveOnHide` 绑定 `wx.onHide`，`mountGameClient` 默认启用，GameRoot 销毁解绑，client-sync 覆盖 hide→remount 恢复
+- 完成定义（本轮）：T49-01~05 全部落地，`playtest-bundle` 7/7 通过，T49-03~05 三 commit 已 push
 
 ---
 
@@ -135,6 +135,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T49-03`：`WxStateStorage` 适配 wx 本地存储，`mountGameClient` 默认注入，client-sync 补 save/load 冒烟 | `src/infra/storage/wxStateStorage.ts` `src/app/gameApp.ts` `src/app/gameClientEntry.ts` `src/app/clientSyncSpikeCli.ts` `tests/infra/wxStateStorage.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（109/109） |
 | 2026-05-30 | 推进 `T49-04`：客户端挂载自动读档 default slot，`clientPersistence` 编排，remount 恢复冒烟 | `src/app/clientPersistence.ts` `src/app/gameClientEntry.ts` `src/app/gameBootstrap.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/clientPersistence.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（112/112） |
 | 2026-05-30 | 推进 `T49-05`：`wx.onHide` 自动存档，`clientLifecycle` 绑定与 hide→remount 冒烟 | `src/infra/lifecycle/wxLifecycle.ts` `src/app/clientLifecycle.ts` `src/app/gameClientEntry.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/clientLifecycle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（116/116） |
+| 2026-05-30 | 收口 `T49-CLOSE`：playtest-bundle 全绿，推送 T49-03~05（wx 存储 + 自动读档 + onHide 存档） | `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（7/7，116 tests） |
 
 ---
 
@@ -208,3 +209,4 @@ open_questions: []
 | 0.1.54 | 2026-05-30 | 推进 T49-03：WxStateStorage 适配 wx 本地存储并接入 mountGameClient |
 | 0.1.55 | 2026-05-30 | 推进 T49-04：客户端挂载自动读档 default slot 与 remount 恢复冒烟 |
 | 0.1.56 | 2026-05-30 | 推进 T49-05：wx.onHide 自动存档绑定与 hide→remount 冒烟 |
+| 0.1.57 | 2026-05-30 | 收口 T49-CLOSE：playtest-bundle 全绿并推送 T49 存档闭环 |
