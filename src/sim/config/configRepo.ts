@@ -96,15 +96,20 @@ export class ConfigRepo {
 
   static loadFromVerticalSlice(rootDir: string): ConfigRepo {
     const base = path.join(rootDir, "docs", "design", "data", "vertical-slice-v0");
+    return ConfigRepo.loadFromConfigDir(base);
+  }
+
+  /** 从扁平 config 目录加载（Cocos client 同步后的 assets/resources/config/v0）。 */
+  static loadFromConfigDir(configDir: string): ConfigRepo {
     const bundle: ConfigBundle = {
-      runConfig: readJson(path.join(base, "run_config.json")),
-      disasters: readJson(path.join(base, "campaign_disasters.json")),
-      facilities: readJson(path.join(base, "facilities_slice.json")),
-      cities: readJson(path.join(base, "cities.json")),
-      companyLevels: readJson(path.join(base, "company_levels.json")),
-      loanTiers: readJson(path.join(base, "loan_tiers.json")),
-      difficulties: readJson(path.join(base, "difficulty_modifiers.json")),
-      adRewards: readJson(path.join(base, "ad_rewards.json"))
+      runConfig: readJson(path.join(configDir, "run_config.json")),
+      disasters: readJson(path.join(configDir, "campaign_disasters.json")),
+      facilities: readJson(path.join(configDir, "facilities_slice.json")),
+      cities: readJson(path.join(configDir, "cities.json")),
+      companyLevels: readJson(path.join(configDir, "company_levels.json")),
+      loanTiers: readJson(path.join(configDir, "loan_tiers.json")),
+      difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
+      adRewards: readJson(path.join(configDir, "ad_rewards.json"))
     };
     return new ConfigRepo(bundle);
   }

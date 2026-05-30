@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:client": "node scripts/sync-client-assets.mjs",
     "test": "vitest run",
     "sim:demo": "tsx src/app/cli.ts",
     "sim:city-loop": "tsx src/app/cityLoopCli.ts",
@@ -19,6 +20,7 @@
     "sim:playtest-bundle": "tsx src/app/playtestBundleCli.ts",
     "sim:app-shell": "tsx src/app/appShellCli.ts",
     "sim:cocos-scene-spike": "tsx src/app/cocosSceneSpikeCli.ts",
+    "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {

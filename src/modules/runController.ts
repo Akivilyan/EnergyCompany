@@ -58,6 +58,7 @@ export interface ControllerInitOptions {
   doctrineId?: GameState["doctrineId"];
   difficultyId?: GameState["difficultyId"];
   campaignId?: string;
+  configRepo?: ConfigRepo;
 }
 
 export class RunController {
@@ -73,13 +74,7 @@ export class RunController {
   }
 
   static fromRepoRoot(repoRoot: string, options: ControllerInitOptions = {}): RunController {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
-    const state = createInitialState(config, {
-      difficultyId: options.difficultyId ?? "simple",
-      doctrineId: options.doctrineId ?? "tech",
-      campaignId: options.campaignId
-    });
-    return new RunController(config, state);
+    return createController(repoRoot, options);
   }
 
   runCommand(command: Command): SimResult<{ state: GameState }> {
@@ -234,5 +229,11 @@ export function createController(
   repoRoot = process.cwd(),
   options: ControllerInitOptions = {}
 ): RunController {
-  return RunController.fromRepoRoot(path.resolve(repoRoot), options);
+  const config = options.configRepo ?? ConfigRepo.loadFromVerticalSlice(path.resolve(repoRoot));
+  const state = createInitialState(config, {
+    difficultyId: options.difficultyId ?? "simple",
+    doctrineId: options.doctrineId ?? "tech",
+    campaignId: options.campaignId
+  });
+  return new RunController(config, state);
 }
