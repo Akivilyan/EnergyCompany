@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.46
+version: 0.1.47
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T48-01`
-- 任务标题：app/ui 最小装配壳层
+- 当前任务 ID：`T48-02`
+- 任务标题：playtest-bundle 纳入 app-shell
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`createGameApp` 装配根 + `GameShell` 导航/城市动作 + 边界扫描与冒烟
+- 完成定义（本轮）：`sim:playtest-bundle` 串行执行 `sim:app-shell`，周五回归覆盖 app/ui 装配冒烟
 
 ---
 
@@ -125,6 +125,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T45-P1-04`：`screenCompany/screenTechTree` 接入 `AdRewardService`（cash/speedup），补广告取消路径回归与 UI 错误码映射 | `src/modules/screenCompany.ts` `src/modules/screenTechTree.ts` `tests/modules/screenCompany.test.ts` `tests/modules/screenTechTree.test.ts` `docs/design/ui/company.md` `docs/design/ui/tech-tree.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 收口 `T45-CLOSE`：新增 `sim:playtest-bundle`（boundaries+regression+test），E3 回归改经 screen 壳层，补 modules 边界扫描 | `src/app/playtestBundleCli.ts` `src/app/regressionCli.ts` `tests/modules/uiBoundary.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T48-01`：新增 `createGameApp` 装配根与 `GameShell` UI 导航壳层，补 `sim:app-shell` 冒烟与 ui 边界扫描 | `src/app/gameApp.ts` `src/ui/gameShell.ts` `src/modules/gameContext.ts` `src/app/appShellCli.ts` `tests/ui/gameShell.test.ts` `tests/modules/uiBoundary.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:app-shell` + `npm test` 通过（待本轮执行） |
+| 2026-05-30 | 推进 `T48-02`：`sim:playtest-bundle` 纳入 `sim:app-shell` 步骤，周五回归覆盖 app/ui 装配壳层冒烟 | `src/app/playtestBundleCli.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 
 ---
 
@@ -188,3 +189,4 @@ open_questions: []
 | 0.1.44 | 2026-05-30 | 推进 T45-P1-04：公司屏/科技树壳层接入 AdRewardService 与广告错误码映射 |
 | 0.1.45 | 2026-05-30 | 收口 T45-CLOSE：新增 playtest 聚合脚本与 modules 边界扫描测试 |
 | 0.1.46 | 2026-05-30 | 推进 T48-01：新增 app/ui 最小装配壳层与导航冒烟 |
+| 0.1.47 | 2026-05-30 | 推进 T48-02：playtest-bundle 纳入 app-shell 冒烟步骤 |
