@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.48
+version: 0.1.49
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T48-03`
-- 任务标题：GameShell 存档编排 + save-loop 改经 app 装配
+- 当前任务 ID：`T48-04`
+- 任务标题：playtest-bundle 纳入 save-loop
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`GameShell.saveSlot/loadSlot` 经 `persistence` 编排，`sim:save-loop` 改走 `createGameApp`
+- 完成定义（本轮）：`sim:playtest-bundle` 串行执行 `sim:save-loop`，周五回归覆盖存档恢复冒烟
 
 ---
 
@@ -127,6 +127,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T48-01`：新增 `createGameApp` 装配根与 `GameShell` UI 导航壳层，补 `sim:app-shell` 冒烟与 ui 边界扫描 | `src/app/gameApp.ts` `src/ui/gameShell.ts` `src/modules/gameContext.ts` `src/app/appShellCli.ts` `tests/ui/gameShell.test.ts` `tests/modules/uiBoundary.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:app-shell` + `npm test` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T48-02`：`sim:playtest-bundle` 纳入 `sim:app-shell` 步骤，周五回归覆盖 app/ui 装配壳层冒烟 | `src/app/playtestBundleCli.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 | 2026-05-30 | 推进 `T48-03`：`GameShell` 新增 `saveSlot/loadSlot`，`sim:save-loop` 改经 `createGameApp` 装配 | `src/ui/gameShell.ts` `src/app/saveLoopCli.ts` `tests/ui/gameShell.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:save-loop` + `npm test` 通过（待本轮执行） |
+| 2026-05-30 | 推进 `T48-04`：`sim:playtest-bundle` 纳入 `sim:save-loop` 步骤，周五回归覆盖存档恢复冒烟 | `src/app/playtestBundleCli.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（待本轮执行） |
 
 ---
 
@@ -192,3 +193,4 @@ open_questions: []
 | 0.1.46 | 2026-05-30 | 推进 T48-01：新增 app/ui 最小装配壳层与导航冒烟 |
 | 0.1.47 | 2026-05-30 | 推进 T48-02：playtest-bundle 纳入 app-shell 冒烟步骤 |
 | 0.1.48 | 2026-05-30 | 推进 T48-03：GameShell 存档编排与 save-loop 改经 app 装配 |
+| 0.1.49 | 2026-05-30 | 推进 T48-04：playtest-bundle 纳入 save-loop 冒烟步骤 |
