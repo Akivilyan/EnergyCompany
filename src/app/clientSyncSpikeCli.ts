@@ -48,6 +48,23 @@ if (!month.ok) {
   process.exit(1);
 }
 
+const fundsBeforeSave = app.controller.state.funds;
+const save = app.persistence.save("client-spike");
+if (!save.ok) {
+  console.log(`save failed: ${save.error}`);
+  process.exit(1);
+}
+app.controller.state.funds = -1;
+const load = app.persistence.load("client-spike");
+if (!load.ok) {
+  console.log(`load failed: ${load.error}`);
+  process.exit(1);
+}
+if (app.controller.state.funds !== fundsBeforeSave) {
+  console.log("load did not restore saved funds");
+  process.exit(1);
+}
+
 console.log(
   `play: month=${app.controller.state.currentMonth}, funds=${app.controller.state.funds}, scene=${host.getCurrentScene()}`
 );

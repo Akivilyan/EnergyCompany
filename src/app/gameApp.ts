@@ -1,6 +1,6 @@
 import { StubRewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
 import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
-import { InMemoryStateStorage } from "../infra/storage/stateStorage.js";
+import { InMemoryStateStorage, type StateStorage } from "../infra/storage/stateStorage.js";
 import { createAdRewardService } from "../modules/adRewardService.js";
 import type { GameAppContext, GameAppScreens } from "../modules/gameContext.js";
 import { createRunPersistence } from "../modules/runPersistence.js";
@@ -22,11 +22,12 @@ export type { GameAppContext, GameAppScreens } from "../modules/gameContext.js";
 export interface GameAppOptions extends ControllerInitOptions {
   repoRoot?: string;
   adProvider?: RewardedAdProvider;
+  stateStorage?: StateStorage;
 }
 
 export function createGameApp(options: GameAppOptions = {}): GameAppContext {
   const controller = createController(options.repoRoot ?? process.cwd(), options);
-  const storage = new InMemoryStateStorage();
+  const storage = options.stateStorage ?? new InMemoryStateStorage();
   const persistence = createRunPersistence(controller, storage);
   const adProvider = options.adProvider ?? new StubRewardedAdProvider({ kind: "always_complete" });
   const adRewardService = createAdRewardService(controller, adProvider);
