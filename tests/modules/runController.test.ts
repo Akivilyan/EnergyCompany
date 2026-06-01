@@ -1,13 +1,13 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("RunController trace", () => {
   it("records command success and failure traces", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.adsRemaining = 1;
 
     const ok = controller.runCommand({ type: "claim_ad_reward", adType: "cash" });
@@ -25,7 +25,7 @@ describe("RunController trace", () => {
   });
 
   it("records settle traces and supports clearTrace", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const month = controller.runNextMonth();
     expect(month.ok).toBe(true);
 
@@ -39,7 +39,7 @@ describe("RunController trace", () => {
   });
 
   it("returns city snapshot for UI wiring", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const snapshot = controller.getCitySnapshot("CITY-START");
     expect(snapshot).not.toBeNull();
     if (!snapshot) return;
@@ -49,7 +49,7 @@ describe("RunController trace", () => {
   });
 
   it("supports build-and-advance helper for city loop", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const step = controller.buildAndAdvance("CITY-START", "wind", 1, true);
     expect(step.buildResult.ok).toBe(true);
     expect(step.settleResult?.ok).toBe(true);
@@ -59,7 +59,7 @@ describe("RunController trace", () => {
   });
 
   it("supports multi-month advance helper", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const out = controller.advanceMonths(3);
     expect(out.failed).toBeNull();
     expect(out.reports).toHaveLength(3);

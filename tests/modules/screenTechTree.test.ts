@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -5,11 +6,10 @@ import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdP
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenTechTree } from "../../src/modules/screenTechTree.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("ScreenTechTree", () => {
   it("blocks research entry below level II", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenTechTree(controller);
 
     const start = screen.startResearch("storage_system_1");
@@ -26,7 +26,7 @@ describe("ScreenTechTree", () => {
   });
 
   it("supports start and cancel research with fund refund", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(controller);
     const start = screen.startResearch("storage_system_1");
@@ -45,7 +45,7 @@ describe("ScreenTechTree", () => {
   });
 
   it("research can complete to lit through monthly settle", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(controller);
     const start = screen.startResearch("storage_system_1");
@@ -59,7 +59,7 @@ describe("ScreenTechTree", () => {
   });
 
   it("maps speedup ad errors and success for UI", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(controller);
 
@@ -82,7 +82,7 @@ describe("ScreenTechTree", () => {
   });
 
   it("maps cancelled ad playback without consuming ads or lighting tech", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(
       controller,

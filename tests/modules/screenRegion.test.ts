@@ -1,14 +1,14 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenRegion } from "../../src/modules/screenRegion.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("ScreenRegion", () => {
   it("shows city unlock status by company level", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenRegion(controller);
 
     const before = screen.getSnapshot();
@@ -22,7 +22,7 @@ describe("ScreenRegion", () => {
   });
 
   it("blocks grid link into locked city at level I", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenRegion(controller);
 
     const action = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
@@ -33,7 +33,7 @@ describe("ScreenRegion", () => {
   });
 
   it("allows grid link into level II city when unlocked", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenRegion(controller);
 
@@ -44,7 +44,7 @@ describe("ScreenRegion", () => {
   });
 
   it("advances month and finishes queued region link", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenRegion(controller);
 

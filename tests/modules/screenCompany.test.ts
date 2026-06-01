@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -5,11 +6,10 @@ import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdP
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenCompany } from "../../src/modules/screenCompany.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("ScreenCompany", () => {
   it("returns company snapshot with unlocked loan options", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);
     const snapshot = screen.getSnapshot();
     expect(snapshot.month).toBe(1);
@@ -23,7 +23,7 @@ describe("ScreenCompany", () => {
   });
 
   it("supports single active loan and maps loan_already_active", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);
     const first = screen.applyLoan("loan_1");
     expect(first.result.ok).toBe(true);
@@ -40,7 +40,7 @@ describe("ScreenCompany", () => {
   });
 
   it("returns recent monthly cashflows from settlement reports", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);
     const out = controller.advanceMonths(2);
     expect(out.failed).toBeNull();
@@ -55,7 +55,7 @@ describe("ScreenCompany", () => {
   });
 
   it("claims cash reward through ad provider by default", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);
     const out = screen.claimCashByAd();
     expect(out.result.ok).toBe(true);
@@ -65,7 +65,7 @@ describe("ScreenCompany", () => {
   });
 
   it("maps cancelled ad playback without consuming ads", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCompany(
       controller,
       new StubRewardedAdProvider({ kind: "always_cancel" })

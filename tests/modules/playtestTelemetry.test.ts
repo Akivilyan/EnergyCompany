@@ -1,14 +1,14 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { exportPlaytestTelemetry } from "../../src/modules/playtestTelemetry.js";
 import { RunController } from "../../src/modules/runController.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("playtestTelemetry", () => {
   it("exports structured command/settle event stream", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const command = controller.runCommand({
       type: "queue_construction",
       cityId: "CITY-START",
@@ -32,7 +32,7 @@ describe("playtestTelemetry", () => {
   });
 
   it("records failed commands in summary and event context", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const fail = controller.runCommand({
       type: "start_research",
       techId: "storage_system_1"

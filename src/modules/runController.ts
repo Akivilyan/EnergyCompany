@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
   ConfigRepo,
   createInitialState,
@@ -73,8 +72,9 @@ export class RunController {
     this.state = state;
   }
 
-  static fromRepoRoot(repoRoot: string, options: ControllerInitOptions = {}): RunController {
-    return createController(repoRoot, options);
+  /** @deprecated 使用 `createControllerFromRepoRoot`（`runController.node.ts`） */
+  static fromRepoRoot(_repoRoot: string, _options: ControllerInitOptions = {}): RunController {
+    throw new Error("RunController.fromRepoRoot: use createControllerFromRepoRoot() in Node");
   }
 
   runCommand(command: Command): SimResult<{ state: GameState }> {
@@ -226,10 +226,9 @@ export class RunController {
 }
 
 export function createController(
-  repoRoot = process.cwd(),
-  options: ControllerInitOptions = {}
+  config: ConfigRepo,
+  options: Omit<ControllerInitOptions, "configRepo"> = {}
 ): RunController {
-  const config = options.configRepo ?? ConfigRepo.loadFromVerticalSlice(path.resolve(repoRoot));
   const state = createInitialState(config, {
     difficultyId: options.difficultyId ?? "simple",
     doctrineId: options.doctrineId ?? "tech",

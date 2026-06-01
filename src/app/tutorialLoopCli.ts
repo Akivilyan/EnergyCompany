@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 /**
- * 教学局最小闭环 CLI 冒烟：
- * 教学开局（blocked）-> 连续 advance 到 onb_done -> 再跑 skip 分支。
- *
- * 用法：
- *   npm run sim:tutorial-loop
+ * 教学局最小闭�?CLI 冒烟�? * 教学开局（blocked�?> 连续 advance �?onb_done -> 再跑 skip 分支�? *
+ * 用法�? *   npm run sim:tutorial-loop
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenOnboarding } from "../modules/screenOnboarding.js";
 
 console.log("=== Energy Company tutorial loop smoke ===");
 
-const tutorial = createController(process.cwd(), { doctrineId: "tutorial" });
+const tutorial = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tutorial" });
 const screen = createScreenOnboarding(tutorial);
 console.log(
   `start: tutorial=${screen.getSnapshot().isTutorialRun}, step=${screen.getSnapshot().currentStepId}, sub=${screen.getSnapshot().playableSubPhase}`
@@ -28,7 +25,7 @@ console.log(
   `advance-path: step=${done.currentStepId}, cleared=${done.cleared}, skipped=${done.skipped}, sub=${done.playableSubPhase}`
 );
 
-const tutorialSkip = createController(process.cwd(), { doctrineId: "tutorial" });
+const tutorialSkip = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tutorial" });
 const skipScreen = createScreenOnboarding(tutorialSkip);
 const skip = skipScreen.skipAll();
 if (!skip.result.ok) {

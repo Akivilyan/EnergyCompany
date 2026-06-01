@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 /**
- * 科技树最小闭环 CLI 冒烟：
- * 升到 II 级 -> 开研 -> 取消返还 -> 再开研 -> 推月点亮
+ * 科技树最小闭�?CLI 冒烟�? * 升到 II �?-> 开�?-> 取消返还 -> 再开�?-> 推月点亮
  *
- * 用法：
- *   npm run sim:tech-loop
+ * 用法�? *   npm run sim:tech-loop
  *   npm run sim:tech-loop -- storage_system_1
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenTechTree } from "../modules/screenTechTree.js";
 
 const techId = process.argv[2] ?? "storage_system_1";
-const controller = createController();
+const controller = createControllerFromRepoRoot();
 const screen = createScreenTechTree(controller);
 
 console.log("=== Energy Company tech loop smoke ===");

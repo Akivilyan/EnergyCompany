@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /**
- * v0 E1-E6 全链路回归 CLI：
- * 覆盖教学、城市、科技/广告、区域、灾害、终局六个体验点，
- * 输出通过率与失败案例，便于 T45-16 收口验收。
- *
- * 用法：
- *   npm run sim:regression
+ * v0 E1-E6 全链路回�?CLI�? * 覆盖教学、城市、科技/广告、区域、灾害、终局六个体验点，
+ * 输出通过率与失败案例，便�?T45-16 收口验收�? *
+ * 用法�? *   npm run sim:regression
  */
 import { createScreenCityDetail } from "../modules/screenCityDetail.js";
 import { createScreenCompany } from "../modules/screenCompany.js";
@@ -13,7 +10,7 @@ import { createScreenEventsPanel } from "../modules/screenEventsPanel.js";
 import { createScreenOnboarding } from "../modules/screenOnboarding.js";
 import { createScreenRegion } from "../modules/screenRegion.js";
 import { createScreenRunResult } from "../modules/screenRunResult.js";
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenTechTree } from "../modules/screenTechTree.js";
 
 type ExperienceId = "E1" | "E2" | "E3" | "E4" | "E5" | "E6";
@@ -40,7 +37,7 @@ function ensure(condition: boolean, message: string): void {
 }
 
 function runE1(): ScenarioResult {
-  const tutorialController = createController(process.cwd(), { doctrineId: "tutorial" });
+  const tutorialController = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tutorial" });
   const onboarding = createScreenOnboarding(tutorialController);
 
   const start = onboarding.getSnapshot();
@@ -57,7 +54,7 @@ function runE1(): ScenarioResult {
   ensure(done.cleared, "tutorial should be marked as cleared");
   ensure(done.playableSubPhase === "navigating", "tutorial done should unlock navigating");
 
-  const skipController = createController(process.cwd(), { doctrineId: "tutorial" });
+  const skipController = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tutorial" });
   const skipScreen = createScreenOnboarding(skipController);
   const skip = skipScreen.skipAll();
   ensure(skip.result.ok, "skip onboarding should succeed");
@@ -66,7 +63,7 @@ function runE1(): ScenarioResult {
   ensure(skipped.currentStepId === "onb_done", "skip should jump to onb_done");
   ensure(skipped.playableSubPhase === "navigating", "skip should unlock navigating");
 
-  const normalController = createController();
+  const normalController = createControllerFromRepoRoot();
   ensure(normalController.state.doctrineId === "tech", "normal run doctrine should be tech");
   ensure(normalController.state.difficultyId === "simple", "normal run difficulty should be simple");
   ensure(!normalController.state.isTutorialRun, "normal run should not be tutorial");
@@ -80,7 +77,7 @@ function runE1(): ScenarioResult {
 }
 
 function runE2(): ScenarioResult {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   const screen = createScreenCityDetail(controller, "CITY-START");
   const before = screen.getSnapshot();
   ensure(before !== null, "CITY-START snapshot missing");
@@ -101,14 +98,14 @@ function runE2(): ScenarioResult {
 
   return {
     id: "E2",
-    title: "单城建造/推月/供能与SV变化",
+    title: "单城建�?推月/供能与SV变化",
     ok: true,
     detail: `month=${before.month}->${last.monthTo}, supply_delta=${last.delta.effectiveSupplyMw}, sv_delta=${last.delta.socialValue}`
   };
 }
 
 function promoteToLevel2(): ReturnType<typeof createController> {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   for (let i = 0; i < 2; i += 1) {
     const build = controller.runCommand({
       type: "queue_construction",
@@ -157,7 +154,7 @@ function runE3(): ScenarioResult {
 }
 
 function runE4(): ScenarioResult {
-  const controller = createController(process.cwd(), { doctrineId: "tech" });
+  const controller = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tech" });
   const screen = createScreenRegion(controller);
   const fromCityId = "CITY-START";
   const toCityId = "CITY-MAP01-02";
@@ -199,14 +196,14 @@ function runE4(): ScenarioResult {
 
   return {
     id: "E4",
-    title: "MAP-01 区域解锁与铺线",
+    title: "MAP-01 区域解锁与铺�?,
     ok: true,
     detail: `level=${snapshot.companyLevel}, link=${link.linkId}, status=${link.status}`
   };
 }
 
 function runE5(): ScenarioResult {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   controller.state.funds = 10000;
   const panel = createScreenEventsPanel(controller);
 
@@ -234,7 +231,7 @@ function runE5(): ScenarioResult {
 }
 
 function runE6(): ScenarioResult {
-  const victoryController = createController();
+  const victoryController = createControllerFromRepoRoot();
   const finalDisaster = victoryController.config.bundle.disasters.find((item) => item.is_final);
   if (!finalDisaster) {
     fail("missing final disaster config");
@@ -253,7 +250,7 @@ function runE6(): ScenarioResult {
   const blocked = victoryController.runCommand({ type: "claim_ad_reward", adType: "cash" });
   ensure(!blocked.ok, "run_result state should block playable command");
 
-  const bankruptController = createController();
+  const bankruptController = createControllerFromRepoRoot();
   bankruptController.state.funds = -100;
   bankruptController.state.bankruptConsecutiveMonths =
     bankruptController.config.bundle.runConfig.bankrupt_consecutive_months - 1;
@@ -275,9 +272,9 @@ function runE6(): ScenarioResult {
 
 const scenarios: ScenarioDef[] = [
   { id: "E1", title: "教学局完成/跳过 + tech/simple 正式局", run: runE1 },
-  { id: "E2", title: "单城建造/推月/供能与SV变化", run: runE2 },
+  { id: "E2", title: "单城建�?推月/供能与SV变化", run: runE2 },
   { id: "E3", title: "II级科技树单队列 + 广告cash/speedup", run: runE3 },
-  { id: "E4", title: "MAP-01 区域解锁与铺线", run: runE4 },
+  { id: "E4", title: "MAP-01 区域解锁与铺�?, run: runE4 },
   { id: "E5", title: "固定灾害首场 + 事件面板确认", run: runE5 },
   { id: "E6", title: "破产/通关双终局进入 run_result", run: runE6 }
 ];

@@ -1,20 +1,20 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenRunResult } from "../../src/modules/screenRunResult.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("ScreenRunResult", () => {
   it("returns null before run result phase", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenRunResult(controller);
     expect(screen.getSnapshot()).toBeNull();
   });
 
   it("supports victory snapshot", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const finalDisaster = controller.config.bundle.disasters.find((d) => d.is_final);
     expect(finalDisaster).toBeTruthy();
     if (!finalDisaster) return;
@@ -34,7 +34,7 @@ describe("ScreenRunResult", () => {
   });
 
   it("supports bankrupt snapshot", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.funds = -100;
     controller.state.bankruptConsecutiveMonths =
       controller.config.bundle.runConfig.bankrupt_consecutive_months - 1;

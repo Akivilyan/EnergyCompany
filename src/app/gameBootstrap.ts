@@ -24,6 +24,11 @@ export interface GameBootstrap {
 }
 
 export function createGameBootstrap(options: GameBootstrapOptions = {}): GameBootstrap {
+  if (!options.configRepo) {
+    throw new Error(
+      "createGameBootstrap requires configRepo (use createGameBootstrapFromRepo in Node CLIs)"
+    );
+  }
   const app = createGameApp(options);
   const shell = createGameShell(app);
   const bridge = options.sceneHost ? createGameSceneBridge(shell, options.sceneHost) : null;

@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 /**
- * 城市页最小闭环 CLI 冒烟：
- * 新局 -> 获取城市快照 -> 下达建造 -> 推进 N 月 -> 打印前后变化
+ * 城市页最小闭�?CLI 冒烟�? * 新局 -> 获取城市快照 -> 下达建�?-> 推进 N �?-> 打印前后变化
  *
- * 用法：
- *   npm run sim:city-loop
+ * 用法�? *   npm run sim:city-loop
  *   npm run sim:city-loop -- CITY-START wind 1 3
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenCityDetail } from "../modules/screenCityDetail.js";
 
 const cityId = process.argv[2] ?? "CITY-START";
@@ -26,7 +24,7 @@ if (!Number.isInteger(months) || months < 1) {
   process.exit(1);
 }
 
-const controller = createController();
+const controller = createControllerFromRepoRoot();
 const screen = createScreenCityDetail(controller, cityId);
 const before = screen.getSnapshot();
 

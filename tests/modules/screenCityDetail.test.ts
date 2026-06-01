@@ -1,14 +1,14 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenCityDetail } from "../../src/modules/screenCityDetail.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("ScreenCityDetail", () => {
   it("supports city build action for UI shell", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCityDetail(controller, "CITY-START");
     const build = screen.queueConstruction("wind", 1);
 
@@ -22,7 +22,7 @@ describe("ScreenCityDetail", () => {
   });
 
   it("returns monthly deltas for multi-step advance", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCityDetail(controller, "CITY-START");
 
     const build = screen.queueConstruction("wind", 1);
@@ -38,7 +38,7 @@ describe("ScreenCityDetail", () => {
   });
 
   it("returns not_found when city does not exist", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const screen = createScreenCityDetail(controller, "CITY-NOT-EXIST");
 
     const build = screen.queueConstruction("wind", 1);

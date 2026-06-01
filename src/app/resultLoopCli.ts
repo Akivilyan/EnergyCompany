@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 /**
- * 终局页最小闭环 CLI 冒烟：
- * 分别构造 victory / bankrupt 分支，并验证 run_result 快照可读且命令被禁用。
- *
- * 用法：
- *   npm run sim:result-loop
+ * 终局页最小闭�?CLI 冒烟�? * 分别构�?victory / bankrupt 分支，并验证 run_result 快照可读且命令被禁用�? *
+ * 用法�? *   npm run sim:result-loop
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenRunResult } from "../modules/screenRunResult.js";
 
 function runVictoryBranch(): void {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   const finalDisaster = controller.config.bundle.disasters.find((item) => item.is_final);
   if (!finalDisaster) {
     console.log("victory branch failed: missing final disaster config");
@@ -38,7 +35,7 @@ function runVictoryBranch(): void {
 }
 
 function runBankruptBranch(): void {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   controller.state.funds = -100;
   controller.state.bankruptConsecutiveMonths =
     controller.config.bundle.runConfig.bankrupt_consecutive_months - 1;

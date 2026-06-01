@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -15,13 +16,13 @@ import {
   setMountedGameClient
 } from "../../src/app/gameClientRegistry.js";
 import { ConfigRepo } from "../../src/sim/index.js";
+import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
 import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("cityHudController", () => {
   it("reads view model from mounted bootstrap", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, sceneHost: new LoggingSceneHost(), autoResumeSlot: false });
     const view = readCityHudViewModel(boot);
     expect(view.month).toBe(1);
@@ -32,7 +33,7 @@ describe("cityHudController", () => {
   });
 
   it("builds wind and advances month through play surface", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
     const build = cityHudBuildWind(boot);
     expect(build.ok).toBe(true);
@@ -49,7 +50,7 @@ describe("cityHudController", () => {
 describe("gameClientRegistry", () => {
   it("notifies mount listeners and supports lookup", () => {
     clearMountedGameClient();
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
     const seen: number[] = [];
     const unbind = onGameClientMounted(() => {

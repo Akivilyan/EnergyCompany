@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 /**
- * 存档恢复最小闭环 CLI 冒烟：
- * 推进两个月 -> 保存 -> 改坏内存态 -> 读档恢复 -> 再推进一月验证可继续。
- *
- * 用法：
- *   npm run sim:save-loop
+ * 存档恢复最小闭�?CLI 冒烟�? * 推进两个�?-> 保存 -> 改坏内存�?-> 读档恢复 -> 再推进一月验证可继续�? *
+ * 用法�? *   npm run sim:save-loop
  */
-import { createGameBootstrap } from "./gameBootstrap.js";
+import { createGameBootstrapFromRepo } from "./gameBootstrap.node.js";
 
 console.log("=== Energy Company save loop smoke ===");
-const { app, play } = createGameBootstrap();
+const { app, play } = createGameBootstrapFromRepo();
 
 for (let i = 0; i < 2; i += 1) {
   const month = play.advanceMonthInCurrentCity();

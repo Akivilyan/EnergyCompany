@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -9,11 +10,10 @@ import {
   serializeState
 } from "../../src/sim/index.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("serialization", () => {
   it("serializes and deserializes state round-trip", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config, { doctrineId: "tutorial" });
     const build = dispatch(
       state,
@@ -40,7 +40,7 @@ describe("serialization", () => {
   });
 
   it("rejects schema mismatch", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     const saved = serializeState(state);
     expect(saved.ok).toBe(true);
@@ -52,7 +52,7 @@ describe("serialization", () => {
   });
 
   it("rejects broken saved references", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     const saved = serializeState(state);
     expect(saved.ok).toBe(true);

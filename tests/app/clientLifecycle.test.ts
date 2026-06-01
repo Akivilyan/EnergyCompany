@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -10,11 +11,11 @@ import { mountGameClient } from "../../src/app/gameClientEntry.js";
 import type { WxHideLifecyclePort } from "../../src/infra/lifecycle/wxLifecycle.js";
 import { InMemoryStateStorage } from "../../src/infra/storage/stateStorage.js";
 import { ConfigRepo } from "../../src/sim/index.js";
-import { createGameApp } from "../../src/app/gameApp.js";
+import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
+import { createGameAppFromRepo } from "../../src/app/gameApp.node.js";
 import { createGameShell } from "../../src/ui/gameShell.js";
 import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 class FakeWxHideLifecycle implements WxHideLifecyclePort {
   private listeners: Array<() => void> = [];
@@ -36,7 +37,7 @@ class FakeWxHideLifecycle implements WxHideLifecyclePort {
 
 describe("bindClientAutoSaveOnHide", () => {
   it("persists default slot when hide lifecycle fires", () => {
-    const app = createGameApp({ repoRoot });
+    const app = createGameAppFromRepo({ repoRoot });
     const shell = createGameShell(app);
     const lifecycle = new FakeWxHideLifecycle();
     shell.advanceMonthInCurrentCity();
@@ -54,14 +55,14 @@ describe("bindClientAutoSaveOnHide", () => {
   });
 
   it("returns unbound when lifecycle port is missing", () => {
-    const app = createGameApp({ repoRoot });
+    const app = createGameAppFromRepo({ repoRoot });
     const shell = createGameShell(app);
     const binding = bindClientAutoSaveOnHide(shell, { lifecycle: null });
     expect(binding.bound).toBe(false);
   });
 
   it("unbind stops hide-triggered saves", () => {
-    const app = createGameApp({ repoRoot });
+    const app = createGameAppFromRepo({ repoRoot });
     const shell = createGameShell(app);
     const lifecycle = new FakeWxHideLifecycle();
     const binding = bindClientAutoSaveOnHide(shell, { lifecycle });
@@ -75,7 +76,7 @@ describe("bindClientAutoSaveOnHide", () => {
 
 describe("mountGameClient auto save on hide", () => {
   it("resumes after wx.onHide auto-save and remount", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const storage = new InMemoryStateStorage();
     const host = new LoggingSceneHost();
     const lifecycle = new FakeWxHideLifecycle();

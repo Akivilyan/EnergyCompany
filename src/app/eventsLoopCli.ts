@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 /**
- * 事件面板最小闭环 CLI 冒烟：
- * 初始查看 -> 推进到首场固定灾害（M22）-> 全屏确认 -> 推进到 debuff 结束 -> 复查
+ * 事件面板最小闭�?CLI 冒烟�? * 初始查看 -> 推进到首场固定灾害（M22�?> 全屏确认 -> 推进�?debuff 结束 -> 复查
  *
- * 用法：
- *   npm run sim:events-loop
+ * 用法�? *   npm run sim:events-loop
  *   npm run sim:events-loop -- 23 34
- *     第一个参数：推进至该月查看 active 与 pending
+ *     第一个参数：推进至该月查�?active �?pending
  *     第二个参数：再推进至该月查看 expired
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenEventsPanel } from "../modules/screenEventsPanel.js";
 
 const triggerMonth = Number(process.argv[2] ?? "23");
@@ -20,7 +18,7 @@ if (!Number.isInteger(triggerMonth) || !Number.isInteger(expireMonth)) {
   process.exit(1);
 }
 
-const controller = createController();
+const controller = createControllerFromRepoRoot();
 controller.state.funds = 10000;
 const panel = createScreenEventsPanel(controller);
 

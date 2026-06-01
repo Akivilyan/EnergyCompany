@@ -1,10 +1,10 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenEventsPanel } from "../../src/modules/screenEventsPanel.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 function settleTo(controller: RunController, targetMonth: number): void {
   while (controller.state.currentMonth < targetMonth && controller.state.runResult === null) {
@@ -17,7 +17,7 @@ function settleTo(controller: RunController, targetMonth: number): void {
 
 describe("ScreenEventsPanel", () => {
   it("lists all four fixed disasters as upcoming at month 1", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const panel = createScreenEventsPanel(controller);
     const snapshot = panel.getSnapshot();
     expect(snapshot.month).toBe(1);
@@ -35,7 +35,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("surfaces first disaster as active with pending fullscreen after month 22", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.funds = 10000;
     settleTo(controller, 23);
     const panel = createScreenEventsPanel(controller);
@@ -59,7 +59,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("acknowledge clears pending fullscreen flag", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.funds = 10000;
     settleTo(controller, 23);
     const panel = createScreenEventsPanel(controller);
@@ -80,7 +80,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("acknowledgeFullscreen reports not_active for not-yet-triggered disasters", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const panel = createScreenEventsPanel(controller);
     const ack = panel.acknowledgeFullscreen(2);
     expect(ack.ok).toBe(false);
@@ -92,7 +92,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("acknowledgeFullscreen reports not_found for unknown seq", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const panel = createScreenEventsPanel(controller);
     const ack = panel.acknowledgeFullscreen(999);
     expect(ack.ok).toBe(false);
@@ -100,7 +100,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("moves expired disasters out of active after debuff completes", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.funds = 10000;
     settleTo(controller, 23);
     const panel = createScreenEventsPanel(controller);
@@ -112,7 +112,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("returns final-disaster acknowledge button key for final modal", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const panel = createScreenEventsPanel(controller);
     const finalCopy = panel.getEventModalCopyBySeq(4);
     expect(finalCopy).toEqual({
@@ -124,7 +124,7 @@ describe("ScreenEventsPanel", () => {
   });
 
   it("applies active slot window and priority ordering when disasters overlap", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     controller.state.funds = 10000;
     const disasters = controller.config.bundle.disasters;
     const second = disasters.find((d) => d.seq === 2);

@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -5,11 +6,10 @@ import { StubRewardedAdProvider, WechatRewardedAdProvider } from "../../src/infr
 import { createAdRewardService } from "../../src/modules/adRewardService.js";
 import { RunController } from "../../src/modules/runController.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("AdRewardService", () => {
   it("claims reward when ad provider completes", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const service = createAdRewardService(
       controller,
       new StubRewardedAdProvider({ kind: "always_complete" })
@@ -23,7 +23,7 @@ describe("AdRewardService", () => {
   });
 
   it("does not consume ads on cancelled ad playback", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const service = createAdRewardService(
       controller,
       new StubRewardedAdProvider({ kind: "always_cancel" })
@@ -37,7 +37,7 @@ describe("AdRewardService", () => {
   });
 
   it("surfaces provider failure before sim command", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const service = createAdRewardService(controller, new WechatRewardedAdProvider());
     const out = service.claimRewardByAd("speedup", "screen_tech.speedup");
     expect(out.rewarded).toBe(false);

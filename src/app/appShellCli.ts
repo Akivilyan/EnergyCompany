@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 /**
- * app/ui 最小装配壳层 CLI 冒烟：
- * 导航 -> 城市建造 -> 推月 -> 打开公司屏快照（经 GameBootstrap + SceneHost）
- *
- * 用法：
- *   npm run sim:app-shell
+ * app/ui 最小装配壳�?CLI 冒烟�? * 导航 -> 城市建�?-> 推月 -> 打开公司屏快照（�?GameBootstrap + SceneHost�? *
+ * 用法�? *   npm run sim:app-shell
  */
-import { createGameBootstrap } from "./gameBootstrap.js";
+import { createGameBootstrapFromRepo } from "./gameBootstrap.node.js";
 import { LoggingSceneHost } from "../ui/sceneHost.js";
 
 const host = new LoggingSceneHost();
-const { app, play } = createGameBootstrap({ sceneHost: host });
+const { app, play } = createGameBootstrapFromRepo({ sceneHost: host });
 
 console.log("=== Energy Company app shell smoke ===");
 console.log(

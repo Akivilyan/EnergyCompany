@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 /**
- * region 页最小闭环 CLI 冒烟：
- * Lv1 铺线拦截 -> 正常局建造补供能并 M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工
+ * region 页最小闭�?CLI 冒烟�? * Lv1 铺线拦截 -> 正常局建造补供能�?M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工
  *
- * 用法：
- *   npm run sim:region-loop
+ * 用法�? *   npm run sim:region-loop
  *   npm run sim:region-loop -- CITY-START CITY-MAP01-02 region
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 import { createScreenRegion } from "../modules/screenRegion.js";
 
 const fromCityId = process.argv[2] ?? "CITY-START";
@@ -15,7 +13,7 @@ const toCityId = process.argv[3] ?? "CITY-MAP01-02";
 const linkTypeRaw = process.argv[4] ?? "region";
 const linkType = linkTypeRaw === "trunk" ? "trunk" : "region";
 
-const controller = createController(process.cwd(), { doctrineId: "tech" });
+const controller = createControllerFromRepoRoot(process.cwd(), { doctrineId: "tech" });
 const screen = createScreenRegion(controller);
 
 console.log("=== Energy Company region loop smoke ===");
@@ -32,8 +30,7 @@ console.log(
   `level I queue: ${blocked.result.error} - ${blocked.result.message}`
 );
 
-// 正常局最小升级路径：先补两座风电，再通过 M10 升至 II 级。
-for (let i = 0; i < 2; i += 1) {
+// 正常局最小升级路径：先补两座风电，再通过 M10 升至 II 级�?for (let i = 0; i < 2; i += 1) {
   const build = controller.runCommand({
     type: "queue_construction",
     cityId: "CITY-START",

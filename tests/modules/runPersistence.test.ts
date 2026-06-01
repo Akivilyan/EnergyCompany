@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -5,11 +6,10 @@ import { InMemoryStateStorage } from "../../src/infra/storage/stateStorage.js";
 import { createRunPersistence } from "../../src/modules/runPersistence.js";
 import { RunController } from "../../src/modules/runController.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("RunPersistence", () => {
   it("saves and loads run state via storage adapter", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const storage = new InMemoryStateStorage();
     const persistence = createRunPersistence(controller, storage);
     const out = controller.advanceMonths(2);
@@ -30,7 +30,7 @@ describe("RunPersistence", () => {
   });
 
   it("returns not_found when slot is missing", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const storage = new InMemoryStateStorage();
     const persistence = createRunPersistence(controller, storage);
     const load = persistence.load("missing-slot");
@@ -41,7 +41,7 @@ describe("RunPersistence", () => {
   });
 
   it("rejects corrupted saved payload by invariant validation", () => {
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const storage = new InMemoryStateStorage();
     const persistence = createRunPersistence(controller, storage);
     const save = persistence.save("slot-b");

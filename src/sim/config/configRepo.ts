@@ -1,6 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
-
 export interface RunConfig {
   campaign_run_target_months: number;
   starting_cash_base: number;
@@ -83,35 +80,11 @@ export interface ConfigBundle {
   adRewards: AdRewardConfig[];
 }
 
-function readJson<T>(filePath: string): T {
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
-}
-
 export class ConfigRepo {
   readonly bundle: ConfigBundle;
 
   constructor(bundle: ConfigBundle) {
     this.bundle = bundle;
-  }
-
-  static loadFromVerticalSlice(rootDir: string): ConfigRepo {
-    const base = path.join(rootDir, "docs", "design", "data", "vertical-slice-v0");
-    return ConfigRepo.loadFromConfigDir(base);
-  }
-
-  /** 从扁平 config 目录加载（Node / 编辑器冒烟）。 */
-  static loadFromConfigDir(configDir: string): ConfigRepo {
-    const bundle: ConfigBundle = {
-      runConfig: readJson(path.join(configDir, "run_config.json")),
-      disasters: readJson(path.join(configDir, "campaign_disasters.json")),
-      facilities: readJson(path.join(configDir, "facilities_slice.json")),
-      cities: readJson(path.join(configDir, "cities.json")),
-      companyLevels: readJson(path.join(configDir, "company_levels.json")),
-      loanTiers: readJson(path.join(configDir, "loan_tiers.json")),
-      difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
-      adRewards: readJson(path.join(configDir, "ad_rewards.json"))
-    };
-    return ConfigRepo.fromBundle(bundle);
   }
 
   /** 从已解析 JSON 记录构建（Cocos resources / 小游戏异步加载）。 */

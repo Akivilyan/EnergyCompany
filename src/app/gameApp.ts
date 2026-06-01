@@ -26,7 +26,10 @@ export interface GameAppOptions extends ControllerInitOptions {
 }
 
 export function createGameApp(options: GameAppOptions = {}): GameAppContext {
-  const controller = createController(options.repoRoot ?? process.cwd(), options);
+  if (!options.configRepo) {
+    throw new Error("createGameApp requires configRepo (Cocos / mountGameClient always injects it)");
+  }
+  const controller = createController(options.configRepo, options);
   const storage = options.stateStorage ?? new InMemoryStateStorage();
   const persistence = createRunPersistence(controller, storage);
   const adProvider = options.adProvider ?? new StubRewardedAdProvider({ kind: "always_complete" });

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * v0 主流程 CLI 冒烟：新局 → 建造 → 推月至终局/破产
+ * v0 主流�?CLI 冒烟：新局 �?建�?�?推月至终局/破产
  * 用法：npm run sim:demo
  */
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 
-const controller = createController();
+const controller = createControllerFromRepoRoot();
 const { state, reports } = controller.playSlice();
 
 console.log("=== Energy Company v0 sim demo ===");

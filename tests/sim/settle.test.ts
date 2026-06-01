@@ -1,10 +1,11 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { ConfigRepo, createInitialState, dispatch, settleNextMonth, defaultPorts } from "../../src/sim/index.js";
+import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
 import type { GameState } from "../../src/sim/index.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("settleNextMonth", () => {
   function withCity(state: GameState, config: ConfigRepo, cityId: string): GameState {
@@ -31,7 +32,7 @@ describe("settleNextMonth", () => {
   }
 
   it("runs M1-M14 in order", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config);
     const result = settleNextMonth(state, config, defaultPorts);
     expect(result.ok).toBe(true);
@@ -56,7 +57,7 @@ describe("settleNextMonth", () => {
   });
 
   it("applies disaster at M22 with locked debuff duration from config", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const d22 = config.bundle.disasters.find((d) => d.trigger_month === 22);
     expect(d22?.debuff_duration_months).toBe(8);
 
@@ -79,7 +80,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch fails atomically on insufficient funds", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.funds = 0;
     const before = structuredClone(state);
@@ -94,7 +95,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch supports start_research and enforces single queue", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config);
     state.companyLevel = 2;
     const initialFunds = state.funds;
@@ -122,7 +123,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch supports cancel_research with full refund", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config);
     state.companyLevel = 2;
     const initialFunds = state.funds;
@@ -151,7 +152,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch cancel_research returns not_found for unknown id", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.companyLevel = 2;
     const result = dispatch(
@@ -166,7 +167,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch claim_ad_reward speedup lights active research", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config);
     state.companyLevel = 2;
     const start = dispatch(
@@ -194,7 +195,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch claim_ad_reward speedup fails without active research", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     const speedup = dispatch(
       state,
@@ -208,7 +209,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M3 progresses research and lights tech on completion", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config);
     state.companyLevel = 2;
     const start = dispatch(
@@ -233,7 +234,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M4 uses unified island rate when two cities are connected in v0", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
     state.companyLevel = 2;
     state.facilities["fac-a"] = {
@@ -270,7 +271,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M4 keeps cities isolated when no finished link exists", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = withSecondCity(createInitialState(config), config);
     state.facilities["fac-a"] = {
       id: "fac-a",
@@ -292,7 +293,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch rejects region link across different regions", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = withCity(createInitialState(config), config, "CITY-MAP02-01");
     state.companyLevel = 3;
     const out = dispatch(
@@ -313,7 +314,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch allows trunk link across different regions", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = withCity(createInitialState(config), config, "CITY-MAP02-01");
     state.companyLevel = 3;
     const out = dispatch(
@@ -334,7 +335,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch rejects trunk link inside same region", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = withSecondCity(createInitialState(config), config);
     state.companyLevel = 2;
     const out = dispatch(
@@ -355,7 +356,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M4 marks city non-eco even with net import", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
     state.companyLevel = 2;
     state.facilities["fac-thermal"] = {
@@ -401,7 +402,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M10 does not downgrade company level when SV drops", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.companyLevel = 3;
     state.facilities = {};
@@ -413,7 +414,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M10 promotes tutorial run to level II with lowered threshold", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config, { doctrineId: "tutorial" });
     const month = settleNextMonth(state, config, defaultPorts);
     expect(month.ok).toBe(true);
@@ -422,7 +423,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M10 tutorial level-II threshold reads from run config", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     config.bundle.runConfig.tutorial_level2_sv_threshold = 5;
     const state = createInitialState(config, { doctrineId: "tutorial" });
     const month = settleNextMonth(state, config, defaultPorts);
@@ -432,7 +433,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M10 normal level-II threshold reads from company level config", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const level2 = config.bundle.companyLevels.find((row) => row.level === 2);
     expect(level2).toBeTruthy();
     if (!level2) return;
@@ -448,7 +449,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M10 can upgrade normal run to level II after initial wind buildout", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config, { doctrineId: "tech" });
 
     const build1 = dispatch(
@@ -481,7 +482,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M13 resets bankrupt streak when funds recover", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.bankruptConsecutiveMonths = 1;
     state.funds = 200;
@@ -495,7 +496,7 @@ describe("settleNextMonth", () => {
   });
 
   it("M14 enters victory when target month reached and final disaster already triggered", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const finalDisaster = config.bundle.disasters.find((d) => d.is_final);
     expect(finalDisaster).toBeTruthy();
     if (!finalDisaster) return;
@@ -515,7 +516,7 @@ describe("settleNextMonth", () => {
   });
 
   it("returns config_missing when final disaster is absent", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     config.bundle.disasters = config.bundle.disasters.filter((d) => !d.is_final);
     const state = createInitialState(config);
 
@@ -526,7 +527,7 @@ describe("settleNextMonth", () => {
   });
 
   it("returns config_missing when bankrupt threshold is invalid", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     config.bundle.runConfig.bankrupt_consecutive_months = 0;
     const state = createInitialState(config);
 
@@ -537,7 +538,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch blocks construction on locked city", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     const result = dispatch(
       state,
@@ -551,7 +552,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch blocks research before company level II", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     const result = dispatch(
       state,
@@ -565,7 +566,7 @@ describe("settleNextMonth", () => {
   });
 
   it("settle returns state_invariant_broken for invalid runtime state", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.adsRemaining = -1;
 
@@ -576,7 +577,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch rejects commands when playable subphase is blocked", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.playableSubPhase = "blocked";
     const result = dispatch(
@@ -593,7 +594,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch allows onboarding advance command when blocked", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config, { doctrineId: "tutorial" });
     state.playableSubPhase = "blocked";
     const result = dispatch(
@@ -610,7 +611,7 @@ describe("settleNextMonth", () => {
   });
 
   it("tutorial run starts in blocked step and can advance to done", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     let state = createInitialState(config, { doctrineId: "tutorial" });
     expect(state.isTutorialRun).toBe(true);
     expect(state.onboardingCurrentStepId).toBe("onb_01_welcome");
@@ -629,7 +630,7 @@ describe("settleNextMonth", () => {
   });
 
   it("skip_onboarding marks tutorial skipped without cleared flag", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config, { doctrineId: "tutorial" });
     const skip = dispatch(state, { type: "skip_onboarding" }, config, defaultPorts);
     expect(skip.ok).toBe(true);
@@ -641,7 +642,7 @@ describe("settleNextMonth", () => {
   });
 
   it("rejects onboarding commands for non-tutorial runs", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config, { doctrineId: "tech" });
     const advance = dispatch(state, { type: "advance_onboarding" }, config, defaultPorts);
     expect(advance.ok).toBe(false);
@@ -650,7 +651,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch rejects run_result phase", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.phase = "run_result";
     state.runResult = "victory";
@@ -669,7 +670,7 @@ describe("settleNextMonth", () => {
   });
 
   it("dispatch rejects commands after bankrupt result", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.phase = "run_result";
     state.runResult = "bankrupt";
@@ -688,7 +689,7 @@ describe("settleNextMonth", () => {
   });
 
   it("settle invalid_phase includes context when called from wrong phase", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.phase = "main_menu";
     const month = settleNextMonth(state, config, defaultPorts);
@@ -700,7 +701,7 @@ describe("settleNextMonth", () => {
   });
 
   it("settle invalid_phase includes run result when run already finished", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const state = createInitialState(config);
     state.runResult = "bankrupt";
     state.phase = "run_result";

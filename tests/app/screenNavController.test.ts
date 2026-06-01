@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -10,13 +11,13 @@ import {
   formatClientNavHint
 } from "../../src/app/screenNavController.js";
 import { ConfigRepo } from "../../src/sim/index.js";
+import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
 import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 describe("screenNavController", () => {
   it("opens company and tech screens through play surface", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const host = new LoggingSceneHost();
     const boot = mountGameClient({ configRepo: config, sceneHost: host, autoResumeSlot: false });
 
@@ -31,7 +32,7 @@ describe("screenNavController", () => {
   });
 
   it("navigates back to city detail", () => {
-    const config = ConfigRepo.loadFromVerticalSlice(repoRoot);
+    const config = loadTestConfig();
     const boot = mountGameClient({
       configRepo: config,
       sceneHost: new LoggingSceneHost(),

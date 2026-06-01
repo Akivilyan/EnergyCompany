@@ -1,3 +1,4 @@
+import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -12,7 +13,6 @@ import {
 import { createRunPersistence } from "../../src/modules/runPersistence.js";
 import { RunController } from "../../src/modules/runController.js";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 class FakeWxStorageSyncPort implements WxStorageSyncPort {
   private readonly slots = new Map<string, unknown>();
@@ -34,7 +34,7 @@ describe("WxStateStorage", () => {
   it("persists envelope under prefixed wx key", () => {
     const wx = new FakeWxStorageSyncPort();
     const storage = new WxStateStorage(wx);
-    const controller = RunController.fromRepoRoot(repoRoot);
+    const controller = createTestController(repoRoot);
     const persistence = createRunPersistence(controller, storage);
     controller.advanceMonths(1);
     const month = controller.state.currentMonth;
@@ -67,7 +67,7 @@ describe("WxStateStorage", () => {
     storage.save("slot-b", {
       schemaVersion: 1,
       savedAtUnixMs: 1,
-      state: RunController.fromRepoRoot(repoRoot).state
+      state: createTestController(repoRoot).state
     });
     storage.remove("slot-b");
     expect(storage.load("slot-b")).toBeNull();
@@ -90,7 +90,7 @@ describe("WxStateStorage", () => {
     storage.save("slot-c", {
       schemaVersion: 1,
       savedAtUnixMs: 1,
-      state: RunController.fromRepoRoot(repoRoot).state
+      state: createTestController(repoRoot).state
     });
     expect(wx.getStorageSync(`${prefix}slot-c`)).not.toBe("");
     expect(wx.getStorageSync(`${WX_RUN_SLOT_KEY_PREFIX}slot-c`)).toBe("");

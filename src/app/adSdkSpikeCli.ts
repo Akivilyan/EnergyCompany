@@ -2,21 +2,19 @@
 /**
  * 真实广告 SDK 对接预研冒烟（T45-P1-04）：
  * - stub completed: 触发真实 claim_ad_reward
- * - stub cancel: 不扣次数不发奖
- * - wechat placeholder: 预留失败路径
+ * - stub cancel: 不扣次数不发�? * - wechat placeholder: 预留失败路径
  *
- * 用法：
- *   npm run sim:ad-sdk-spike
+ * 用法�? *   npm run sim:ad-sdk-spike
  */
 import {
   StubRewardedAdProvider,
   WechatRewardedAdProvider
 } from "../infra/monetization/rewardedAdProvider.js";
 import { createAdRewardService } from "../modules/adRewardService.js";
-import { createController } from "../modules/runController.js";
+import { createControllerFromRepoRoot } from "../modules/runController.node.js";
 
 function runStubCompleted(): void {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   const service = createAdRewardService(
     controller,
     new StubRewardedAdProvider({ kind: "always_complete" })
@@ -28,7 +26,7 @@ function runStubCompleted(): void {
 }
 
 function runStubCancel(): void {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   const service = createAdRewardService(
     controller,
     new StubRewardedAdProvider({ kind: "always_cancel" })
@@ -40,7 +38,7 @@ function runStubCancel(): void {
 }
 
 function runWechatPlaceholder(): void {
-  const controller = createController();
+  const controller = createControllerFromRepoRoot();
   const service = createAdRewardService(controller, new WechatRewardedAdProvider());
   const out = service.claimRewardByAd("speedup", "screen_tech.speedup");
   console.log(
