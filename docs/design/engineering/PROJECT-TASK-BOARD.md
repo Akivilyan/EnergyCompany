@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.58
+version: 0.1.59
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T50-01`
-- 任务标题：Cocos 城市页最小 HUD（建造/推月/顶栏）
+- 当前任务 ID：`T50-02`
+- 任务标题：场景导航 + Cocos 工程初始化清单
 - 状态：`done`
 - 开始时间：2026-05-30
-- 完成定义（本轮）：`cityHudController` + `CityHudPanel` + `gameClientRegistry`，GameRoot 挂载 HUD，client-sync 改走 HUD 控制器路径
+- 完成定义（本轮）：`screenNavController` + HUD 导航按钮 + 场景缺失降级 + `sim:cocos-init-spike` + `cocos-client-setup.md`
 
 ---
 
@@ -137,6 +137,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T49-05`：`wx.onHide` 自动存档，`clientLifecycle` 绑定与 hide→remount 冒烟 | `src/infra/lifecycle/wxLifecycle.ts` `src/app/clientLifecycle.ts` `src/app/gameClientEntry.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/clientLifecycle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:client-sync-spike` + `npm test` 通过（116/116） |
 | 2026-05-30 | 收口 `T49-CLOSE`：playtest-bundle 全绿，推送 T49-03~05（wx 存储 + 自动读档 + onHide 存档） | `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:playtest-bundle` 通过（7/7，116 tests） |
 | 2026-05-30 | 推进 `T50-01`：城市页 HUD 控制器 + Cocos `CityHudPanel` + 挂载注册表 | `src/app/cityHudController.ts` `src/app/gameClientRegistry.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `client/cocos/assets/scripts/GameRoot.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/cityHudController.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run build:client` + `sim:client-sync-spike` + `npm test` 通过（119/119） |
+| 2026-05-30 | 推进 `T50-02`：场景导航 + Cocos 预检 + 初始化清单 | `src/app/screenNavController.ts` `src/app/cocosInitCheck.ts` `src/app/cocosInitSpikeCli.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `client/cocos/assets/scripts/CocosSceneHost.ts` `docs/design/engineering/cocos-client-setup.md` `tests/app/screenNavController.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:cocos-init-spike` + `sim:client-sync-spike` + `npm test` 通过（122/122） |
 
 ---
 
@@ -212,3 +213,4 @@ open_questions: []
 | 0.1.56 | 2026-05-30 | 推进 T49-05：wx.onHide 自动存档绑定与 hide→remount 冒烟 |
 | 0.1.57 | 2026-05-30 | 收口 T49-CLOSE：playtest-bundle 全绿并推送 T49 存档闭环 |
 | 0.1.58 | 2026-05-30 | 推进 T50-01：Cocos 城市页 HUD 控制器与 CityHudPanel 实接 |
+| 0.1.59 | 2026-05-30 | 推进 T50-02：场景导航、Cocos 预检 CLI 与初始化清单 |

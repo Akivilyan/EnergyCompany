@@ -14,6 +14,12 @@ import {
   formatCityHudStatus,
   readCityHudViewModel
 } from "../shared/src/app/cityHudController";
+import {
+  clientNavBack,
+  clientNavOpenCompany,
+  clientNavOpenTechTree,
+  formatClientNavHint
+} from "../shared/src/app/screenNavController";
 import { getMountedGameClient, onGameClientMounted } from "../shared/src/app/gameClientRegistry";
 import type { GameBootstrap } from "../shared/src/app/gameBootstrap";
 
@@ -50,13 +56,16 @@ export class CityHudPanel extends Component {
 
     const panel = new Node("CityHudPanel");
     panel.setParent(this.node);
-    panel.setPosition(new Vec3(0, 280, 0));
-    panel.addComponent(UITransform).setContentSize(640, 180);
+    panel.setPosition(new Vec3(0, 250, 0));
+    panel.addComponent(UITransform).setContentSize(640, 240);
 
-    this.statusLabel = this.createLabel(panel, "StatusLabel", new Vec3(0, 50, 0), 24);
-    this.hintLabel = this.createLabel(panel, "HintLabel", new Vec3(0, 10, 0), 18);
-    this.createTapButton(panel, "BuildWind", new Vec3(-120, -50, 0), "Build Wind", () => this.onBuildWind());
-    this.createTapButton(panel, "AdvanceMonth", new Vec3(120, -50, 0), "Next Month", () => this.onAdvanceMonth());
+    this.statusLabel = this.createLabel(panel, "StatusLabel", new Vec3(0, 80, 0), 24);
+    this.hintLabel = this.createLabel(panel, "HintLabel", new Vec3(0, 45, 0), 18);
+    this.createTapButton(panel, "BuildWind", new Vec3(-120, 0, 0), "Build Wind", () => this.onBuildWind());
+    this.createTapButton(panel, "AdvanceMonth", new Vec3(120, 0, 0), "Next Month", () => this.onAdvanceMonth());
+    this.createTapButton(panel, "OpenCompany", new Vec3(-160, -55, 0), "Company", () => this.onOpenCompany());
+    this.createTapButton(panel, "OpenTech", new Vec3(0, -55, 0), "Tech", () => this.onOpenTech());
+    this.createTapButton(panel, "NavBack", new Vec3(160, -55, 0), "Back", () => this.onNavBack());
   }
 
   private createLabel(parent: Node, name: string, position: Vec3, fontSize: number): Label {
@@ -91,8 +100,9 @@ export class CityHudPanel extends Component {
   private refresh(): void {
     if (!this.boot || !this.statusLabel || !this.hintLabel) return;
     const view = readCityHudViewModel(this.boot);
+    const stackDepth = this.boot.play.getNavigation().stack.length;
     this.statusLabel.string = formatCityHudStatus(view);
-    this.hintLabel.string = `screen=${view.screen}`;
+    this.hintLabel.string = formatClientNavHint(view, stackDepth);
   }
 
   private onBuildWind(): void {
@@ -111,5 +121,23 @@ export class CityHudPanel extends Component {
     if (!out.ok) {
       console.warn(`[CityHudPanel] advance failed: ${out.errorCode ?? "unknown"}`);
     }
+  }
+
+  private onOpenCompany(): void {
+    if (!this.boot) return;
+    clientNavOpenCompany(this.boot);
+    this.refresh();
+  }
+
+  private onOpenTech(): void {
+    if (!this.boot) return;
+    clientNavOpenTechTree(this.boot);
+    this.refresh();
+  }
+
+  private onNavBack(): void {
+    if (!this.boot) return;
+    clientNavBack(this.boot);
+    this.refresh();
   }
 }

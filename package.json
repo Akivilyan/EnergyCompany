@@ -20,6 +20,7 @@
     "sim:playtest-bundle": "tsx src/app/playtestBundleCli.ts",
     "sim:app-shell": "tsx src/app/appShellCli.ts",
     "sim:cocos-scene-spike": "tsx src/app/cocosSceneSpikeCli.ts",
+    "sim:cocos-init-spike": "tsx src/app/cocosInitSpikeCli.ts",
     "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },

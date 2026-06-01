@@ -16,6 +16,7 @@ import {
   formatCityHudStatus,
   readCityHudViewModel
 } from "./cityHudController.js";
+import { clientNavBack, clientNavOpenCompany, formatClientNavHint } from "./screenNavController.js";
 import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
 import type { WxHideLifecyclePort } from "../infra/lifecycle/wxLifecycle.js";
@@ -84,6 +85,11 @@ if (!month.ok) {
   process.exit(1);
 }
 console.log(`hud-after-play: ${formatCityHudStatus(month.view)}`);
+
+const company = clientNavOpenCompany(boot1);
+console.log(`nav-company: ${formatClientNavHint(company.view, company.navigation.stack.length)}`);
+const back = clientNavBack(boot1);
+console.log(`nav-back: ${formatClientNavHint(back.view, back.navigation.stack.length)}`);
 
 const savedMonth = app.controller.state.currentMonth;
 const savedFunds = app.controller.state.funds;
