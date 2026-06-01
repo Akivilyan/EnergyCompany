@@ -15,6 +15,7 @@ export {
   formatCityHudStatus,
   readCityHudViewModel
 } from "./cityHudController.js";
+export { formatClientHudStatus } from "./clientHudController.js";
 export {
   clientNavBack,
   clientNavOpenCompany,

@@ -23,6 +23,7 @@
     "sim:cocos-init-spike": "tsx src/app/cocosInitSpikeCli.ts",
     "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
     "verify:client": "npm run build:client && npm run sim:cocos-init-spike && npm run sim:client-sync-spike",
+    "check:cocos-preview": "tsx src/app/previewProbeCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {

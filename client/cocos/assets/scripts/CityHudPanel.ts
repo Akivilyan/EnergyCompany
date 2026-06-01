@@ -19,7 +19,7 @@ import {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,
-  formatCityHudStatus,
+  formatClientHudStatus,
   formatClientNavHint,
   readCityHudViewModel,
   type GameBootstrap
@@ -128,7 +128,7 @@ export class CityHudPanel extends Component {
     }
     const view = readCityHudViewModel(this.boot);
     const stackDepth = this.boot.play.getNavigation().stack.length;
-    this.statusLabel.string = formatCityHudStatus(view);
+    this.statusLabel.string = formatClientHudStatus(this.boot);
     this.hintLabel.string = formatClientNavHint(view, stackDepth);
   }
 
