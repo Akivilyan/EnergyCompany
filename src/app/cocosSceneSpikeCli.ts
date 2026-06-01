@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 /**
  * Cocos 场景占位接入预研冒烟（T48-05）：
- * GameShell 导航 -> SceneHost 场景名映射 -> 轨迹输出
+ * GameShell 导航 -> SceneHost 场景名映�?-> 轨迹输出
  *
- * 用法：
- *   npm run sim:cocos-scene-spike
+ * 用法�? *   npm run sim:cocos-scene-spike
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { createGameBootstrap } from "./gameBootstrap.js";
+import { createGameBootstrapFromRepo } from "./gameBootstrap.node.js";
 import { buildSceneRegistry } from "../ui/sceneMap.js";
 import { LoggingSceneHost } from "../ui/sceneHost.js";
 
@@ -16,7 +15,7 @@ const repoRoot = process.cwd();
 const registryPath = path.join(repoRoot, "client", "cocos", "scene-registry.json");
 
 const host = new LoggingSceneHost();
-const { play } = createGameBootstrap({ repoRoot, sceneHost: host });
+const { play } = createGameBootstrapFromRepo({ repoRoot, sceneHost: host });
 
 console.log("=== Energy Company cocos scene spike ===");
 console.log(`start: scene=${host.getCurrentScene()}, screen=${play.getNavigation().currentScreen}`);

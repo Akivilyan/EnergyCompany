@@ -37,10 +37,31 @@ export function runCocosInitChecks(repoRoot: string): CocosInitCheckItem[] {
   const sharedDir = resolveClientSharedDir(repoRoot);
   const checks: CocosInitCheckItem[] = [];
 
+  const packageJsonPath = path.join(cocosRoot, "package.json");
+  const legacyProjectJsonPath = path.join(cocosRoot, "project.json");
+  let cocosProjectOk = false;
+  let cocosProjectDetail = path.relative(repoRoot, cocosRoot);
+  if (fs.existsSync(packageJsonPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as {
+        creator?: { version?: string };
+      };
+      cocosProjectOk = true;
+      const version = pkg.creator?.version ?? "unknown";
+      cocosProjectDetail = `${cocosProjectDetail} (creator ${version})`;
+    } catch {
+      cocosProjectDetail = "package.json is invalid JSON";
+    }
+  } else if (fs.existsSync(legacyProjectJsonPath)) {
+    cocosProjectOk = true;
+    cocosProjectDetail = `${cocosProjectDetail} (legacy project.json)`;
+  } else {
+    cocosProjectDetail = "missing package.json (Cocos 3.8+ project root)";
+  }
   checks.push({
     id: "cocos-project",
-    ok: fs.existsSync(path.join(cocosRoot, "project.json")),
-    detail: path.relative(repoRoot, cocosRoot)
+    ok: cocosProjectOk,
+    detail: cocosProjectDetail
   });
 
   for (const file of REQUIRED_SCRIPTS) {
@@ -67,12 +88,12 @@ export function runCocosInitChecks(repoRoot: string): CocosInitCheckItem[] {
     });
   }
 
-  const sharedEntry = path.join(sharedDir, "src", "app", "gameClientEntry.ts");
+  const sharedBundle = path.join(sharedDir, "game-client.mjs");
   checks.push({
     id: "shared-sync",
-    ok: fs.existsSync(sharedEntry),
-    detail: fs.existsSync(sharedEntry)
-      ? path.relative(repoRoot, sharedEntry)
+    ok: fs.existsSync(sharedBundle),
+    detail: fs.existsSync(sharedBundle)
+      ? path.relative(repoRoot, sharedBundle)
       : "missing; run npm run build:client before opening Cocos"
   });
 

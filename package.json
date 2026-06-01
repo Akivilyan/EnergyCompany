@@ -22,9 +22,11 @@
     "sim:cocos-scene-spike": "tsx src/app/cocosSceneSpikeCli.ts",
     "sim:cocos-init-spike": "tsx src/app/cocosInitSpikeCli.ts",
     "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
+    "verify:client": "npm run build:client && npm run sim:cocos-init-spike && npm run sim:client-sync-spike",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"

@@ -44,7 +44,7 @@ class FakeWxHideLifecycle implements WxHideLifecyclePort {
 const repoRoot = process.cwd();
 const sharedDir = resolveClientSharedDir(repoRoot);
 const configDir = resolveClientConfigDir(repoRoot);
-const sharedEntry = path.join(sharedDir, "src", "app", "gameClientEntry.ts");
+const sharedEntry = path.join(sharedDir, "game-client.mjs");
 
 if (!fs.existsSync(sharedEntry)) {
   console.log("shared assets missing, running build:client...");

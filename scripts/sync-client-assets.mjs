@@ -1,14 +1,13 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const sharedSrc = path.join(root, "client", "cocos", "assets", "shared", "src");
+const sharedDir = path.join(root, "client", "cocos", "assets", "shared");
+const bundleOut = path.join(sharedDir, "game-client.mjs");
 const configSrc = path.join(root, "docs", "design", "data", "vertical-slice-v0");
 const configDest = path.join(root, "client", "cocos", "assets", "resources", "config", "v0");
 const manifestPath = path.join(root, "client", "cocos", "sync-manifest.json");
-
-const srcRoots = ["sim", "modules", "ui", "infra", "app"];
-const skipFile = (name) => name.endsWith("Cli.ts");
 
 const configFiles = [
   "run_config.json",
@@ -21,27 +20,13 @@ const configFiles = [
   "ad_rewards.json"
 ];
 
-function copyDir(src, dest, { fileFilter } = {}) {
-  fs.mkdirSync(dest, { recursive: true });
-  for (const name of fs.readdirSync(src)) {
-    if (fileFilter && !fileFilter(name, path.join(src, name))) continue;
-    const from = path.join(src, name);
-    const to = path.join(dest, name);
-    if (fs.statSync(from).isDirectory()) {
-      copyDir(from, to, { fileFilter });
-    } else {
-      fs.copyFileSync(from, to);
-    }
-  }
-}
+fs.rmSync(sharedDir, { recursive: true, force: true });
+fs.mkdirSync(sharedDir, { recursive: true });
 
-fs.rmSync(path.join(root, "client", "cocos", "assets", "shared"), { recursive: true, force: true });
-
-for (const dir of srcRoots) {
-  copyDir(path.join(root, "src", dir), path.join(sharedSrc, dir), {
-    fileFilter: (name) => !skipFile(name)
-  });
-}
+execFileSync(process.execPath, [path.join(root, "scripts", "bundle-client-logic.mjs")], {
+  cwd: root,
+  stdio: "inherit"
+});
 
 fs.mkdirSync(configDest, { recursive: true });
 for (const file of configFiles) {
@@ -49,12 +34,13 @@ for (const file of configFiles) {
 }
 
 const manifest = {
-  version: 1,
+  version: 2,
   syncedAt: new Date().toISOString(),
   configFiles,
-  sharedFrom: "src"
+  sharedBundle: path.relative(root, bundleOut)
 };
-// 本地构建 stamp（已 gitignore，勿提交）
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
-console.log(`client sync ok: shared=${path.relative(root, sharedSrc)}, config=${path.relative(root, configDest)}`);
+console.log(
+  `client sync ok: bundle=${path.relative(root, bundleOut)}, config=${path.relative(root, configDest)}`
+);
