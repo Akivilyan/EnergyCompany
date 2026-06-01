@@ -69,7 +69,8 @@ npm run sim:cocos-init-spike
 | 路径 | 用途 |
 |------|------|
 | `assets/scripts/` | Cocos 组件（GameRoot、CityHudPanel 等） |
-| `assets/shared/src/` | `build:client` 从 `src/` 同步的 TS 逻辑 |
+| `assets/shared/src/` | `build:client` 从 `src/` 同步的 TS 逻辑（**不提交**） |
+| `sync-manifest.json` | `build:client` 本地同步 stamp（**不提交**） |
 | `assets/resources/config/v0/` | 表数据 JSON |
 | `scene-registry.json` | screenId ↔ 场景名注册表 |
 

@@ -54,6 +54,7 @@ const manifest = {
   configFiles,
   sharedFrom: "src"
 };
+// 本地构建 stamp（已 gitignore，勿提交）
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
 console.log(`client sync ok: shared=${path.relative(root, sharedSrc)}, config=${path.relative(root, configDest)}`);

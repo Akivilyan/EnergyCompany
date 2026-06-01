@@ -1,4 +1,50 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Node / TypeScript ---
 node_modules/
 dist/
-client/cocos/assets/shared/
+coverage/
 *.log
+npm-debug.log*
+*.tsbuildinfo
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- IDE（保留可共享的团队配置）---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Cursor 本地会话/缓存（保留 .cursor/rules 等已入库配置）
+.cursor/plans/
+.cursor/projects/
+.cursor/**/terminals/
+
+# --- Cocos Creator（client/cocos）---
+# 生成物与本地缓存；assets 下 .scene / .prefab / .meta 等需提交
+client/cocos/library/
+client/cocos/temp/
+client/cocos/local/
+client/cocos/build/
+client/cocos/native/
+client/cocos/profiles/
+
+# build:client 从 src/ 同步的逻辑副本（源文件在仓库根 src/）
+client/cocos/assets/shared/
+client/cocos/sync-manifest.json
+
+# --- 微信小游戏构建产物（Cocos 发布输出，路径随模板可能略有差异）---
+**/wechatgame/
+**/wechat-minigame/

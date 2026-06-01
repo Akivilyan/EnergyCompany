@@ -44,11 +44,10 @@ class FakeWxHideLifecycle implements WxHideLifecyclePort {
 const repoRoot = process.cwd();
 const sharedDir = resolveClientSharedDir(repoRoot);
 const configDir = resolveClientConfigDir(repoRoot);
-const manifestPath = path.join(repoRoot, "client", "cocos", "sync-manifest.json");
 const sharedEntry = path.join(sharedDir, "src", "app", "gameClientEntry.ts");
 
-if (!fs.existsSync(manifestPath) || !fs.existsSync(sharedEntry)) {
-  console.log("client assets missing, running build:client...");
+if (!fs.existsSync(sharedEntry)) {
+  console.log("shared assets missing, running build:client...");
   execSync("npm run build:client", { stdio: "inherit", cwd: repoRoot });
 }
 
@@ -121,4 +120,4 @@ if (
 console.log(
   `play: month=${boot2.app.controller.state.currentMonth}, funds=${boot2.app.controller.state.funds}, scene=${host.getCurrentScene()}, resume=${boot2.clientResume.slotId}, hide-save=${boot1.clientAutoSave.slotId}`
 );
-console.log(`manifest: ${path.relative(repoRoot, manifestPath)}`);
+console.log(`shared: ${path.relative(repoRoot, sharedDir)}`);
