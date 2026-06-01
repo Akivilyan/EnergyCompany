@@ -16,9 +16,10 @@ open_questions: []
 在 Cocos Creator 中首次打开 `client/cocos` 前，先在仓库根目录执行：
 
 ```bash
-npm run build:client
-npm run sim:cocos-init-spike
+npm run verify:client
 ```
+
+（等价于 `build:client` + `sim:cocos-init-spike` + `sim:client-sync-spike`，**不打开 Cocos** 也能验证逻辑与资源。）
 
 预检通过后再进编辑器；`editor-scenes` 为 **advisory**（仓库内可以没有 `.scene`，但预览前需在编辑器里创建）。
 
@@ -26,22 +27,27 @@ npm run sim:cocos-init-spike
 
 ## 1. 打开工程
 
-| 项 | 说明 |
-|----|------|
-| 引擎 | Cocos Creator **3.8.x**（与 `client/cocos/project.json` 一致） |
-| 工程路径 | 仓库内 `client/cocos` |
-| 同步 | 每次拉代码或改 `src/` 后执行 `npm run build:client` |
+
+| 项    | 说明                                                        |
+| ---- | --------------------------------------------------------- |
+| 引擎   | Cocos Creator **3.8.8**（与 `client/cocos/package.json` → `creator.version` 一致） |
+| 工程路径 | 仓库内 **`client/cocos`**（含 `package.json` 的目录；不要选到 `client` 上一层） |
+| 工程骨架 | 已含 `package.json`、`settings/`、`.creator/`；**不要**在 Dashboard 新建空项目代替 |
+| 首次打开 | 编辑器会自动生成 `library/`、`temp/`（已在 `.gitignore`，勿提交） |
+| 同步   | 每次拉代码或改 `src/` 后 `npm run`执行 `build:client`               |
+
 
 ---
 
 ## 2. 最小启动场景（只需 1 个）
 
-当前代码只需 **`CityDetail`** 即可跑通城市页闭环；其它场景名见 `client/cocos/scene-registry.json`，可后续再建。
+当前代码只需 `**CityDetail`** 即可跑通城市页闭环；其它场景名见 `client/cocos/scene-registry.json`，可后续再建。
 
-1. 新建场景，命名为 **`CityDetail`**
+1. 新建场景，命名为 `**CityDetail**`
 2. 添加 **Canvas**（含 Camera）
-3. Canvas 下建空节点，挂载 **`GameRoot`** 组件
-4. **无需**手动添加 `CityHudPanel`（`GameRoot` 挂载后自动创建）
+3. Canvas 下建空节点（建议命名 `GameRoot`），挂载 `**GameRoot`** 组件
+4. **无需**手动添加 `CityHudPanel`（`GameRoot` 会自动挂上并**用代码画**文字和按钮，不是 3D 模型）
+5. 确认层级：`CityDetail` → `Canvas` → `GameRoot`（GameRoot **必须在 Canvas 下面**，否则 UI 不显示）
 5. **项目设置 → 项目数据 → 默认场景**：设为 `CityDetail`
 
 预览预期：
@@ -66,24 +72,37 @@ npm run sim:cocos-init-spike
 
 ## 4. 资源与目录
 
-| 路径 | 用途 |
-|------|------|
-| `assets/scripts/` | Cocos 组件（GameRoot、CityHudPanel 等） |
-| `assets/shared/src/` | `build:client` 从 `src/` 同步的 TS 逻辑（**不提交**） |
-| `sync-manifest.json` | `build:client` 本地同步 stamp（**不提交**） |
-| `assets/resources/config/v0/` | 表数据 JSON |
-| `scene-registry.json` | screenId ↔ 场景名注册表 |
+
+| 路径                            | 用途                                         |
+| ----------------------------- | ------------------------------------------ |
+| `assets/scripts/`             | Cocos 组件（GameRoot、CityHudPanel 等）          |
+| `assets/shared/game-client.mjs` | `build:client` 用 esbuild 打好的浏览器包（**不提交**） |
+| `sync-manifest.json`            | `build:client` 本地同步 stamp（**不提交**）           |
+| `assets/resources/config/v0/` | 表数据 JSON                                   |
+| `scene-registry.json`         | screenId ↔ 场景名注册表                          |
+
 
 ---
 
 ## 5. 常见问题
 
-| 现象 | 处理 |
-|------|------|
-| config load failed | 先 `npm run build:client` |
-| shared 导入报错 | 确认 `assets/shared/src/app/gameClientEntry.ts` 存在 |
-| loadScene Company failed | 正常；创建对应场景或忽略（单场景模式） |
-| 按钮无反应 | 确认 Console 有 `[GameRoot] mounted`；检查 Canvas 有 Camera |
+
+| 现象                       | 处理                                                   |
+| ------------------------ | ---------------------------------------------------- |
+| Dashboard「编辑器版本不存在」 | 在 Dashboard **编辑器**页安装/关联 3.8.8；工程路径必须是 `client/cocos` |
+| 空项目文件很多、本仓库很少        | 正常：`library/`、`temp/`、`.meta` 多为首次打开后生成，不必与空模板逐文件对齐 |
+| config load failed       | 先 `npm run build:client`                             |
+| 找不到 `./sceneMap.js` / `node:fs` | 先 `npm run build:client`；脚本须从 `game-client.mjs` 导入，勿直接引用 `assets/shared/src` |
+| shared 导入报错              | 确认 `assets/shared/game-client.mjs` 存在（由 esbuild 生成） |
+| loadScene Company failed | 正常；创建对应场景或忽略（单场景模式）                                  |
+| 预览全黑、无任何字               | 看 Console 是否有 `[GameRoot] mounted`；无则配置未加载成功。改脚本后保存并等底部 **Quick Compile** 完成再预览 |
+| `import-map.json` ENOENT   | 关编辑器 → 删 `client/cocos/temp` 与 `library` → 重开工程 → 等编译完成再播放 |
+| 改 TS 后预览不更新              | **开发者 → 重新加载**（Ctrl+R），或 **开发者 → 缓存 → 清除代码缓存**；无「重新编译脚本」菜单（3.8.8 正常） |
+| 浏览器 F12 只有引擎日志、没有 `[GameRoot]` | 正常：`cc.log` 默认在 **Cocos 编辑器 → Console**。预览页调试级别选 **Info For Web Page**，或看 F12 里 `console.warn`（脚本已双写）。须在编辑器点 **播放** 且保持预览页打开 |
+| 一直 Loading、顶栏不变 | 看是否变成 **Config load failed**；根目录执行 `npm run build:client` 后回 Cocos 保存场景再播放 |
+| Console 刷屏 `CityDetail is already being loaded` | 已修：`CocosSceneHost` 在**当前场景同名**时不再 `loadScene`；去掉 `addPersistRootNode`（Canvas 子节点不能常驻根） |
+| 按钮无反应                    | 确认 Console 有 `[GameRoot] mounted`；检查 Canvas 有 Camera |
+
 
 ---
 
@@ -98,6 +117,9 @@ CityDetail 在编辑器预览通过后，再配置：
 
 ## 变更记录
 
-| 版本 | 日期 | 说明 |
-|------|------|------|
+
+| 版本    | 日期         | 说明                                   |
+| ----- | ---------- | ------------------------------------ |
 | 0.1.0 | 2026-05-30 | T50-02 初版：最小 CityDetail 场景清单与单场景导航说明 |
+
+
