@@ -1,0 +1,12 @@
+
+# Cocos Creator generated / local (root .gitignore also covers these)
+library/
+temp/
+local/
+build/
+profiles/
+native/
+
+node_modules/
+.vscode/
+.idea/
