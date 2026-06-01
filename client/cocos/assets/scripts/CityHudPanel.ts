@@ -1,27 +1,29 @@
 import {
   _decorator,
   Component,
+  Graphics,
   Label,
+  log,
   Node,
   UITransform,
   Color,
   EventTouch,
-  Vec3
+  Vec3,
+  HorizontalTextAlignment,
+  VerticalTextAlignment,
+  Overflow
 } from "cc";
 import {
   cityHudAdvanceMonth,
   cityHudBuildWind,
-  formatCityHudStatus,
-  readCityHudViewModel
-} from "../shared/src/app/cityHudController";
-import {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,
-  formatClientNavHint
-} from "../shared/src/app/screenNavController";
-import { getMountedGameClient, onGameClientMounted } from "../shared/src/app/gameClientRegistry";
-import type { GameBootstrap } from "../shared/src/app/gameBootstrap";
+  formatCityHudStatus,
+  formatClientNavHint,
+  readCityHudViewModel,
+  type GameBootstrap
+} from "../shared/game-client.mjs";
 
 const { ccclass } = _decorator;
 
@@ -29,26 +31,31 @@ const { ccclass } = _decorator;
 @ccclass("CityHudPanel")
 export class CityHudPanel extends Component {
   private boot: GameBootstrap | null = null;
-  private unbindMount: (() => void) | null = null;
   private statusLabel: Label | null = null;
   private hintLabel: Label | null = null;
 
   onLoad(): void {
+    const line = `[CityHudPanel] onLoad on ${this.node.name}`;
+    log(line);
+    console.warn(line);
     this.ensureUi();
-    this.unbindMount = onGameClientMounted((boot) => {
-      this.boot = boot;
-      this.refresh();
-    });
-    const existing = getMountedGameClient();
-    if (existing) {
-      this.boot = existing;
-      this.refresh();
-    }
+    this.showLoading();
+  }
+
+  /** GameRoot 完成 mountGameClient 后直接注入（不依赖跨模块 registry）。 */
+  bindGameBoot(boot: GameBootstrap): void {
+    this.boot = boot;
+    this.refresh();
+  }
+
+  showMountError(message: string): void {
+    if (!this.statusLabel || !this.hintLabel) return;
+    this.statusLabel.string = "Config load failed";
+    this.hintLabel.string = message;
   }
 
   onDestroy(): void {
-    this.unbindMount?.();
-    this.unbindMount = null;
+    this.boot = null;
   }
 
   private ensureUi(): void {
@@ -68,15 +75,26 @@ export class CityHudPanel extends Component {
     this.createTapButton(panel, "NavBack", new Vec3(160, -55, 0), "Back", () => this.onNavBack());
   }
 
+  private showLoading(): void {
+    if (!this.statusLabel || !this.hintLabel) return;
+    this.statusLabel.string = "Loading…";
+    this.hintLabel.string = "等待 GameRoot 加载配置";
+  }
+
   private createLabel(parent: Node, name: string, position: Vec3, fontSize: number): Label {
     const node = new Node(name);
     node.setParent(parent);
     node.setPosition(position);
     node.addComponent(UITransform).setContentSize(300, 36);
     const label = node.addComponent(Label);
+    label.useSystemFont = true;
+    label.fontFamily = "Arial";
     label.fontSize = fontSize;
-    label.lineHeight = fontSize + 4;
+    label.lineHeight = fontSize + 8;
     label.color = new Color(240, 240, 240, 255);
+    label.horizontalAlign = HorizontalTextAlignment.CENTER;
+    label.verticalAlign = VerticalTextAlignment.CENTER;
+    label.overflow = Overflow.RESIZE_HEIGHT;
     label.string = name;
     return label;
   }
@@ -91,14 +109,23 @@ export class CityHudPanel extends Component {
     const node = new Node(name);
     node.setParent(parent);
     node.setPosition(position);
-    node.addComponent(UITransform).setContentSize(180, 44);
+    const transform = node.addComponent(UITransform);
+    transform.setContentSize(180, 44);
+    const bg = node.addComponent(Graphics);
+    bg.fillColor = new Color(48, 72, 120, 220);
+    bg.roundRect(-90, -22, 180, 44, 6);
+    bg.fill();
     const label = this.createLabel(node, `${name}Label`, new Vec3(0, 0, 0), 20);
     label.string = caption;
     node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler(), this);
   }
 
   private refresh(): void {
-    if (!this.boot || !this.statusLabel || !this.hintLabel) return;
+    if (!this.statusLabel || !this.hintLabel) return;
+    if (!this.boot) {
+      this.showLoading();
+      return;
+    }
     const view = readCityHudViewModel(this.boot);
     const stackDepth = this.boot.play.getNavigation().stack.length;
     this.statusLabel.string = formatCityHudStatus(view);

@@ -1,11 +1,11 @@
 import { JsonAsset, resources } from "cc";
 import {
   buildConfigBundle,
+  ConfigRepo,
   V0_CONFIG_JSON_FILES,
   V0_CONFIG_RESOURCE_BASE,
   type ConfigBundleInput
-} from "../shared/src/sim/config/configBundle";
-import { ConfigRepo } from "../shared/src/sim/config/configRepo";
+} from "../shared/game-client.mjs";
 
 function loadJsonAsset<T>(resourcePath: string): Promise<T> {
   return new Promise((resolve, reject) => {

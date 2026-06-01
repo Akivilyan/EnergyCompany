@@ -1,6 +1,5 @@
 import { director } from "cc";
-import type { SceneHost } from "../shared/src/ui/sceneHost";
-import type { ScreenId } from "../shared/src/ui/types";
+import type { SceneHost, ScreenId } from "../shared/game-client.mjs";
 
 export class CocosSceneHost implements SceneHost {
   private current: string | null = null;
@@ -11,6 +10,10 @@ export class CocosSceneHost implements SceneHost {
 
   loadScene(sceneName: string, _screenId: ScreenId): void {
     this.current = sceneName;
+    const activeSceneName = director.getScene()?.name;
+    if (activeSceneName === sceneName) {
+      return;
+    }
     director.loadScene(sceneName, (err) => {
       if (err) {
         console.warn(
