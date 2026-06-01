@@ -21,6 +21,12 @@ npm run verify:client
 
 （等价于 `build:client` + `sim:cocos-init-spike` + `sim:client-sync-spike`，**不打开 Cocos** 也能验证逻辑与资源。）
 
+编辑器里点 **播放** 后，可在仓库根目录探测预览 HTTP 是否起来：
+
+```bash
+npm run check:cocos-preview
+```
+
 预检通过后再进编辑器；`editor-scenes` 为 **advisory**（仓库内可以没有 `.scene`，但预览前需在编辑器里创建）。
 
 ---
@@ -52,7 +58,7 @@ npm run verify:client
 
 预览预期：
 
-- 顶栏：`M1 · 140 · CITY-START`
+- 顶栏：`M1 · 140 · CITY-START`（点 **Company** / **Tech** 后顶栏会切到公司/科技摘要）
 - 按钮：**Build Wind** / **Next Month** / **Company** / **Tech** / **Back**
 - 控制台：`[GameRoot] mounted screen=screen_city_detail ...`
 
