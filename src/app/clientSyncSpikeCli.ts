@@ -16,6 +16,7 @@ import {
   formatCityHudStatus,
   readCityHudViewModel
 } from "./cityHudController.js";
+import { companyApplyFirstUnlockedLoan } from "./companyHudController.js";
 import { clientNavBack, clientNavOpenCompany, formatClientNavHint } from "./screenNavController.js";
 import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
@@ -87,6 +88,12 @@ console.log(`hud-after-play: ${formatCityHudStatus(month.view)}`);
 
 const company = clientNavOpenCompany(boot1);
 console.log(`nav-company: ${formatClientNavHint(company.view, company.navigation.stack.length)}`);
+const loan = companyApplyFirstUnlockedLoan(boot1);
+if (!loan.ok) {
+  console.log(`company-loan failed: ${loan.uiErrorCode ?? "unknown"}`);
+  process.exit(1);
+}
+console.log(`company-loan: active=${boot1.app.screens.company.getSnapshot().activeLoan?.loanId ?? "none"}`);
 const back = clientNavBack(boot1);
 console.log(`nav-back: ${formatClientNavHint(back.view, back.navigation.stack.length)}`);
 

@@ -19,6 +19,8 @@ import {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,
+  companyApplyFirstUnlockedLoan,
+  companyClaimCashByAd,
   formatClientHudStatus,
   formatClientNavHint,
   readCityHudViewModel,
@@ -33,6 +35,11 @@ export class CityHudPanel extends Component {
   private boot: GameBootstrap | null = null;
   private statusLabel: Label | null = null;
   private hintLabel: Label | null = null;
+  private buildWindBtn: Node | null = null;
+  private advanceMonthBtn: Node | null = null;
+  private applyLoanBtn: Node | null = null;
+  private adCashBtn: Node | null = null;
+  private lastActionKey: string | null = null;
 
   onLoad(): void {
     const line = `[CityHudPanel] onLoad on ${this.node.name}`;
@@ -68,8 +75,18 @@ export class CityHudPanel extends Component {
 
     this.statusLabel = this.createLabel(panel, "StatusLabel", new Vec3(0, 80, 0), 24);
     this.hintLabel = this.createLabel(panel, "HintLabel", new Vec3(0, 45, 0), 18);
-    this.createTapButton(panel, "BuildWind", new Vec3(-120, 0, 0), "Build Wind", () => this.onBuildWind());
-    this.createTapButton(panel, "AdvanceMonth", new Vec3(120, 0, 0), "Next Month", () => this.onAdvanceMonth());
+    this.buildWindBtn = this.createTapButton(panel, "BuildWind", new Vec3(-120, 0, 0), "Build Wind", () =>
+      this.onBuildWind()
+    );
+    this.advanceMonthBtn = this.createTapButton(panel, "AdvanceMonth", new Vec3(120, 0, 0), "Next Month", () =>
+      this.onAdvanceMonth()
+    );
+    this.applyLoanBtn = this.createTapButton(panel, "ApplyLoan", new Vec3(-60, 0, 0), "Loan", () =>
+      this.onApplyLoan()
+    );
+    this.adCashBtn = this.createTapButton(panel, "AdCash", new Vec3(60, 0, 0), "Ad Cash", () => this.onAdCash());
+    this.applyLoanBtn.active = false;
+    this.adCashBtn.active = false;
     this.createTapButton(panel, "OpenCompany", new Vec3(-160, -55, 0), "Company", () => this.onOpenCompany());
     this.createTapButton(panel, "OpenTech", new Vec3(0, -55, 0), "Tech", () => this.onOpenTech());
     this.createTapButton(panel, "NavBack", new Vec3(160, -55, 0), "Back", () => this.onNavBack());
@@ -105,7 +122,7 @@ export class CityHudPanel extends Component {
     position: Vec3,
     caption: string,
     handler: () => void
-  ): void {
+  ): Node {
     const node = new Node(name);
     node.setParent(parent);
     node.setPosition(position);
@@ -118,6 +135,7 @@ export class CityHudPanel extends Component {
     const label = this.createLabel(node, `${name}Label`, new Vec3(0, 0, 0), 20);
     label.string = caption;
     node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler(), this);
+    return node;
   }
 
   private refresh(): void {
@@ -128,8 +146,14 @@ export class CityHudPanel extends Component {
     }
     const view = readCityHudViewModel(this.boot);
     const stackDepth = this.boot.play.getNavigation().stack.length;
+    const onCompany = view.screen === "screen_company";
+    this.buildWindBtn!.active = !onCompany;
+    this.advanceMonthBtn!.active = !onCompany;
+    this.applyLoanBtn!.active = onCompany;
+    this.adCashBtn!.active = onCompany;
     this.statusLabel.string = formatClientHudStatus(this.boot);
-    this.hintLabel.string = formatClientNavHint(view, stackDepth);
+    const navHint = formatClientNavHint(view, stackDepth);
+    this.hintLabel.string = this.lastActionKey ? `${navHint} · ${this.lastActionKey}` : navHint;
   }
 
   private onBuildWind(): void {
@@ -164,7 +188,28 @@ export class CityHudPanel extends Component {
 
   private onNavBack(): void {
     if (!this.boot) return;
+    this.lastActionKey = null;
     clientNavBack(this.boot);
     this.refresh();
+  }
+
+  private onApplyLoan(): void {
+    if (!this.boot) return;
+    const out = companyApplyFirstUnlockedLoan(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) {
+      console.warn(`[CityHudPanel] loan failed: ${out.uiErrorCode ?? "unknown"}`);
+    }
+  }
+
+  private onAdCash(): void {
+    if (!this.boot) return;
+    const out = companyClaimCashByAd(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) {
+      console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
+    }
   }
 }

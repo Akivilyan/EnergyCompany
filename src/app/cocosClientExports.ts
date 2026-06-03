@@ -17,6 +17,10 @@ export {
 } from "./cityHudController.js";
 export { formatClientHudStatus } from "./clientHudController.js";
 export {
+  companyApplyFirstUnlockedLoan,
+  companyClaimCashByAd
+} from "./companyHudController.js";
+export {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,
