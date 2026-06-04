@@ -16,6 +16,7 @@ import {
   formatCityHudStatus,
   readCityHudViewModel
 } from "./cityHudController.js";
+import { eventsAcknowledgeNextPending } from "./eventsHudController.js";
 import { companyApplyFirstUnlockedLoan } from "./companyHudController.js";
 import {
   techEnsureLevelIIForDev,
@@ -127,6 +128,25 @@ if (!techSpeed.ok) {
 const lit = boot1.app.screens.tech.getSnapshot().litTechIds;
 console.log(`tech-lit: storage_system_1=${lit.includes("storage_system_1")}`);
 clientNavBack(boot1);
+
+boot1.app.controller.state.funds = 10000;
+while (boot1.app.controller.state.currentMonth < 23 && boot1.app.controller.state.runResult === null) {
+  const step = cityHudAdvanceMonth(boot1);
+  if (!step.ok) {
+    console.log(`events-advance failed at M${boot1.app.controller.state.currentMonth}: ${step.errorCode ?? "unknown"}`);
+    process.exit(1);
+  }
+}
+const pending = boot1.app.screens.events.getSnapshot().pendingFullscreen?.seq ?? "none";
+console.log(`events-pending@M23: seq=${pending}`);
+const ack = eventsAcknowledgeNextPending(boot1);
+if (!ack.ok) {
+  console.log(`events-ack failed: ${ack.uiErrorCode ?? "unknown"}`);
+  process.exit(1);
+}
+console.log(
+  `events-ack: pending cleared, active=${boot1.app.screens.events.getSnapshot().active.length}`
+);
 
 const savedMonth = app.controller.state.currentMonth;
 const savedFunds = app.controller.state.funds;

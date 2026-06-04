@@ -26,6 +26,7 @@ import {
   techCancelActiveResearch,
   techSpeedupResearchByAd,
   techStartDefaultResearch,
+  eventsAcknowledgeNextPending,
   t,
   type GameBootstrap
 } from "../shared/game-client.mjs";
@@ -63,6 +64,7 @@ export class CityHudPanel extends Component {
   private startResearchBtn: Node | null = null;
   private cancelResearchBtn: Node | null = null;
   private adSpeedupBtn: Node | null = null;
+  private ackEventBtn: Node | null = null;
   private lastActionKey: string | null = null;
 
   onLoad(): void {
@@ -161,12 +163,20 @@ export class CityHudPanel extends Component {
       "hud.btn.ad_speedup",
       () => this.onAdSpeedup()
     );
+    this.ackEventBtn = this.createTapButton(
+      panel,
+      "AckEvent",
+      new Vec3(0, HUD.actionRowY, 0),
+      "hud.btn.ack_event",
+      () => this.onAckEvent()
+    );
 
     this.applyLoanBtn.active = false;
     this.adCashBtn.active = false;
     this.startResearchBtn.active = false;
     this.cancelResearchBtn.active = false;
     this.adSpeedupBtn.active = false;
+    this.ackEventBtn.active = false;
 
     const navHalf = HUD.navGap;
     this.createTapButton(panel, "OpenCompany", new Vec3(-navHalf, HUD.navRowY, 0), "hud.btn.company", () =>
@@ -245,6 +255,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.startResearchBtn, "hud.btn.start_research");
     this.setButtonCaption(this.cancelResearchBtn, "hud.btn.cancel_research");
     this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
+    this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
   }
 
   private actionMessage(): string | null {
@@ -262,8 +273,10 @@ export class CityHudPanel extends Component {
     const onCompany = view.screen === "screen_company";
     const onTech = view.screen === "screen_tech_tree";
     const onCity = !onCompany && !onTech;
+    const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
     this.buildWindBtn!.active = onCity;
     this.advanceMonthBtn!.active = onCity;
+    this.ackEventBtn!.active = onCity && pendingEvent;
     this.applyLoanBtn!.active = onCompany;
     this.adCashBtn!.active = onCompany;
     this.startResearchBtn!.active = onTech;
@@ -349,5 +362,13 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] ad speedup failed: ${out.uiErrorCode ?? "unknown"}`);
+  }
+
+  private onAckEvent(): void {
+    if (!this.boot) return;
+    const out = eventsAcknowledgeNextPending(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] ack event failed: ${out.uiErrorCode ?? "unknown"}`);
   }
 }

@@ -29,6 +29,11 @@ export {
   techStartDefaultResearch
 } from "./techHudController.js";
 export {
+  eventsAcknowledgeNextPending,
+  formatEventsHudHint,
+  formatPendingEventModalLines
+} from "./eventsHudController.js";
+export {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,

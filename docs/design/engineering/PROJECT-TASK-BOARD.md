@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T50-05`
-- 任务标题：科技屏开发 HUD（开研/取消/广告加速）
+- 当前任务 ID：`T50-06`
+- 任务标题：事件面板 / 灾害全屏确认（开发 HUD）
 - 状态：`done`
-- 开始时间：2026-06-01
-- 完成定义（本轮）：`techHudController` + Cocos 按屏切换科技按钮 + client-sync 开研/加速冒烟
+- 开始时间：2026-06-04
+- 完成定义（本轮）：`eventsHudController` + 城市屏待确认「知道了」+ client-sync 推月至 M23 并 ack
 
 ---
 
@@ -141,6 +141,7 @@ open_questions: []
 | 2026-06-01 | 收口 `T50-03`：预览 HTTP 探测 + 公司/科技屏顶栏文案 | `src/app/previewProbe.ts` `src/app/previewProbeCli.ts` `src/app/clientHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/previewProbe.test.ts` `tests/app/clientHudController.test.ts` `package.json` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-01 | 推进 `T50-04`：公司屏借贷/广告领现接入开发 HUD | `src/app/companyHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/companyHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-01 | 推进 `T50-05`：科技屏开研/取消/广告加速接入开发 HUD | `src/app/techHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/techHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
+| 2026-06-04 | 推进 `T50-06`：灾害待确认与 eventsHud 接入开发 HUD | `src/app/eventsHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `src/app/clientSyncSpikeCli.ts` `tests/app/eventsHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 
 ---
 

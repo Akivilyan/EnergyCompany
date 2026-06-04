@@ -1,5 +1,6 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
+import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 
 export function formatLoanTierLabel(loanId: string): string {
@@ -74,7 +75,15 @@ export function buildClientHudDisplay(
   } else if (screen === "screen_tech_tree") {
     display = formatTechStatus(boot);
   } else {
-    display = { statusLine: formatCityStatus(boot), detailLine: formatNavHint(boot) };
+    const eventsHint = formatEventsHudHint(boot);
+    const pending = formatPendingEventModalLines(boot);
+    display = {
+      statusLine: formatCityStatus(boot),
+      detailLine: eventsHint ?? formatNavHint(boot)
+    };
+    if (pending) {
+      display.detailLine = `${display.detailLine} · ${pending.summary}`;
+    }
   }
 
   if (screen === "screen_company" || screen === "screen_tech_tree") {
