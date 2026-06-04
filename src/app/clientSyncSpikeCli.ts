@@ -26,9 +26,11 @@ import {
 import {
   clientNavBack,
   clientNavOpenCompany,
+  clientNavOpenRegion,
   clientNavOpenTechTree,
   formatClientNavHint
 } from "./screenNavController.js";
+import { regionQueueDefaultLink } from "./regionHudController.js";
 import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
 import type { WxHideLifecyclePort } from "../infra/lifecycle/wxLifecycle.js";
@@ -127,6 +129,18 @@ if (!techSpeed.ok) {
 }
 const lit = boot1.app.screens.tech.getSnapshot().litTechIds;
 console.log(`tech-lit: storage_system_1=${lit.includes("storage_system_1")}`);
+clientNavBack(boot1);
+
+const regionNav = clientNavOpenRegion(boot1);
+console.log(`nav-region: ${formatClientNavHint(regionNav.view, regionNav.navigation.stack.length)}`);
+const regionLink = regionQueueDefaultLink(boot1);
+if (!regionLink.ok) {
+  console.log(`region-link failed: ${regionLink.errorCode ?? "unknown"}`);
+  process.exit(1);
+}
+const linkId = "CITY-MAP01-02::CITY-START";
+const queued = boot1.app.screens.region.getSnapshot().gridLinks.find((l) => l.linkId === linkId);
+console.log(`region-link: status=${queued?.status ?? "missing"}`);
 clientNavBack(boot1);
 
 boot1.app.controller.state.funds = 10000;

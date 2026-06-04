@@ -12,8 +12,10 @@ export const en: Record<string, string> = {
   "hud.btn.cancel_research": "Cancel",
   "hud.btn.ad_speedup": "Ad Speed",
   "hud.btn.company": "Company",
+  "hud.btn.region": "Region",
   "hud.btn.tech": "Tech",
   "hud.btn.back": "Back",
+  "hud.btn.queue_link": "Queue Link",
   "hud.btn.ack_event": "Got it",
 
   "hud.events.pending": "Disaster pending: {title}",
@@ -42,6 +44,8 @@ export const en: Record<string, string> = {
   "hud.status.company_no_loan": "No active loan",
   "hud.status.tech_locked": "Tech · locked (need Lv2, now Lv{level})",
   "hud.status.tech_locked_hint": "Level up company first",
+  "hud.status.region": "Region · Lv{level} · {funds} · {cities} cities",
+  "hud.status.region_links": "M{month} · links building={building} done={finished}",
   "hud.status.tech_header": "Tech · lit={lit}",
   "hud.status.tech_idle_hint": "No active research",
   "hud.status.tech_active_hint": "Research: {techId} · {months}m left",
@@ -85,6 +89,13 @@ export const en: Record<string, string> = {
   "events_panel.error.event_not_active": "Event not active",
   "events_panel.error.no_pending_modal": "No pending modal",
   "events_panel.error.action_failed": "Action failed",
+
+  "region.error.not_unlocked": "Target city locked (need company Lv2)",
+  "region.error.insufficient_funds": "Not enough funds for grid link",
+  "region.error.link_exists": "Link already exists or in progress",
+  "region.error.invalid_link": "Invalid grid link",
+  "region.error.action_failed": "Grid link failed",
+  "region.success.link_queued": "Region link queued",
 
   "onboarding.error.not_tutorial_run": "Not a tutorial run",
   "onboarding.error.action_blocked": "Onboarding blocked",

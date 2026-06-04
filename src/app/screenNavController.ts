@@ -28,6 +28,10 @@ export function clientNavOpenTechTree(boot: GameBootstrap): ClientNavResult {
   return clientNavOpenScreen(boot, "screen_tech_tree");
 }
 
+export function clientNavOpenRegion(boot: GameBootstrap): ClientNavResult {
+  return clientNavOpenScreen(boot, "screen_region");
+}
+
 export function clientNavOpenCity(boot: GameBootstrap): ClientNavResult {
   return clientNavOpenScreen(boot, "screen_city_detail");
 }

@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { formatClientHudStatus } from "../../src/app/clientHudController.js";
-import { clientNavOpenCompany, clientNavOpenTechTree } from "../../src/app/screenNavController.js";
+import {
+  clientNavOpenCompany,
+  clientNavOpenRegion,
+  clientNavOpenTechTree
+} from "../../src/app/screenNavController.js";
+import { techEnsureLevelIIForDev } from "../../src/app/techHudController.js";
 import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 
 describe("clientHudController", () => {
@@ -25,5 +30,12 @@ describe("clientHudController", () => {
     clientNavOpenTechTree(boot);
     const line = formatClientHudStatus(boot);
     expect(line.startsWith("科技 ·")).toBe(true);
+  });
+
+  it("formats region when on screen_region", () => {
+    const boot = createGameBootstrapFromRepo();
+    techEnsureLevelIIForDev(boot);
+    clientNavOpenRegion(boot);
+    expect(formatClientHudStatus(boot)).toMatch(/^区域 · 2级 · 资金\d+ · 已解锁\d+城$/);
   });
 });

@@ -19,7 +19,9 @@ import {
   cityHudBuildWind,
   clientNavBack,
   clientNavOpenCompany,
+  clientNavOpenRegion,
   clientNavOpenTechTree,
+  regionQueueDefaultLink,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
   readCityHudViewModel,
@@ -65,6 +67,7 @@ export class CityHudPanel extends Component {
   private cancelResearchBtn: Node | null = null;
   private adSpeedupBtn: Node | null = null;
   private ackEventBtn: Node | null = null;
+  private queueRegionLinkBtn: Node | null = null;
   private lastActionKey: string | null = null;
 
   onLoad(): void {
@@ -177,13 +180,44 @@ export class CityHudPanel extends Component {
     this.cancelResearchBtn.active = false;
     this.adSpeedupBtn.active = false;
     this.ackEventBtn.active = false;
-
-    const navHalf = HUD.navGap;
-    this.createTapButton(panel, "OpenCompany", new Vec3(-navHalf, HUD.navRowY, 0), "hud.btn.company", () =>
-      this.onOpenCompany()
+    this.queueRegionLinkBtn = this.createTapButton(
+      panel,
+      "QueueRegionLink",
+      new Vec3(-half, HUD.actionRowY, 0),
+      "hud.btn.queue_link",
+      () => this.onQueueRegionLink()
     );
-    this.createTapButton(panel, "OpenTech", new Vec3(0, HUD.navRowY, 0), "hud.btn.tech", () => this.onOpenTech());
-    this.createTapButton(panel, "NavBack", new Vec3(navHalf, HUD.navRowY, 0), "hud.btn.back", () => this.onNavBack());
+    this.queueRegionLinkBtn.active = false;
+
+    const navStep = HUD.navGap / 2;
+    this.createTapButton(
+      panel,
+      "OpenCompany",
+      new Vec3(-navStep * 1.5, HUD.navRowY, 0),
+      "hud.btn.company",
+      () => this.onOpenCompany()
+    );
+    this.createTapButton(
+      panel,
+      "OpenRegion",
+      new Vec3(-navStep * 0.5, HUD.navRowY, 0),
+      "hud.btn.region",
+      () => this.onOpenRegion()
+    );
+    this.createTapButton(
+      panel,
+      "OpenTech",
+      new Vec3(navStep * 0.5, HUD.navRowY, 0),
+      "hud.btn.tech",
+      () => this.onOpenTech()
+    );
+    this.createTapButton(
+      panel,
+      "NavBack",
+      new Vec3(navStep * 1.5, HUD.navRowY, 0),
+      "hud.btn.back",
+      () => this.onNavBack()
+    );
   }
 
   private showLoading(): void {
@@ -256,6 +290,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.cancelResearchBtn, "hud.btn.cancel_research");
     this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
     this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
+    this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
   }
 
   private actionMessage(): string | null {
@@ -271,11 +306,13 @@ export class CityHudPanel extends Component {
     }
     const view = readCityHudViewModel(this.boot);
     const onCompany = view.screen === "screen_company";
+    const onRegion = view.screen === "screen_region";
     const onTech = view.screen === "screen_tech_tree";
-    const onCity = !onCompany && !onTech;
+    const onCity = !onCompany && !onRegion && !onTech;
     const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
     this.buildWindBtn!.active = onCity;
-    this.advanceMonthBtn!.active = onCity;
+    this.advanceMonthBtn!.active = onCity || onRegion;
+    this.queueRegionLinkBtn!.active = onRegion;
     this.ackEventBtn!.active = onCity && pendingEvent;
     this.applyLoanBtn!.active = onCompany;
     this.adCashBtn!.active = onCompany;
@@ -314,6 +351,13 @@ export class CityHudPanel extends Component {
     if (!this.boot) return;
     this.lastActionKey = null;
     clientNavOpenTechTree(this.boot);
+    this.refresh();
+  }
+
+  private onOpenRegion(): void {
+    if (!this.boot) return;
+    this.lastActionKey = null;
+    clientNavOpenRegion(this.boot);
     this.refresh();
   }
 
@@ -370,5 +414,13 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] ack event failed: ${out.uiErrorCode ?? "unknown"}`);
+  }
+
+  private onQueueRegionLink(): void {
+    if (!this.boot) return;
+    const out = regionQueueDefaultLink(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] region link failed: ${out.errorCode ?? "unknown"}`);
   }
 }

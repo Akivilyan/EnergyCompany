@@ -12,8 +12,10 @@ export const zhCN: Record<string, string> = {
   "hud.btn.cancel_research": "取消研发",
   "hud.btn.ad_speedup": "广告加速",
   "hud.btn.company": "公司",
+  "hud.btn.region": "区域",
   "hud.btn.tech": "科技",
   "hud.btn.back": "返回",
+  "hud.btn.queue_link": "铺线",
   "hud.btn.ack_event": "知道了",
 
   "hud.events.pending": "灾害待确认：{title}",
@@ -42,6 +44,8 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_no_loan": "无在贷",
   "hud.status.tech_locked": "科技 · 未解锁（需2级，当前{level}级）",
   "hud.status.tech_locked_hint": "升级公司后再来",
+  "hud.status.region": "区域 · {level}级 · 资金{funds} · 已解锁{cities}城",
+  "hud.status.region_links": "第{month}月 · 线路 在建{building} 完工{finished}",
   "hud.status.tech_header": "科技 · 已点亮{lit}项",
   "hud.status.tech_idle_hint": "当前无在研项目",
   "hud.status.tech_active_hint": "在研：{techId} · 剩{months}月",
@@ -85,6 +89,13 @@ export const zhCN: Record<string, string> = {
   "events_panel.error.event_not_active": "事件未激活",
   "events_panel.error.no_pending_modal": "没有待确认弹窗",
   "events_panel.error.action_failed": "操作失败",
+
+  "region.error.not_unlocked": "目标城市未解锁（需公司2级）",
+  "region.error.insufficient_funds": "铺线资金不足",
+  "region.error.link_exists": "该线路已存在或正在建造",
+  "region.error.invalid_link": "铺线参数无效",
+  "region.error.action_failed": "铺线失败",
+  "region.success.link_queued": "已排队区域铺线",
 
   "onboarding.error.not_tutorial_run": "非教学局",
   "onboarding.error.action_blocked": "引导步骤未完成",

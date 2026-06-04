@@ -117,6 +117,7 @@ npm run check:cocos-preview
 | `game-client.mjs.map.meta is not exist` | 正常：`build:client` 不再生成 `.map`；若仍报错，删 `assets/shared/*.map*` 后重跑 `npm run build:client`，再在 Cocos 里 **资源 → 刷新** |
 | 按钮无反应                    | 确认 Console 有 `[GameRoot] mounted`；检查 Canvas 有 Camera |
 | 推月后出现「知道了」按钮            | 灾害全屏确认（T50-06）；顶栏会显示待确认标题，点 **知道了** 清除 pending |
+| 导航条 **区域** + **铺线**        | 需公司 **2 级**（可先公司屏借贷/推月或科技屏升到 II）；区域屏点 **铺线** 排队 `CITY-START → CITY-MAP01-02` |
 
 
 ---

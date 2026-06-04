@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T50-06`
-- 任务标题：事件面板 / 灾害全屏确认（开发 HUD）
+- 当前任务 ID：`T50-07`
+- 任务标题：区域屏入口与铺线（开发 HUD）
 - 状态：`done`
 - 开始时间：2026-06-04
-- 完成定义（本轮）：`eventsHudController` + 城市屏待确认「知道了」+ client-sync 推月至 M23 并 ack
+- 完成定义（本轮）：`regionHudController` + 导航「区域」+ 铺线按钮 + client-sync 在 II 级排队默认区内线
 
 ---
 
@@ -142,6 +142,7 @@ open_questions: []
 | 2026-06-01 | 推进 `T50-04`：公司屏借贷/广告领现接入开发 HUD | `src/app/companyHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/companyHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-01 | 推进 `T50-05`：科技屏开研/取消/广告加速接入开发 HUD | `src/app/techHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/techHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-04 | 推进 `T50-06`：灾害待确认与 eventsHud 接入开发 HUD | `src/app/eventsHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `src/app/clientSyncSpikeCli.ts` `tests/app/eventsHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
+| 2026-06-04 | 推进 `T50-07`：区域导航与默认铺线接入开发 HUD | `src/app/regionHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/screenNavController.ts` `tests/app/regionHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 
 ---
 

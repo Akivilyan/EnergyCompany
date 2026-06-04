@@ -36,6 +36,25 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   return { statusLine, detailLine: loanPart };
 }
 
+function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
+  const s = boot.app.screens.region.getSnapshot();
+  const building = s.gridLinks.filter((l) => l.status === "building").length;
+  const finished = s.gridLinks.filter((l) => l.status === "finished").length;
+  const unlockedCities = s.cities.filter((c) => c.unlocked).length;
+  return {
+    statusLine: t("hud.status.region", {
+      level: s.companyLevel,
+      funds: s.funds,
+      cities: unlockedCities
+    }),
+    detailLine: t("hud.status.region_links", {
+      building,
+      finished,
+      month: s.month
+    })
+  };
+}
+
 function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.tech.getSnapshot();
   if (!s.canOpen) {
@@ -72,6 +91,8 @@ export function buildClientHudDisplay(
   let display: ClientHudDisplay;
   if (screen === "screen_company") {
     display = formatCompanyStatus(boot);
+  } else if (screen === "screen_region") {
+    display = formatRegionStatus(boot);
   } else if (screen === "screen_tech_tree") {
     display = formatTechStatus(boot);
   } else {
@@ -86,7 +107,7 @@ export function buildClientHudDisplay(
     }
   }
 
-  if (screen === "screen_company" || screen === "screen_tech_tree") {
+  if (screen === "screen_company" || screen === "screen_region" || screen === "screen_tech_tree") {
     const nav = formatNavHint(boot);
     display.detailLine = actionMessage
       ? `${nav} · ${display.detailLine} · ${actionMessage}`
