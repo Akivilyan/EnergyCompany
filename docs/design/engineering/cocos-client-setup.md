@@ -19,7 +19,15 @@ open_questions: []
 npm run verify:client
 ```
 
-（等价于 `build:client` + `sim:cocos-init-spike` + `sim:client-sync-spike`，**不打开 Cocos** 也能验证逻辑与资源。）
+（等价于 `build:client` + 工程预检 + T50 HUD 全屏冒烟 + hide 存档恢复，**不打开 Cocos** 也能验证逻辑与资源。）
+
+分项脚本：
+
+| 命令 | 用途 |
+|------|------|
+| `npm run sim:cocos-hud-close` | 仅 T50 静态检查 + HUD 冒烟 |
+| `npm run sim:client-sync-spike` | 冒烟 + T49 存档恢复（playtest 子步骤） |
+| `npm run sim:cocos-init-spike` | 仅工程/资源预检 |
 
 编辑器里点 **播放** 后，可在仓库根目录探测预览 HTTP 是否起来：
 
@@ -122,12 +130,37 @@ npm run check:cocos-preview
 
 ---
 
-## 6. 微信小游戏（后续）
+## 5.1 T50 开发 HUD 验收（已收口）
 
-CityDetail 在编辑器预览通过后，再配置：
+`npm run sim:cocos-hud-close` 或 `npm run verify:client` 会逐项打印：
 
-1. 构建发布 → 微信小游戏
-2. 真机验证：启动读档、`onHide` 自动存档、重进恢复
+| ID | 内容 |
+|----|------|
+| t50-01 | 挂载、建造风场、推月 |
+| t50-03~04 | 导航公司、申请贷款 |
+| t50-05 | 升 II 级、开研、广告加速 |
+| t50-07 | 导航区域、默认铺线 |
+| t50-06 | 推至 M23、灾害确认 |
+| t49-persistence | hide 存档与 remount 恢复（仅 `verify:client` / `client-sync-spike`） |
+
+当前为 **代码绘制** 的开发 HUD，不是 Prefab 真 UI（见 `PROJECT-TASK-BOARD` T55 入口条件）。
+
+---
+
+## 6. 微信小游戏构建清单（T51）
+
+CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
+
+1. **构建前**：`npm run verify:client`；确认 `client/cocos/assets/shared/game-client.mjs` 存在
+2. **Cocos Creator**：菜单 **项目 → 构建发布** → 平台 **微信小游戏**
+3. **首包**：确认 `resources/config/v0` 已打进包；`temp/`、`library/` 勿提交 Git
+4. **真机冒烟**：
+   - 冷启动进入 `CityDetail`，顶栏非 Loading
+   - 玩 2～3 月后切后台再进，月份/资金与退出前一致（`onHide` 存档）
+   - 公司 2 级后可进 **区域** 并 **铺线**
+   - 推至约 M23 出现灾害 **知道了** 并可确认
+5. **广告**：激励视频仍为 stub；真机接 WeChat 广告需替换 `RewardedAdProvider`（见 `engineering/stack.md`）
+6. **语言**：预览 URL `?locale=en` 或 `localStorage` 键 `energy-company.locale`
 
 ---
 

@@ -21,7 +21,7 @@ open_questions: []
 
 ## 1. 当前阶段与总目标
 
-- 当前阶段：`T50` Cocos UI 实接（城市页最小 HUD）
+- 当前阶段：`T51` 微信小游戏构建与真机冒烟
 - 执行策略：先 coding 健壮性与可玩闭环，再做数值精调
 - 本看板维护频率：每次对话结束时实时更新
 - 提交策略：每步本地 `commit`；累计到阶段节点后再统一 `push`
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T50-07`
-- 任务标题：区域屏入口与铺线（开发 HUD）
-- 状态：`done`
+- 当前任务 ID：`T51`
+- 任务标题：微信小游戏构建清单与真机冒烟
+- 状态：`todo`
 - 开始时间：2026-06-04
-- 完成定义（本轮）：`regionHudController` + 导航「区域」+ 铺线按钮 + client-sync 在 II 级排队默认区内线
+- 完成定义（本轮）：`cocos-client-setup.md` §6 清单可执行；真机验证启动/存档/区域/灾害（需本机 Cocos 构建）
 
 ---
 
@@ -143,6 +143,7 @@ open_questions: []
 | 2026-06-01 | 推进 `T50-05`：科技屏开研/取消/广告加速接入开发 HUD | `src/app/techHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/techHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-04 | 推进 `T50-06`：灾害待确认与 eventsHud 接入开发 HUD | `src/app/eventsHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `src/app/clientSyncSpikeCli.ts` `tests/app/eventsHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-04 | 推进 `T50-07`：区域导航与默认铺线接入开发 HUD | `src/app/regionHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/screenNavController.ts` `tests/app/regionHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
+| 2026-06-04 | 收口 `T50-CLOSE`：`clientHudSmoke` + `sim:cocos-hud-close` + `verify:client` 聚合 | `src/app/clientHudSmoke.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
 
 ---
 
@@ -222,3 +223,5 @@ open_questions: []
 | 0.1.60 | 2026-06-01 | 推进 T50-03：check:cocos-preview 与多屏 HUD 顶栏 |
 | 0.1.61 | 2026-06-01 | 推进 T50-04：公司屏借贷与广告领现开发 HUD |
 | 0.1.62 | 2026-06-01 | 推进 T50-05：科技屏开研/取消/广告加速开发 HUD |
+| 0.1.63 | 2026-06-04 | 收口 T50-CLOSE：HUD 验收 CLI 与 verify:client 聚合 |
+| 0.1.64 | 2026-06-04 | 推进 T50-06/07：灾害确认与区域铺线开发 HUD |

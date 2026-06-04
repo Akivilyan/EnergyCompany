@@ -26,7 +26,7 @@ const steps: BundleStep[] = [
   { id: "app-shell", title: "app/ui 装配壳层冒烟", command: "npm run sim:app-shell" },
   { id: "save-loop", title: "存档恢复冒烟", command: "npm run sim:save-loop" },
   { id: "cocos-scene", title: "Cocos 场景占位接入", command: "npm run sim:cocos-scene-spike" },
-  { id: "client-sync", title: "Cocos client 资源同步", command: "npm run sim:client-sync-spike" },
+  { id: "verify-client", title: "Cocos 客户端验收 (T50+T49)", command: "npm run verify:client" },
   { id: "regression", title: "E1-E6 体验回归", command: "npm run sim:regression" },
   { id: "unit", title: "单元/模块测试", command: "npm test" }
 ];

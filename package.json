@@ -22,7 +22,8 @@
     "sim:cocos-scene-spike": "tsx src/app/cocosSceneSpikeCli.ts",
     "sim:cocos-init-spike": "tsx src/app/cocosInitSpikeCli.ts",
     "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
-    "verify:client": "npm run build:client && npm run sim:cocos-init-spike && npm run sim:client-sync-spike",
+    "sim:cocos-hud-close": "tsx src/app/cocosHudCloseSpikeCli.ts",
+    "verify:client": "tsx src/app/verifyClientCli.ts",
     "check:cocos-preview": "tsx src/app/previewProbeCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
