@@ -1,7 +1,8 @@
 import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 import { runCocosInitChecks, summarizeCocosInitChecks } from "../../src/app/cocosInitCheck.js";
 import { mountGameClient } from "../../src/app/gameClientEntry.js";
 import {
@@ -16,6 +17,10 @@ import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 
 
 describe("screenNavController", () => {
+  beforeEach(() => {
+    setLocale(DEFAULT_LOCALE);
+  });
+
   it("opens company and tech screens through play surface", () => {
     const config = loadTestConfig();
     const host = new LoggingSceneHost();
@@ -41,7 +46,7 @@ describe("screenNavController", () => {
     clientNavOpenCompany(boot);
     const back = clientNavBack(boot);
     expect(back.screen).toBe("screen_city_detail");
-    expect(formatClientNavHint(back.view, back.navigation.stack.length)).toContain("stack=0");
+    expect(formatClientNavHint(back.view, back.navigation.stack.length)).toContain("返回层0");
   });
 });
 

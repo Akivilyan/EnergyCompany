@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 
 export interface CityHudViewModel {
@@ -50,5 +51,6 @@ export function cityHudAdvanceMonth(boot: GameBootstrap): CityHudAdvanceResult {
 }
 
 export function formatCityHudStatus(view: CityHudViewModel): string {
-  return `M${view.month} · ${view.funds} · ${view.cityId}`;
+  const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
+  return t("hud.status.city", { month: view.month, funds: view.funds, city });
 }

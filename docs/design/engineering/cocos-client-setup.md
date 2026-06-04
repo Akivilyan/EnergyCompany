@@ -29,6 +29,13 @@ npm run check:cocos-preview
 
 预检通过后再进编辑器；`editor-scenes` 为 **advisory**（仓库内可以没有 `.scene`，但预览前需在编辑器里创建）。
 
+### 语言（简中 / 英语）
+
+- **默认简中**（`zh-CN`），适合人肉测试。
+- 文案表：`src/i18n/messages/zh-CN.ts`、`en.ts`。
+- 切英语：预览 URL 加 `?locale=en`（会写入 `localStorage`）。
+- 切回简中：`?locale=zh-CN`，或删除 `localStorage` 键 `energy-company.locale`。
+
 ---
 
 ## 1. 打开工程
@@ -58,9 +65,8 @@ npm run check:cocos-preview
 
 预览预期：
 
-- 顶栏：`M1 · 140 · CITY-START`（点 **Company** / **Tech** 后顶栏会切到公司/科技摘要）
-- 按钮：**Build Wind** / **Next Month** / **Company** / **Tech** / **Back**
-- **Company** 屏中间：**Loan** / **Ad Cash**；**Tech** 屏中间：**Start** / **Cancel** / **Ad Speed**（II 级前 Start 会报 locked，属预期）
+- 顶栏（简中）：`第1月 · 资金140 · 起始城`；公司屏主行 `公司 · 1级 · …`，副行 `在贷：小额贷款（30万）· 剩12月`
+- 按钮（简中）：**建造风场** / **下一月** / **公司** / **科技** / **返回** 等
 - 控制台：`[GameRoot] mounted screen=screen_city_detail ...`
 
 ---

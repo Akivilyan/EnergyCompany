@@ -26,6 +26,7 @@ import {
   techCancelActiveResearch,
   techSpeedupResearchByAd,
   techStartDefaultResearch,
+  t,
   type GameBootstrap
 } from "../shared/game-client.mjs";
 
@@ -49,40 +50,6 @@ const HUD = {
   actionGap: 140,
   navGap: 150
 } as const;
-
-const BTN = {
-  buildWind: "建造风场",
-  nextMonth: "下一月",
-  loan: "申请贷款",
-  adCash: "广告领钱",
-  startResearch: "开始研发",
-  cancelResearch: "取消研发",
-  adSpeedup: "广告加速",
-  company: "公司",
-  tech: "科技",
-  back: "返回"
-} as const;
-
-const ACTION_MSG: Record<string, string> = {
-  "company.error.loan_not_found": "未找到该贷款档位",
-  "company.error.loan_tier_locked": "该档位尚未解锁",
-  "company.error.loan_already_active": "已有贷款，不能再借",
-  "company.error.ad_not_completed": "广告未看完",
-  "company.error.ad_provider_failed": "广告服务失败",
-  "company.error.ads_exhausted": "今日广告次数已用完",
-  "company.error.action_invalid": "当前阶段不能操作",
-  "company.error.action_failed": "操作失败",
-  "tech_tree.error.tech_locked": "需公司2级才能开科技树",
-  "tech_tree.error.insufficient_funds": "资金不足",
-  "tech_tree.error.research_queue_full": "研发队列已满",
-  "tech_tree.error.research_not_found": "未找到该研发",
-  "tech_tree.error.no_active_research": "当前没有在研项目",
-  "tech_tree.error.ad_not_completed": "广告未看完",
-  "tech_tree.error.ad_provider_failed": "广告服务失败",
-  "tech_tree.error.action_blocked": "教学引导中，暂不可操作",
-  "tech_tree.error.action_invalid": "当前阶段不能操作",
-  "tech_tree.error.action_failed": "操作失败"
-};
 
 @ccclass("CityHudPanel")
 export class CityHudPanel extends Component {
@@ -113,7 +80,7 @@ export class CityHudPanel extends Component {
 
   showMountError(message: string): void {
     if (!this.statusLabel || !this.hintLabel) return;
-    this.statusLabel.string = "配置加载失败";
+    this.statusLabel.string = t("hud.config_failed");
     this.hintLabel.string = message;
   }
 
@@ -149,49 +116,49 @@ export class CityHudPanel extends Component {
       panel,
       "BuildWind",
       new Vec3(-half, HUD.actionRowY, 0),
-      BTN.buildWind,
+      "hud.btn.build_wind",
       () => this.onBuildWind()
     );
     this.advanceMonthBtn = this.createTapButton(
       panel,
       "AdvanceMonth",
       new Vec3(half, HUD.actionRowY, 0),
-      BTN.nextMonth,
+      "hud.btn.next_month",
       () => this.onAdvanceMonth()
     );
     this.applyLoanBtn = this.createTapButton(
       panel,
       "ApplyLoan",
       new Vec3(-half, HUD.actionRowY, 0),
-      BTN.loan,
+      "hud.btn.loan",
       () => this.onApplyLoan()
     );
     this.adCashBtn = this.createTapButton(
       panel,
       "AdCash",
       new Vec3(half, HUD.actionRowY, 0),
-      BTN.adCash,
+      "hud.btn.ad_cash",
       () => this.onAdCash()
     );
     this.startResearchBtn = this.createTapButton(
       panel,
       "StartResearch",
       new Vec3(-HUD.actionGap, HUD.actionRowY, 0),
-      BTN.startResearch,
+      "hud.btn.start_research",
       () => this.onStartResearch()
     );
     this.cancelResearchBtn = this.createTapButton(
       panel,
       "CancelResearch",
       new Vec3(0, HUD.actionRowY, 0),
-      BTN.cancelResearch,
+      "hud.btn.cancel_research",
       () => this.onCancelResearch()
     );
     this.adSpeedupBtn = this.createTapButton(
       panel,
       "AdSpeedup",
       new Vec3(HUD.actionGap, HUD.actionRowY, 0),
-      BTN.adSpeedup,
+      "hud.btn.ad_speedup",
       () => this.onAdSpeedup()
     );
 
@@ -202,17 +169,17 @@ export class CityHudPanel extends Component {
     this.adSpeedupBtn.active = false;
 
     const navHalf = HUD.navGap;
-    this.createTapButton(panel, "OpenCompany", new Vec3(-navHalf, HUD.navRowY, 0), BTN.company, () =>
+    this.createTapButton(panel, "OpenCompany", new Vec3(-navHalf, HUD.navRowY, 0), "hud.btn.company", () =>
       this.onOpenCompany()
     );
-    this.createTapButton(panel, "OpenTech", new Vec3(0, HUD.navRowY, 0), BTN.tech, () => this.onOpenTech());
-    this.createTapButton(panel, "NavBack", new Vec3(navHalf, HUD.navRowY, 0), BTN.back, () => this.onNavBack());
+    this.createTapButton(panel, "OpenTech", new Vec3(0, HUD.navRowY, 0), "hud.btn.tech", () => this.onOpenTech());
+    this.createTapButton(panel, "NavBack", new Vec3(navHalf, HUD.navRowY, 0), "hud.btn.back", () => this.onNavBack());
   }
 
   private showLoading(): void {
     if (!this.statusLabel || !this.hintLabel) return;
-    this.statusLabel.string = "加载中…";
-    this.hintLabel.string = "等待游戏初始化";
+    this.statusLabel.string = t("hud.loading");
+    this.hintLabel.string = t("hud.wait_mount");
   }
 
   private createLabel(
@@ -243,7 +210,7 @@ export class CityHudPanel extends Component {
     parent: Node,
     name: string,
     position: Vec3,
-    caption: string,
+    messageKey: string,
     handler: () => void
   ): Node {
     const node = new Node(name);
@@ -258,15 +225,31 @@ export class CityHudPanel extends Component {
     bg.roundRect(-w / 2, -h / 2, w, h, 6);
     bg.fill();
     const label = this.createLabel(node, `${name}Label`, new Vec3(0, 0, 0), HUD.buttonFont, w - 8);
-    label.string = caption;
-    label.overflow = Overflow.SHRINK;
+    label.string = t(messageKey);
     node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler(), this);
     return node;
   }
 
+  private setButtonCaption(buttonNode: Node | null, messageKey: string): void {
+    if (!buttonNode) return;
+    const labelNode = buttonNode.getChildByName(`${buttonNode.name}Label`);
+    const label = labelNode?.getComponent(Label);
+    if (label) label.string = t(messageKey);
+  }
+
+  private syncButtonCaptions(): void {
+    this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind");
+    this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month");
+    this.setButtonCaption(this.applyLoanBtn, "hud.btn.loan");
+    this.setButtonCaption(this.adCashBtn, "hud.btn.ad_cash");
+    this.setButtonCaption(this.startResearchBtn, "hud.btn.start_research");
+    this.setButtonCaption(this.cancelResearchBtn, "hud.btn.cancel_research");
+    this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
+  }
+
   private actionMessage(): string | null {
     if (!this.lastActionKey) return null;
-    return ACTION_MSG[this.lastActionKey] ?? this.lastActionKey;
+    return t(this.lastActionKey);
   }
 
   private refresh(): void {
@@ -286,6 +269,7 @@ export class CityHudPanel extends Component {
     this.startResearchBtn!.active = onTech;
     this.cancelResearchBtn!.active = onTech;
     this.adSpeedupBtn!.active = onTech;
+    this.syncButtonCaptions();
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
     this.statusLabel.string = display.statusLine;

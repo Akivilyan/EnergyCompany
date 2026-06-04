@@ -1,7 +1,8 @@
 import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 import {
   cityHudAdvanceMonth,
   cityHudBuildWind,
@@ -21,6 +22,10 @@ import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 
 
 describe("cityHudController", () => {
+  beforeEach(() => {
+    setLocale(DEFAULT_LOCALE);
+  });
+
   it("reads view model from mounted bootstrap", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, sceneHost: new LoggingSceneHost(), autoResumeSlot: false });
@@ -29,7 +34,7 @@ describe("cityHudController", () => {
     expect(view.funds).toBeGreaterThan(0);
     expect(view.cityId).toBe("CITY-START");
     expect(view.screen).toBe("screen_city_detail");
-    expect(formatCityHudStatus(view)).toContain("M1");
+    expect(formatCityHudStatus(view)).toContain("第1月");
   });
 
   it("builds wind and advances month through play surface", () => {

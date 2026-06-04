@@ -44,3 +44,16 @@ export {
 export { ConfigRepo } from "../sim/config/configRepo.js";
 export type { SceneHost } from "../ui/sceneHost.js";
 export type { ScreenId } from "../ui/types.js";
+export {
+  DEFAULT_LOCALE,
+  getLocale,
+  setLocale,
+  persistLocale,
+  parseLocale,
+  initLocaleFromEnvironment,
+  initLocaleForPreview,
+  ensureChineseDefaultForDev,
+  t,
+  tScreenLabel,
+  type LocaleId
+} from "../i18n/index.js";

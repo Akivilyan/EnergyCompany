@@ -1,3 +1,4 @@
+import { t, tScreenLabel } from "../i18n/index.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel, type CityHudViewModel } from "./cityHudController.js";
 import type { NavigationState, ScreenId } from "../ui/types.js";
@@ -42,5 +43,5 @@ export function clientNavBack(boot: GameBootstrap): ClientNavResult {
 }
 
 export function formatClientNavHint(view: CityHudViewModel, stackDepth: number): string {
-  return `screen=${view.screen} · stack=${stackDepth}`;
+  return t("hud.nav.hint", { screen: tScreenLabel(view.screen), stack: stackDepth });
 }

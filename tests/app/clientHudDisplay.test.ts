@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import {
   buildClientHudDisplay,
@@ -6,8 +6,13 @@ import {
 } from "../../src/app/clientHudDisplay.js";
 import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
 import { companyApplyFirstUnlockedLoan } from "../../src/app/companyHudController.js";
+import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 
 describe("clientHudDisplay", () => {
+  beforeEach(() => {
+    setLocale(DEFAULT_LOCALE);
+  });
+
   it("formats loan tier with readable Chinese label", () => {
     expect(formatLoanTierLabel("loan_1")).toBe("小额贷款（30万）");
   });

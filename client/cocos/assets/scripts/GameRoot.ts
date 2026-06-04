@@ -1,6 +1,7 @@
 import { log, error as logError, _decorator, Component } from "cc";
 import {
   clearMountedGameClient,
+  ensureChineseDefaultForDev,
   mountGameClient,
   setMountedGameClient,
   type GameBootstrap
@@ -27,6 +28,7 @@ export class GameRoot extends Component {
   private unbindAutoSave: (() => void) | null = null;
 
   onLoad(): void {
+    ensureChineseDefaultForDev();
     trace("GameRoot", `onLoad node=${this.node.name}, parent=${this.node.parent?.name ?? "none"}`);
     // 先挂上 HUD（占位文案），配置异步加载完后再 refresh
     if (!this.getComponent(CityHudPanel)) {
