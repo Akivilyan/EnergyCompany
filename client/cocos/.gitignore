@@ -7,6 +7,9 @@ build/
 profiles/
 native/
 
+# Editor-only telemetry / splash survey (session id changes per machine)
+settings/v2/packages/information.json
+
 node_modules/
 .vscode/
 .idea/
