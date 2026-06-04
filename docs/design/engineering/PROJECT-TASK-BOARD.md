@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.61
+version: 0.1.62
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T50-04`
-- 任务标题：公司屏开发 HUD（借贷 + 广告领现）
+- 当前任务 ID：`T50-05`
+- 任务标题：科技屏开发 HUD（开研/取消/广告加速）
 - 状态：`done`
 - 开始时间：2026-06-01
-- 完成定义（本轮）：`companyHudController` + Cocos 按屏切换按钮 + `client-sync-spike` 贷款冒烟
+- 完成定义（本轮）：`techHudController` + Cocos 按屏切换科技按钮 + client-sync 开研/加速冒烟
 
 ---
 
@@ -140,6 +140,7 @@ open_questions: []
 | 2026-05-30 | 推进 `T50-02`：场景导航 + Cocos 预检 + 初始化清单 | `src/app/screenNavController.ts` `src/app/cocosInitCheck.ts` `src/app/cocosInitSpikeCli.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `client/cocos/assets/scripts/CocosSceneHost.ts` `docs/design/engineering/cocos-client-setup.md` `tests/app/screenNavController.test.ts` `package.json` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm run sim:cocos-init-spike` + `sim:client-sync-spike` + `npm test` 通过（122/122） |
 | 2026-06-01 | 收口 `T50-03`：预览 HTTP 探测 + 公司/科技屏顶栏文案 | `src/app/previewProbe.ts` `src/app/previewProbeCli.ts` `src/app/clientHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/previewProbe.test.ts` `tests/app/clientHudController.test.ts` `package.json` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-01 | 推进 `T50-04`：公司屏借贷/广告领现接入开发 HUD | `src/app/companyHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/companyHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
+| 2026-06-01 | 推进 `T50-05`：科技屏开研/取消/广告加速接入开发 HUD | `src/app/techHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/techHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 
 ---
 
@@ -218,3 +219,4 @@ open_questions: []
 | 0.1.59 | 2026-05-30 | 推进 T50-02：场景导航、Cocos 预检 CLI 与初始化清单 |
 | 0.1.60 | 2026-06-01 | 推进 T50-03：check:cocos-preview 与多屏 HUD 顶栏 |
 | 0.1.61 | 2026-06-01 | 推进 T50-04：公司屏借贷与广告领现开发 HUD |
+| 0.1.62 | 2026-06-01 | 推进 T50-05：科技屏开研/取消/广告加速开发 HUD |

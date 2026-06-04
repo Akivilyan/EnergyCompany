@@ -21,6 +21,13 @@ export {
   companyClaimCashByAd
 } from "./companyHudController.js";
 export {
+  DEFAULT_DEV_TECH_ID,
+  techCancelActiveResearch,
+  techEnsureLevelIIForDev,
+  techSpeedupResearchByAd,
+  techStartDefaultResearch
+} from "./techHudController.js";
+export {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenTechTree,

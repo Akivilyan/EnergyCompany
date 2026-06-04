@@ -24,6 +24,9 @@ import {
   formatClientHudStatus,
   formatClientNavHint,
   readCityHudViewModel,
+  techCancelActiveResearch,
+  techSpeedupResearchByAd,
+  techStartDefaultResearch,
   type GameBootstrap
 } from "../shared/game-client.mjs";
 
@@ -39,6 +42,9 @@ export class CityHudPanel extends Component {
   private advanceMonthBtn: Node | null = null;
   private applyLoanBtn: Node | null = null;
   private adCashBtn: Node | null = null;
+  private startResearchBtn: Node | null = null;
+  private cancelResearchBtn: Node | null = null;
+  private adSpeedupBtn: Node | null = null;
   private lastActionKey: string | null = null;
 
   onLoad(): void {
@@ -85,8 +91,20 @@ export class CityHudPanel extends Component {
       this.onApplyLoan()
     );
     this.adCashBtn = this.createTapButton(panel, "AdCash", new Vec3(60, 0, 0), "Ad Cash", () => this.onAdCash());
+    this.startResearchBtn = this.createTapButton(panel, "StartResearch", new Vec3(-120, 0, 0), "Start", () =>
+      this.onStartResearch()
+    );
+    this.cancelResearchBtn = this.createTapButton(panel, "CancelResearch", new Vec3(0, 0, 0), "Cancel", () =>
+      this.onCancelResearch()
+    );
+    this.adSpeedupBtn = this.createTapButton(panel, "AdSpeedup", new Vec3(120, 0, 0), "Ad Speed", () =>
+      this.onAdSpeedup()
+    );
     this.applyLoanBtn.active = false;
     this.adCashBtn.active = false;
+    this.startResearchBtn.active = false;
+    this.cancelResearchBtn.active = false;
+    this.adSpeedupBtn.active = false;
     this.createTapButton(panel, "OpenCompany", new Vec3(-160, -55, 0), "Company", () => this.onOpenCompany());
     this.createTapButton(panel, "OpenTech", new Vec3(0, -55, 0), "Tech", () => this.onOpenTech());
     this.createTapButton(panel, "NavBack", new Vec3(160, -55, 0), "Back", () => this.onNavBack());
@@ -147,10 +165,15 @@ export class CityHudPanel extends Component {
     const view = readCityHudViewModel(this.boot);
     const stackDepth = this.boot.play.getNavigation().stack.length;
     const onCompany = view.screen === "screen_company";
-    this.buildWindBtn!.active = !onCompany;
-    this.advanceMonthBtn!.active = !onCompany;
+    const onTech = view.screen === "screen_tech_tree";
+    const onCity = !onCompany && !onTech;
+    this.buildWindBtn!.active = onCity;
+    this.advanceMonthBtn!.active = onCity;
     this.applyLoanBtn!.active = onCompany;
     this.adCashBtn!.active = onCompany;
+    this.startResearchBtn!.active = onTech;
+    this.cancelResearchBtn!.active = onTech;
+    this.adSpeedupBtn!.active = onTech;
     this.statusLabel.string = formatClientHudStatus(this.boot);
     const navHint = formatClientNavHint(view, stackDepth);
     this.hintLabel.string = this.lastActionKey ? `${navHint} · ${this.lastActionKey}` : navHint;
@@ -176,12 +199,14 @@ export class CityHudPanel extends Component {
 
   private onOpenCompany(): void {
     if (!this.boot) return;
+    this.lastActionKey = null;
     clientNavOpenCompany(this.boot);
     this.refresh();
   }
 
   private onOpenTech(): void {
     if (!this.boot) return;
+    this.lastActionKey = null;
     clientNavOpenTechTree(this.boot);
     this.refresh();
   }
@@ -210,6 +235,36 @@ export class CityHudPanel extends Component {
     this.refresh();
     if (!out.ok) {
       console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
+    }
+  }
+
+  private onStartResearch(): void {
+    if (!this.boot) return;
+    const out = techStartDefaultResearch(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) {
+      console.warn(`[CityHudPanel] start research failed: ${out.uiErrorCode ?? "unknown"}`);
+    }
+  }
+
+  private onCancelResearch(): void {
+    if (!this.boot) return;
+    const out = techCancelActiveResearch(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) {
+      console.warn(`[CityHudPanel] cancel research failed: ${out.uiErrorCode ?? "unknown"}`);
+    }
+  }
+
+  private onAdSpeedup(): void {
+    if (!this.boot) return;
+    const out = techSpeedupResearchByAd(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) {
+      console.warn(`[CityHudPanel] ad speedup failed: ${out.uiErrorCode ?? "unknown"}`);
     }
   }
 }

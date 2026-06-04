@@ -60,6 +60,7 @@ npm run check:cocos-preview
 
 - 顶栏：`M1 · 140 · CITY-START`（点 **Company** / **Tech** 后顶栏会切到公司/科技摘要）
 - 按钮：**Build Wind** / **Next Month** / **Company** / **Tech** / **Back**
+- **Company** 屏中间：**Loan** / **Ad Cash**；**Tech** 屏中间：**Start** / **Cancel** / **Ad Speed**（II 级前 Start 会报 locked，属预期）
 - 控制台：`[GameRoot] mounted screen=screen_city_detail ...`
 
 ---

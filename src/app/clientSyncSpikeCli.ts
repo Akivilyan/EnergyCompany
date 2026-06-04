@@ -17,7 +17,17 @@ import {
   readCityHudViewModel
 } from "./cityHudController.js";
 import { companyApplyFirstUnlockedLoan } from "./companyHudController.js";
-import { clientNavBack, clientNavOpenCompany, formatClientNavHint } from "./screenNavController.js";
+import {
+  techEnsureLevelIIForDev,
+  techSpeedupResearchByAd,
+  techStartDefaultResearch
+} from "./techHudController.js";
+import {
+  clientNavBack,
+  clientNavOpenCompany,
+  clientNavOpenTechTree,
+  formatClientNavHint
+} from "./screenNavController.js";
 import { mountGameClient } from "./gameClientEntry.js";
 import { loadConfigRepoFromJsonDir } from "./loadConfigRecords.js";
 import type { WxHideLifecyclePort } from "../infra/lifecycle/wxLifecycle.js";
@@ -96,6 +106,27 @@ if (!loan.ok) {
 console.log(`company-loan: active=${boot1.app.screens.company.getSnapshot().activeLoan?.loanId ?? "none"}`);
 const back = clientNavBack(boot1);
 console.log(`nav-back: ${formatClientNavHint(back.view, back.navigation.stack.length)}`);
+
+const levelReady = techEnsureLevelIIForDev(boot1);
+if (!levelReady.ok) {
+  console.log(`tech-level failed: level=${levelReady.level}`);
+  process.exit(1);
+}
+const techNav = clientNavOpenTechTree(boot1);
+console.log(`nav-tech: ${formatClientNavHint(techNav.view, techNav.navigation.stack.length)}`);
+const techStart = techStartDefaultResearch(boot1);
+if (!techStart.ok) {
+  console.log(`tech-start failed: ${techStart.uiErrorCode ?? "unknown"}`);
+  process.exit(1);
+}
+const techSpeed = techSpeedupResearchByAd(boot1);
+if (!techSpeed.ok) {
+  console.log(`tech-speedup failed: ${techSpeed.uiErrorCode ?? "unknown"}`);
+  process.exit(1);
+}
+const lit = boot1.app.screens.tech.getSnapshot().litTechIds;
+console.log(`tech-lit: storage_system_1=${lit.includes("storage_system_1")}`);
+clientNavBack(boot1);
 
 const savedMonth = app.controller.state.currentMonth;
 const savedFunds = app.controller.state.funds;
