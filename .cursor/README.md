@@ -28,6 +28,23 @@
 - 通用工具箱：`../cursor-workbench/docs/toolbox/common-toolbox.md`
 - 项目专用工具箱：`../docs/design/engineering/cursor-toolbox.md`
 
+## 项目 Skills
+
+项目专用 skills 放在 `.cursor/skills/`：
+
+| Skill | 用途 |
+|------|------|
+| `wechat-build-debug` | 微信开发者工具慢启动、`cli.bat`、端口/进程排查 |
+| `cocos-verify` | Cocos / 客户端改动后的最小验证命令选择 |
+| `task-board-sync` | 会话结束时同步 `PROJECT-TASK-BOARD.md` |
+| `sim-change-guard` | `src/sim` / `src/modules` 改动边界与验证守卫 |
+| `config-sync-check` | 配置表改动后的同步与最小验证 |
+| `hud-playtest-check` | HUD / 客户端交互改动后的最小冒烟路径 |
+| `ops-phase-close` | 阶段支撑任务 / 协作基座任务收口检查 |
+| `github-pr-ci` | GitHub PR / CI / 评论相关的项目工作流 |
+
+若后续继续扩项目专用协作能力，优先补这里，不要回写到通用层。
+
 ## 当前结构
 
 - always-apply：`session-discipline.mdc`、`project-context.mdc`、`verification.mdc`

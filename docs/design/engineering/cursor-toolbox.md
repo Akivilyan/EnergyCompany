@@ -2,7 +2,7 @@
 id: engineering/cursor-toolbox
 title: Cursor 工具箱（项目专用）
 status: draft
-version: 0.1.0
+version: 0.1.3
 sources:
   - AGENTS.md
   - .cursor/README.md
@@ -14,7 +14,8 @@ depends_on:
   - engineering/architecture
   - engineering/cocos-client-setup
 open_questions:
-  - 后续优先补哪些项目专用 skills / MCP
+  - Browser 是否会在后续 Web 调试页阶段升级为项目级默认 MCP
+  - GitHub MCP 启用后，哪些只读查询应从 `gh` CLI 迁移过去
 ---
 
 # Cursor 工具箱（项目专用）
@@ -60,37 +61,66 @@ open_questions:
 | `npm run check:cocos-preview` | 探测预览页是否起来 |
 | `npm run sim:*` | 各类 CLI 冒烟与闭环检查 |
 
-## 3. 下一批建议补充的项目专用 Skills
+## 3. 项目专用 Skills
 
-这些不适合放在通用层，应该先在本项目里落地：
+这些不适合放在通用层，应继续在本项目内维护。
 
-### 高优先级
+### 第一批已落地（高优先级）
+
+| Skill | 状态 | 目的 | 落点 |
+|------|------|------|------|
+| `wechat-build-debug` | done | 微信开发者工具慢启动、CLI 唤起、端口/进程排查 | `.cursor/skills/wechat-build-debug/SKILL.md` |
+| `cocos-verify` | done | Cocos 相关改动后选择 `build:client` / `verify:client` / `check:cocos-preview` | `.cursor/skills/cocos-verify/SKILL.md` |
+| `task-board-sync` | done | 每轮结束统一更新 `PROJECT-TASK-BOARD.md` | `.cursor/skills/task-board-sync/SKILL.md` |
+| `sim-change-guard` | done | 改 `src/sim/` / `src/modules/` 时提醒边界、测试与命令选择 | `.cursor/skills/sim-change-guard/SKILL.md` |
+
+### 第二批已落地（常用中优先级）
+
+| Skill | 状态 | 目的 | 落点 |
+|------|------|------|------|
+| `config-sync-check` | done | 改配置表后执行同步与最小验证，避免漏跑 `build:client` | `.cursor/skills/config-sync-check/SKILL.md` |
+| `hud-playtest-check` | done | HUD / 客户端交互改动后的最小冒烟路径选择 | `.cursor/skills/hud-playtest-check/SKILL.md` |
+| `ops-phase-close` | done | 阶段支撑任务（如 OPS-01）收口时统一检查入口、看板和工具状态 | `.cursor/skills/ops-phase-close/SKILL.md` |
+| `github-pr-ci` | done | GitHub PR / CI / 评论相关的项目工作流与摘要节奏 | `.cursor/skills/github-pr-ci/SKILL.md` |
+
+### 当前技能数量
+
+当前项目专用 skills 共 `8` 个，仍在可控范围内；暂不继续扩低频项。
+
+### 暂缓（低频或还没形成稳定路径）
 
 | Skill | 目的 |
 |------|------|
-| `wechat-build-debug` | 微信开发者工具慢启动、CLI 唤起、端口/进程排查 |
-| `cocos-verify` | Cocos 相关改动后自动选择 `build:client` / `verify:client` / `check:cocos-preview` |
-| `task-board-sync` | 每轮结束统一更新 `PROJECT-TASK-BOARD.md` |
-| `sim-change-guard` | 改 `src/sim/` 时强制提醒边界、测试与命令选择 |
+| `browser-page-check` | 若未来出现稳定 Web 调试页 / 文档页自动验证，再补独立 skill |
 
-### 中优先级
-
-| Skill | 目的 |
-|------|------|
-| `config-sync-check` | 改 `docs/design/data/vertical-slice-v0/` 后同步与验证 |
-| `hud-playtest-check` | 开发 HUD / 客户端交互改动后的最小冒烟 |
-| `ops-phase-close` | 阶段支撑任务（如 OPS-01）收口时的统一检查与提交整理 |
-
-## 4. 下一批建议补充的项目专用 MCP
+## 4. 项目专用 MCP 候选
 
 本项目目前更需要的是“能减少上下文沟通”的 MCP，而不是堆太多外部系统。
 
-### 建议优先
+### 第一批高优先级候选
 
-| MCP | 作用 | 备注 |
-|-----|------|------|
-| GitHub | 看 PR、Issue、CI、评论 | 通用但对当前项目高价值 |
-| Browser | 如果后续 Web 调试页或文档页面需要自动验证 | 条件启用 |
+| MCP | 状态 | 主要场景 | 为什么是高优先级 | 接入前提 |
+|-----|------|----------|------------------|----------|
+| GitHub | planned | 看 PR、Issue、CI、评论；阶段收口时查远端反馈 | 仓库后续会进入 PR / CI / 评论闭环，信息价值高于其他外部系统 | 当前先用 `gh` CLI；当项目开始频繁处理 PR / CI 时接入 MCP |
+| Browser | candidate | Web 调试页、文档页、预览页的自动验证 | 若后续出现稳定的浏览器验证路径，可减少手工点检 | 只有当页面自动化验证成为重复动作时再纳入默认工具链 |
+
+### GitHub 接入策略
+
+当前仓库还没有 GitHub MCP 可直接使用，因此采用“两步走”：
+
+1. 现在：
+   - 用 `gh` CLI 处理 PR、Issue、CI、评论摘要
+   - 通过 `github-pr-ci` skill 固化查询节奏，避免每次手写流程
+2. 未来启用 GitHub MCP 后：
+   - 优先把“只读查询类”迁到 MCP
+   - 写操作仍保持谨慎，继续按显式请求执行
+
+### Browser 接入策略
+
+当前仓库虽然已有浏览器 MCP，但还不把它当作项目级默认工具：
+
+- 只有在出现稳定、重复的页面验证路径时，才从“可用”升级为“默认”
+- 当前仍以 `verify:client`、`check:cocos-preview` 和本地 CLI 为主
 
 ### 暂缓
 
@@ -110,11 +140,25 @@ open_questions:
 - `ui/cocos -> modules -> sim <- config` 这套项目架构
 - `sim:city-loop`、`verify:client`、`check:cocos-preview` 等脚本名
 
-## 6. 下一阶段建议
+## 6. 当前收口结论
+
+当前建议保留的“常用项目专用 tools”已经覆盖：
+
+- 模拟层改动边界守卫
+- 配置同步
+- Cocos / HUD 最小验证
+- 微信开发者工具排障
+- 看板同步
+- 阶段支撑任务收口
+- GitHub PR / CI 摘要工作流
+
+低频项先不补，避免技能目录继续膨胀。
+
+## 7. 下一阶段建议
 
 当前 `OPS-01` 收口完成后，下一阶段建议拆成两步：
 
-1. 先补 **项目专用 skills**
-2. 再决定是否接 **少量高价值 MCP**
+1. 保持现有项目专用 skills 稳定使用，观察是否真有缺口
+2. 再决定是否接入 **少量高价值 MCP**
 
 顺序不要反过来，因为当前最大的痛点仍然是“协作习惯与任务收口”，不是远端工具不够多。
