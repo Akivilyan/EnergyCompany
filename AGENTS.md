@@ -6,7 +6,7 @@
 
 微信小游戏（Cocos Creator 3.x + TypeScript）+ **纯 TS 模拟核心**。规则真理在 `src/sim/`，UI/Cocos 只编排，不直改状态。
 
-## 核心约定
+## 必须遵守
 
 ### 1. Git 节奏
 
@@ -36,13 +36,7 @@
 - UI/Cocos 不直接改 `GameState`
 - 改 `docs/design/data/vertical-slice-v0/` 后考虑 `npm run build:client`
 
-## 规则入口
-
-- always-apply 规则：`.cursor/rules/session-discipline.mdc`、`project-context.mdc`、`verification.mdc`
-- 按文件触发：`.cursor/rules/sim-architecture.mdc`、`cocos-wechat.mdc`
-- 说明文件：`.cursor/README.md`
-
-## 文档入口
+## 先看哪些文件
 
 | 用途 | 文件 |
 |------|------|
@@ -50,9 +44,9 @@
 | 任务拆条 | [IMPLEMENTATION-TASKS.md](docs/design/engineering/IMPLEMENTATION-TASKS.md) |
 | 模块边界 | [architecture.md](docs/design/engineering/architecture.md) |
 | Cocos 联调 | [cocos-client-setup.md](docs/design/engineering/cocos-client-setup.md) |
-| 通用 Agent 模板 | 上级目录 [cursor-workbench](../cursor-workbench/README.md) |
+| 规则说明与排障 | [.cursor/README.md](.cursor/README.md) |
 
-## 外部工具
+## 外部工具提醒
 
 - 构建输出：`client/cocos/build/wechatgame`
 - CLI 报 `open` 成功 ≠ 窗口已显示；2.x 首次可能慢启动 3～5 分钟

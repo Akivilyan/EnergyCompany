@@ -1,5 +1,13 @@
 # Cursor 配置（本仓库）
 
+## 三层入口
+
+| 入口 | 职责 |
+|------|------|
+| `README.md` | 仓库简介与开发入口 |
+| `AGENTS.md` | 新 Agent 必须遵守的一页硬约束 |
+| `.cursor/README.md` | 规则结构、加载说明、冲突排查 |
+
 ## 规则文件
 
 | 文件 | 作用 |
@@ -12,11 +20,20 @@
 
 ## 入口
 
-根目录 [AGENTS.md](../AGENTS.md) — 每个新 Agent 应先读。
+根目录 [AGENTS.md](../AGENTS.md) — 每个新 Agent 应先读。  
+规则模板与跨项目协作基座在同级目录 [cursor-workbench](../../cursor-workbench/README.md)。
 
-## 通用基座
+## 当前结构
 
-跨项目模板与 skill 在同级目录 [cursor-workbench](../../cursor-workbench/README.md)。
+- always-apply：`session-discipline.mdc`、`project-context.mdc`、`verification.mdc`
+- 按文件触发：`sim-architecture.mdc`、`cocos-wechat.mdc`
+
+## 当前阶段说明
+
+2026-06-09 起，本仓库正在进行一轮 **协作基座收口**：
+- 收敛项目规则入口
+- 为后续扩充 skills / MCP 做准备
+- 完成后再继续扩展工具箱，而不是继续堆临时提示词
 
 ## 若 Agent 仍不遵守
 

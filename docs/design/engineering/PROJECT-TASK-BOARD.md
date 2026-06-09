@@ -55,11 +55,11 @@ open_questions: []
 
 ## 3. 当前任务（只保留 1 项 doing）
 
-- 当前任务 ID：`T51`
-- 任务标题：微信小游戏构建清单与真机冒烟
-- 状态：`todo`
-- 开始时间：2026-06-04
-- 完成定义（本轮）：`cocos-client-setup.md` §6 清单可执行；真机验证启动/存档/区域/灾害（需本机 Cocos 构建）
+- 当前任务 ID：`OPS-01`
+- 任务标题：协作基座收口（cursor-workbench / 项目规则 / 入口去重）
+- 状态：`doing`
+- 开始时间：2026-06-09
+- 完成定义（本轮）：三处入口职责稳定；项目规则不再重复；为下一阶段补充 skills / MCP 留出明确入口
 
 ---
 
@@ -146,6 +146,7 @@ open_questions: []
 | 2026-06-04 | 收口 `T50-CLOSE`：`clientHudSmoke` + `sim:cocos-hud-close` + `verify:client` 聚合 | `src/app/clientHudSmoke.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-09 | 清理 Cursor 项目规则：删除重复提交规则，收敛 `.cursor/rules` 职责，并补 `AGENTS.md` / `.cursor/README.md` 说明 | `AGENTS.md` `.cursor/README.md` `.cursor/prompts/session-kickoff.md` `.cursor/rules/session-discipline.mdc` `.cursor/rules/project-context.mdc` `.cursor/rules/verification.mdc` `.cursor/rules/sim-architecture.mdc` `.cursor/rules/cocos-wechat.mdc` `README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 | 2026-06-09 | 继续压缩 Agent 入口：收敛 `AGENTS.md` 与 `.cursor/README.md`，明确规则分工与排障入口 | `AGENTS.md` `.cursor/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
+| 2026-06-09 | 将 `cursor-workbench` / 项目规则整理确认为阶段支撑任务 `OPS-01`，并继续去重 `README.md` / `AGENTS.md` / `.cursor/README.md` 三处入口 | `README.md` `AGENTS.md` `.cursor/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 
 ---
 
@@ -229,3 +230,4 @@ open_questions: []
 | 0.1.64 | 2026-06-04 | 推进 T50-06/07：灾害确认与区域铺线开发 HUD |
 | 0.1.65 | 2026-06-09 | 清理 Cursor 项目规则：删除重复规则，收敛职责并补入口说明 |
 | 0.1.66 | 2026-06-09 | 压缩 AGENTS/规则说明入口，减少重复与交叉职责 |
+| 0.1.67 | 2026-06-09 | 新增阶段支撑任务 OPS-01，承接 cursor-workbench 与项目规则收口 |

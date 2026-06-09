@@ -24,9 +24,11 @@ npm run lint:boundaries
 
 ## Cursor / Agent 协作
 
-约定已写入 **[AGENTS.md](AGENTS.md)** 与 **[.cursor/rules/](.cursor/rules/)**（分功能 commit、阶段 push、验证命令、架构边界）。  
-新开会话 **无需重复说明** 提交策略；若 Agent 仍不遵守，见 [.cursor/README.md](.cursor/README.md)。  
-跨项目模板见同级 [cursor-workbench](../cursor-workbench/README.md)。
+- Agent 入口：见 [AGENTS.md](AGENTS.md)
+- 规则与排障：见 [.cursor/README.md](.cursor/README.md)
+- 跨项目协作基座：见同级 [cursor-workbench](../cursor-workbench/README.md)
+
+新开会话 **无需重复说明** 提交策略、验证方式与架构边界。
 
 ## 推进文档
 
