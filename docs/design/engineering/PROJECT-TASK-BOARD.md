@@ -59,7 +59,7 @@ open_questions: []
 - 任务标题：协作基座收口（cursor-workbench / 项目规则 / 入口去重）
 - 状态：`doing`
 - 开始时间：2026-06-09
-- 完成定义（本轮）：三处入口职责稳定；项目规则不再重复；为下一阶段补充 skills / MCP 留出明确入口
+- 完成定义（本轮）：三处入口职责稳定；项目规则不再重复；通用/项目专用工具箱两层结构落地；为下一阶段补充 skills / MCP 留出明确入口
 
 ---
 
@@ -147,6 +147,7 @@ open_questions: []
 | 2026-06-09 | 清理 Cursor 项目规则：删除重复提交规则，收敛 `.cursor/rules` 职责，并补 `AGENTS.md` / `.cursor/README.md` 说明 | `AGENTS.md` `.cursor/README.md` `.cursor/prompts/session-kickoff.md` `.cursor/rules/session-discipline.mdc` `.cursor/rules/project-context.mdc` `.cursor/rules/verification.mdc` `.cursor/rules/sim-architecture.mdc` `.cursor/rules/cocos-wechat.mdc` `README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 | 2026-06-09 | 继续压缩 Agent 入口：收敛 `AGENTS.md` 与 `.cursor/README.md`，明确规则分工与排障入口 | `AGENTS.md` `.cursor/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 | 2026-06-09 | 将 `cursor-workbench` / 项目规则整理确认为阶段支撑任务 `OPS-01`，并继续去重 `README.md` / `AGENTS.md` / `.cursor/README.md` 三处入口 | `README.md` `AGENTS.md` `.cursor/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
+| 2026-06-09 | 为后续扩充工具箱建立两层结构：`cursor-workbench` 新增通用工具箱清单；项目内新增微信小游戏专用工具箱清单 | `../cursor-workbench/docs/toolbox/common-toolbox.md` `../cursor-workbench/README.md` `../cursor-workbench/docs/architecture/directory-guide.md` `README.md` `.cursor/README.md` `docs/design/engineering/cursor-toolbox.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 
 ---
 
@@ -231,3 +232,4 @@ open_questions: []
 | 0.1.65 | 2026-06-09 | 清理 Cursor 项目规则：删除重复规则，收敛职责并补入口说明 |
 | 0.1.66 | 2026-06-09 | 压缩 AGENTS/规则说明入口，减少重复与交叉职责 |
 | 0.1.67 | 2026-06-09 | 新增阶段支撑任务 OPS-01，承接 cursor-workbench 与项目规则收口 |
+| 0.1.68 | 2026-06-09 | 新增通用/项目专用双层工具箱清单，准备下一阶段扩 skills / MCP |

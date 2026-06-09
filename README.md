@@ -27,6 +27,7 @@ npm run lint:boundaries
 - Agent 入口：见 [AGENTS.md](AGENTS.md)
 - 规则与排障：见 [.cursor/README.md](.cursor/README.md)
 - 跨项目协作基座：见同级 [cursor-workbench](../cursor-workbench/README.md)
+- 项目专用工具箱：见 [docs/design/engineering/cursor-toolbox.md](docs/design/engineering/cursor-toolbox.md)
 
 新开会话 **无需重复说明** 提交策略、验证方式与架构边界。
 

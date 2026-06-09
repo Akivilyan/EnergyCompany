@@ -23,6 +23,11 @@
 根目录 [AGENTS.md](../AGENTS.md) — 每个新 Agent 应先读。  
 规则模板与跨项目协作基座在同级目录 [cursor-workbench](../../cursor-workbench/README.md)。
 
+## 工具箱分层
+
+- 通用工具箱：`../cursor-workbench/docs/toolbox/common-toolbox.md`
+- 项目专用工具箱：`../docs/design/engineering/cursor-toolbox.md`
+
 ## 当前结构
 
 - always-apply：`session-discipline.mdc`、`project-context.mdc`、`verification.mdc`
