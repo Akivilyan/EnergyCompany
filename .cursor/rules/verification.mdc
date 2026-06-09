@@ -1,0 +1,25 @@
+---
+description: 改动后的最小验证命令集
+alwaysApply: true
+---
+
+# 验证
+
+改完代码后 **必须** 运行与改动相关的最小命令，并在回复中说明结果。
+
+## 命令选择
+
+| 改动 | 至少运行 |
+|------|----------|
+| `src/sim/`、`src/modules/`、`tests/` | `npm test` |
+| 类型/编译 | `npm run build` |
+| import 边界 | `npm run lint:boundaries` |
+| `docs/design/data/vertical-slice-v0/` | `npm run build:client` |
+| Cocos 脚本/场景 | `npm run verify:client` 或说明 Cocos 构建路径 |
+| 仅文档/看板 | 说明无需跑测试 |
+
+## 执行原则
+
+- 能跑则跑，不要只写「建议用户跑」
+- 失败则修到通过或明确说明阻塞原因
+- 不要扩大 scope「顺手重构」

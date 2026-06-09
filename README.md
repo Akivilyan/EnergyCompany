@@ -22,6 +22,12 @@ npm run lint:boundaries
 | `playtest-lab/` | 代理仿真方向筛选（非引擎实跑） |
 | `tests/sim/` | 模拟层单测 |
 
+## Cursor / Agent 协作
+
+约定已写入 **[AGENTS.md](AGENTS.md)** 与 **[.cursor/rules/](.cursor/rules/)**（分功能 commit、阶段 push、验证命令、架构边界）。  
+新开会话 **无需重复说明** 提交策略；若 Agent 仍不遵守，见 [.cursor/README.md](.cursor/README.md)。  
+跨项目模板见同级 [cursor-workbench](../cursor-workbench/README.md)。
+
 ## 推进文档
 
 - [v0 实现任务拆条](docs/design/engineering/IMPLEMENTATION-TASKS.md)

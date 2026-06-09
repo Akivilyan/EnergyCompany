@@ -1,0 +1,22 @@
+---
+description: 模拟层与模块边界约束
+globs: src/sim/**/*.ts,src/modules/**/*.ts,tests/**/*.ts
+alwaysApply: false
+---
+
+# 模拟层架构
+
+## 依赖方向
+
+`ui/cocos → modules → sim ← config` · `infra` 经端口注入
+
+## 禁区
+
+- `src/sim/`：禁止 `cc.*`、localStorage、平台 SDK、读 UI 状态
+- `config`：只读查询，不做业务决策
+- UI/Cocos：禁止直接改 `GameState`、禁止直写存档
+
+## 改动要求
+
+- 优先补/改 `tests/sim/` 单测
+- 跑 `npm test` + `npm run lint:boundaries`

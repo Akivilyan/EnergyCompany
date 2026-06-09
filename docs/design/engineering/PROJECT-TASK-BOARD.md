@@ -89,7 +89,7 @@ open_questions: []
 | 2026-05-29 | 推进 `T45-10`：新增 `screenRegion` 壳层（城市解锁态快照/`queue_grid_link` 动作）并补 level I/II 铺线回归 | `src/modules/screenRegion.ts` `tests/modules/screenRegion.test.ts` | `npm test` 通过（32/32） |
 | 2026-05-29 | 推进 `T45-10`：新增 `sim:region-loop` 冒烟脚本，串起 Lv1 拦截 -> Lv2 铺线 -> 推月完工最小链路 | `src/app/regionLoopCli.ts` `package.json` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（32/32） |
 | 2026-05-29 | 推进 `T45-10`：`sim:region-loop` 去除 `companyLevel` 直接注入，改为经 M10 结算升级后再铺线 | `src/app/regionLoopCli.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（32/32） |
-| 2026-05-29 | 协作策略固化：新增 always-apply 规则，默认“每步本地 commit、阶段性 push” | `.cursor/rules/commit-push-rhythm.mdc` | 规则文件新增 |
+| 2026-05-29 | 协作策略固化：新增 always-apply 规则，默认“每步本地 commit、阶段性 push”（后续已收敛到 `AGENTS.md` + `session-discipline.mdc`） | `.cursor/rules/session-discipline.mdc` `AGENTS.md` | 规则文件新增 |
 | 2026-05-29 | 推进 `T45-10`：M10 增加 tutorial 升 II 门槛策略，`region-loop` 改为 tutorial 真实升级路径 | `src/sim/core/settleNextMonth.ts` `src/modules/runController.ts` `src/app/regionLoopCli.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（33/33） |
 | 2026-05-29 | 推进 `T45-10`：tutorial 升 II 门槛改由 `run_config` 提供，补配置读取回归测试 | `docs/design/data/vertical-slice-v0/run_config.json` `src/sim/config/configRepo.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（34/34） |
 | 2026-05-29 | 推进 `T45-10`：`screenRegion` 新增 `advanceOneMonth/advanceMonths`，region 冒烟改走壳层推进 | `src/modules/screenRegion.ts` `src/app/regionLoopCli.ts` `tests/modules/screenRegion.test.ts` | `npm run sim:region-loop -- CITY-START CITY-MAP01-02 region` 通过；`npm test` 通过（35/35） |
@@ -144,6 +144,8 @@ open_questions: []
 | 2026-06-04 | 推进 `T50-06`：灾害待确认与 eventsHud 接入开发 HUD | `src/app/eventsHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `src/app/clientSyncSpikeCli.ts` `tests/app/eventsHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-04 | 推进 `T50-07`：区域导航与默认铺线接入开发 HUD | `src/app/regionHudController.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/screenNavController.ts` `tests/app/regionHudController.test.ts` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-04 | 收口 `T50-CLOSE`：`clientHudSmoke` + `sim:cocos-hud-close` + `verify:client` 聚合 | `src/app/clientHudSmoke.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
+| 2026-06-09 | 清理 Cursor 项目规则：删除重复提交规则，收敛 `.cursor/rules` 职责，并补 `AGENTS.md` / `.cursor/README.md` 说明 | `AGENTS.md` `.cursor/README.md` `.cursor/prompts/session-kickoff.md` `.cursor/rules/session-discipline.mdc` `.cursor/rules/project-context.mdc` `.cursor/rules/verification.mdc` `.cursor/rules/sim-architecture.mdc` `.cursor/rules/cocos-wechat.mdc` `README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
+| 2026-06-09 | 继续压缩 Agent 入口：收敛 `AGENTS.md` 与 `.cursor/README.md`，明确规则分工与排障入口 | `AGENTS.md` `.cursor/README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 
 ---
 
@@ -225,3 +227,5 @@ open_questions: []
 | 0.1.62 | 2026-06-01 | 推进 T50-05：科技屏开研/取消/广告加速开发 HUD |
 | 0.1.63 | 2026-06-04 | 收口 T50-CLOSE：HUD 验收 CLI 与 verify:client 聚合 |
 | 0.1.64 | 2026-06-04 | 推进 T50-06/07：灾害确认与区域铺线开发 HUD |
+| 0.1.65 | 2026-06-09 | 清理 Cursor 项目规则：删除重复规则，收敛职责并补入口说明 |
+| 0.1.66 | 2026-06-09 | 压缩 AGENTS/规则说明入口，减少重复与交叉职责 |
