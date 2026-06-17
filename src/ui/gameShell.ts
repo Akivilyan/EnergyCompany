@@ -3,6 +3,18 @@ import type { NavigationState, ScreenId } from "./types.js";
 
 const DEFAULT_CITY_ID = "CITY-START";
 
+/** 底部平级导航：切换时不压栈，仅「返回」走层级栈。 */
+export const PRIMARY_TAB_SCREENS: ReadonlySet<ScreenId> = new Set([
+  "screen_city_detail",
+  "screen_company",
+  "screen_tech_tree",
+  "screen_region"
+]);
+
+function isPrimaryTab(screen: ScreenId): boolean {
+  return PRIMARY_TAB_SCREENS.has(screen);
+}
+
 export interface CityBuildActionResult {
   navigation: NavigationState;
   ok: boolean;
@@ -46,10 +58,14 @@ export class GameShell {
   }
 
   openScreen(screenId: ScreenId, cityId?: string): NavigationState {
-    if (this.navigation.currentScreen !== screenId) {
-      this.navigation.stack.push(this.navigation.currentScreen);
+    const from = this.navigation.currentScreen;
+    if (from !== screenId) {
+      const tabSwitch = isPrimaryTab(from) && isPrimaryTab(screenId);
+      if (!tabSwitch) {
+        this.navigation.stack.push(from);
+      }
+      this.navigation.currentScreen = screenId;
     }
-    this.navigation.currentScreen = screenId;
     if (cityId) {
       this.navigation.cityId = cityId;
     }
@@ -60,6 +76,13 @@ export class GameShell {
   }
 
   back(): NavigationState {
+    if (
+      isPrimaryTab(this.navigation.currentScreen) &&
+      this.navigation.currentScreen !== "screen_city_detail"
+    ) {
+      this.navigation.currentScreen = "screen_city_detail";
+      return this.getNavigation();
+    }
     const previous = this.navigation.stack.pop();
     if (previous) {
       this.navigation.currentScreen = previous;

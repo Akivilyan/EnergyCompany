@@ -10,8 +10,20 @@ export function formatLoanTierLabel(loanId: string): string {
 }
 
 export interface ClientHudDisplay {
+  /** 首行摘要，供 CLI/冒烟断言。 */
   statusLine: string;
   detailLine: string;
+  /** 多行状态，供 Cocos 开发 HUD 展示。 */
+  statusLines: string[];
+  detailLines: string[];
+}
+
+function hudLines(...parts: Array<string | null | undefined>): string[] {
+  return parts.filter((p): p is string => !!p && p.length > 0);
+}
+
+function firstLine(lines: string[], fallback = ""): string {
+  return lines[0] ?? fallback;
 }
 
 function formatCityStatus(boot: GameBootstrap): string {
@@ -20,20 +32,39 @@ function formatCityStatus(boot: GameBootstrap): string {
   return t("hud.status.city", { month: view.month, funds: view.funds, city });
 }
 
+function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): number | null {
+  const row = boot.app.controller.config.bundle.companyLevels.find(
+    (item) => item.level === companyLevel + 1
+  );
+  return row?.sv_threshold ?? null;
+}
+
 function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.company.getSnapshot();
+  const nextThreshold = nextCompanyLevelThreshold(boot, s.companyLevel);
+  const svLine =
+    nextThreshold === null
+      ? t("hud.line.social_value_max", { current: s.socialValue })
+      : t("hud.line.social_value", { current: s.socialValue, next: nextThreshold });
   const statusLine = t("hud.status.company", {
     level: s.companyLevel,
     funds: s.funds,
     ads: s.adsRemaining
   });
+  const statusLines = hudLines(
+    t("hud.line.company_header", { level: s.companyLevel }),
+    svLine,
+    t("hud.line.funds", { funds: s.funds }),
+    t("hud.line.ads_remaining", { ads: s.adsRemaining })
+  );
   const loanPart = s.activeLoan
     ? t("hud.status.company_loan_detail", {
         loanName: formatLoanTierLabel(s.activeLoan.loanId),
         months: s.activeLoan.monthsRemaining
       })
     : t("hud.status.company_no_loan");
-  return { statusLine, detailLine: loanPart };
+  const detailLines = hudLines(svLine, loanPart);
+  return { statusLine, detailLine: detailLines.join(" · "), statusLines, detailLines };
 }
 
 function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
@@ -41,39 +72,64 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   const building = s.gridLinks.filter((l) => l.status === "building").length;
   const finished = s.gridLinks.filter((l) => l.status === "finished").length;
   const unlockedCities = s.cities.filter((c) => c.unlocked).length;
-  return {
-    statusLine: t("hud.status.region", {
-      level: s.companyLevel,
-      funds: s.funds,
-      cities: unlockedCities
-    }),
-    detailLine: t("hud.status.region_links", {
-      building,
-      finished,
-      month: s.month
-    })
-  };
+  const statusLine = t("hud.status.region", {
+    level: s.companyLevel,
+    funds: s.funds,
+    cities: unlockedCities
+  });
+  const detailLine = t("hud.status.region_links", {
+    building,
+    finished,
+    month: s.month
+  });
+  const statusLines = hudLines(
+    t("hud.line.region_header", { level: s.companyLevel }),
+    t("hud.line.funds", { funds: s.funds }),
+    t("hud.line.cities_unlocked", { cities: unlockedCities })
+  );
+  const detailLines = hudLines(
+    t("hud.line.month", { month: s.month }),
+    t("hud.line.region_links", { building, finished })
+  );
+  return { statusLine, detailLine, statusLines, detailLines };
 }
 
 function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.tech.getSnapshot();
   if (!s.canOpen) {
+    const statusLine = t("hud.status.tech_locked", { level: s.companyLevel });
+    const detailLine = t("hud.status.tech_locked_hint");
     return {
-      statusLine: t("hud.status.tech_locked", { level: s.companyLevel }),
-      detailLine: t("hud.status.tech_locked_hint")
+      statusLine,
+      detailLine,
+      statusLines: hudLines(statusLine),
+      detailLines: hudLines(detailLine)
     };
   }
   const statusLine = t("hud.status.tech_header", { lit: s.litTechIds.length });
+  const statusLines = hudLines(
+    t("hud.line.tech_header", { lit: s.litTechIds.length })
+  );
   if (s.activeResearch) {
-    return {
-      statusLine,
-      detailLine: t("hud.status.tech_active_hint", {
+    const detailLine = t("hud.status.tech_active_hint", {
+      techId: s.activeResearch.techId,
+      months: s.activeResearch.monthsRemaining
+    });
+    const detailLines = hudLines(
+      t("hud.line.research_active", {
         techId: s.activeResearch.techId,
         months: s.activeResearch.monthsRemaining
       })
-    };
+    );
+    return { statusLine, detailLine, statusLines, detailLines };
   }
-  return { statusLine, detailLine: t("hud.status.tech_idle_hint") };
+  const detailLine = t("hud.status.tech_idle_hint");
+  return {
+    statusLine,
+    detailLine,
+    statusLines,
+    detailLines: hudLines(detailLine)
+  };
 }
 
 export function formatNavHint(boot: GameBootstrap): string {
@@ -96,24 +152,47 @@ export function buildClientHudDisplay(
   } else if (screen === "screen_tech_tree") {
     display = formatTechStatus(boot);
   } else {
+    const view = readCityHudViewModel(boot);
+    const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
     const eventsHint = formatEventsHudHint(boot);
     const pending = formatPendingEventModalLines(boot);
+    const statusLine = formatCityStatus(boot);
+    const statusLines = hudLines(
+      t("hud.line.month", { month: view.month }),
+      t("hud.line.funds", { funds: view.funds }),
+      t("hud.line.city", { city })
+    );
+    const detailLines = hudLines(
+      t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
+      t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),
+      eventsHint,
+      pending?.summary
+    );
     display = {
-      statusLine: formatCityStatus(boot),
-      detailLine: eventsHint ?? formatNavHint(boot)
+      statusLine,
+      detailLine: firstLine(detailLines, formatNavHint(boot)),
+      statusLines,
+      detailLines
     };
-    if (pending) {
-      display.detailLine = `${display.detailLine} · ${pending.summary}`;
-    }
   }
 
   if (screen === "screen_company" || screen === "screen_region" || screen === "screen_tech_tree") {
-    const nav = formatNavHint(boot);
-    display.detailLine = actionMessage
-      ? `${nav} · ${display.detailLine} · ${actionMessage}`
-      : `${nav} · ${display.detailLine}`;
+    const navLines = hudLines(
+      t("hud.line.nav_screen", { screen: tScreenLabel(readCityHudViewModel(boot).screen) }),
+      t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length })
+    );
+    display.detailLines = hudLines(...navLines, ...display.detailLines, actionMessage);
+    display.detailLine = display.detailLines.join(" · ");
   } else if (actionMessage) {
-    display.detailLine = `${display.detailLine} · ${actionMessage}`;
+    display.detailLines = hudLines(...display.detailLines, actionMessage);
+    display.detailLine = display.detailLines.join(" · ");
+  }
+
+  if (!display.statusLines?.length) {
+    display.statusLines = hudLines(display.statusLine);
+  }
+  if (!display.detailLines?.length) {
+    display.detailLines = hudLines(display.detailLine);
   }
 
   return display;

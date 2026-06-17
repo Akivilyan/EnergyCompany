@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { ConfigRepo, createInitialState, dispatch, settleNextMonth, defaultPorts } from "../../src/sim/index.js";
+import { syncOperableCities } from "../../src/sim/core/settleNextMonth.js";
 import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
 import type { GameState } from "../../src/sim/index.js";
 
@@ -479,6 +480,47 @@ describe("settleNextMonth", () => {
       state = month.value.state;
     }
     expect(state.companyLevel).toBe(2);
+  });
+
+  it("syncOperableCities materializes unlocked cities during settle", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-MAP01-02"]).toBeTruthy();
+    expect(month.value.state.cities["CITY-MAP01-03"]).toBeTruthy();
+  });
+
+  it("M10 promotes to level III when MAP-01 social value meets v0 threshold", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    syncOperableCities(state, config);
+    const windByCity = [
+      { id: "f-start", cityId: "CITY-START", outputMw: 1500 },
+      { id: "f-map02", cityId: "CITY-MAP01-02", outputMw: 600 },
+      { id: "f-map03", cityId: "CITY-MAP01-03", outputMw: 100 }
+    ];
+    for (const fac of windByCity) {
+      state.facilities[fac.id] = {
+        id: fac.id,
+        cityId: fac.cityId,
+        facilityId: "wind",
+        tier: 1,
+        outputMw: fac.outputMw,
+        monthlyOpex: 0,
+        monthlyFuel: 0
+      };
+    }
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.socialValueCurrent).toBeGreaterThanOrEqual(28);
+    expect(month.value.state.companyLevel).toBe(3);
   });
 
   it("M13 resets bankrupt streak when funds recover", () => {

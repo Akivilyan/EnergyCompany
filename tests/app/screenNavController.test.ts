@@ -28,12 +28,13 @@ describe("screenNavController", () => {
 
     const company = clientNavOpenCompany(boot);
     expect(company.screen).toBe("screen_company");
-    expect(host.getCurrentScene()).toBe("Company");
+    expect(host.getCurrentScene()).toBe("CityDetail");
 
     const tech = clientNavOpenTechTree(boot);
     expect(tech.screen).toBe("screen_tech_tree");
-    expect(host.getCurrentScene()).toBe("TechTree");
-    expect(tech.navigation.stack).toContain("screen_company");
+    expect(host.getCurrentScene()).toBe("CityDetail");
+    expect(tech.navigation.stack).toEqual([]);
+    expect(host.history).toHaveLength(1);
   });
 
   it("navigates back to city detail", () => {

@@ -24,6 +24,20 @@ describe("GameShell", () => {
     expect(shell.getNavigation().currentScreen).toBe("screen_city_detail");
   });
 
+  it("switches primary tabs without growing the back stack", () => {
+    const app = createGameAppFromRepo({ repoRoot });
+    const shell = createGameShell(app);
+    shell.openScreen("screen_company");
+    shell.openScreen("screen_tech_tree");
+    shell.openScreen("screen_region");
+    shell.openScreen("screen_company");
+    expect(shell.getNavigation().currentScreen).toBe("screen_company");
+    expect(shell.getNavigation().stack).toEqual([]);
+    shell.back();
+    expect(shell.getNavigation().currentScreen).toBe("screen_city_detail");
+    expect(shell.getNavigation().stack).toEqual([]);
+  });
+
   it("routes build and advance through modules only", () => {
     const app = createGameAppFromRepo({ repoRoot });
     const shell = createGameShell(app);

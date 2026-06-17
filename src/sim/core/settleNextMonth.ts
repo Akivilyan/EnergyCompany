@@ -1,4 +1,5 @@
 import type { ConfigRepo } from "../config/configRepo.js";
+import { deepClone } from "./deepClone.js";
 import {
   aggregateIncomeMult,
   applyDisasterTrigger,
@@ -77,6 +78,29 @@ function getEffectiveSvThreshold(
     return config.bundle.runConfig.tutorial_level2_sv_threshold ?? 0;
   }
   return baseThreshold;
+}
+
+/** 将已解锁城市写入运行态，供 M4/M9 按城结算社会价值。 */
+export function syncOperableCities(state: GameState, config: ConfigRepo): void {
+  for (const cityConfig of config.bundle.cities) {
+    if (state.companyLevel < cityConfig.unlock_company_level) {
+      continue;
+    }
+    if (state.cities[cityConfig.city_id]) {
+      continue;
+    }
+    state.cities[cityConfig.city_id] = {
+      cityId: cityConfig.city_id,
+      demandMw: cityConfig.base_demand_mw,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: cityConfig.city_base_social_value
+    };
+  }
 }
 
 function buildIslands(state: GameState): string[][] {
@@ -253,7 +277,7 @@ export function settleNextMonth(
     return stateCheck;
   }
 
-  const next: GameState = structuredClone(state);
+  const next: GameState = deepClone(state);
   next.phase = "month_settling";
   const monthFrom = next.currentMonth;
   const steps: SettlementStepReport[] = [];
@@ -262,6 +286,7 @@ export function settleNextMonth(
   steps.push(runM3(next));
 
   steps.push(runM1(next, config));
+  syncOperableCities(next, config);
   recalcSupply(next);
   steps.push(
     step("M4_supply_recalc", "supply ratios updated", {
