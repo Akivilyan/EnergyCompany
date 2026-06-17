@@ -1,3 +1,4 @@
+import { deepClone } from "../../sim/core/deepClone.js";
 import type { SerializedStateEnvelope } from "../../sim/types/storage.js";
 import { InMemoryStateStorage, type StateStorage } from "./stateStorage.js";
 
@@ -50,7 +51,7 @@ export class WxStateStorage implements StateStorage {
     const raw = this.wx.getStorageSync(this.storageKey(slotId));
     if (raw == null || raw === "") return null;
     if (!isSerializedStateEnvelope(raw)) return null;
-    return structuredClone(raw);
+    return deepClone(raw);
   }
 
   remove(slotId: string): void {

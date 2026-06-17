@@ -1,3 +1,4 @@
+import { deepClone } from "../../sim/core/deepClone.js";
 import type { SerializedStateEnvelope } from "../../sim/types/storage.js";
 
 export interface StateStorage {
@@ -10,13 +11,13 @@ export class InMemoryStateStorage implements StateStorage {
   private readonly slots = new Map<string, SerializedStateEnvelope>();
 
   save(slotId: string, envelope: SerializedStateEnvelope): void {
-    this.slots.set(slotId, structuredClone(envelope));
+    this.slots.set(slotId, deepClone(envelope));
   }
 
   load(slotId: string): SerializedStateEnvelope | null {
     const value = this.slots.get(slotId);
     if (!value) return null;
-    return structuredClone(value);
+    return deepClone(value);
   }
 
   remove(slotId: string): void {
