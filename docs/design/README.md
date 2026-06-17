@@ -1,35 +1,37 @@
-# 设计文档体系（重建中）
+# 设计文档总览
 
-本目录是游戏设计文档的**新权威来源**。旧目录 [`../`](../) 下的文件保留作参考，逐步废弃；内容经任务拆解后迁入此处。
+`docs/design/` 是当前项目的权威设计文档目录。玩法规则、功能规格、UI 结构、配置说明和工程约束都以这里为准。
 
-## 流水线
+## 结构
 
-```text
-GDD → Feature Spec → UI Spec → Data → Code
-```
+| 目录 | 作用 |
+|------|------|
+| `gdd/` | 玩法规则、系统边界、核心流程 |
+| `features/` | 面向实现与验收的功能规格 |
+| `ui/` | 屏幕结构、组件树、交互状态 |
+| `data/` | 配置结构、字段说明、切片数据 |
+| `engineering/` | 工程约束、实现拆条、联调与看板 |
 
-| 阶段 | 目录 | 作用 |
-|------|------|------|
-| GDD | `gdd/` | 玩法真理源：边界、循环、规则、公式（不写实现） |
-| Feature Spec | `features/` | 按系统可验收的功能规格（输入/输出/前置/副作用） |
-| UI Spec | `ui/` | 屏幕流、线框、组件与交互表 |
-| Data | `data/` | 表结构、字段说明、垂直切片样例数据 |
-| Code | `engineering/` | 工程模块、垂直切片范围、与实现的接口约定 |
+## 推荐阅读顺序
 
-## 怎么用
+1. `gdd/00-vision.md`
+2. `gdd/01-core-loop.md`
+3. `features/README.md`
+4. `ui/README.md`
+5. `data/README.md`
+6. `engineering/architecture.md`
 
-1. 编写规范见 [`META.md`](./META.md)；任务顺序见 [`TASK-LIST.md`](./TASK-LIST.md)。
-2. **每次对话只做一个任务**；由 Agent 引导，从旧 `docs/` 摘录并改写，不一次性搬迁。
-3. 新文档使用 `META.md` 中的 front matter（`status`: draft / locked 等）。
-4. **Playable v0 范围已定**（[`engineering/vertical-slice-v0.md`](./engineering/vertical-slice-v0.md) + [`data/vertical-slice-v0/`](./data/vertical-slice-v0/)）。**当前进度：T42～T46 已完成，T47 已按不适用跳过**（仓库内无可迁移旧 `docs/*.md`）。配置总览 [`data/README.md`](./data/README.md)。
+## 当前权威入口
 
-## 旧文档对照（搬迁来源，非权威）
+| 用途 | 文件 |
+|------|------|
+| 文档规范 | `META.md` |
+| 旧文档映射 | `LEGACY.md` |
+| 设计阶段摘要 | `TASK-LIST.md` |
+| 当前工程进展 | `engineering/PROJECT-TASK-BOARD.md` |
 
-| 旧文件 | 主要迁入目标 |
-|--------|----------------|
-| `game-core-design.md` | `gdd/` 各章 |
-| `game-core-design-整合摘要.md` | 仅作搬迁索引，不单独成稿 |
-| `game-core-design-设计演变摘要.md` | 必要时写入 `gdd/00-vision.md` 附录或 changelog |
-| `balance-data-structure.md` | `data/` |
-| `tech-tree-design.md` | `gdd/08-tech.md` + `features/tech-tree.md` |
-| `technical-and-tooling-plan.md` | `engineering/` |
+## 说明
+
+- 旧 `docs/*.md` 仅保留为历史参考
+- 当前开发不再依赖设计迁移任务流程
+- 若设计文档与旧记录冲突，以 `docs/design/` 当前文档为准

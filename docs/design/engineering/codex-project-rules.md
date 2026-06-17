@@ -1,0 +1,126 @@
+---
+id: engineering/codex-project-rules
+title: Codex 项目规则
+status: draft
+version: 0.1.0
+sources:
+  - AGENTS.md
+  - docs/design/engineering/architecture.md
+  - docs/design/engineering/cocos-client-setup.md
+  - docs/design/engineering/PROJECT-TASK-BOARD.md
+supersedes: []
+depends_on:
+  - engineering/architecture
+  - engineering/project-task-board
+open_questions: []
+---
+
+# Codex 项目规则
+
+本文件承接项目级协作建议、验证选择与联调注意事项。硬约束以 `AGENTS.md` 为准，本文件负责把常用判断写短、写清楚。
+
+## 1. 默认阅读顺序
+
+新会话默认按这个顺序读取：
+
+1. `AGENTS.md`
+2. `docs/design/engineering/PROJECT-TASK-BOARD.md`
+3. `docs/design/engineering/architecture.md`
+4. `docs/design/engineering/cocos-client-setup.md`（仅 Cocos / 微信相关）
+5. `docs/design/engineering/codex-handoff.md`（需要更完整工程上下文时）
+
+## 2. 架构边界速查
+
+主线依赖：
+
+```text
+ui/cocos -> modules -> sim <- config
+app 负责装配
+infra 通过端口注入
+```
+
+边界提醒：
+
+- `src/sim/`：禁止 `cc.*`、本地存储、平台 SDK、UI 状态
+- `src/modules/`：做编排，不复制结算公式
+- `src/ui/` / `client/cocos/`：不直接改 `GameState`
+- `config`：只读查询，不做流程判断
+
+## 3. 验证选择
+
+| 改动 | 至少运行 |
+|------|----------|
+| `src/sim/`、`src/modules/`、`tests/` | `npm test` |
+| 类型、入口装配、编译风险高 | `npm run build` |
+| 层间引用或边界 | `npm run lint:boundaries` |
+| `docs/design/data/vertical-slice-v0/` | `npm run build:client` |
+| `client/cocos/`、客户端脚本、HUD、场景 | `npm run verify:client` |
+| 预览页探测 | `npm run check:cocos-preview` |
+| 仅文档 / 看板 / 规则 | 说明无需跑测试 |
+
+执行原则：
+
+- 能跑就跑，不把验证甩给用户
+- 失败则修到通过，或明确说明阻塞
+- 只跑和改动相关的最小集合
+
+## 4. 常用守则
+
+### sim 改动守则
+
+- 优先做最小改动，不顺手跨层重构
+- 涉及语义变化时，先补 `tests/sim/` 或 `tests/modules/`
+- 如果只是展示需求变化，优先落在 `src/modules/` 或 `src/app/`
+
+### 配置同步守则
+
+- 改 `docs/design/data/vertical-slice-v0/` 后，至少跑 `npm run build:client`
+- 若配置影响客户端联调，再补 `npm run verify:client`
+
+### 客户端验证守则
+
+- Cocos / HUD 改动，默认先跑 `npm run verify:client`
+- 需要探测编辑器预览是否起来，再跑 `npm run check:cocos-preview`
+
+### 看板更新守则
+
+- 对话结束前更新 `PROJECT-TASK-BOARD.md`
+- 只保留 1 个当前进行中的任务
+- 日志记录写本轮结论、涉及文件、验证结果
+
+## 5. 微信构建与联调
+
+关键路径：
+
+- 工程：`client/cocos/`
+- 构建输出：`client/cocos/build/wechatgame`
+
+联调注意：
+
+- 微信开发者工具需开启 CLI / 服务端口
+- `cli.bat open` 成功不代表窗口立刻显示
+- 2.x 首次启动可能需要 3 到 5 分钟预热
+- 先清理僵尸 `wechatdevtools` 进程，再重试
+
+手动排查顺序：
+
+1. 确认 `npm run verify:client` 通过
+2. 确认构建输出目录存在
+3. 确认微信工具 CLI 可调用
+4. 再手动 `open --project <绝对路径>`
+
+## 6. 常用入口
+
+| 用途 | 文件 |
+|------|------|
+| 当前状态 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
+| 实现拆条 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
+| 设计总览 | `docs/design/README.md` |
+| Cocos 初始化与真机冒烟 | `docs/design/engineering/cocos-client-setup.md` |
+| 工程地图 | `docs/design/engineering/codex-handoff.md` |
+
+## 变更记录
+
+| 版本 | 日期 | 说明 |
+|------|------|------|
+| 0.1.0 | 2026-06-17 | 首版：承接原项目规则、验证选择、边界守则与微信联调注意事项 |

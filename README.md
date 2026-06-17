@@ -1,40 +1,62 @@
-# Energy Company（设计 + 模拟核心）
+# Energy Company
 
-当前仓库以 **设计文档** 与 **可测试 TypeScript 模拟层** 为主，目标平台为微信小游戏（Cocos + TS）。
+微信小游戏项目：`Cocos Creator 3.x + TypeScript` 客户端，`src/sim/` 为纯 TS 模拟核心与规则真理源。
 
-## 快速开始
+## 当前阶段
+
+- 当前主线：`T51` 微信小游戏构建与真机冒烟
+- 当前协作收口：文档体系压缩、规则入口收敛、旧 Cursor 规则体系退场
+- 开发原则：先保证可玩闭环与边界稳定，再做数值精调
+
+## 必看入口
+
+| 用途 | 文件 |
+|------|------|
+| 硬约束 | `AGENTS.md` |
+| Codex 协作规则 | `docs/design/engineering/codex-project-rules.md` |
+| 当前任务与近期进展 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
+| 设计总览 | `docs/design/README.md` |
+| 架构边界 | `docs/design/engineering/architecture.md` |
+| Cocos / 微信联调 | `docs/design/engineering/cocos-client-setup.md` |
+| Codex 接手上下文 | `docs/design/engineering/codex-handoff.md` |
+
+## 最小命令
 
 ```bash
 npm install
 npm test
-npm run sim:demo
+npm run build
 npm run lint:boundaries
+npm run verify:client
 ```
 
-## 目录
+按改动类型选择更小命令，规则见 `docs/design/engineering/codex-project-rules.md`。
+
+## 文档导航
+
+| 目录 | 作用 |
+|------|------|
+| `docs/design/gdd/` | 玩法规则与系统边界 |
+| `docs/design/features/` | 面向实现与验收的功能规格 |
+| `docs/design/ui/` | 屏幕结构、组件与交互 |
+| `docs/design/data/` | 配置结构、字段说明、切片数据 |
+| `docs/design/engineering/` | 工程约束、实现拆条、联调与看板 |
+
+## 代码结构
 
 | 路径 | 说明 |
 |------|------|
-| `docs/design/` | GDD / Feature / UI / Data / Engineering |
-| `src/sim/` | 纯 TS 模拟核心（无引擎依赖） |
-| `src/modules/` | 业务编排（UI 应只调此层） |
-| `src/app/` | CLI 冒烟入口 |
-| `playtest-lab/` | 代理仿真方向筛选（非引擎实跑） |
-| `tests/sim/` | 模拟层单测 |
+| `src/sim/` | 纯 TS 模拟核心，不依赖引擎 |
+| `src/modules/` | 业务编排层，UI 只调用这一层 |
+| `src/app/` | CLI 冒烟、装配与客户端入口 |
+| `src/ui/` | 引擎无关 UI 壳层与场景桥接 |
+| `src/infra/` | 存档、生命周期、广告等外部能力 |
+| `client/cocos/` | Cocos 工程 |
 
-## Cursor / Agent 协作
+## 协作入口
 
-- Agent 入口：见 [AGENTS.md](AGENTS.md)
-- 规则与排障：见 [.cursor/README.md](.cursor/README.md)
-- Codex 接手上下文：见 [docs/design/engineering/codex-handoff.md](docs/design/engineering/codex-handoff.md)
-- 跨项目协作基座：见同级 [cursor-workbench](../cursor-workbench/README.md)
-- 项目专用工具箱：见 [docs/design/engineering/cursor-toolbox.md](docs/design/engineering/cursor-toolbox.md)
+- 开新会话先读 `AGENTS.md`
+- 涉及实现边界、验证选择、微信排障时读 `docs/design/engineering/codex-project-rules.md`
+- 涉及当前状态与下一步时读 `docs/design/engineering/PROJECT-TASK-BOARD.md`
 
-新开会话 **无需重复说明** 提交策略、验证方式与架构边界。
-
-## 推进文档
-
-- [v0 实现任务拆条](docs/design/engineering/IMPLEMENTATION-TASKS.md)
-- [灾害数值政策（debuff 锁定）](docs/design/engineering/v0-disaster-balance-policy.md)
-- [全经济调参面板](docs/design/engineering/v0-balance-knob-surface.md)
-- [每周节奏](docs/design/engineering/v0-weekly-rhythm.md)
+新会话无需重复说明提交策略、验证方式与架构边界。
