@@ -59,6 +59,7 @@ open_questions: []
 | 2026-06-17 | 文档收敛：重写入口、压缩任务与看板、建立归档层并准备删除旧 Cursor 规则目录 | `README.md` `AGENTS.md` `docs/design/README.md` `docs/design/META.md` `docs/design/LEGACY.md` `docs/design/TASK-LIST.md` `docs/design/engineering/*.md` `docs/design/archive/*` | 仅文档整理，无需跑测试 |
 | 2026-06-17 | 回写主真相：依据既有工作历史与当前复核，将 `OPS-01` 标记完成、将 `T51` 从主看板层确认为已完成，并进入开发前真相固化 | `docs/design/engineering/PROJECT-TASK-BOARD.md` `docs/design/current-product-truth.md` `README.md` `docs/design/README.md` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/codex-handoff.md` | 仅文档整理，无需跑测试 |
 | 2026-06-17 | 用户纠偏：`T51` 并未完成，只能确认“已构建并在真机跑起”，仍有待修问题；据此将当前阶段切回真机问题收口 | `docs/design/engineering/PROJECT-TASK-BOARD.md` `docs/design/current-product-truth.md` `README.md` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/codex-handoff.md` | 仅文档整理，无需跑测试 |
+| 2026-06-17 | 环境收口：修复 PowerShell 下 `npm` 可用性，补齐 Python/py，固化 Cocos 与微信开发者工具入口，并安装 `playwright`/`screenshot` skill | `package.json` `scripts/doctor.mjs` `scripts/open-cocos.mjs` `scripts/open-wechat-devtools.mjs` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm -v` `npx --version` `python --version` `py --version` `npm run doctor` 通过 |
 
 ## 6. 阶段摘要
 
