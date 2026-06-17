@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板（coding-first）
 status: draft
-version: 0.1.71
+version: 0.1.72
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,10 +56,10 @@ open_questions: []
 ## 3. 当前任务（只保留 1 项 doing）
 
 - 当前任务 ID：`OPS-01`
-- 任务标题：协作基座收口（cursor-workbench / 项目规则 / 入口去重）
+- 任务标题：协作基座收口（Cursor/Codex 接手 / 项目规则 / 入口去重）
 - 状态：`doing`
 - 开始时间：2026-06-09
-- 完成定义（本轮）：三处入口职责稳定；项目规则不再重复；通用/项目专用工具箱两层结构落地；项目专用 skills 控制在常用范围内并已补齐；GitHub 进入明确的项目级接入策略；低频项明确暂缓
+- 完成定义（本轮）：三处入口职责稳定；项目规则不再重复；通用/项目专用工具箱两层结构落地；项目专用 skills 控制在常用范围内并已补齐；Codex 接手上下文形成工程文档入口；GitHub 进入明确的项目级接入策略；低频项明确暂缓
 
 ---
 
@@ -151,6 +151,7 @@ open_questions: []
 | 2026-06-09 | 补第一批高优先级项目专用 skills：新增 `wechat-build-debug` / `cocos-verify` / `task-board-sync` / `sim-change-guard`，并细化 MCP 候选清单 | `.cursor/skills/wechat-build-debug/SKILL.md` `.cursor/skills/cocos-verify/SKILL.md` `.cursor/skills/task-board-sync/SKILL.md` `.cursor/skills/sim-change-guard/SKILL.md` `.cursor/README.md` `docs/design/engineering/cursor-toolbox.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 | 2026-06-09 | 继续补常用项目专用 tools：新增 `config-sync-check` / `hud-playtest-check`，并把低频项 `ops-phase-close` 明确暂缓 | `.cursor/skills/config-sync-check/SKILL.md` `.cursor/skills/hud-playtest-check/SKILL.md` `.cursor/README.md` `docs/design/engineering/cursor-toolbox.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
 | 2026-06-09 | 收口项目专用 tools 清单：补 `ops-phase-close` / `github-pr-ci`，并将 GitHub 从泛候选细化为“当前 `gh` CLI、后续 MCP 接入”的项目策略 | `.cursor/skills/ops-phase-close/SKILL.md` `.cursor/skills/github-pr-ci/SKILL.md` `.cursor/README.md` `docs/design/engineering/cursor-toolbox.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅规则/文档整理，无需跑测试 |
+| 2026-06-17 | Codex 接手项目：通读 Cursor 规则、工程文档和核心代码结构，新增 Codex 接手上下文并接入 README | `docs/design/engineering/codex-handoff.md` `README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/看板整理，无需跑测试 |
 
 ---
 
@@ -239,3 +240,4 @@ open_questions: []
 | 0.1.69 | 2026-06-09 | 落地第一批高优先级项目专用 skills，并把 GitHub / Browser 细化为高优先级 MCP 候选 |
 | 0.1.70 | 2026-06-09 | 补齐常用中优先级项目专用 skills，并明确低频项先暂缓 |
 | 0.1.71 | 2026-06-09 | 补齐剩余常用项目专用 skills，并明确 GitHub 现阶段先走 `gh` CLI、后续再接 MCP |
+| 0.1.72 | 2026-06-17 | 新增 Codex 接手上下文文档，并把入口接入 README 与当前 OPS-01 看板记录 |
