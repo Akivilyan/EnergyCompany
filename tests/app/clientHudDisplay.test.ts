@@ -4,6 +4,7 @@ import {
   buildClientHudDisplay,
   formatLoanTierLabel
 } from "../../src/app/clientHudDisplay.js";
+import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
 import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
 import { companyApplyFirstUnlockedLoan } from "../../src/app/companyHudController.js";
 import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
@@ -25,5 +26,13 @@ describe("clientHudDisplay", () => {
     expect(display.statusLine).toMatch(/^公司 · \d+级 · 资金\d+ · 广告\d+次$/);
     expect(display.detailLine).toContain("小额贷款（30万）");
     expect(display.detailLine).not.toContain("loan_1");
+  });
+
+  it("exposes locked hud capabilities before company level 2", () => {
+    const boot = createGameBootstrapFromRepo();
+    expect(getClientHudCapabilities(boot)).toEqual({
+      canQueueRegionLink: false,
+      canOperateTech: false
+    });
   });
 });

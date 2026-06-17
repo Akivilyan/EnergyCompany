@@ -17,6 +17,7 @@ export {
 } from "./cityHudController.js";
 export { formatClientHudStatus } from "./clientHudController.js";
 export { buildClientHudDisplay, formatLoanTierLabel } from "./clientHudDisplay.js";
+export { getClientHudCapabilities } from "./clientHudCapabilities.js";
 export {
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd

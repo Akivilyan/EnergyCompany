@@ -62,6 +62,7 @@ open_questions: []
 | 2026-06-17 | 环境收口：修复 PowerShell 下 `npm` 可用性，补齐 Python/py，固化 Cocos 与微信开发者工具入口，并安装 `playwright`/`screenshot` skill | `package.json` `scripts/doctor.mjs` `scripts/open-cocos.mjs` `scripts/open-wechat-devtools.mjs` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `npm -v` `npx --version` `python --version` `py --version` `npm run doctor` 通过 |
 | 2026-06-17 | 前置脚手架复核：重启后确认 Codex 会话下裸 `npm` 仍受 PowerShell 执行策略影响，统一改为 `cmd.exe /c npm ...` 作为稳态入口；补 `doctor:full` 区分环境问题与仓库现有编译错误 | `README.md` `package.json` `scripts/doctor.mjs` `scripts/doctor-full.mjs` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run doctor` 通过；`cmd.exe /c npm run doctor:full` 显示 `test`/`lint:boundaries`/`verify:client` 通过，`build` 因现有 TS 语法错误失败 |
 | 2026-06-17 | 仓库健康修复：清掉 `build` 里的 CLI 语法/strict 噪音，补本地 Node 类型 shim、灾害配置缺口并把误放到 `src/` 的测试移回 `tests/`，恢复本地健康检查全绿 | `src/app/regionLoopCli.ts` `src/app/regressionCli.ts` `src/sim/config/configRepo.ts` `src/types/node-shim.d.ts` `tests/app/clientHudCapabilities.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-18 | `T51` 子步骤：补开发 HUD 能力门控，未解锁时隐藏区域铺线与科技操作按钮，避免真机出现“功能未开但按钮仍显示/可点”的误导反馈 | `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/clientHudDisplay.test.ts` `tests/app/clientHudCapabilities.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -80,3 +81,4 @@ open_questions: []
 | 0.3.0 | 2026-06-17 | 回写 `T51` 与 `OPS-01` 完成状态，新增开发前真相固化任务 |
 | 0.4.0 | 2026-06-17 | 按用户纠偏恢复 `T51` 为当前阶段，改为真机问题收口 |
 | 0.5.0 | 2026-06-17 | 补记仓库健康修复：恢复 `build`/`test`/`verify:client` 全绿，继续以 `T51` 为当前阶段 |
+| 0.6.0 | 2026-06-18 | 补记 `T51` 子步骤：开发 HUD 按真实解锁状态门控区域/科技按钮 |

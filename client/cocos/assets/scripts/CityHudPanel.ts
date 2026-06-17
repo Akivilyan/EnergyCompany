@@ -24,6 +24,7 @@ import {
   regionQueueDefaultLink,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  getClientHudCapabilities,
   readCityHudViewModel,
   techCancelActiveResearch,
   techSpeedupResearchByAd,
@@ -337,6 +338,7 @@ export class CityHudPanel extends Component {
       return;
     }
     const viewModel = readCityHudViewModel(this.boot);
+    const caps = getClientHudCapabilities(this.boot);
     const onCompany = viewModel.screen === "screen_company";
     const onRegion = viewModel.screen === "screen_region";
     const onTech = viewModel.screen === "screen_tech_tree";
@@ -345,13 +347,13 @@ export class CityHudPanel extends Component {
 
     this.buildWindBtn!.node.active = onCity;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
-    this.queueRegionLinkBtn!.node.active = onRegion;
+    this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
     this.applyLoanBtn!.node.active = onCompany;
     this.adCashBtn!.node.active = onCompany;
-    this.startResearchBtn!.node.active = onTech;
-    this.cancelResearchBtn!.node.active = onTech;
-    this.adSpeedupBtn!.node.active = onTech;
+    this.startResearchBtn!.node.active = onTech && caps.canOperateTech;
+    this.cancelResearchBtn!.node.active = onTech && caps.canOperateTech;
+    this.adSpeedupBtn!.node.active = onTech && caps.canOperateTech;
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
     this.openTechBtn!.node.active = true;
