@@ -1,4 +1,5 @@
 import type { ConfigRepo } from "../config/configRepo.js";
+import { deepClone } from "./deepClone.js";
 import { err, ok, type SimResult } from "../types/result.js";
 import type { GameState } from "../types/gameState.js";
 import {
@@ -15,7 +16,7 @@ export function serializeState(state: GameState): SimResult<SerializedStateEnvel
   return ok({
     schemaVersion: STATE_SCHEMA_VERSION,
     savedAtUnixMs: Date.now(),
-    state: structuredClone(state)
+    state: deepClone(state)
   });
 }
 
@@ -91,7 +92,7 @@ export function deserializeState(
     });
   }
 
-  const state = structuredClone(envelope.state);
+  const state = deepClone(envelope.state);
   const basic = validateStateBasics(state);
   if (!basic.ok) return basic;
   const refs = validateStateReferences(state, config);

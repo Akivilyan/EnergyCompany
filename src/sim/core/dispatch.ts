@@ -1,4 +1,5 @@
 import type { ConfigRepo } from "../config/configRepo.js";
+import { deepClone } from "./deepClone.js";
 import type { Command } from "../types/commands.js";
 import type { GameState } from "../types/gameState.js";
 import type { SimPorts } from "../types/ports.js";
@@ -24,7 +25,7 @@ const ONBOARDING_FLOW: GameState["onboardingCurrentStepId"][] = [
 ];
 
 function cloneState(state: GameState): GameState {
-  return structuredClone(state);
+  return deepClone(state);
 }
 
 function makeUndirectedLinkKey(fromCityId: string, toCityId: string): string {
