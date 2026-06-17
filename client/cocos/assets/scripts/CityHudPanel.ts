@@ -8,10 +8,10 @@ import {
   UITransform,
   Color,
   EventTouch,
-  Vec3,
   HorizontalTextAlignment,
   VerticalTextAlignment,
-  Overflow
+  Overflow,
+  view
 } from "cc";
 import {
   buildClientHudDisplay,
@@ -32,50 +32,76 @@ import {
   t,
   type GameBootstrap
 } from "../shared/game-client.mjs";
+import {
+  buildHudBandLayout,
+  computePortraitLetterboxScale,
+  placeCenteredRect,
+  readHudContainerSize,
+  splitRowSlots,
+  type HudBandLayout,
+  unparentWatch
+} from "./hudLayout";
 
 const { ccclass } = _decorator;
 
-/** 设计分辨率 1280×720 下 HUD 布局常量（开发用，勿超出安全区）。 */
-const HUD = {
-  panelWidth: 720,
-  panelHeight: 200,
-  panelY: 120,
-  statusY: 72,
-  detailY: 38,
-  actionRowY: -8,
-  navRowY: -58,
-  labelWidth: 680,
-  statusFont: 22,
-  detailFont: 16,
-  buttonW: 128,
-  buttonH: 40,
-  buttonFont: 18,
-  actionGap: 140,
-  navGap: 150
-} as const;
+interface HudButton {
+  node: Node;
+  label: Label;
+  bg: Graphics;
+  messageKey: string;
+}
 
 @ccclass("CityHudPanel")
 export class CityHudPanel extends Component {
   private boot: GameBootstrap | null = null;
+  private shell: Node | null = null;
+  private statusBand: Node | null = null;
+  private detailBand: Node | null = null;
   private statusLabel: Label | null = null;
   private hintLabel: Label | null = null;
-  private buildWindBtn: Node | null = null;
-  private advanceMonthBtn: Node | null = null;
-  private applyLoanBtn: Node | null = null;
-  private adCashBtn: Node | null = null;
-  private startResearchBtn: Node | null = null;
-  private cancelResearchBtn: Node | null = null;
-  private adSpeedupBtn: Node | null = null;
-  private ackEventBtn: Node | null = null;
-  private queueRegionLinkBtn: Node | null = null;
+  private buildWindBtn: HudButton | null = null;
+  private advanceMonthBtn: HudButton | null = null;
+  private applyLoanBtn: HudButton | null = null;
+  private adCashBtn: HudButton | null = null;
+  private startResearchBtn: HudButton | null = null;
+  private cancelResearchBtn: HudButton | null = null;
+  private adSpeedupBtn: HudButton | null = null;
+  private ackEventBtn: HudButton | null = null;
+  private queueRegionLinkBtn: HudButton | null = null;
+  private openCompanyBtn: HudButton | null = null;
+  private openRegionBtn: HudButton | null = null;
+  private openTechBtn: HudButton | null = null;
+  private navBackBtn: HudButton | null = null;
   private lastActionKey: string | null = null;
+  private readonly onLayoutChange = (): void => this.applyLayout();
 
   onLoad(): void {
     const line = `[CityHudPanel] onLoad on ${this.node.name}`;
     log(line);
     console.warn(line);
+    if (!this.node.getComponent(UITransform)) {
+      this.node.addComponent(UITransform);
+    }
     this.ensureUi();
     this.showLoading();
+    this.scheduleLayoutRetries();
+  }
+
+  onEnable(): void {
+    view.on("canvas-resize", this.onLayoutChange, this);
+    this.applyLayout();
+    this.scheduleLayoutRetries();
+  }
+
+  onDisable(): void {
+    view.off("canvas-resize", this.onLayoutChange, this);
+    this.unschedule(this.retryLayout);
+  }
+
+  onDestroy(): void {
+    if (this.shell) unparentWatch(this.shell, this.onLayoutChange);
+    view.off("canvas-resize", this.onLayoutChange, this);
+    this.boot = null;
   }
 
   bindGameBoot(boot: GameBootstrap): void {
@@ -89,135 +115,132 @@ export class CityHudPanel extends Component {
     this.hintLabel.string = message;
   }
 
-  onDestroy(): void {
-    this.boot = null;
+  private scheduleLayoutRetries(): void {
+    this.unschedule(this.retryLayout);
+    this.schedule(this.retryLayout, 0, 8, 0.05);
+  }
+
+  private retryLayout(): void {
+    this.applyLayout();
   }
 
   private ensureUi(): void {
     if (this.statusLabel) return;
 
-    const panel = new Node("CityHudPanel");
-    panel.setParent(this.node);
-    panel.setPosition(new Vec3(0, HUD.panelY, 0));
-    panel.addComponent(UITransform).setContentSize(HUD.panelWidth, HUD.panelHeight);
+    const shell = new Node("HudShell");
+    shell.setParent(this.node);
+    this.shell = shell;
 
-    this.statusLabel = this.createLabel(
-      panel,
-      "StatusLabel",
-      new Vec3(0, HUD.statusY, 0),
-      HUD.statusFont,
-      HUD.labelWidth
-    );
-    this.hintLabel = this.createLabel(
-      panel,
-      "HintLabel",
-      new Vec3(0, HUD.detailY, 0),
-      HUD.detailFont,
-      HUD.labelWidth
-    );
+    this.statusBand = new Node("StatusBand");
+    this.statusBand.setParent(shell);
+    this.statusLabel = this.createBandLabel(this.statusBand);
 
-    const half = HUD.actionGap / 2;
-    this.buildWindBtn = this.createTapButton(
-      panel,
-      "BuildWind",
-      new Vec3(-half, HUD.actionRowY, 0),
-      "hud.btn.build_wind",
-      () => this.onBuildWind()
-    );
-    this.advanceMonthBtn = this.createTapButton(
-      panel,
-      "AdvanceMonth",
-      new Vec3(half, HUD.actionRowY, 0),
-      "hud.btn.next_month",
-      () => this.onAdvanceMonth()
-    );
-    this.applyLoanBtn = this.createTapButton(
-      panel,
-      "ApplyLoan",
-      new Vec3(-half, HUD.actionRowY, 0),
-      "hud.btn.loan",
-      () => this.onApplyLoan()
-    );
-    this.adCashBtn = this.createTapButton(
-      panel,
-      "AdCash",
-      new Vec3(half, HUD.actionRowY, 0),
-      "hud.btn.ad_cash",
-      () => this.onAdCash()
-    );
-    this.startResearchBtn = this.createTapButton(
-      panel,
-      "StartResearch",
-      new Vec3(-HUD.actionGap, HUD.actionRowY, 0),
-      "hud.btn.start_research",
-      () => this.onStartResearch()
-    );
-    this.cancelResearchBtn = this.createTapButton(
-      panel,
-      "CancelResearch",
-      new Vec3(0, HUD.actionRowY, 0),
-      "hud.btn.cancel_research",
-      () => this.onCancelResearch()
-    );
-    this.adSpeedupBtn = this.createTapButton(
-      panel,
-      "AdSpeedup",
-      new Vec3(HUD.actionGap, HUD.actionRowY, 0),
-      "hud.btn.ad_speedup",
-      () => this.onAdSpeedup()
-    );
-    this.ackEventBtn = this.createTapButton(
-      panel,
-      "AckEvent",
-      new Vec3(0, HUD.actionRowY, 0),
-      "hud.btn.ack_event",
-      () => this.onAckEvent()
-    );
+    this.detailBand = new Node("DetailBand");
+    this.detailBand.setParent(shell);
+    this.hintLabel = this.createBandLabel(this.detailBand);
 
-    this.applyLoanBtn.active = false;
-    this.adCashBtn.active = false;
-    this.startResearchBtn.active = false;
-    this.cancelResearchBtn.active = false;
-    this.adSpeedupBtn.active = false;
-    this.ackEventBtn.active = false;
-    this.queueRegionLinkBtn = this.createTapButton(
-      panel,
-      "QueueRegionLink",
-      new Vec3(-half, HUD.actionRowY, 0),
-      "hud.btn.queue_link",
-      () => this.onQueueRegionLink()
+    this.buildWindBtn = this.createTapButton(shell, "BuildWind", "hud.btn.build_wind", () => this.onBuildWind());
+    this.advanceMonthBtn = this.createTapButton(shell, "AdvanceMonth", "hud.btn.next_month", () => this.onAdvanceMonth());
+    this.ackEventBtn = this.createTapButton(shell, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
+    this.applyLoanBtn = this.createTapButton(shell, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
+    this.adCashBtn = this.createTapButton(shell, "AdCash", "hud.btn.ad_cash", () => this.onAdCash());
+    this.startResearchBtn = this.createTapButton(shell, "StartResearch", "hud.btn.start_research", () =>
+      this.onStartResearch()
     );
-    this.queueRegionLinkBtn.active = false;
+    this.cancelResearchBtn = this.createTapButton(shell, "CancelResearch", "hud.btn.cancel_research", () =>
+      this.onCancelResearch()
+    );
+    this.queueRegionLinkBtn = this.createTapButton(shell, "QueueRegionLink", "hud.btn.queue_link", () =>
+      this.onQueueRegionLink()
+    );
+    this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => this.onAdSpeedup());
+    this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
+    this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
+    this.openTechBtn = this.createTapButton(shell, "OpenTech", "hud.btn.tech", () => this.onOpenTech());
+    this.navBackBtn = this.createTapButton(shell, "NavBack", "hud.btn.back", () => this.onNavBack());
 
-    const navStep = HUD.navGap / 2;
-    this.createTapButton(
-      panel,
-      "OpenCompany",
-      new Vec3(-navStep * 1.5, HUD.navRowY, 0),
-      "hud.btn.company",
-      () => this.onOpenCompany()
+    this.applyLayout();
+  }
+
+  private applyLayout(): void {
+    if (!this.shell || !this.statusBand || !this.detailBand || !this.statusLabel || !this.hintLabel) return;
+
+    const container = readHudContainerSize(this.node);
+    if (container.width <= 0 || container.height <= 0) return;
+
+    const rootTransform = this.node.getComponent(UITransform);
+    rootTransform?.setContentSize(container.width, container.height);
+
+    const compensation = computePortraitLetterboxScale(container);
+    this.shell.setScale(compensation, compensation, 1);
+    this.shell.setPosition(0, 0, 0);
+
+    const layout = buildHudBandLayout(container);
+    placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
+    placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
+    this.fitLabelToBand(this.statusLabel, layout.status);
+    this.fitLabelToBand(this.hintLabel, layout.detail);
+    this.statusLabel.fontSize = layout.statusFont;
+    this.statusLabel.lineHeight = Math.round(layout.statusFont * 1.2);
+    this.hintLabel.fontSize = layout.detailFont;
+    this.hintLabel.lineHeight = Math.round(layout.detailFont * 1.2);
+
+    this.placeRowButtons(layout.rows[0], [this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
+    this.placeRowButtons(
+      layout.rows[1],
+      [
+        this.queueRegionLinkBtn,
+        this.ackEventBtn,
+        this.applyLoanBtn,
+        this.adCashBtn,
+        this.startResearchBtn,
+        this.cancelResearchBtn
+      ],
+      layout.buttonFont
     );
-    this.createTapButton(
-      panel,
-      "OpenRegion",
-      new Vec3(-navStep * 0.5, HUD.navRowY, 0),
-      "hud.btn.region",
-      () => this.onOpenRegion()
-    );
-    this.createTapButton(
-      panel,
-      "OpenTech",
-      new Vec3(navStep * 0.5, HUD.navRowY, 0),
-      "hud.btn.tech",
-      () => this.onOpenTech()
-    );
-    this.createTapButton(
-      panel,
-      "NavBack",
-      new Vec3(navStep * 1.5, HUD.navRowY, 0),
-      "hud.btn.back",
-      () => this.onNavBack()
-    );
+    this.placeRowButtons(layout.rows[2], [this.adSpeedupBtn], layout.buttonFont);
+    this.placeRowButtons(layout.rows[3], [this.openCompanyBtn, this.openRegionBtn], layout.buttonFont);
+    this.placeRowButtons(layout.rows[4], [this.openTechBtn, this.navBackBtn], layout.buttonFont);
+  }
+
+  private placeRowButtons(row: HudBandLayout, buttons: Array<HudButton | null>, fontSize: number): void {
+    const active = buttons.filter((btn): btn is HudButton => !!btn && btn.node.active);
+    const slots = splitRowSlots(row, active.length);
+    for (let i = 0; i < active.length; i += 1) {
+      const slot = slots[i];
+      const btn = active[i];
+      placeCenteredRect(btn.node, slot.x, slot.y, slot.width, slot.height);
+      btn.label.fontSize = fontSize;
+      btn.label.lineHeight = Math.round(fontSize * 1.12);
+      btn.label.enableWrapText = false;
+      this.fitLabelToBand(btn.label, slot);
+      this.redrawButton(btn);
+    }
+  }
+
+  private fitLabelToBand(label: Label, band: HudBandLayout): void {
+    const node = label.node;
+    const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    transform.setContentSize(band.width * 0.94, band.height * 0.9);
+    node.setPosition(0, 0, 0);
+  }
+
+  private allButtons(): HudButton[] {
+    return [
+      this.buildWindBtn,
+      this.advanceMonthBtn,
+      this.applyLoanBtn,
+      this.adCashBtn,
+      this.startResearchBtn,
+      this.cancelResearchBtn,
+      this.adSpeedupBtn,
+      this.ackEventBtn,
+      this.queueRegionLinkBtn,
+      this.openCompanyBtn,
+      this.openRegionBtn,
+      this.openTechBtn,
+      this.navBackBtn
+    ].filter((btn): btn is HudButton => btn !== null);
   }
 
   private showLoading(): void {
@@ -226,59 +249,64 @@ export class CityHudPanel extends Component {
     this.hintLabel.string = t("hud.wait_mount");
   }
 
-  private createLabel(
-    parent: Node,
-    name: string,
-    position: Vec3,
-    fontSize: number,
-    width: number
-  ): Label {
-    const node = new Node(name);
+  private createBandLabel(parent: Node): Label {
+    const node = new Node("Label");
     node.setParent(parent);
-    node.setPosition(position);
-    node.addComponent(UITransform).setContentSize(width, 40);
+    node.addComponent(UITransform);
     const label = node.addComponent(Label);
     label.useSystemFont = true;
     label.fontFamily = "Arial";
-    label.fontSize = fontSize;
-    label.lineHeight = fontSize + 6;
-    label.color = new Color(240, 240, 240, 255);
+    label.color = new Color(245, 245, 245, 255);
     label.horizontalAlign = HorizontalTextAlignment.CENTER;
     label.verticalAlign = VerticalTextAlignment.CENTER;
-    label.overflow = Overflow.SHRINK;
-    label.string = name;
+    label.overflow = Overflow.RESIZE_HEIGHT;
+    label.enableWrapText = true;
     return label;
   }
 
   private createTapButton(
     parent: Node,
     name: string,
-    position: Vec3,
     messageKey: string,
     handler: () => void
-  ): Node {
+  ): HudButton {
     const node = new Node(name);
     node.setParent(parent);
-    node.setPosition(position);
-    const w = HUD.buttonW;
-    const h = HUD.buttonH;
-    const transform = node.addComponent(UITransform);
-    transform.setContentSize(w, h);
+    node.addComponent(UITransform);
     const bg = node.addComponent(Graphics);
-    bg.fillColor = new Color(48, 72, 120, 220);
-    bg.roundRect(-w / 2, -h / 2, w, h, 6);
-    bg.fill();
-    const label = this.createLabel(node, `${name}Label`, new Vec3(0, 0, 0), HUD.buttonFont, w - 8);
+    const labelNode = new Node(`${name}Label`);
+    labelNode.setParent(node);
+    labelNode.addComponent(UITransform);
+    const label = labelNode.addComponent(Label);
+    label.useSystemFont = true;
+    label.fontFamily = "Arial";
+    label.color = new Color(255, 255, 255, 255);
+    label.horizontalAlign = HorizontalTextAlignment.CENTER;
+    label.verticalAlign = VerticalTextAlignment.CENTER;
+    label.overflow = Overflow.SHRINK;
+    label.enableWrapText = false;
     label.string = t(messageKey);
     node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler(), this);
-    return node;
+    const hudButton: HudButton = { node, label, bg, messageKey };
+    return hudButton;
   }
 
-  private setButtonCaption(buttonNode: Node | null, messageKey: string): void {
-    if (!buttonNode) return;
-    const labelNode = buttonNode.getChildByName(`${buttonNode.name}Label`);
-    const label = labelNode?.getComponent(Label);
-    if (label) label.string = t(messageKey);
+  private redrawButton(btn: HudButton): void {
+    const transform = btn.node.getComponent(UITransform);
+    if (!transform) return;
+    const w = transform.width;
+    const h = transform.height;
+    if (w <= 0 || h <= 0) return;
+    btn.bg.clear();
+    btn.bg.fillColor = new Color(36, 96, 188, 245);
+    btn.bg.roundRect(-w / 2, -h / 2, w, h, Math.min(18, h * 0.16));
+    btn.bg.fill();
+  }
+
+  private setButtonCaption(btn: HudButton | null, messageKey: string): void {
+    if (!btn) return;
+    btn.messageKey = messageKey;
+    btn.label.string = t(messageKey);
   }
 
   private syncButtonCaptions(): void {
@@ -291,6 +319,10 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
     this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
     this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
+    this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
+    this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
+    this.setButtonCaption(this.openTechBtn, "hud.btn.tech");
+    this.setButtonCaption(this.navBackBtn, "hud.btn.back");
   }
 
   private actionMessage(): string | null {
@@ -304,26 +336,32 @@ export class CityHudPanel extends Component {
       this.showLoading();
       return;
     }
-    const view = readCityHudViewModel(this.boot);
-    const onCompany = view.screen === "screen_company";
-    const onRegion = view.screen === "screen_region";
-    const onTech = view.screen === "screen_tech_tree";
+    const viewModel = readCityHudViewModel(this.boot);
+    const onCompany = viewModel.screen === "screen_company";
+    const onRegion = viewModel.screen === "screen_region";
+    const onTech = viewModel.screen === "screen_tech_tree";
     const onCity = !onCompany && !onRegion && !onTech;
     const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
-    this.buildWindBtn!.active = onCity;
-    this.advanceMonthBtn!.active = onCity || onRegion;
-    this.queueRegionLinkBtn!.active = onRegion;
-    this.ackEventBtn!.active = onCity && pendingEvent;
-    this.applyLoanBtn!.active = onCompany;
-    this.adCashBtn!.active = onCompany;
-    this.startResearchBtn!.active = onTech;
-    this.cancelResearchBtn!.active = onTech;
-    this.adSpeedupBtn!.active = onTech;
+
+    this.buildWindBtn!.node.active = onCity;
+    this.advanceMonthBtn!.node.active = onCity || onRegion;
+    this.queueRegionLinkBtn!.node.active = onRegion;
+    this.ackEventBtn!.node.active = onCity && pendingEvent;
+    this.applyLoanBtn!.node.active = onCompany;
+    this.adCashBtn!.node.active = onCompany;
+    this.startResearchBtn!.node.active = onTech;
+    this.cancelResearchBtn!.node.active = onTech;
+    this.adSpeedupBtn!.node.active = onTech;
+    this.openCompanyBtn!.node.active = true;
+    this.openRegionBtn!.node.active = true;
+    this.openTechBtn!.node.active = true;
+    this.navBackBtn!.node.active = true;
     this.syncButtonCaptions();
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
-    this.statusLabel.string = display.statusLine;
-    this.hintLabel.string = display.detailLine;
+    this.statusLabel.string = display.statusLines.join("\n");
+    this.hintLabel.string = display.detailLines.join("\n");
+    this.applyLayout();
   }
 
   private onBuildWind(): void {
