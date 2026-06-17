@@ -24,12 +24,26 @@
 ## 最小命令
 
 ```bash
-npm install
-npm test
-npm run build
-npm run lint:boundaries
-npm run verify:client
+npm.cmd install
+npm.cmd run doctor
+npm.cmd test
+npm.cmd run build
+npm.cmd run lint:boundaries
+npm.cmd run verify:client
 ```
+
+若在 PowerShell 中遇到 `npm.ps1` 执行策略拦截，优先改用 `npm.cmd`；仓库内脚手架均按此兼容。
+
+推荐在 Codex 会话中优先使用：
+
+```bash
+cmd.exe /c npm run doctor
+cmd.exe /c npm run doctor:full
+```
+
+说明：
+- `doctor`：检查项目主链路工具与外部 GUI 路径。
+- `doctor:full`：串行跑 `doctor`、`build`、`lint:boundaries`、`test`、`verify:client`，用于区分环境故障与仓库现有代码错误。
 
 按改动类型选择更小命令，规则见 `docs/design/engineering/codex-project-rules.md`。
 
