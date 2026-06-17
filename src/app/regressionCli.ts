@@ -1,8 +1,11 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
- * v0 E1-E6 全链路回�?CLI�? * 覆盖教学、城市、科技/广告、区域、灾害、终局六个体验点，
- * 输出通过率与失败案例，便�?T45-16 收口验收�? *
- * 用法�? *   npm run sim:regression
+ * v0 E1-E6 全链路回归 CLI。
+ * 覆盖教学、城市、科技/广告、区域、灾害、终局六个体验点，
+ * 输出通过率与失败案例，便于 T45-16 收口验收。
+ *
+ * 用法：
+ *   npm run sim:regression
  */
 import { createScreenCityDetail } from "../modules/screenCityDetail.js";
 import { createScreenCompany } from "../modules/screenCompany.js";
@@ -80,11 +83,16 @@ function runE2(): ScenarioResult {
   const controller = createControllerFromRepoRoot();
   const screen = createScreenCityDetail(controller, "CITY-START");
   const before = screen.getSnapshot();
-  ensure(before !== null, "CITY-START snapshot missing");
+  if (before === null) {
+    fail("CITY-START snapshot missing");
+  }
 
   const build = screen.queueConstruction("wind", 1);
-  ensure(build.ok, "queue construction output missing");
-  ensure(build.value.result.ok, "queue construction command failed");
+  if (!build.ok) {
+    fail("queue construction output missing");
+  }
+  const buildValue = build.value;
+  ensure(buildValue.result.ok, "queue construction command failed");
 
   const advance = screen.advanceMonths(3);
   ensure(!advance.failed, "settle failed during city loop");
@@ -98,13 +106,13 @@ function runE2(): ScenarioResult {
 
   return {
     id: "E2",
-    title: "单城建�?推月/供能与SV变化",
+    title: "单城建设/推月/供能与SV变化",
     ok: true,
     detail: `month=${before.month}->${last.monthTo}, supply_delta=${last.delta.effectiveSupplyMw}, sv_delta=${last.delta.socialValue}`
   };
 }
 
-function promoteToLevel2(): ReturnType<typeof createController> {
+function promoteToLevel2(): ReturnType<typeof createControllerFromRepoRoot> {
   const controller = createControllerFromRepoRoot();
   for (let i = 0; i < 2; i += 1) {
     const build = controller.runCommand({
@@ -160,8 +168,11 @@ function runE4(): ScenarioResult {
   const toCityId = "CITY-MAP01-02";
 
   const blocked = screen.queueGridLink(fromCityId, toCityId, "region");
-  ensure(!blocked.result.ok, "level I queue should be blocked");
-  ensure(blocked.result.error === "not_unlocked", "level I queue should fail with not_unlocked");
+  if (blocked.result.ok) {
+    fail("level I queue should be blocked");
+  }
+  const blockedError = blocked.result.error;
+  ensure(blockedError === "not_unlocked", "level I queue should fail with not_unlocked");
 
   for (let i = 0; i < 2; i += 1) {
     const build = controller.runCommand({
@@ -196,7 +207,7 @@ function runE4(): ScenarioResult {
 
   return {
     id: "E4",
-    title: "MAP-01 区域解锁与铺�?,
+    title: "MAP-01 区域解锁与铺线",
     ok: true,
     detail: `level=${snapshot.companyLevel}, link=${link.linkId}, status=${link.status}`
   };
@@ -245,8 +256,11 @@ function runE6(): ScenarioResult {
   ensure(victorySettle.ok, "victory branch settle failed");
   const victoryScreen = createScreenRunResult(victoryController);
   const victorySnapshot = victoryScreen.getSnapshot();
-  ensure(victorySnapshot !== null, "victory run result snapshot missing");
-  ensure(victorySnapshot.runResult === "victory", "victory branch should end with victory");
+  if (victorySnapshot === null) {
+    fail("victory run result snapshot missing");
+  }
+  const victory = victorySnapshot;
+  ensure(victory.runResult === "victory", "victory branch should end with victory");
   const blocked = victoryController.runCommand({ type: "claim_ad_reward", adType: "cash" });
   ensure(!blocked.ok, "run_result state should block playable command");
 
@@ -259,22 +273,25 @@ function runE6(): ScenarioResult {
   ensure(bankruptSettle.ok, "bankrupt branch settle failed");
   const bankruptScreen = createScreenRunResult(bankruptController);
   const bankruptSnapshot = bankruptScreen.getSnapshot();
-  ensure(bankruptSnapshot !== null, "bankrupt run result snapshot missing");
-  ensure(bankruptSnapshot.runResult === "bankrupt", "bankrupt branch should end with bankrupt");
+  if (bankruptSnapshot === null) {
+    fail("bankrupt run result snapshot missing");
+  }
+  const bankrupt = bankruptSnapshot;
+  ensure(bankrupt.runResult === "bankrupt", "bankrupt branch should end with bankrupt");
 
   return {
     id: "E6",
     title: "破产/通关双终局进入 run_result",
     ok: true,
-    detail: `victory_month=${victorySnapshot.month}, bankrupt_month=${bankruptSnapshot.month}`
+    detail: `victory_month=${victory.month}, bankrupt_month=${bankrupt.month}`
   };
 }
 
 const scenarios: ScenarioDef[] = [
   { id: "E1", title: "教学局完成/跳过 + tech/simple 正式局", run: runE1 },
-  { id: "E2", title: "单城建�?推月/供能与SV变化", run: runE2 },
+  { id: "E2", title: "单城建设/推月/供能与SV变化", run: runE2 },
   { id: "E3", title: "II级科技树单队列 + 广告cash/speedup", run: runE3 },
-  { id: "E4", title: "MAP-01 区域解锁与铺�?, run: runE4 },
+  { id: "E4", title: "MAP-01 区域解锁与铺线", run: runE4 },
   { id: "E5", title: "固定灾害首场 + 事件面板确认", run: runE5 },
   { id: "E6", title: "破产/通关双终局进入 run_result", run: runE6 }
 ];

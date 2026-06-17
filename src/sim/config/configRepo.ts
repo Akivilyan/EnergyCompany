@@ -9,6 +9,7 @@ export interface RunConfig {
 export interface DisasterConfig {
   campaign_id: string;
   seq: number;
+  event_id?: string;
   trigger_month: number;
   immediate_cash_penalty: number;
   /** 设计锁定：调参不得修改，见 v0-disaster-balance-policy.md */
@@ -21,6 +22,7 @@ export interface DisasterConfig {
   research_duration_mult_den: number;
   exam_tier: number;
   is_final?: boolean;
+  popup_required?: boolean;
 }
 
 export interface FacilityConfig {

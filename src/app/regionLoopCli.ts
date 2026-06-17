@@ -1,8 +1,10 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
- * region 页最小闭�?CLI 冒烟�? * Lv1 铺线拦截 -> 正常局建造补供能�?M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工
+ * region 页最小闭环 CLI 冒烟。
+ * Lv1 铺线拦截 -> 正常局建造补供能 -> M10 升到 Lv2 -> 区域铺线 -> 推进 1 月看链路完工。
  *
- * 用法�? *   npm run sim:region-loop
+ * 用法：
+ *   npm run sim:region-loop
  *   npm run sim:region-loop -- CITY-START CITY-MAP01-02 region
  */
 import { createControllerFromRepoRoot } from "../modules/runController.node.js";
@@ -26,11 +28,10 @@ if (blocked.result.ok) {
   console.log("expected not_unlocked on level I, but link queued");
   process.exit(1);
 }
-console.log(
-  `level I queue: ${blocked.result.error} - ${blocked.result.message}`
-);
+console.log(`level I queue: ${blocked.result.error} - ${blocked.result.message}`);
 
-// 正常局最小升级路径：先补两座风电，再通过 M10 升至 II 级�?for (let i = 0; i < 2; i += 1) {
+// 正常局最小升级路径：先补两座风电，再通过 M10 升至 II 级。
+for (let i = 0; i < 2; i += 1) {
   const build = controller.runCommand({
     type: "queue_construction",
     cityId: "CITY-START",
@@ -65,14 +66,10 @@ console.log(`level-up trace: ${levelUpReports.join(" | ")}`);
 
 const unlocked = screen.queueGridLink(fromCityId, toCityId, linkType);
 if (!unlocked.result.ok) {
-  console.log(
-    `level II queue failed: ${unlocked.result.error} - ${unlocked.result.message}`
-  );
+  console.log(`level II queue failed: ${unlocked.result.error} - ${unlocked.result.message}`);
   process.exit(1);
 }
-console.log(
-  `level II queue success: links=${unlocked.after.gridLinks.length}, funds=${unlocked.after.funds}`
-);
+console.log(`level II queue success: links=${unlocked.after.gridLinks.length}, funds=${unlocked.after.funds}`);
 
 const advance = screen.advanceMonths(1);
 if (advance.failed && !advance.failed.ok) {
