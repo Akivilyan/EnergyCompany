@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.2.0
+version: 0.3.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -165,9 +165,9 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 
 ### 当前状态
 
-- `T51` 已按既有工作历史与当前复核视为完成
-- 本页保留为后续再次构建、联调、回归和发布前自检的操作入口
-- 若后续出现新的真机回归问题，应追加到 `PROJECT-TASK-BOARD.md` 与本页，而不是回退 `T51` 的完成事实
+- 当前只可确认：已能构建微信小游戏包，且已在真机上跑起
+- `T51` 仍未完成，原因是真机仍有待修问题
+- 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
 ---
 
@@ -178,5 +178,6 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 | ----- | ---------- | ------------------------------------ |
 | 0.1.0 | 2026-05-30 | T50-02 初版：最小 CityDetail 场景清单与单场景导航说明 |
 | 0.2.0 | 2026-06-17 | 补充 T51 当前状态说明，明确本页作为后续构建与联调入口继续保留 |
+| 0.3.0 | 2026-06-17 | 按用户纠偏修正 T51 状态：已跑起但仍有真机问题待修 |
 
 
