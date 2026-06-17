@@ -21,6 +21,16 @@ export function resolveSceneName(screenId: ScreenId): string {
   return SCREEN_SCENE_MAP[screenId];
 }
 
+/**
+ * 已纳入 Cocos 构建的物理场景（与 `client/cocos/scene-registry.json` → `builtSceneNames` 同步）。
+ * 未列入的场景只做逻辑屏切换，不触发 `director.loadScene`。
+ */
+export const BUILT_SCENE_NAMES: ReadonlySet<string> = new Set(["CityDetail"]);
+
+export function isBuiltScene(sceneName: string): boolean {
+  return BUILT_SCENE_NAMES.has(sceneName);
+}
+
 export function buildSceneRegistry(bundle = "main"): SceneRegistryEntry[] {
   return (Object.keys(SCREEN_SCENE_MAP) as ScreenId[]).map((screenId) => ({
     screenId,

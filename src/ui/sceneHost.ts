@@ -1,4 +1,4 @@
-import { resolveSceneName } from "./sceneMap.js";
+import { isBuiltScene, resolveSceneName } from "./sceneMap.js";
 import type { ScreenId } from "./types.js";
 
 export interface SceneTransition {
@@ -27,5 +27,9 @@ export class LoggingSceneHost implements SceneHost {
 }
 
 export function syncSceneHost(host: SceneHost, screenId: ScreenId): void {
-  host.loadScene(resolveSceneName(screenId), screenId);
+  const sceneName = resolveSceneName(screenId);
+  if (!isBuiltScene(sceneName)) {
+    return;
+  }
+  host.loadScene(sceneName, screenId);
 }

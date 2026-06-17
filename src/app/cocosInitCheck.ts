@@ -107,7 +107,47 @@ export function runCocosInitChecks(repoRoot: string): CocosInitCheckItem[] {
         : "none in repo; create CityDetail in Cocos Editor and set as launch scene"
   });
 
+  checks.push(validateBuiltSceneGate(cocosRoot, sceneFiles, repoRoot));
+
   return checks;
+}
+
+function validateBuiltSceneGate(
+  cocosRoot: string,
+  sceneFiles: string[],
+  repoRoot: string
+): CocosInitCheckItem {
+  const hostPath = path.join(cocosRoot, "assets", "scripts", "CocosSceneHost.ts");
+  const registryPath = path.join(cocosRoot, "scene-registry.json");
+  if (!fs.existsSync(hostPath) || !fs.existsSync(registryPath)) {
+    return {
+      id: "built-scene-gate",
+      ok: false,
+      detail: "missing CocosSceneHost or scene-registry.json"
+    };
+  }
+
+  const registry = JSON.parse(fs.readFileSync(registryPath, "utf8")) as {
+    builtSceneNames?: string[];
+  };
+  const builtFromRegistry = registry.builtSceneNames ?? [];
+  const sceneNames = sceneFiles.map((file) => path.basename(file, ".scene")).sort();
+  const sceneMapPath = path.join(repoRoot, "src", "ui", "sceneMap.ts");
+  const sceneMapSource = fs.existsSync(sceneMapPath) ? fs.readFileSync(sceneMapPath, "utf8") : "";
+  const registryMismatch = sceneNames.filter((name) => !builtFromRegistry.includes(name));
+  const sceneMapMismatch = sceneNames.filter((name) => !sceneMapSource.includes(`"${name}"`));
+
+  const ok =
+    sceneMapSource.includes("BUILT_SCENE_NAMES") &&
+    registryMismatch.length === 0 &&
+    sceneMapMismatch.length === 0;
+  return {
+    id: "built-scene-gate",
+    ok,
+    detail: ok
+      ? `built scenes gated: ${sceneNames.join(", ")}`
+      : `sync sceneMap/registry with scenes (registry: ${registryMismatch.join(", ") || "none"}; sceneMap: ${sceneMapMismatch.join(", ") || "none"})`
+  };
 }
 
 function findSceneAssets(cocosRoot: string): string[] {

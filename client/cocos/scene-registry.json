@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "builtSceneNames": ["CityDetail"],
   "scenes": [
     {
       "screenId": "screen_main_menu",

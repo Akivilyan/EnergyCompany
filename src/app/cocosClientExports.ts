@@ -50,6 +50,7 @@ export {
 } from "../sim/config/configBundle.js";
 export { ConfigRepo } from "../sim/config/configRepo.js";
 export type { SceneHost } from "../ui/sceneHost.js";
+export { BUILT_SCENE_NAMES, isBuiltScene } from "../ui/sceneMap.js";
 export type { ScreenId } from "../ui/types.js";
 export {
   DEFAULT_LOCALE,

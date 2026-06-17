@@ -17,12 +17,15 @@ describe("GameSceneBridge", () => {
     expect(host.history).toHaveLength(1);
   });
 
-  it("maps navigation to cocos scene names", () => {
+  it("keeps physical scene on CityDetail when company screen is unbuilt", () => {
     const host = new LoggingSceneHost();
     const bridge = createGameSceneBridge(createGameShell(createGameAppFromRepo({ repoRoot })), host);
     bridge.openScreen("screen_company");
-    expect(host.getCurrentScene()).toBe(SCREEN_SCENE_MAP.screen_company);
+    expect(bridge.getNavigation().currentScreen).toBe("screen_company");
+    expect(host.getCurrentScene()).toBe(SCREEN_SCENE_MAP.screen_city_detail);
+    expect(host.history).toHaveLength(1);
     bridge.back();
+    expect(bridge.getNavigation().currentScreen).toBe("screen_city_detail");
     expect(host.getCurrentScene()).toBe(SCREEN_SCENE_MAP.screen_city_detail);
   });
 
