@@ -4,8 +4,8 @@
 
 ## 当前阶段
 
-- 当前主线：`T51` 微信小游戏构建与真机冒烟
-- 当前协作收口：文档体系压缩、规则入口收敛、旧 Cursor 规则体系退场
+- 当前主线：开发准备
+- 当前协作收口：当前产品真相、阶段完成定义与主看板状态回写
 - 开发原则：先保证可玩闭环与边界稳定，再做数值精调
 
 ## 必看入口
@@ -13,6 +13,7 @@
 | 用途 | 文件 |
 |------|------|
 | 硬约束 | `AGENTS.md` |
+| 当前产品真相 | `docs/design/current-product-truth.md` |
 | Codex 协作规则 | `docs/design/engineering/codex-project-rules.md` |
 | 当前任务与近期进展 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
 | 设计总览 | `docs/design/README.md` |
@@ -56,6 +57,7 @@ npm run verify:client
 ## 协作入口
 
 - 开新会话先读 `AGENTS.md`
+- 涉及“当前版本到底做到哪、什么算阶段完成”时读 `docs/design/current-product-truth.md`
 - 涉及实现边界、验证选择、微信排障时读 `docs/design/engineering/codex-project-rules.md`
 - 涉及当前状态与下一步时读 `docs/design/engineering/PROJECT-TASK-BOARD.md`
 

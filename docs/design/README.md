@@ -25,6 +25,7 @@
 
 | 用途 | 文件 |
 |------|------|
+| 当前产品真相 | `current-product-truth.md` |
 | 文档规范 | `META.md` |
 | 旧文档映射 | `LEGACY.md` |
 | 设计阶段摘要 | `TASK-LIST.md` |
@@ -34,4 +35,5 @@
 
 - 旧 `docs/*.md` 仅保留为历史参考
 - 当前开发不再依赖设计迁移任务流程
+- 判断“当前版本做到哪、什么算阶段完成”时，优先看 `current-product-truth.md`
 - 若设计文档与旧记录冲突，以 `docs/design/` 当前文档为准

@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.1.0
+version: 0.2.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -163,6 +163,12 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 5. **广告**：激励视频仍为 stub；真机接 WeChat 广告需替换 `RewardedAdProvider`（见 `engineering/stack.md`）
 6. **语言**：预览 URL `?locale=en` 或 `localStorage` 键 `energy-company.locale`
 
+### 当前状态
+
+- `T51` 已按既有工作历史与当前复核视为完成
+- 本页保留为后续再次构建、联调、回归和发布前自检的操作入口
+- 若后续出现新的真机回归问题，应追加到 `PROJECT-TASK-BOARD.md` 与本页，而不是回退 `T51` 的完成事实
+
 ---
 
 ## 变更记录
@@ -171,5 +177,6 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 | 版本    | 日期         | 说明                                   |
 | ----- | ---------- | ------------------------------------ |
 | 0.1.0 | 2026-05-30 | T50-02 初版：最小 CityDetail 场景清单与单场景导航说明 |
+| 0.2.0 | 2026-06-17 | 补充 T51 当前状态说明，明确本页作为后续构建与联调入口继续保留 |
 
 

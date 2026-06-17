@@ -28,7 +28,7 @@ open_questions:
 - 项目形态：微信小游戏客户端 + 纯 TS 模拟核心
 - 规则真理：`src/sim/`
 - 架构主线：`ui/cocos -> modules -> sim <- config`
-- 当前阶段：`T51` 微信小游戏构建与真机冒烟
+- 当前阶段：开发准备
 - 当前协作结果：文档入口已收敛，项目规则不再依赖旧 Cursor 规则目录
 
 ## 2. 必读文件
@@ -36,6 +36,7 @@ open_questions:
 | 用途 | 文件 |
 |------|------|
 | 硬约束 | `AGENTS.md` |
+| 当前产品真相 | `docs/design/current-product-truth.md` |
 | 协作规则 | `docs/design/engineering/codex-project-rules.md` |
 | 当前任务 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
@@ -61,6 +62,7 @@ open_questions:
 
 ## 5. 当前风险
 
+- 当前阶段的主要风险不是工程闭环缺失，而是设计真相、阶段真相和开发目标若继续漂移，会再次拖慢实现判断
 - 月结步骤顺序的文档口径仍需后续再统一
 - 当前客户端仍偏开发 HUD，不是最终 UI 资源形态
 - 微信激励广告仍是 stub / 预研接入状态
@@ -69,8 +71,9 @@ open_questions:
 
 1. 看 `git status --short`
 2. 读 `AGENTS.md`
-3. 读 `PROJECT-TASK-BOARD.md`
-4. 按任务决定是否补读 `architecture.md` 或 `cocos-client-setup.md`
+3. 读 `current-product-truth.md`
+4. 读 `PROJECT-TASK-BOARD.md`
+5. 按任务决定是否补读 `architecture.md` 或 `cocos-client-setup.md`
 
 ## 变更记录
 

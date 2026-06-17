@@ -24,10 +24,11 @@ open_questions: []
 新会话默认按这个顺序读取：
 
 1. `AGENTS.md`
-2. `docs/design/engineering/PROJECT-TASK-BOARD.md`
-3. `docs/design/engineering/architecture.md`
-4. `docs/design/engineering/cocos-client-setup.md`（仅 Cocos / 微信相关）
-5. `docs/design/engineering/codex-handoff.md`（需要更完整工程上下文时）
+2. `docs/design/current-product-truth.md`
+3. `docs/design/engineering/PROJECT-TASK-BOARD.md`
+4. `docs/design/engineering/architecture.md`
+5. `docs/design/engineering/cocos-client-setup.md`（仅 Cocos / 微信相关）
+6. `docs/design/engineering/codex-handoff.md`（需要更完整工程上下文时）
 
 ## 2. 架构边界速查
 
@@ -113,6 +114,7 @@ infra 通过端口注入
 
 | 用途 | 文件 |
 |------|------|
+| 当前版本真相 | `docs/design/current-product-truth.md` |
 | 当前状态 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
 | 实现拆条 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
 | 设计总览 | `docs/design/README.md` |
