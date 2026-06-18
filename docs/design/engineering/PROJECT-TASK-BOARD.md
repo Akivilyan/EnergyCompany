@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.0.0
+version: 1.1.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -67,6 +67,7 @@ open_questions: []
 | 2026-06-18 | `T51` 真机截图反馈：修复公司页 HUD 上半区文案重叠，收敛公司/区域/科技页提示行数，并让 Cocos 文本在固定区域内缩小而不是扩高覆盖 | `src/app/clientHudDisplay.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 构建链路修正：定位到微信工具仍在跑旧 `build/wechatgame` 产物，新增 `verify:client` 对微信包内 `CityHudPanel` 过期编译的检测，并补清缓存重建说明 | `src/app/cocosHudCloseCheck.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` 通过；`cmd.exe /c npm run verify:client` 预期失败并提示 `wechat-build:fresh-city-hud-panel`，需清理 Cocos 缓存后重建微信包 |
 | 2026-06-18 | `T51` 微信半包诊断：确认新工作区路径正确，但 Cocos 3.8.8 本次构建日志出现 `SIGTERM in task build-script` 后仍误报 success，实际缺 `src/polyfills.bundle.js`、`src/system.bundle.js`、`src/import-map.js`；新增启动模块完整性检测 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 预期失败并提示 `wechat-build:startup-modules` |
+| 2026-06-18 | `T51` 半包诊断收紧：确认项目历史上可正常构建并真机运行，当前问题收敛为 Codex 工作区最近一次 Cocos 构建被 `SIGTERM` 打断后留下半包；`verify:client` 增加最新微信构建日志检查 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 预期失败并同时提示 `wechat-build:last-build-log` 与 `wechat-build:startup-modules` |
 
 ## 6. 阶段摘要
 
@@ -90,3 +91,4 @@ open_questions: []
 | 0.8.0 | 2026-06-18 | 补记 `T51` 真机截图反馈：公司页 HUD 上半区重叠修复 |
 | 0.9.0 | 2026-06-18 | 补记 `T51` 构建链路修正：检测微信包旧编译产物 |
 | 1.0.0 | 2026-06-18 | 补记 `T51` 微信半包诊断：检测 `game.js` 启动模块缺失 |
+| 1.1.0 | 2026-06-18 | 补记 `T51` 半包诊断收紧：检测最新 Cocos 构建日志 SIGTERM |

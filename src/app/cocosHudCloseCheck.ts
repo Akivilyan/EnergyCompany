@@ -69,6 +69,47 @@ function checkWechatBuildStartupModules(repoRoot: string): CocosHudCloseCheckIte
   };
 }
 
+function checkLatestWechatBuildLog(repoRoot: string): CocosHudCloseCheckItem {
+  const logDir = path.join(resolveClientCocosRoot(repoRoot), "temp", "builder", "log");
+  if (!fs.existsSync(logDir)) {
+    return {
+      id: "wechat-build:last-build-log",
+      ok: true,
+      detail: "Cocos builder log not present; skipped"
+    };
+  }
+
+  const logNames: string[] = fs
+    .readdirSync(logDir)
+    .filter((name: string) => /^wechatgame.*\.log$/i.test(name));
+  const logs: Array<{ name: string; filePath: string; modifiedMs: number }> = logNames
+    .map((name: string) => {
+      const filePath = path.join(logDir, name);
+      return { name, filePath, modifiedMs: fs.statSync(filePath).mtimeMs };
+    })
+    .sort((a, b) => b.modifiedMs - a.modifiedMs);
+  const latest = logs[0];
+  if (!latest) {
+    return {
+      id: "wechat-build:last-build-log",
+      ok: true,
+      detail: "wechat build log not present; skipped"
+    };
+  }
+
+  const source = fs.readFileSync(latest.filePath, "utf8");
+  const terminatedBuildScript =
+    source.includes("SIGTERM in task build-script") ||
+    source.includes("Exit process with code:null, signal:SIGTERM in task build-script");
+  return {
+    id: "wechat-build:last-build-log",
+    ok: !terminatedBuildScript,
+    detail: terminatedBuildScript
+      ? `${latest.name}: build-script was terminated by SIGTERM; Cocos may still report success while leaving a half-built WeChat package`
+      : `${latest.name}: no build-script SIGTERM found`
+  };
+}
+
 function checkWechatBuildFreshness(repoRoot: string): CocosHudCloseCheckItem {
   const indexPath = path.join(
     resolveClientCocosRoot(repoRoot),
@@ -139,6 +180,7 @@ export function runCocosHudCloseStaticChecks(
     });
   }
   if (options.withWechatBuildFreshness) {
+    checks.push(checkLatestWechatBuildLog(repoRoot));
     checks.push(checkWechatBuildStartupModules(repoRoot));
     checks.push(checkWechatBuildFreshness(repoRoot));
   }

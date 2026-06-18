@@ -44,6 +44,40 @@ describe("cocosHudCloseCheck", () => {
     expect(complete?.ok).toBe(true);
   });
 
+  it("reports terminated Cocos build-script from the latest WeChat build log", () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-wechat-log-"));
+    const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
+    const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
+    fs.mkdirSync(scriptsDir, { recursive: true });
+    fs.mkdirSync(logDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(scriptsDir, "CityHudPanel.ts"),
+      "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
+      "utf8"
+    );
+
+    const failedLog = path.join(logDir, "wechatgame2026-6-18 13-11.log");
+    fs.writeFileSync(
+      failedLog,
+      "Error: Exit process with code:null, signal:SIGTERM in task build-script",
+      "utf8"
+    );
+    const failed = runCocosHudCloseStaticChecks(tempRoot, {
+      withWechatBuildFreshness: true
+    }).find((item) => item.id === "wechat-build:last-build-log");
+    expect(failed?.ok).toBe(false);
+    expect(failed?.detail).toContain("SIGTERM");
+
+    const okLog = path.join(logDir, "wechatgame2026-6-18 13-20.log");
+    fs.writeFileSync(okLog, "build success", "utf8");
+    const now = new Date(Date.now() + 1000);
+    fs.utimesSync(okLog, now, now);
+    const passed = runCocosHudCloseStaticChecks(tempRoot, {
+      withWechatBuildFreshness: true
+    }).find((item) => item.id === "wechat-build:last-build-log");
+    expect(passed?.ok).toBe(true);
+  });
+
   it("keeps pending disaster modal across hide and remount", () => {
     const result = runCocosHudClose(repoRoot, {
       withPersistence: true,

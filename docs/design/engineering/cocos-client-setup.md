@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.4.0
+version: 0.5.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -167,8 +167,9 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 
 ### 当前状态
 
-- 当前只可确认：微信工具路径已指向 `client/cocos/build/wechatgame`；最近一次 Cocos 构建日志误报 success，但实际产物是缺启动脚本的半包
-- `npm run verify:client` 会检查 `game.js` 引用的启动模块是否真实存在；若报 `wechat-build:startup-modules`，不要继续打开微信工具调试
+- 历史事实：该项目在同一 Cocos 3.8.8 / 微信小游戏链路下曾正常构建并真机运行；当前问题不是项目整体不能构建
+- 当前 Codex 工作区状态：微信工具路径已指向 `client/cocos/build/wechatgame`；最近一次 Cocos 构建日志误报 success，但实际产物是缺启动脚本的半包
+- `npm run verify:client` 会检查最新微信构建日志和 `game.js` 引用的启动模块是否真实存在；若报 `wechat-build:last-build-log` 或 `wechat-build:startup-modules`，不要继续打开微信工具调试
 - `T51` 仍未完成，原因是真机构建/冒烟链路尚未恢复到可启动闭环
 - 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
@@ -183,5 +184,6 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 | 0.2.0 | 2026-06-17 | 补充 T51 当前状态说明，明确本页作为后续构建与联调入口继续保留 |
 | 0.3.0 | 2026-06-17 | 按用户纠偏修正 T51 状态：已跑起但仍有真机问题待修 |
 | 0.4.0 | 2026-06-18 | 补记微信半包诊断：`verify:client` 检查 `game.js` 启动脚本依赖是否完整 |
+| 0.5.0 | 2026-06-18 | 明确历史构建可用，当前验证只拦截 Codex 工作区这次 SIGTERM 后留下的半包 |
 
 
