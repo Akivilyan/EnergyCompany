@@ -47,14 +47,17 @@ describe("cocosHudCloseCheck", () => {
   it("reports terminated Cocos build-script from the latest WeChat build log", () => {
     const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-wechat-log-"));
     const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
+    const buildRoot = path.join(tempRoot, "client", "cocos", "build", "wechatgame");
     const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
     fs.mkdirSync(scriptsDir, { recursive: true });
+    fs.mkdirSync(buildRoot, { recursive: true });
     fs.mkdirSync(logDir, { recursive: true });
     fs.writeFileSync(
       path.join(scriptsDir, "CityHudPanel.ts"),
       "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
       "utf8"
     );
+    fs.writeFileSync(path.join(buildRoot, "game.js"), "require('./web-adapter');", "utf8");
 
     const failedLog = path.join(logDir, "wechatgame2026-6-18 13-11.log");
     fs.writeFileSync(
@@ -76,6 +79,30 @@ describe("cocosHudCloseCheck", () => {
       withWechatBuildFreshness: true
     }).find((item) => item.id === "wechat-build:last-build-log");
     expect(passed?.ok).toBe(true);
+  });
+
+  it("ignores stale terminated build logs when the WeChat package was deleted", () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-stale-log-"));
+    const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
+    const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
+    fs.mkdirSync(scriptsDir, { recursive: true });
+    fs.mkdirSync(logDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(scriptsDir, "CityHudPanel.ts"),
+      "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
+      "utf8"
+    );
+    fs.writeFileSync(
+      path.join(logDir, "wechatgame2026-6-18 13-11.log"),
+      "Error: Exit process with code:null, signal:SIGTERM in task build-script",
+      "utf8"
+    );
+
+    const check = runCocosHudCloseStaticChecks(tempRoot, {
+      withWechatBuildFreshness: true
+    }).find((item) => item.id === "wechat-build:last-build-log");
+    expect(check?.ok).toBe(true);
+    expect(check?.detail).toContain("wechat build not present");
   });
 
   it("keeps pending disaster modal across hide and remount", () => {

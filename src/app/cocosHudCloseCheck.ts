@@ -70,7 +70,17 @@ function checkWechatBuildStartupModules(repoRoot: string): CocosHudCloseCheckIte
 }
 
 function checkLatestWechatBuildLog(repoRoot: string): CocosHudCloseCheckItem {
-  const logDir = path.join(resolveClientCocosRoot(repoRoot), "temp", "builder", "log");
+  const cocosRoot = resolveClientCocosRoot(repoRoot);
+  const gamePath = path.join(cocosRoot, "build", "wechatgame", "game.js");
+  if (!fs.existsSync(gamePath)) {
+    return {
+      id: "wechat-build:last-build-log",
+      ok: true,
+      detail: "wechat build not present; skipped"
+    };
+  }
+
+  const logDir = path.join(cocosRoot, "temp", "builder", "log");
   if (!fs.existsSync(logDir)) {
     return {
       id: "wechat-build:last-build-log",
