@@ -21,6 +21,54 @@ export interface CocosHudCloseStaticCheckOptions {
   withWechatBuildFreshness?: boolean;
 }
 
+function resolveWechatRequirePath(buildRoot: string, request: string): string | null {
+  if (request.startsWith("./") || request.startsWith("../")) {
+    const resolved = path.resolve(buildRoot, request);
+    return path.extname(resolved) ? resolved : `${resolved}.js`;
+  }
+  if (request.startsWith("src/")) {
+    return path.join(buildRoot, request);
+  }
+  return null;
+}
+
+function checkWechatBuildStartupModules(repoRoot: string): CocosHudCloseCheckItem {
+  const buildRoot = path.join(resolveClientCocosRoot(repoRoot), "build", "wechatgame");
+  const gamePath = path.join(buildRoot, "game.js");
+  if (!fs.existsSync(gamePath)) {
+    return {
+      id: "wechat-build:startup-modules",
+      ok: true,
+      detail: "wechat build not present; skipped"
+    };
+  }
+
+  const source = fs.readFileSync(gamePath, "utf8");
+  const requireRequests: string[] = [];
+  for (const match of source.matchAll(/require\(\s*["']([^"']+)["']\s*\)/g)) {
+    requireRequests.push(match[1] ?? "");
+  }
+  const requiredPaths = requireRequests
+    .filter((request) => request.length > 0)
+    .map((request) => ({
+      request,
+      filePath: resolveWechatRequirePath(buildRoot, request)
+    }))
+    .filter((item): item is { request: string; filePath: string } => item.filePath !== null);
+
+  const missing = requiredPaths.filter((item) => !fs.existsSync(item.filePath));
+  return {
+    id: "wechat-build:startup-modules",
+    ok: missing.length === 0,
+    detail:
+      missing.length === 0
+        ? `wechat startup modules present (${requiredPaths.length} require calls)`
+        : `missing startup module(s): ${missing
+            .map((item) => item.request)
+            .join(", ")}; Cocos reported a half-built WeChat package, clear build/wechatgame and rebuild after script compilation finishes`
+  };
+}
+
 function checkWechatBuildFreshness(repoRoot: string): CocosHudCloseCheckItem {
   const indexPath = path.join(
     resolveClientCocosRoot(repoRoot),
@@ -91,6 +139,7 @@ export function runCocosHudCloseStaticChecks(
     });
   }
   if (options.withWechatBuildFreshness) {
+    checks.push(checkWechatBuildStartupModules(repoRoot));
     checks.push(checkWechatBuildFreshness(repoRoot));
   }
 

@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.3.0
+version: 0.4.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -118,6 +118,7 @@ npm run check:cocos-preview
 | loadScene Company failed | 正常；创建对应场景或忽略（单场景模式）                                  |
 | 预览全黑、无任何字               | 看 Console 是否有 `[GameRoot] mounted`；无则配置未加载成功。改脚本后保存并等底部 **Quick Compile** 完成再预览 |
 | `import-map.json` ENOENT   | 关编辑器 → 删 `client/cocos/temp` 与 `library` → 重开工程 → 等编译完成再播放 |
+| 微信工具报 `module 'src/polyfills.bundle.js' is not defined` | 当前 `build/wechatgame` 是半包：`game.js` 已引用启动脚本，但 `src/polyfills.bundle.js`、`src/system.bundle.js`、`src/import-map.js` 未产出。先关微信工具与 Cocos，删除 `client/cocos/build/wechatgame`，重开 Cocos 等脚本编译完成，再重新构建微信小游戏；构建后先跑 `npm run verify:client`，必须没有 `wechat-build:startup-modules` 失败再打开微信工具 |
 | 改 TS 后预览不更新              | **开发者 → 重新加载**（Ctrl+R），或 **开发者 → 缓存 → 清除代码缓存**；无「重新编译脚本」菜单（3.8.8 正常） |
 | 浏览器 F12 只有引擎日志、没有 `[GameRoot]` | 正常：`cc.log` 默认在 **Cocos 编辑器 → Console**。预览页调试级别选 **Info For Web Page**，或看 F12 里 `console.warn`（脚本已双写）。须在编辑器点 **播放** 且保持预览页打开 |
 | 一直 Loading、顶栏不变 | 看是否变成 **Config load failed**；根目录执行 `npm run build:client` 后回 Cocos 保存场景再播放 |
@@ -166,8 +167,9 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 
 ### 当前状态
 
-- 当前只可确认：已能构建微信小游戏包，且已在真机上跑起
-- `T51` 仍未完成，原因是真机仍有待修问题
+- 当前只可确认：微信工具路径已指向 `client/cocos/build/wechatgame`；最近一次 Cocos 构建日志误报 success，但实际产物是缺启动脚本的半包
+- `npm run verify:client` 会检查 `game.js` 引用的启动模块是否真实存在；若报 `wechat-build:startup-modules`，不要继续打开微信工具调试
+- `T51` 仍未完成，原因是真机构建/冒烟链路尚未恢复到可启动闭环
 - 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
 ---
@@ -180,5 +182,6 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 | 0.1.0 | 2026-05-30 | T50-02 初版：最小 CityDetail 场景清单与单场景导航说明 |
 | 0.2.0 | 2026-06-17 | 补充 T51 当前状态说明，明确本页作为后续构建与联调入口继续保留 |
 | 0.3.0 | 2026-06-17 | 按用户纠偏修正 T51 状态：已跑起但仍有真机问题待修 |
+| 0.4.0 | 2026-06-18 | 补记微信半包诊断：`verify:client` 检查 `game.js` 启动脚本依赖是否完整 |
 
 
