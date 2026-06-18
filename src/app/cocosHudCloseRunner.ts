@@ -46,14 +46,20 @@ interface PersistenceSmokeResult {
 
 export function runCocosHudClose(
   repoRoot: string,
-  options: { withPersistence: boolean; withInitPreflight: boolean }
+  options: {
+    withPersistence: boolean;
+    withInitPreflight: boolean;
+    withWechatBuildFreshness?: boolean;
+  }
 ): CocosHudCloseResult {
   const sharedEntry = path.join(resolveClientSharedDir(repoRoot), "game-client.mjs");
   if (!fs.existsSync(sharedEntry)) {
     execSync("npm run build:client", { stdio: "inherit", cwd: repoRoot });
   }
 
-  const staticChecks = runCocosHudCloseStaticChecks(repoRoot);
+  const staticChecks = runCocosHudCloseStaticChecks(repoRoot, {
+    withWechatBuildFreshness: options.withWechatBuildFreshness ?? false
+  });
   if (options.withInitPreflight) {
     const initSummary = summarizeCocosInitChecks(runCocosInitChecks(repoRoot));
     if (initSummary.blockingFailed.length > 0) {

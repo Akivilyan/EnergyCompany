@@ -55,7 +55,7 @@ npm run check:cocos-preview
 | 工程路径 | 仓库内 **`client/cocos`**（含 `package.json` 的目录；不要选到 `client` 上一层） |
 | 工程骨架 | 已含 `package.json`、`settings/`、`.creator/`；**不要**在 Dashboard 新建空项目代替 |
 | 首次打开 | 编辑器会自动生成 `library/`、`temp/`（已在 `.gitignore`，勿提交） |
-| 同步   | 每次拉代码或改 `src/` 后 `npm run`执行 `build:client`               |
+| 同步   | 每次拉代码或改 `src/` 后执行 `npm run build:client`；改 `client/cocos/assets/scripts/*.ts` 后还必须让 Cocos 重新编译脚本并重新构建微信小游戏 |
 
 
 ---
@@ -124,6 +124,7 @@ npm run check:cocos-preview
 | Console 刷屏 `CityDetail is already being loaded` | 已修：`CocosSceneHost` 在**当前场景同名**时不再 `loadScene`；去掉 `addPersistRootNode`（Canvas 子节点不能常驻根） |
 | `game-client.mjs.map.meta is not exist` | 正常：`build:client` 不再生成 `.map`；若仍报错，删 `assets/shared/*.map*` 后重跑 `npm run build:client`，再在 Cocos 里 **资源 → 刷新** |
 | 微信模拟器 `URLSearchParams is not defined` | 已修：`previewLocale` 不依赖 URLSearchParams；改 `src/` 后 `npm run build:client` 再 **构建微信小游戏** |
+| 改了 `CityHudPanel.ts` 但微信工具界面没变化 | `npm run build:client` 只同步 `assets/shared/game-client.mjs`，不会重编 Cocos 脚本。关闭微信开发者工具与 Cocos，删除 `client/cocos/temp`、`client/cocos/library`、`client/cocos/build/wechatgame`，重开 Cocos 等脚本编译完成，再重新构建微信小游戏。`npm run verify:client` 若报 `wechat-build:fresh-city-hud-panel`，说明微信包仍是旧编译产物 |
 | 按钮无反应                    | 确认 Console 有 `[GameRoot] mounted`；检查 Canvas 有 Camera |
 | 推月后出现「知道了」按钮            | 灾害全屏确认（T50-06）；顶栏会显示待确认标题，点 **知道了** 清除 pending |
 | 导航条 **区域** + **铺线**        | 需公司 **2 级**（可先公司屏借贷/推月或科技屏升到 II）；区域屏点 **铺线** 排队 `CITY-START → CITY-MAP01-02` |

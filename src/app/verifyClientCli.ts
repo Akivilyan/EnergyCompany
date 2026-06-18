@@ -15,7 +15,8 @@ let result;
 try {
   result = runCocosHudClose(repoRoot, {
     withPersistence: true,
-    withInitPreflight: true
+    withInitPreflight: true,
+    withWechatBuildFreshness: true
   });
 } catch (error) {
   console.log(error instanceof Error ? error.message : String(error));

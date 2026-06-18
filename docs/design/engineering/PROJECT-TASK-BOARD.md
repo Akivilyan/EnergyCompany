@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 0.8.0
+version: 0.9.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -65,6 +65,7 @@ open_questions: []
 | 2026-06-18 | `T51` 子步骤：补开发 HUD 能力门控，未解锁时隐藏区域铺线与科技操作按钮，避免真机出现“功能未开但按钮仍显示/可点”的误导反馈 | `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/clientHudDisplay.test.ts` `tests/app/clientHudCapabilities.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 子步骤：把“灾害待确认时切后台，再进入后仍保留弹层且可确认”纳入客户端聚合验证，锁住灾害月冒烟与 `onHide` 存档恢复的交叉风险 | `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `src/app/clientSyncSpikeCli.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 真机截图反馈：修复公司页 HUD 上半区文案重叠，收敛公司/区域/科技页提示行数，并让 Cocos 文本在固定区域内缩小而不是扩高覆盖 | `src/app/clientHudDisplay.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-18 | `T51` 构建链路修正：定位到微信工具仍在跑旧 `build/wechatgame` 产物，新增 `verify:client` 对微信包内 `CityHudPanel` 过期编译的检测，并补清缓存重建说明 | `src/app/cocosHudCloseCheck.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` 通过；`cmd.exe /c npm run verify:client` 预期失败并提示 `wechat-build:fresh-city-hud-panel`，需清理 Cocos 缓存后重建微信包 |
 
 ## 6. 阶段摘要
 
@@ -86,3 +87,4 @@ open_questions: []
 | 0.6.0 | 2026-06-18 | 补记 `T51` 子步骤：开发 HUD 按真实解锁状态门控区域/科技按钮 |
 | 0.7.0 | 2026-06-18 | 补记 `T51` 子步骤：客户端验证覆盖灾害待确认切后台恢复 |
 | 0.8.0 | 2026-06-18 | 补记 `T51` 真机截图反馈：公司页 HUD 上半区重叠修复 |
+| 0.9.0 | 2026-06-18 | 补记 `T51` 构建链路修正：检测微信包旧编译产物 |
