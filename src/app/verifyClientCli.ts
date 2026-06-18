@@ -31,11 +31,15 @@ for (const item of result.smokeSteps) {
 console.log(
   `[${result.persistenceOk ? "OK" : "FAIL"}] t49-persistence | ${result.persistenceDetail}`
 );
+console.log(
+  `[${result.eventResumeOk ? "OK" : "FAIL"}] t51-event-resume | ${result.eventResumeDetail}`
+);
 
 const failed =
   result.staticChecks.some((item) => !item.ok) ||
   result.smokeSteps.some((item) => !item.ok) ||
-  !result.persistenceOk;
+  !result.persistenceOk ||
+  !result.eventResumeOk;
 if (failed) {
   process.exit(1);
 }

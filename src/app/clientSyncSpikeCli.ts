@@ -26,6 +26,9 @@ for (const item of result.smokeSteps) {
 console.log(
   `[${result.persistenceOk ? "OK" : "FAIL"}] t49-persistence | ${result.persistenceDetail}`
 );
-if (!result.persistenceOk) {
+console.log(
+  `[${result.eventResumeOk ? "OK" : "FAIL"}] t51-event-resume | ${result.eventResumeDetail}`
+);
+if (!result.persistenceOk || !result.eventResumeOk) {
   process.exit(1);
 }
