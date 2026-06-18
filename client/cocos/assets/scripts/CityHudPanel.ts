@@ -260,7 +260,7 @@ export class CityHudPanel extends Component {
     label.color = new Color(245, 245, 245, 255);
     label.horizontalAlign = HorizontalTextAlignment.CENTER;
     label.verticalAlign = VerticalTextAlignment.CENTER;
-    label.overflow = Overflow.RESIZE_HEIGHT;
+    label.overflow = Overflow.SHRINK;
     label.enableWrapText = true;
     return label;
   }

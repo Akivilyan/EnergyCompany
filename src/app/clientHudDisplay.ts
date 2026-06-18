@@ -53,7 +53,6 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   });
   const statusLines = hudLines(
     t("hud.line.company_header", { level: s.companyLevel }),
-    svLine,
     t("hud.line.funds", { funds: s.funds }),
     t("hud.line.ads_remaining", { ads: s.adsRemaining })
   );
@@ -84,7 +83,6 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   });
   const statusLines = hudLines(
     t("hud.line.region_header", { level: s.companyLevel }),
-    t("hud.line.funds", { funds: s.funds }),
     t("hud.line.cities_unlocked", { cities: unlockedCities })
   );
   const detailLines = hudLines(
@@ -177,11 +175,7 @@ export function buildClientHudDisplay(
   }
 
   if (screen === "screen_company" || screen === "screen_region" || screen === "screen_tech_tree") {
-    const navLines = hudLines(
-      t("hud.line.nav_screen", { screen: tScreenLabel(readCityHudViewModel(boot).screen) }),
-      t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length })
-    );
-    display.detailLines = hudLines(...navLines, ...display.detailLines, actionMessage);
+    display.detailLines = hudLines(...display.detailLines, actionMessage);
     display.detailLine = display.detailLines.join(" · ");
   } else if (actionMessage) {
     display.detailLines = hudLines(...display.detailLines, actionMessage);
