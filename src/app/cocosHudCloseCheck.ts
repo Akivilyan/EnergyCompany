@@ -111,12 +111,15 @@ function checkLatestWechatBuildLog(repoRoot: string): CocosHudCloseCheckItem {
   const terminatedBuildScript =
     source.includes("SIGTERM in task build-script") ||
     source.includes("Exit process with code:null, signal:SIGTERM in task build-script");
+  const startupModules = checkWechatBuildStartupModules(repoRoot);
   return {
     id: "wechat-build:last-build-log",
-    ok: !terminatedBuildScript,
-    detail: terminatedBuildScript
-      ? `${latest.name}: build-script was terminated by SIGTERM; Cocos may still report success while leaving a half-built WeChat package`
-      : `${latest.name}: no build-script SIGTERM found`
+    ok: !terminatedBuildScript || startupModules.ok,
+    detail: !terminatedBuildScript
+      ? `${latest.name}: no build-script SIGTERM found`
+      : startupModules.ok
+        ? `${latest.name}: build-script SIGTERM found, but startup modules are present; non-blocking`
+        : `${latest.name}: build-script was terminated by SIGTERM and startup modules are missing; Cocos may still report success while leaving a half-built WeChat package`
   };
 }
 

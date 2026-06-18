@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.6.0
+version: 0.7.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -168,9 +168,9 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 ### 当前状态
 
 - 历史事实：该项目在同一 Cocos 3.8.8 / 微信小游戏链路下曾正常构建并真机运行；当前问题不是项目整体不能构建
-- 当前 Codex 工作区状态：旧半包已删除，`npm run verify:client` 在没有 `build/wechatgame/game.js` 时会跳过旧构建日志，等待 Cocos 重新产包
-- `npm run verify:client` 会在微信包存在时检查最新微信构建日志和 `game.js` 引用的启动模块是否真实存在；若报 `wechat-build:last-build-log` 或 `wechat-build:startup-modules`，不要继续打开微信工具调试
-- `T51` 仍未完成，原因是真机构建/冒烟链路尚未恢复到可启动闭环
+- 当前 Codex 工作区状态：微信包已重新生成，`src/polyfills.bundle.js`、`src/system.bundle.js`、`src/import-map.js` 与 `assets/main/index.js` 均存在，`npm run verify:client` 通过
+- `npm run verify:client` 会在微信包存在时检查最新微信构建日志和 `game.js` 引用的启动模块是否真实存在；若日志里有 `SIGTERM` 但启动模块完整，该项记为非阻塞
+- `T51` 仍未完成，原因是微信开发者工具 Console 仍有运行期报错待确认
 - 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
 ---
@@ -186,5 +186,6 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
 | 0.4.0 | 2026-06-18 | 补记微信半包诊断：`verify:client` 检查 `game.js` 启动脚本依赖是否完整 |
 | 0.5.0 | 2026-06-18 | 明确历史构建可用，当前验证只拦截 Codex 工作区这次 SIGTERM 后留下的半包 |
 | 0.6.0 | 2026-06-18 | 修正旧构建日志检测：微信包已删除时不再用历史 SIGTERM 阻塞 `verify:client` |
+| 0.7.0 | 2026-06-18 | 修正构建日志判断：`SIGTERM` 不单独阻塞，启动模块完整时微信包验证通过 |
 
 

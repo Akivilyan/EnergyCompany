@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.2.0
+version: 1.3.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -69,6 +69,7 @@ open_questions: []
 | 2026-06-18 | `T51` 微信半包诊断：确认新工作区路径正确，但 Cocos 3.8.8 本次构建日志出现 `SIGTERM in task build-script` 后仍误报 success，实际缺 `src/polyfills.bundle.js`、`src/system.bundle.js`、`src/import-map.js`；新增启动模块完整性检测 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 预期失败并提示 `wechat-build:startup-modules` |
 | 2026-06-18 | `T51` 半包诊断收紧：确认项目历史上可正常构建并真机运行，当前问题收敛为 Codex 工作区最近一次 Cocos 构建被 `SIGTERM` 打断后留下半包；`verify:client` 增加最新微信构建日志检查 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 预期失败并同时提示 `wechat-build:last-build-log` 与 `wechat-build:startup-modules` |
 | 2026-06-18 | `T51` 验证门槛修正：删除旧 `build/wechatgame` 后，不再让历史 `SIGTERM` 日志阻塞 `verify:client`；后续只在微信包存在时检查最新构建日志与启动模块完整性 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-18 | `T51` 微信包恢复：重新构建后启动模块与 `assets/main/index.js` 均已存在，`verify:client` 调整为 `SIGTERM` 仅在启动模块缺失时阻塞；当前转入微信开发者工具 Console 运行期报错排查 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -94,3 +95,4 @@ open_questions: []
 | 1.0.0 | 2026-06-18 | 补记 `T51` 微信半包诊断：检测 `game.js` 启动模块缺失 |
 | 1.1.0 | 2026-06-18 | 补记 `T51` 半包诊断收紧：检测最新 Cocos 构建日志 SIGTERM |
 | 1.2.0 | 2026-06-18 | 补记 `T51` 验证门槛修正：微信包不存在时跳过旧构建日志 |
+| 1.3.0 | 2026-06-18 | 补记 `T51` 微信包恢复：启动模块完整且 `verify:client` 通过 |
