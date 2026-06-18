@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.8.0
+version: 0.9.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -229,7 +229,9 @@ Console 红错：
 - 历史事实：该项目在同一 Cocos 3.8.8 / 微信小游戏链路下曾正常构建并真机运行；当前问题不是项目整体不能构建
 - 当前 Codex 工作区状态：微信包已重新生成，`src/polyfills.bundle.js`、`src/system.bundle.js`、`src/import-map.js` 与 `assets/main/index.js` 均存在，`npm run verify:client` 通过
 - `npm run verify:client` 会在微信包存在时检查最新微信构建日志和 `game.js` 引用的启动模块是否真实存在；若日志里有 `SIGTERM` 但启动模块完整，该项记为非阻塞
-- `T51` 仍未完成，原因是微信开发者工具 Console 仍有运行期报错待确认
+- 最新一次用户手工冒烟反馈：按钮主链路在真机与微信开发者工具上一致可用；日志里未见运行时崩溃，只看到 `conflict_in_progress`、`research_queue_full`、`loan_already_active` 这类预期业务拒绝日志
+- 真机上“关掉再开还保持上一次进度”是当前实现的预期行为，不是异常缓存：客户端默认会从 `slot-main` 自动读档，并在 `wx.onHide` 时自动存档
+- `T51` 仍未完成，但阻塞点已从“构建/半包”收敛为“是否还存在真正的运行期异常或残余 UX 误导”
 - 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
 ---
@@ -247,5 +249,6 @@ Console 红错：
 | 0.6.0 | 2026-06-18 | 修正旧构建日志检测：微信包已删除时不再用历史 SIGTERM 阻塞 `verify:client` |
 | 0.7.0 | 2026-06-18 | 修正构建日志判断：`SIGTERM` 不单独阻塞，启动模块完整时微信包验证通过 |
 | 0.8.0 | 2026-06-18 | 新增 T51 运行期冒烟用例与 Console 红错回传格式，转入运行期问题收集 |
+| 0.9.0 | 2026-06-18 | 补记一次真机/微信工具手工冒烟结果，明确当前“关掉再开保留进度”属于 `slot-main` 自动读档与 `onHide` 自动存档的预期行为 |
 
 

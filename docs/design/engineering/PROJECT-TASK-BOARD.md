@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.4.0
+version: 1.5.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -72,6 +72,7 @@ open_questions: []
 | 2026-06-18 | `T51` 验证门槛修正：删除旧 `build/wechatgame` 后，不再让历史 `SIGTERM` 日志阻塞 `verify:client`；后续只在微信包存在时检查最新构建日志与启动模块完整性 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 微信包恢复：重新构建后启动模块与 `assets/main/index.js` 均已存在，`verify:client` 调整为 `SIGTERM` 仅在启动模块缺失时阻塞；当前转入微信开发者工具 Console 运行期报错排查 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 运行期冒烟入口固化：把冷启动、公司升 2 级、区域/队列、月份推进、灾害确认、自动存档恢复整理成可直接执行的最小手工用例，并要求将微信开发者工具 Console 红错单独导出为文本日志 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
+| 2026-06-18 | `T51` 运行期反馈回写：用户确认真机与微信开发者工具主链路一致可跑，日志未见运行时崩溃；当前看到的 `conflict_in_progress` / `research_queue_full` / `loan_already_active` 属于预期业务拒绝，另将“关掉再开仍保留进度”明确为 `slot-main` 自动读档 + `onHide` 自动存档的预期表现 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -99,3 +100,4 @@ open_questions: []
 | 1.2.0 | 2026-06-18 | 补记 `T51` 验证门槛修正：微信包不存在时跳过旧构建日志 |
 | 1.3.0 | 2026-06-18 | 补记 `T51` 微信包恢复：启动模块完整且 `verify:client` 通过 |
 | 1.4.0 | 2026-06-18 | 补记 `T51` 运行期冒烟入口固化：整理最小手工用例与日志回传要求 |
+| 1.5.0 | 2026-06-18 | 补记 `T51` 运行期反馈回写：主链路可跑，日志所见为预期业务拒绝，自动续局属预期存档行为 |
