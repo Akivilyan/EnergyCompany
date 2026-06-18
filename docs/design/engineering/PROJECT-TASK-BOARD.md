@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.5.0
+version: 1.6.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -18,19 +18,19 @@ open_questions: []
 
 ## 1. 当前阶段
 
-- 当前阶段：`T51` 真机问题收口
-- 当前策略：先定位并修完真机遗留问题，再进入后续开发
+- 当前阶段：`FAST-01` Playable Demo 快线
+- 当前策略：冻结非阻塞小问题，把开发重心从 `vertical-slice-v0` 最小验证切到“更完整 demo 内容落地”
 
 ## 2. 当前任务
 
-- 任务 ID：`T51-CLOSE`
-- 标题：真机遗留问题收口（已构建并跑起，但尚未完成冒烟闭环）
+- 任务 ID：`FAST-01`
+- 标题：Playable Demo 快线落地（从 v0 最小裁剪闭环推进到更完整、可持续试玩的 demo）
 - 状态：`doing`
-- 开始时间：2026-06-17
+- 开始时间：2026-06-18
 - 完成定义：
-  - 明确当前真机问题清单
-  - 至少修完阻塞主链路的问题，并补对应验证
-  - 真机冒烟满足 `current-product-truth.md` 中的 `T51` 完成定义
+  - 不再被真机/微信工具的小问题阻塞主线
+  - 明确下一批要补齐的可玩内容范围，而不是继续停在最小验证态
+  - 至少形成一个可执行的后续开发批次：地图扩张、公司等级扩张、科技内容扩张、UI 正式化排期
 
 ## 3. 当前工程摘要
 
@@ -38,17 +38,18 @@ open_questions: []
 |------|------|
 | T45 P0 闭环 | done |
 | T48–T50 客户端装配与开发 HUD | done |
-| T51 真机构建与冒烟 | doing |
+| T51 真机构建与冒烟 | done |
+| FAST-01 Demo 快线 | doing |
 | OPS-01 文档与规则收敛 | done |
 | 开发前真相固化 | done |
 
 ## 4. 下一步
 
-1. 复核真机上的实际异常表现
-2. 按最小冒烟用例收集运行期 Console 红错
-3. 在代码和文档中建立最小问题清单
-4. 逐项修复并补验证
-5. `T51` 收口后再回到后续开发批次
+1. 把当前 v0 裁剪项与“更完整 demo”差距列清楚
+2. 先定下一批直接做的功能，不再把时间耗在非阻塞小问题上
+3. 优先推进地图、公司等级、科技内容和更长经营链路
+4. 保持最小验证持续可跑
+5. 正式 UI / SDK / 数值收敛放到后面批次
 
 ## 5. 近期日志
 
@@ -73,15 +74,17 @@ open_questions: []
 | 2026-06-18 | `T51` 微信包恢复：重新构建后启动模块与 `assets/main/index.js` 均已存在，`verify:client` 调整为 `SIGTERM` 仅在启动模块缺失时阻塞；当前转入微信开发者工具 Console 运行期报错排查 | `src/app/cocosHudCloseCheck.ts` `tests/app/cocosHudCloseCheck.test.ts` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test -- tests/app/cocosHudCloseCheck.test.ts` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | `T51` 运行期冒烟入口固化：把冷启动、公司升 2 级、区域/队列、月份推进、灾害确认、自动存档恢复整理成可直接执行的最小手工用例，并要求将微信开发者工具 Console 红错单独导出为文本日志 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
 | 2026-06-18 | `T51` 运行期反馈回写：用户确认真机与微信开发者工具主链路一致可跑，日志未见运行时崩溃；当前看到的 `conflict_in_progress` / `research_queue_full` / `loan_already_active` 属于预期业务拒绝，另将“关掉再开仍保留进度”明确为 `slot-main` 自动读档 + `onHide` 自动存档的预期表现 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-18 | 主线切换：结合最新真机反馈，确认当前瓶颈主要是 `vertical-slice-v0` 的内容裁剪，而不是阻塞性运行时故障；因此把主线从 `T51` 真机收口切到 `FAST-01` Playable Demo 快线，后续优先扩公司等级、地图区域、科技内容与更长经营链路 | `README.md` `docs/design/current-product-truth.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
 
 ## 6. 阶段摘要
 
 - `T45`：模拟核心、主要屏幕壳层、回归脚本、存档与广告 stub 已完成
 - `T48–T49`：应用装配、客户端挂载、配置同步、存档恢复已完成
 - `T50`：开发 HUD、导航、公司/科技/事件/区域入口已完成
-- `T51`：已完成构建路径与真机启动，但真机问题仍未收口，当前阶段继续停留在 `T51`
+- `T51`：已完成构建路径、真机启动与最小冒烟；后续若有真机专属问题按缺陷单处理
+- `FAST-01`：当前主线，目标是尽快把 demo 从 v0 最小裁剪态推进到更完整可玩内容
 - `OPS-01`：已完成协作入口、规则文档与历史归档收敛
-- 当前重点：基于真机实际问题推进修复，而不是提前切入后续开发
+- 当前重点：优先扩内容而不是继续打磨非阻塞小问题
 
 ## 变更记录
 
@@ -101,3 +104,4 @@ open_questions: []
 | 1.3.0 | 2026-06-18 | 补记 `T51` 微信包恢复：启动模块完整且 `verify:client` 通过 |
 | 1.4.0 | 2026-06-18 | 补记 `T51` 运行期冒烟入口固化：整理最小手工用例与日志回传要求 |
 | 1.5.0 | 2026-06-18 | 补记 `T51` 运行期反馈回写：主链路可跑，日志所见为预期业务拒绝，自动续局属预期存档行为 |
+| 1.6.0 | 2026-06-18 | 主线切换到 `FAST-01` Playable Demo 快线：真机不再作为统一阻塞项，优先推进内容扩张 |
