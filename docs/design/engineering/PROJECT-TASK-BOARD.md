@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.6.0
+version: 1.7.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -75,6 +75,7 @@ open_questions: []
 | 2026-06-18 | `T51` 运行期冒烟入口固化：把冷启动、公司升 2 级、区域/队列、月份推进、灾害确认、自动存档恢复整理成可直接执行的最小手工用例，并要求将微信开发者工具 Console 红错单独导出为文本日志 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
 | 2026-06-18 | `T51` 运行期反馈回写：用户确认真机与微信开发者工具主链路一致可跑，日志未见运行时崩溃；当前看到的 `conflict_in_progress` / `research_queue_full` / `loan_already_active` 属于预期业务拒绝，另将“关掉再开仍保留进度”明确为 `slot-main` 自动读档 + `onHide` 自动存档的预期表现 | `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-18 | 主线切换：结合最新真机反馈，确认当前瓶颈主要是 `vertical-slice-v0` 的内容裁剪，而不是阻塞性运行时故障；因此把主线从 `T51` 真机收口切到 `FAST-01` Playable Demo 快线，后续优先扩公司等级、地图区域、科技内容与更长经营链路 | `README.md` `docs/design/current-product-truth.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
+| 2026-06-18 | 工程清理：补充根目录 `.tmp/` 到 `.gitignore`，避免 Codex 临时文件继续污染工作区；本轮仅提交忽略规则与看板回写，不动用户当前未提交的 Cocos 本地设置改动 | `.gitignore` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程配置整理，无需跑测试 |
 
 ## 6. 阶段摘要
 
@@ -105,3 +106,4 @@ open_questions: []
 | 1.4.0 | 2026-06-18 | 补记 `T51` 运行期冒烟入口固化：整理最小手工用例与日志回传要求 |
 | 1.5.0 | 2026-06-18 | 补记 `T51` 运行期反馈回写：主链路可跑，日志所见为预期业务拒绝，自动续局属预期存档行为 |
 | 1.6.0 | 2026-06-18 | 主线切换到 `FAST-01` Playable Demo 快线：真机不再作为统一阻塞项，优先推进内容扩张 |
+| 1.7.0 | 2026-06-18 | 补记工程清理：忽略根目录 `.tmp/`，避免临时文件污染工作区 |
