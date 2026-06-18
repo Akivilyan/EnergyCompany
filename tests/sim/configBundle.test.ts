@@ -23,5 +23,6 @@ describe("buildConfigBundle", () => {
     const fromRecords = loadConfigRepoFromJsonDir(sliceDir);
     const fromSlice = loadTestConfig();
     expect(fromRecords.bundle.facilities.length).toBe(fromSlice.bundle.facilities.length);
+    expect(fromRecords.bundle.technologies.length).toBe(fromSlice.bundle.technologies.length);
   });
 });

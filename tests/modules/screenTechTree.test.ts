@@ -12,7 +12,7 @@ describe("ScreenTechTree", () => {
     const controller = createTestController(repoRoot);
     const screen = createScreenTechTree(controller);
 
-    const start = screen.startResearch("storage_system_1");
+    const start = screen.startResearch("wind_2");
     expect(start.result.ok).toBe(false);
     if (!start.result.ok) {
       expect(start.result.error).toBe("not_unlocked");
@@ -29,7 +29,7 @@ describe("ScreenTechTree", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(controller);
-    const start = screen.startResearch("storage_system_1");
+    const start = screen.startResearch("wind_2");
     expect(start.result.ok).toBe(true);
     const active = screen.getSnapshot().activeResearch;
     expect(active).not.toBeNull();
@@ -41,21 +41,21 @@ describe("ScreenTechTree", () => {
     expect(cancel.uiErrorCode).toBeNull();
     expect(cancel.uiCopy).toBeNull();
     expect(cancel.after.activeResearch).toBeNull();
-    expect(cancel.after.funds).toBe(cancel.before.funds + 60);
+    expect(cancel.after.funds).toBe(cancel.before.funds + 40);
   });
 
   it("research can complete to lit through monthly settle", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;
     const screen = createScreenTechTree(controller);
-    const start = screen.startResearch("storage_system_1");
+    const start = screen.startResearch("wind_2");
     expect(start.result.ok).toBe(true);
 
     const advance = controller.advanceMonths(3);
     expect(advance.failed).toBeNull();
     const after = screen.getSnapshot();
     expect(after.activeResearch).toBeNull();
-    expect(after.litTechIds).toContain("storage_system_1");
+    expect(after.litTechIds).toContain("wind_2");
   });
 
   it("maps speedup ad errors and success for UI", () => {
@@ -71,14 +71,14 @@ describe("ScreenTechTree", () => {
       actionKey: "tech_tree.action.start_research_first"
     });
 
-    const start = screen.startResearch("storage_system_1");
+    const start = screen.startResearch("wind_2");
     expect(start.result.ok).toBe(true);
     const speedup = screen.speedupResearchByAd();
     expect(speedup.result.ok).toBe(true);
     expect(speedup.uiErrorCode).toBeNull();
     expect(speedup.uiCopy).toBeNull();
     expect(speedup.after.activeResearch).toBeNull();
-    expect(speedup.after.litTechIds).toContain("storage_system_1");
+    expect(speedup.after.litTechIds).toContain("wind_2");
   });
 
   it("maps cancelled ad playback without consuming ads or lighting tech", () => {
@@ -88,14 +88,28 @@ describe("ScreenTechTree", () => {
       controller,
       new StubRewardedAdProvider({ kind: "always_cancel" })
     );
-    const start = screen.startResearch("storage_system_1");
+    const start = screen.startResearch("wind_2");
     expect(start.result.ok).toBe(true);
 
     const speedup = screen.speedupResearchByAd();
     expect(speedup.result.ok).toBe(false);
     expect(speedup.uiErrorCode).toBe("ad_not_completed");
     expect(speedup.after.activeResearch).not.toBeNull();
-    expect(speedup.after.litTechIds).not.toContain("storage_system_1");
+    expect(speedup.after.litTechIds).not.toContain("wind_2");
     expect(controller.state.adsRemaining).toBe(10);
+  });
+
+  it("exposes technology list snapshot with current unlock states", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenTechTree(controller);
+
+    const snapshot = screen.getSnapshot();
+    const wind2 = snapshot.technologies.find((item) => item.techId === "wind_2");
+    const storage1 = snapshot.technologies.find((item) => item.techId === "storage_system_1");
+
+    expect(wind2?.status).toBe("unlocked");
+    expect(wind2?.displayName).toBe("风电·II");
+    expect(storage1?.status).toBe("locked");
   });
 });

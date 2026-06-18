@@ -9,8 +9,6 @@ export interface DispatchOutput {
   state: GameState;
 }
 
-const RESEARCH_COST = 60;
-const RESEARCH_MONTHS = 3;
 const GRID_LINK_COST = 8;
 const GRID_LINK_BUILD_MONTHS = 1;
 const ONBOARDING_FLOW: GameState["onboardingCurrentStepId"][] = [
@@ -188,23 +186,42 @@ export function dispatch(
       break;
     }
     case "start_research": {
+      const tech = config.getTechnology(command.techId);
+      if (!tech) {
+        return err("not_found", "technology not found");
+      }
       if (next.companyLevel < 2) {
         return err("not_unlocked", "research is unlocked from company level II");
+      }
+      if (next.companyLevel < tech.company_level_min) {
+        return err("not_unlocked", "technology not unlocked for current company level", {
+          company_level: next.companyLevel,
+          required_company_level: tech.company_level_min,
+          tech_id: command.techId
+        });
       }
       if (next.litTechIds.includes(command.techId)) {
         return err("conflict_in_progress", "tech already researched");
       }
+      for (const requiredTechId of tech.requires_lit ?? []) {
+        if (!next.litTechIds.includes(requiredTechId)) {
+          return err("not_unlocked", "technology prerequisite not lit", {
+            tech_id: command.techId,
+            requires_lit: requiredTechId
+          });
+        }
+      }
       if (Object.keys(next.researches).length > 0) {
         return err("conflict_in_progress", "only one active research allowed");
       }
-      if (next.funds < RESEARCH_COST) {
+      if (next.funds < tech.research_cost) {
         return err("insufficient_funds", "not enough funds for research");
       }
-      next.funds -= RESEARCH_COST;
+      next.funds -= tech.research_cost;
       next.researches[command.techId] = {
         researchId: `rq-${next.currentMonth}-${command.techId}`,
         techId: command.techId,
-        monthsRemaining: RESEARCH_MONTHS
+        monthsRemaining: tech.research_months
       };
       break;
     }
@@ -219,8 +236,14 @@ export function dispatch(
       if (!foundTechId) {
         return err("not_found", "research item not found");
       }
+      const tech = config.getTechnology(foundTechId);
+      if (!tech) {
+        return err("state_invariant_broken", "technology missing for active research", {
+          tech_id: foundTechId
+        });
+      }
       delete next.researches[foundTechId];
-      next.funds += RESEARCH_COST;
+      next.funds += tech.research_cost;
       break;
     }
     case "advance_onboarding": {

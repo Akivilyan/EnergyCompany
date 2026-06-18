@@ -7,6 +7,7 @@ import type {
   DisasterConfig,
   FacilityConfig,
   LoanTierConfig,
+  TechnologyConfig,
   RunConfig
 } from "./configRepo.js";
 import { ConfigRepo } from "./configRepo.js";
@@ -22,7 +23,8 @@ export const V0_CONFIG_JSON_FILES = {
   companyLevels: "company_levels.json",
   loanTiers: "loan_tiers.json",
   difficulties: "difficulty_modifiers.json",
-  adRewards: "ad_rewards.json"
+  adRewards: "ad_rewards.json",
+  technologies: "technology_config.json"
 } as const;
 
 export interface ConfigBundleInput {
@@ -34,6 +36,7 @@ export interface ConfigBundleInput {
   loanTiers: LoanTierConfig[];
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
+  technologies: TechnologyConfig[];
 }
 
 export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
@@ -45,7 +48,8 @@ export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
     companyLevels: input.companyLevels,
     loanTiers: input.loanTiers,
     difficulties: input.difficulties,
-    adRewards: input.adRewards
+    adRewards: input.adRewards,
+    technologies: input.technologies
   };
 }
 

@@ -1,4 +1,5 @@
 import type { GameState, SimResult } from "../sim/index.js";
+import type { TechnologyTab } from "../sim/config/configRepo.js";
 import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
 import {
   createDefaultAdRewardService,
@@ -80,12 +81,24 @@ export interface TechTreeSnapshot {
   companyLevel: number;
   funds: number;
   canOpen: boolean;
+  technologies: TechTreeNodeSnapshot[];
   activeResearch: {
     techId: string;
     researchId: string;
     monthsRemaining: number;
   } | null;
   litTechIds: string[];
+}
+
+export interface TechTreeNodeSnapshot {
+  techId: string;
+  displayName: string;
+  tab: TechnologyTab;
+  companyLevelMin: number;
+  status: "locked" | "unlocked" | "researching" | "lit";
+  requiresLit: string[];
+  researchCost: number;
+  researchMonths: number;
 }
 
 export interface TechTreeActionOutput {
@@ -147,11 +160,40 @@ export class ScreenTechTree {
 
   getSnapshot(): TechTreeSnapshot {
     const active = Object.values(this.controller.state.researches)[0];
+    const technologies = this.controller.config.bundle.technologies
+      .map((tech) => {
+        let status: TechTreeNodeSnapshot["status"] = "locked";
+        if (this.controller.state.litTechIds.includes(tech.tech_id)) {
+          status = "lit";
+        } else if (this.controller.state.researches[tech.tech_id]) {
+          status = "researching";
+        } else if (
+          this.controller.state.companyLevel >= tech.company_level_min &&
+          (tech.requires_lit ?? []).every((requiredTechId) =>
+            this.controller.state.litTechIds.includes(requiredTechId)
+          )
+        ) {
+          status = "unlocked";
+        }
+
+        return {
+          techId: tech.tech_id,
+          displayName: tech.display_name,
+          tab: tech.tab,
+          companyLevelMin: tech.company_level_min,
+          status,
+          requiresLit: [...(tech.requires_lit ?? [])],
+          researchCost: tech.research_cost,
+          researchMonths: tech.research_months
+        };
+      })
+      .sort((a, b) => a.companyLevelMin - b.companyLevelMin || a.techId.localeCompare(b.techId));
     return {
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,
       canOpen: this.controller.state.companyLevel >= 2,
+      technologies,
       activeResearch: active
         ? {
             techId: active.techId,

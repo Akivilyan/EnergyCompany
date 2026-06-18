@@ -2,8 +2,8 @@ import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
 import type { ClientNavResult } from "./screenNavController.js";
 
-/** v0 开发 HUD 默认开研节点（与 sim:tech-loop 一致）。 */
-export const DEFAULT_DEV_TECH_ID = "storage_system_1";
+/** FAST-01 开发 HUD 默认开研节点：II 级即能演示科技扩容。 */
+export const DEFAULT_DEV_TECH_ID = "wind_2";
 
 export interface TechHudActionResult {
   ok: boolean;

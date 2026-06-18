@@ -71,6 +71,30 @@ export interface AdRewardConfig {
   reward_cash: number;
 }
 
+export type TechnologyTab =
+  | "wind"
+  | "solar"
+  | "thermal"
+  | "hydro"
+  | "nuclear"
+  | "grid"
+  | "engineering";
+
+export interface TechnologyConfig {
+  tech_id: string;
+  display_name: string;
+  tab: TechnologyTab;
+  company_level_min: number;
+  requires_lit?: string[];
+  starts_lit: boolean;
+  research_cost: number;
+  research_months: number;
+  effect_type: string;
+  effect_target: string;
+  effect_value: Record<string, unknown>;
+  notes?: string;
+}
+
 export interface ConfigBundle {
   runConfig: RunConfig;
   disasters: DisasterConfig[];
@@ -80,6 +104,7 @@ export interface ConfigBundle {
   loanTiers: LoanTierConfig[];
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
+  technologies: TechnologyConfig[];
 }
 
 export class ConfigRepo {
@@ -109,6 +134,10 @@ export class ConfigRepo {
   getAdReward(level: number): number {
     const row = this.bundle.adRewards.find((r) => r.company_level === level);
     return row?.reward_cash ?? 0;
+  }
+
+  getTechnology(id: string): TechnologyConfig | undefined {
+    return this.bundle.technologies.find((tech) => tech.tech_id === id);
   }
 
   getStartingCash(difficultyId: "simple" | "normal"): number {

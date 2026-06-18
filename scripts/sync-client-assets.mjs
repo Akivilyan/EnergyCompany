@@ -17,7 +17,8 @@ const configFiles = [
   "company_levels.json",
   "loan_tiers.json",
   "difficulty_modifiers.json",
-  "ad_rewards.json"
+  "ad_rewards.json",
+  "technology_config.json"
 ];
 
 fs.rmSync(sharedDir, { recursive: true, force: true });

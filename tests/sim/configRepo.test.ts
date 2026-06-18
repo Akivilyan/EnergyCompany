@@ -15,5 +15,6 @@ describe("loadConfigRepoFromConfigDir", () => {
     expect(fromDir.bundle.runConfig.campaign_run_target_months).toBe(
       fromRepo.bundle.runConfig.campaign_run_target_months
     );
+    expect(fromDir.bundle.technologies.length).toBe(fromRepo.bundle.technologies.length);
   });
 });

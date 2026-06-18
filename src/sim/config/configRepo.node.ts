@@ -22,7 +22,8 @@ export function loadConfigRepoFromConfigDir(configDir: string): ConfigRepo {
     companyLevels: readJson(path.join(configDir, "company_levels.json")),
     loanTiers: readJson(path.join(configDir, "loan_tiers.json")),
     difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
-    adRewards: readJson(path.join(configDir, "ad_rewards.json"))
+    adRewards: readJson(path.join(configDir, "ad_rewards.json")),
+    technologies: readJson(path.join(configDir, "technology_config.json"))
   };
   return ConfigRepo.fromBundle(bundle);
 }

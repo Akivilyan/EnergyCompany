@@ -102,19 +102,19 @@ describe("settleNextMonth", () => {
     const initialFunds = state.funds;
     const start = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_1" },
+      { type: "start_research", techId: "wind_2" },
       config,
       defaultPorts
     );
     expect(start.ok).toBe(true);
     if (!start.ok) return;
     state = start.value.state;
-    expect(state.funds).toBe(initialFunds - 60);
-    expect(Object.keys(state.researches)).toContain("storage_system_1");
+    expect(state.funds).toBe(initialFunds - 40);
+    expect(Object.keys(state.researches)).toContain("wind_2");
 
     const second = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_2" },
+      { type: "start_research", techId: "solar_2" },
       config,
       defaultPorts
     );
@@ -130,14 +130,14 @@ describe("settleNextMonth", () => {
     const initialFunds = state.funds;
     const start = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_1" },
+      { type: "start_research", techId: "wind_2" },
       config,
       defaultPorts
     );
     expect(start.ok).toBe(true);
     if (!start.ok) return;
     state = start.value.state;
-    const research = state.researches["storage_system_1"];
+    const research = state.researches["wind_2"];
     expect(research).toBeTruthy();
 
     const cancel = dispatch(
@@ -173,7 +173,7 @@ describe("settleNextMonth", () => {
     state.companyLevel = 2;
     const start = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_1" },
+      { type: "start_research", techId: "wind_2" },
       config,
       defaultPorts
     );
@@ -190,7 +190,7 @@ describe("settleNextMonth", () => {
     );
     expect(speedup.ok).toBe(true);
     if (!speedup.ok) return;
-    expect(speedup.value.state.litTechIds).toContain("storage_system_1");
+    expect(speedup.value.state.litTechIds).toContain("wind_2");
     expect(Object.keys(speedup.value.state.researches)).toHaveLength(0);
     expect(speedup.value.state.adsRemaining).toBe(beforeAds - 1);
   });
@@ -215,7 +215,7 @@ describe("settleNextMonth", () => {
     state.companyLevel = 2;
     const start = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_1" },
+      { type: "start_research", techId: "wind_2" },
       config,
       defaultPorts
     );
@@ -230,8 +230,23 @@ describe("settleNextMonth", () => {
       state = month.value.state;
     }
 
-    expect(state.litTechIds).toContain("storage_system_1");
+    expect(state.litTechIds).toContain("wind_2");
     expect(Object.keys(state.researches)).toHaveLength(0);
+  });
+
+  it("dispatch blocks higher-level tech before company level reaches requirement", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    const result = dispatch(
+      state,
+      { type: "start_research", techId: "storage_system_1" },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
   });
 
   it("M4 uses unified island rate when two cities are connected in v0", () => {
@@ -598,7 +613,7 @@ describe("settleNextMonth", () => {
     const state = createInitialState(config);
     const result = dispatch(
       state,
-      { type: "start_research", techId: "storage_system_1" },
+      { type: "start_research", techId: "wind_2" },
       config,
       defaultPorts
     );
