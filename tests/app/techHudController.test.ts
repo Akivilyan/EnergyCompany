@@ -3,6 +3,8 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import { clientNavOpenTechTree } from "../../src/app/screenNavController.js";
 import {
   DEFAULT_DEV_TECH_ID,
+  getTechHudSelectionSnapshot,
+  techCycleResearchCandidate,
   techCancelActiveResearch,
   techEnsureLevelIIForDev,
   techSpeedupResearchByAd,
@@ -18,6 +20,26 @@ describe("techHudController", () => {
     const out = techStartDefaultResearch(boot);
     expect(out.ok).toBe(true);
     expect(boot.app.screens.tech.getSnapshot().activeResearch?.techId).toBe(DEFAULT_DEV_TECH_ID);
+  });
+
+  it("cycles selected research candidate before starting", () => {
+    const boot = createGameBootstrapFromRepo();
+    techEnsureLevelIIForDev(boot);
+    clientNavOpenTechTree(boot);
+
+    const before = getTechHudSelectionSnapshot(boot);
+    expect(before.selectedTechId).toBe(DEFAULT_DEV_TECH_ID);
+
+    const cycle = techCycleResearchCandidate(boot);
+    expect(cycle.ok).toBe(true);
+    expect(cycle.messageKey).toBe("tech_tree.action.selected_next_candidate");
+
+    const after = getTechHudSelectionSnapshot(boot);
+    expect(after.selectedTechId).not.toBe(before.selectedTechId);
+
+    const start = techStartDefaultResearch(boot);
+    expect(start.ok).toBe(true);
+    expect(boot.app.screens.tech.getSnapshot().activeResearch?.techId).toBe(after.selectedTechId);
   });
 
   it("cancels active research with refund", () => {

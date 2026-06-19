@@ -24,8 +24,11 @@ export {
 } from "./companyHudController.js";
 export {
   DEFAULT_DEV_TECH_ID,
+  getTechHudSelectionSnapshot,
+  techCycleResearchCandidate,
   techCancelActiveResearch,
   techEnsureLevelIIForDev,
+  formatSelectedResearchCandidate,
   techSpeedupResearchByAd,
   techStartDefaultResearch
 } from "./techHudController.js";

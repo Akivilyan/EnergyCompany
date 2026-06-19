@@ -1,6 +1,7 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
+import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 
 export function formatLoanTierLabel(loanId: string): string {
@@ -106,7 +107,8 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   }
   const statusLine = t("hud.status.tech_header", { lit: s.litTechIds.length });
   const statusLines = hudLines(
-    t("hud.line.tech_header", { lit: s.litTechIds.length })
+    t("hud.line.tech_header", { lit: s.litTechIds.length }),
+    t("hud.line.tech_researchable", { count: s.researchableTechIds.length })
   );
   if (s.activeResearch) {
     const detailLine = t("hud.status.tech_active_hint", {
@@ -121,12 +123,17 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     );
     return { statusLine, detailLine, statusLines, detailLines };
   }
-  const detailLine = t("hud.status.tech_idle_hint");
+  const selection = getTechHudSelectionSnapshot(boot);
+  const selectedLine = formatSelectedResearchCandidate(boot);
+  const detailLine = selectedLine ?? t("hud.status.tech_no_candidate_hint");
   return {
     statusLine,
     detailLine,
     statusLines,
-    detailLines: hudLines(detailLine)
+    detailLines: hudLines(
+      selection.candidates.length > 0 ? t("hud.status.tech_idle_hint") : null,
+      detailLine
+    )
   };
 }
 

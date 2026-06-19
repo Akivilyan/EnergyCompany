@@ -82,6 +82,7 @@ export interface TechTreeSnapshot {
   funds: number;
   canOpen: boolean;
   technologies: TechTreeNodeSnapshot[];
+  researchableTechIds: string[];
   activeResearch: {
     techId: string;
     researchId: string;
@@ -188,12 +189,16 @@ export class ScreenTechTree {
         };
       })
       .sort((a, b) => a.companyLevelMin - b.companyLevelMin || a.techId.localeCompare(b.techId));
+    const researchableTechIds = technologies
+      .filter((tech) => tech.status === "unlocked")
+      .map((tech) => tech.techId);
     return {
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,
       canOpen: this.controller.state.companyLevel >= 2,
       technologies,
+      researchableTechIds,
       activeResearch: active
         ? {
             techId: active.techId,

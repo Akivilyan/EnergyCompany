@@ -41,6 +41,21 @@ describe("clientHudDisplay", () => {
     expect(lines).toHaveLength(5);
   });
 
+  it("shows selected research candidate and researchable count on tech screen", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.play.buildInCurrentCity("wind", 1);
+    boot.play.buildInCurrentCity("wind", 1);
+    for (let i = 0; i < 2; i += 1) {
+      boot.play.advanceMonthInCurrentCity();
+    }
+    boot.play.openScreen("screen_tech_tree");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.statusLines).toEqual(["已点亮 4 项科技", "可研 5 项"]);
+    expect(display.detailLines[0]).toBe("当前无在研项目");
+    expect(display.detailLines[1]).toContain("候选：风电·II");
+  });
+
   it("exposes locked hud capabilities before company level 2", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({

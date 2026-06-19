@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.9.0
+version: 1.10.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -78,6 +78,7 @@ open_questions: []
 | 2026-06-18 | 工程清理：补充根目录 `.tmp/` 到 `.gitignore`，避免 Codex 临时文件继续污染工作区；本轮仅提交忽略规则与看板回写，不动用户当前未提交的 Cocos 本地设置改动 | `.gitignore` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程配置整理，无需跑测试 |
 | 2026-06-18 | 仓库卫生修正：确认 `client/cocos/settings/v2/packages/*.json` 属于 Cocos 官方建议入库的 `settings/` 目录，不做 `gitignore`；新增 `.gitattributes` 固定文本与 JSON 行尾，减少 Windows/Cocos 触发的假脏状态 | `.gitattributes` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程配置整理，无需跑测试 |
 | 2026-06-18 | `FAST-01` 子步骤：补齐最小科技配置表并把科技研发从硬编码单节点改成配置驱动；科技页现在可暴露可研/锁定节点列表，II 级默认演示节点改为 `wind_2`，客户端同步链路也补进 `technology_config.json` | `docs/design/data/vertical-slice-v0/technology_config.json` `docs/design/data/vertical-slice-v0/manifest.json` `client/cocos/assets/resources/config/v0/technology_config.json` `scripts/sync-client-assets.mjs` `src/sim/config/*.ts` `src/sim/core/dispatch.ts` `src/modules/screenTechTree.ts` `src/app/techHudController.ts` `tests/sim/*.test.ts` `tests/modules/screenTechTree.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm test` 通过 |
+| 2026-06-19 | `FAST-01` 第二个科技内容扩张子步：科技页/HUD 从“固定默认开研”扩到“显示可研候选、切换候选并按所选节点开研”；同时补候选摘要文案与客户端 HUD 按状态复用第三按钮（空闲时切换候选，在研时广告加速） | `src/modules/screenTechTree.ts` `src/app/techHudController.ts` `src/app/clientHudDisplay.ts` `src/app/cocosClientExports.ts` `src/i18n/messages/*` `client/cocos/assets/scripts/CityHudPanel.ts` `tests/modules/screenTechTree.test.ts` `tests/app/techHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -111,3 +112,4 @@ open_questions: []
 | 1.7.0 | 2026-06-18 | 补记工程清理：忽略根目录 `.tmp/`，避免临时文件污染工作区 |
 | 1.8.0 | 2026-06-18 | 补记仓库卫生修正：新增 `.gitattributes` 固定行尾，并明确保留 Cocos `settings/` 入库 |
 | 1.9.0 | 2026-06-18 | 补记 `FAST-01` 首个内容扩张子步：科技最小链路改为配置驱动并同步到客户端资源 |
+| 1.10.0 | 2026-06-19 | 补记 `FAST-01` 第二个科技内容扩张子步：科技页/HUD 支持多候选切换与按所选节点开研 |

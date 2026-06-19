@@ -111,5 +111,12 @@ describe("ScreenTechTree", () => {
     expect(wind2?.status).toBe("unlocked");
     expect(wind2?.displayName).toBe("风电·II");
     expect(storage1?.status).toBe("locked");
+    expect(snapshot.researchableTechIds).toEqual([
+      "eng_bulk_procure",
+      "hydro_2",
+      "solar_2",
+      "thermal_2",
+      "wind_2"
+    ]);
   });
 });

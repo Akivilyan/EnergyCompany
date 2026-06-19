@@ -30,7 +30,9 @@ import {
   techSpeedupResearchByAd,
   techStartDefaultResearch,
   eventsAcknowledgeNextPending,
+  getTechHudSelectionSnapshot,
   t,
+  techCycleResearchCandidate,
   type GameBootstrap
 } from "../shared/game-client.mjs";
 import {
@@ -344,6 +346,9 @@ export class CityHudPanel extends Component {
     const onTech = viewModel.screen === "screen_tech_tree";
     const onCity = !onCompany && !onRegion && !onTech;
     const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
+    const techSnapshot = this.boot.app.screens.tech.getSnapshot();
+    const techSelection = getTechHudSelectionSnapshot(this.boot);
+    const hasActiveResearch = !!techSnapshot.activeResearch;
 
     this.buildWindBtn!.node.active = onCity;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
@@ -351,14 +356,20 @@ export class CityHudPanel extends Component {
     this.ackEventBtn!.node.active = onCity && pendingEvent;
     this.applyLoanBtn!.node.active = onCompany;
     this.adCashBtn!.node.active = onCompany;
-    this.startResearchBtn!.node.active = onTech && caps.canOperateTech;
-    this.cancelResearchBtn!.node.active = onTech && caps.canOperateTech;
-    this.adSpeedupBtn!.node.active = onTech && caps.canOperateTech;
+    this.startResearchBtn!.node.active = onTech && caps.canOperateTech && !hasActiveResearch;
+    this.cancelResearchBtn!.node.active = onTech && caps.canOperateTech && hasActiveResearch;
+    this.adSpeedupBtn!.node.active =
+      onTech &&
+      caps.canOperateTech &&
+      (hasActiveResearch || techSelection.candidates.length > 0);
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
     this.openTechBtn!.node.active = true;
     this.navBackBtn!.node.active = true;
     this.syncButtonCaptions();
+    if (onTech && !hasActiveResearch) {
+      this.setButtonCaption(this.adSpeedupBtn, "hud.btn.cycle_research");
+    }
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
     this.statusLabel.string = display.statusLines.join("\n");
@@ -442,10 +453,13 @@ export class CityHudPanel extends Component {
 
   private onAdSpeedup(): void {
     if (!this.boot) return;
-    const out = techSpeedupResearchByAd(this.boot);
+    const hasActiveResearch = !!this.boot.app.screens.tech.getSnapshot().activeResearch;
+    const out = hasActiveResearch
+      ? techSpeedupResearchByAd(this.boot)
+      : techCycleResearchCandidate(this.boot);
     this.lastActionKey = out.messageKey;
     this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] ad speedup failed: ${out.uiErrorCode ?? "unknown"}`);
+    if (!out.ok) console.warn(`[CityHudPanel] tech action failed: ${out.uiErrorCode ?? "unknown"}`);
   }
 
   private onAckEvent(): void {
