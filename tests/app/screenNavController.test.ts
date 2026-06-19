@@ -8,6 +8,7 @@ import { mountGameClient } from "../../src/app/gameClientEntry.js";
 import {
   clientNavBack,
   clientNavOpenCompany,
+  clientNavOpenWorldMap,
   clientNavOpenTechTree,
   formatClientNavHint
 } from "../../src/app/screenNavController.js";
@@ -48,6 +49,16 @@ describe("screenNavController", () => {
     const back = clientNavBack(boot);
     expect(back.screen).toBe("screen_city_detail");
     expect(formatClientNavHint(back.view, back.navigation.stack.length)).toContain("返回层0");
+  });
+  it("opens world map through play surface", () => {
+    const config = loadTestConfig();
+    const host = new LoggingSceneHost();
+    const boot = mountGameClient({ configRepo: config, sceneHost: host, autoResumeSlot: false });
+
+    const world = clientNavOpenWorldMap(boot);
+    expect(world.screen).toBe("screen_world_map");
+    expect(host.getCurrentScene()).toBe("CityDetail");
+    expect(world.navigation.stack).toEqual([]);
   });
 });
 

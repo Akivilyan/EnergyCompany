@@ -113,6 +113,70 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   return { statusLine, detailLine, statusLines, detailLines };
 }
 
+function formatWorldConnectionStatus(status: string): string {
+  switch (status) {
+    case "capital":
+      return t("hud.world.connection.capital");
+    case "locked":
+      return t("hud.world.connection.locked");
+    case "planned":
+      return t("hud.world.connection.planned");
+    case "available":
+      return t("hud.world.connection.available");
+    case "building":
+      return t("hud.world.connection.building");
+    case "connected":
+      return t("hud.world.connection.connected");
+    default:
+      return status;
+  }
+}
+
+function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
+  const s = boot.app.screens.world.getSnapshot();
+  const focusRegion =
+    s.regions.find(
+      (region) => region.unlocked && region.connectionStatus !== "capital" && region.connectionStatus !== "planned"
+    ) ??
+    s.regions.find((region) => region.unlocked && region.connectionStatus === "planned") ??
+    s.regions.find((region) => !region.unlocked) ??
+    s.regions[0];
+  const statusLine = t("hud.status.world", {
+    level: s.companyLevel,
+    funds: s.funds,
+    unlocked: s.unlockedRegions,
+    total: s.totalRegions
+  });
+  const statusLines = hudLines(
+    t("hud.line.world_header", { level: s.companyLevel }),
+    t("hud.line.world_regions", { unlocked: s.unlockedRegions, total: s.totalRegions }),
+    t("hud.line.world_trunks", { connected: s.connectedTrunks, building: s.buildingTrunks })
+  );
+  const detailLines = hudLines(
+    s.nextUnlockRegion
+      ? t("hud.status.world_next_unlock", {
+          region: s.nextUnlockRegion.displayName,
+          level: s.nextUnlockRegion.unlockCompanyLevel
+        })
+      : t("hud.status.world_all_unlocked"),
+    focusRegion
+      ? t("hud.status.world_region_detail", {
+          region: focusRegion.displayName,
+          state: focusRegion.unlocked ? t("hud.world.region_state.unlocked") : t("hud.world.region_state.locked"),
+          cities: focusRegion.unlockedCities,
+          totalCities: focusRegion.totalCities,
+          trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)
+        })
+      : null
+  );
+  return {
+    statusLine,
+    detailLine: detailLines.join(" 路 "),
+    statusLines,
+    detailLines
+  };
+}
+
 function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.tech.getSnapshot();
   if (!s.canOpen) {
@@ -174,6 +238,8 @@ export function buildClientHudDisplay(
     display = formatCompanyStatus(boot);
   } else if (screen === "screen_region") {
     display = formatRegionStatus(boot);
+  } else if (screen === "screen_world_map") {
+    display = formatWorldStatus(boot);
   } else if (screen === "screen_tech_tree") {
     display = formatTechStatus(boot);
   } else {
@@ -207,7 +273,12 @@ export function buildClientHudDisplay(
     };
   }
 
-  if (screen === "screen_company" || screen === "screen_region" || screen === "screen_tech_tree") {
+  if (
+    screen === "screen_company" ||
+    screen === "screen_region" ||
+    screen === "screen_world_map" ||
+    screen === "screen_tech_tree"
+  ) {
     display.detailLines = hudLines(...display.detailLines, actionMessage);
     display.detailLine = display.detailLines.join(" · ");
   } else if (actionMessage) {

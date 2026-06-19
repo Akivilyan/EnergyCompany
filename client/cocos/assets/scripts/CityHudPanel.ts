@@ -22,6 +22,7 @@ import {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenRegion,
+  clientNavOpenWorldMap,
   clientNavOpenTechTree,
   regionCycleLinkCandidate,
   regionQueueDefaultLink,
@@ -80,6 +81,7 @@ export class CityHudPanel extends Component {
   private cycleRegionLinkBtn: HudButton | null = null;
   private openCompanyBtn: HudButton | null = null;
   private openRegionBtn: HudButton | null = null;
+  private openWorldBtn: HudButton | null = null;
   private openTechBtn: HudButton | null = null;
   private navBackBtn: HudButton | null = null;
   private lastActionKey: string | null = null;
@@ -171,6 +173,7 @@ export class CityHudPanel extends Component {
     this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => this.onAdSpeedup());
     this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
     this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
+    this.openWorldBtn = this.createTapButton(shell, "OpenWorld", "hud.btn.world", () => this.onOpenWorld());
     this.openTechBtn = this.createTapButton(shell, "OpenTech", "hud.btn.tech", () => this.onOpenTech());
     this.navBackBtn = this.createTapButton(shell, "NavBack", "hud.btn.back", () => this.onNavBack());
 
@@ -216,7 +219,11 @@ export class CityHudPanel extends Component {
       layout.buttonFont
     );
     this.placeRowButtons(layout.rows[2], [this.adSpeedupBtn], layout.buttonFont);
-    this.placeRowButtons(layout.rows[3], [this.openCompanyBtn, this.openRegionBtn], layout.buttonFont);
+    this.placeRowButtons(
+      layout.rows[3],
+      [this.openCompanyBtn, this.openRegionBtn, this.openWorldBtn],
+      layout.buttonFont
+    );
     this.placeRowButtons(layout.rows[4], [this.openTechBtn, this.navBackBtn], layout.buttonFont);
   }
 
@@ -258,6 +265,7 @@ export class CityHudPanel extends Component {
       this.cycleRegionLinkBtn,
       this.openCompanyBtn,
       this.openRegionBtn,
+      this.openWorldBtn,
       this.openTechBtn,
       this.navBackBtn
     ].filter((btn): btn is HudButton => btn !== null);
@@ -344,6 +352,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
     this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
     this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
+    this.setButtonCaption(this.openWorldBtn, "hud.btn.world");
     this.setButtonCaption(this.openTechBtn, "hud.btn.tech");
     this.setButtonCaption(this.navBackBtn, "hud.btn.back");
   }
@@ -389,6 +398,7 @@ export class CityHudPanel extends Component {
       (hasActiveResearch || techSelection.candidates.length > 0);
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
+    this.openWorldBtn!.node.active = true;
     this.openTechBtn!.node.active = true;
     this.navBackBtn!.node.active = true;
     this.syncButtonCaptions();
@@ -445,6 +455,13 @@ export class CityHudPanel extends Component {
     if (!this.boot) return;
     this.lastActionKey = null;
     clientNavOpenRegion(this.boot);
+    this.refresh();
+  }
+
+  private onOpenWorld(): void {
+    if (!this.boot) return;
+    this.lastActionKey = null;
+    clientNavOpenWorldMap(this.boot);
     this.refresh();
   }
 

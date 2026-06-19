@@ -32,6 +32,10 @@ export function clientNavOpenRegion(boot: GameBootstrap): ClientNavResult {
   return clientNavOpenScreen(boot, "screen_region");
 }
 
+export function clientNavOpenWorldMap(boot: GameBootstrap): ClientNavResult {
+  return clientNavOpenScreen(boot, "screen_world_map");
+}
+
 export function clientNavOpenCity(boot: GameBootstrap): ClientNavResult {
   return clientNavOpenScreen(boot, "screen_city_detail");
 }

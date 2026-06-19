@@ -56,6 +56,7 @@ export {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenRegion,
+  clientNavOpenWorldMap,
   clientNavOpenTechTree,
   formatClientNavHint
 } from "./screenNavController.js";

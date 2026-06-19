@@ -9,12 +9,14 @@ import type { ScreenOnboarding } from "./screenOnboarding.js";
 import type { ScreenRegion } from "./screenRegion.js";
 import type { ScreenRunResult } from "./screenRunResult.js";
 import type { ScreenTechTree } from "./screenTechTree.js";
+import type { ScreenWorldMap } from "./screenWorldMap.js";
 
 export interface GameAppScreens {
   city(cityId: string): ScreenCityDetail;
   company: ScreenCompany;
   tech: ScreenTechTree;
   region: ScreenRegion;
+  world: ScreenWorldMap;
   events: ScreenEventsPanel;
   onboarding: ScreenOnboarding;
   runResult: ScreenRunResult;

@@ -28,6 +28,7 @@ describe("GameShell", () => {
     const app = createGameAppFromRepo({ repoRoot });
     const shell = createGameShell(app);
     shell.openScreen("screen_company");
+    shell.openScreen("screen_world_map");
     shell.openScreen("screen_tech_tree");
     shell.openScreen("screen_region");
     shell.openScreen("screen_company");

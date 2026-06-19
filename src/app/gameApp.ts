@@ -16,6 +16,7 @@ import { createScreenOnboarding } from "../modules/screenOnboarding.js";
 import { createScreenRegion } from "../modules/screenRegion.js";
 import { createScreenRunResult } from "../modules/screenRunResult.js";
 import { createScreenTechTree } from "../modules/screenTechTree.js";
+import { createScreenWorldMap } from "../modules/screenWorldMap.js";
 
 export type { GameAppContext, GameAppScreens } from "../modules/gameContext.js";
 
@@ -40,6 +41,7 @@ export function createGameApp(options: GameAppOptions = {}): GameAppContext {
     company: createScreenCompany(controller, adProvider),
     tech: createScreenTechTree(controller, adProvider),
     region: createScreenRegion(controller),
+    world: createScreenWorldMap(controller),
     events: createScreenEventsPanel(controller),
     onboarding: createScreenOnboarding(controller),
     runResult: createScreenRunResult(controller),

@@ -6,7 +6,7 @@ import {
 } from "../../src/app/clientHudDisplay.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
 import { cityHudCycleBuildCandidate } from "../../src/app/cityHudController.js";
-import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
+import { clientNavOpenCompany, clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
 import {
   companyApplyFirstUnlockedLoan,
   companyCycleLoanCandidate
@@ -101,5 +101,15 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines.some((line) => line.includes("当前候选：区域线 CITY-START->CITY-MAP01-02"))).toBe(
       true
     );
+  });
+  it("shows world map unlock progress and next unlock", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.statusLines.some((line) => line.includes("3/10"))).toBe(true);
+    expect(display.detailLines[0]).toContain("4级");
+    expect(display.detailLines[1]).toContain("主干线可建");
   });
 });

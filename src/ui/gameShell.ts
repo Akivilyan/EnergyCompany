@@ -8,7 +8,8 @@ export const PRIMARY_TAB_SCREENS: ReadonlySet<ScreenId> = new Set([
   "screen_city_detail",
   "screen_company",
   "screen_tech_tree",
-  "screen_region"
+  "screen_region",
+  "screen_world_map"
 ]);
 
 function isPrimaryTab(screen: ScreenId): boolean {
