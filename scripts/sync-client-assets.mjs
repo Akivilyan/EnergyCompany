@@ -13,6 +13,7 @@ const configFiles = [
   "run_config.json",
   "campaign_disasters.json",
   "facilities_slice.json",
+  "regions.json",
   "cities.json",
   "company_levels.json",
   "loan_tiers.json",

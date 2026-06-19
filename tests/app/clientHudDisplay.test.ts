@@ -60,7 +60,20 @@ describe("clientHudDisplay", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({
       canQueueRegionLink: false,
+      canCycleRegionLink: false,
       canOperateTech: false
     });
+  });
+
+  it("shows selected region link candidate and candidate count on region screen", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    boot.play.openScreen("screen_region");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.statusLines).toContain("可玩链路 5");
+    expect(display.detailLines.some((line) => line.includes("当前候选：区域线 CITY-START->CITY-MAP01-02"))).toBe(
+      true
+    );
   });
 });

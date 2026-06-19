@@ -18,6 +18,7 @@ export function loadConfigRepoFromJsonDir(configDir: string): ConfigRepo {
     runConfig: readJsonFile(configDir, V0_CONFIG_JSON_FILES.runConfig),
     disasters: readJsonFile(configDir, V0_CONFIG_JSON_FILES.disasters),
     facilities: readJsonFile(configDir, V0_CONFIG_JSON_FILES.facilities),
+    regions: readJsonFile(configDir, V0_CONFIG_JSON_FILES.regions),
     cities: readJsonFile(configDir, V0_CONFIG_JSON_FILES.cities),
     companyLevels: readJsonFile(configDir, V0_CONFIG_JSON_FILES.companyLevels),
     loanTiers: readJsonFile(configDir, V0_CONFIG_JSON_FILES.loanTiers),

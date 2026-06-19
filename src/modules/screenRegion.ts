@@ -20,12 +20,26 @@ export interface RegionGridLinkItem {
   monthsRemaining: number;
 }
 
+export interface RegionLinkCandidate {
+  candidateId: string;
+  fromCityId: string;
+  toCityId: string;
+  linkType: "region" | "trunk";
+  unlocked: boolean;
+  available: boolean;
+  regionId: string | null;
+  regionName: string;
+  fromCityName: string;
+  toCityName: string;
+}
+
 export interface ScreenRegionSnapshot {
   month: number;
   companyLevel: number;
   funds: number;
   cities: RegionCityItem[];
   gridLinks: RegionGridLinkItem[];
+  linkCandidates: RegionLinkCandidate[];
 }
 
 export interface RegionQueueGridLinkOutput {
@@ -51,6 +65,9 @@ export class ScreenRegion {
   constructor(private readonly controller: RunController) {}
 
   getSnapshot(): ScreenRegionSnapshot {
+    const cityNameMap = new Map(
+      this.controller.config.bundle.cities.map((city) => [city.city_id, city.display_name ?? city.city_id])
+    );
     const cities = this.controller.config.bundle.cities
       .map((city) => {
         const runtime = this.controller.state.cities[city.city_id];
@@ -77,13 +94,88 @@ export class ScreenRegion {
       }))
       .sort((a, b) => a.linkId.localeCompare(b.linkId));
 
+    const linkCandidates = this.buildLinkCandidates(cityNameMap);
+
     return {
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,
       cities,
-      gridLinks
+      gridLinks,
+      linkCandidates
     };
+  }
+
+  private buildLinkCandidates(cityNameMap: Map<string, string>): RegionLinkCandidate[] {
+    const candidates: RegionLinkCandidate[] = [];
+    const level = this.controller.state.companyLevel;
+    const unlockedCities = this.controller.config.bundle.cities.filter(
+      (city) => level >= city.unlock_company_level
+    );
+    const linkExists = (fromCityId: string, toCityId: string): boolean => {
+      const key = [fromCityId, toCityId].sort().join("::");
+      return !!this.controller.state.gridLinks[key];
+    };
+
+    for (const region of this.controller.config.bundle.regions) {
+      const regionCities = unlockedCities.filter((city) => city.region_id === region.region_id);
+      if (regionCities.length < 2) continue;
+      const hubCity =
+        regionCities.find((city) => city.city_type === "central") ?? regionCities[0];
+      for (const city of regionCities) {
+        if (city.city_id === hubCity.city_id) continue;
+        candidates.push({
+          candidateId: `${hubCity.city_id}->${city.city_id}:region`,
+          fromCityId: hubCity.city_id,
+          toCityId: city.city_id,
+          linkType: "region",
+          unlocked: true,
+          available: !linkExists(hubCity.city_id, city.city_id),
+          regionId: region.region_id,
+          regionName: region.display_name ?? region.region_id,
+          fromCityName: cityNameMap.get(hubCity.city_id) ?? hubCity.city_id,
+          toCityName: cityNameMap.get(city.city_id) ?? city.city_id
+        });
+      }
+    }
+
+    const crossRegionHubs = this.controller.config.bundle.regions
+      .map((region) => {
+        const unlocked = level >= region.unlock_company_level;
+        const hubCity = this.controller.config.bundle.cities.find(
+          (city) => city.region_id === region.region_id && city.city_type === "central"
+        );
+        return unlocked && hubCity
+          ? {
+              regionId: region.region_id,
+              regionName: region.display_name ?? region.region_id,
+              cityId: hubCity.city_id,
+              cityName: cityNameMap.get(hubCity.city_id) ?? hubCity.city_id
+            }
+          : null;
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+      .sort((a, b) => a.regionId.localeCompare(b.regionId));
+
+    const startHub = crossRegionHubs[0] ?? null;
+    if (startHub) {
+      for (const hub of crossRegionHubs.slice(1)) {
+        candidates.push({
+          candidateId: `${startHub.cityId}->${hub.cityId}:trunk`,
+          fromCityId: startHub.cityId,
+          toCityId: hub.cityId,
+          linkType: "trunk",
+          unlocked: true,
+          available: !linkExists(startHub.cityId, hub.cityId),
+          regionId: null,
+          regionName: `${startHub.regionName} x ${hub.regionName}`,
+          fromCityName: startHub.cityName,
+          toCityName: hub.cityName
+        });
+      }
+    }
+
+    return candidates.sort((a, b) => a.candidateId.localeCompare(b.candidateId));
   }
 
   queueGridLink(

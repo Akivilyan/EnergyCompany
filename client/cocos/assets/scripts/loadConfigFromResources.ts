@@ -29,11 +29,13 @@ export async function loadConfigFromResources(): Promise<ConfigRepo> {
     runConfig: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.runConfig)),
     disasters: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.disasters)),
     facilities: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.facilities)),
+    regions: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.regions)),
     cities: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.cities)),
     companyLevels: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.companyLevels)),
     loanTiers: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.loanTiers)),
     difficulties: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.difficulties)),
-    adRewards: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.adRewards))
+    adRewards: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.adRewards)),
+    technologies: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.technologies))
   };
   return ConfigRepo.fromBundle(buildConfigBundle(input));
 }

@@ -44,11 +44,21 @@ export interface CityConfig {
   city_base_social_value: number;
   has_river: boolean;
   unlock_company_level: number;
+  city_type?: string;
+  display_name?: string;
 }
 
 export interface CompanyLevelConfig {
   level: number;
   sv_threshold: number;
+}
+
+export interface RegionConfig {
+  region_id: string;
+  region_type?: string;
+  unlock_company_level: number;
+  display_name?: string;
+  design_role?: string;
 }
 
 export interface LoanTierConfig {
@@ -99,6 +109,7 @@ export interface ConfigBundle {
   runConfig: RunConfig;
   disasters: DisasterConfig[];
   facilities: FacilityConfig[];
+  regions: RegionConfig[];
   cities: CityConfig[];
   companyLevels: CompanyLevelConfig[];
   loanTiers: LoanTierConfig[];
@@ -125,6 +136,10 @@ export class ConfigRepo {
 
   getCity(id: string): CityConfig | undefined {
     return this.bundle.cities.find((c) => c.city_id === id);
+  }
+
+  getRegion(id: string): RegionConfig | undefined {
+    return this.bundle.regions.find((region) => region.region_id === id);
   }
 
   getDisasterForMonth(month: number): DisasterConfig | undefined {

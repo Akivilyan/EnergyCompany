@@ -9,6 +9,7 @@ describe("getClientHudCapabilities", () => {
     expect(boot.app.controller.state.companyLevel).toBe(1);
     expect(getClientHudCapabilities(boot)).toEqual({
       canQueueRegionLink: false,
+      canCycleRegionLink: false,
       canOperateTech: false
     });
   });
@@ -25,6 +26,7 @@ describe("getClientHudCapabilities", () => {
     expect(boot.app.controller.state.companyLevel).toBeGreaterThanOrEqual(2);
     expect(getClientHudCapabilities(boot)).toEqual({
       canQueueRegionLink: true,
+      canCycleRegionLink: true,
       canOperateTech: true
     });
   });

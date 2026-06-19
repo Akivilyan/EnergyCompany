@@ -37,7 +37,13 @@ export {
   formatEventsHudHint,
   formatPendingEventModalLines
 } from "./eventsHudController.js";
-export { regionQueueDefaultLink, DEFAULT_REGION_LINK } from "./regionHudController.js";
+export {
+  DEFAULT_REGION_LINK,
+  formatSelectedRegionLink,
+  getRegionHudSelectionSnapshot,
+  regionCycleLinkCandidate,
+  regionQueueDefaultLink
+} from "./regionHudController.js";
 export {
   clientNavBack,
   clientNavOpenCompany,

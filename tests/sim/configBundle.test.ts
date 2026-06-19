@@ -13,6 +13,7 @@ describe("buildConfigBundle", () => {
   it("fromBundle matches loadFromConfigDir for vertical slice", () => {
     const fromDir = loadConfigRepoFromConfigDir(sliceDir);
     const fromBundle = configRepoFromBundle(buildConfigBundle(fromDir.bundle));
+    expect(fromBundle.bundle.regions.length).toBe(fromDir.bundle.regions.length);
     expect(fromBundle.bundle.cities.length).toBe(fromDir.bundle.cities.length);
     expect(fromBundle.bundle.runConfig.campaign_run_target_months).toBe(
       fromDir.bundle.runConfig.campaign_run_target_months

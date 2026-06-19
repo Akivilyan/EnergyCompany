@@ -21,6 +21,7 @@ import {
   clientNavOpenCompany,
   clientNavOpenRegion,
   clientNavOpenTechTree,
+  regionCycleLinkCandidate,
   regionQueueDefaultLink,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
@@ -71,6 +72,7 @@ export class CityHudPanel extends Component {
   private adSpeedupBtn: HudButton | null = null;
   private ackEventBtn: HudButton | null = null;
   private queueRegionLinkBtn: HudButton | null = null;
+  private cycleRegionLinkBtn: HudButton | null = null;
   private openCompanyBtn: HudButton | null = null;
   private openRegionBtn: HudButton | null = null;
   private openTechBtn: HudButton | null = null;
@@ -156,6 +158,9 @@ export class CityHudPanel extends Component {
     this.queueRegionLinkBtn = this.createTapButton(shell, "QueueRegionLink", "hud.btn.queue_link", () =>
       this.onQueueRegionLink()
     );
+    this.cycleRegionLinkBtn = this.createTapButton(shell, "CycleRegionLink", "hud.btn.cycle_region_link", () =>
+      this.onCycleRegionLink()
+    );
     this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => this.onAdSpeedup());
     this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
     this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
@@ -192,6 +197,7 @@ export class CityHudPanel extends Component {
     this.placeRowButtons(
       layout.rows[1],
       [
+        this.cycleRegionLinkBtn,
         this.queueRegionLinkBtn,
         this.ackEventBtn,
         this.applyLoanBtn,
@@ -239,6 +245,7 @@ export class CityHudPanel extends Component {
       this.adSpeedupBtn,
       this.ackEventBtn,
       this.queueRegionLinkBtn,
+      this.cycleRegionLinkBtn,
       this.openCompanyBtn,
       this.openRegionBtn,
       this.openTechBtn,
@@ -322,6 +329,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
     this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
     this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
+    this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
     this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
     this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
     this.setButtonCaption(this.openTechBtn, "hud.btn.tech");
@@ -353,6 +361,7 @@ export class CityHudPanel extends Component {
     this.buildWindBtn!.node.active = onCity;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
+    this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
     this.applyLoanBtn!.node.active = onCompany;
     this.adCashBtn!.node.active = onCompany;
@@ -476,5 +485,13 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] region link failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onCycleRegionLink(): void {
+    if (!this.boot) return;
+    const out = regionCycleLinkCandidate(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] region candidate failed: ${out.errorCode ?? "unknown"}`);
   }
 }

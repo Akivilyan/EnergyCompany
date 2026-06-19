@@ -18,6 +18,7 @@ export function loadConfigRepoFromConfigDir(configDir: string): ConfigRepo {
     runConfig: readJson(path.join(configDir, "run_config.json")),
     disasters: readJson(path.join(configDir, "campaign_disasters.json")),
     facilities: readJson(path.join(configDir, "facilities_slice.json")),
+    regions: readJson(path.join(configDir, "regions.json")),
     cities: readJson(path.join(configDir, "cities.json")),
     companyLevels: readJson(path.join(configDir, "company_levels.json")),
     loanTiers: readJson(path.join(configDir, "loan_tiers.json")),

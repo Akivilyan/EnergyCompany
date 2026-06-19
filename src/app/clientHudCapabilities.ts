@@ -2,6 +2,7 @@ import type { GameBootstrap } from "./gameBootstrap.js";
 
 export interface ClientHudCapabilities {
   canQueueRegionLink: boolean;
+  canCycleRegionLink: boolean;
   canOperateTech: boolean;
 }
 
@@ -12,9 +13,10 @@ export interface ClientHudCapabilities {
 export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabilities {
   const region = boot.app.screens.region.getSnapshot();
   const tech = boot.app.screens.tech.getSnapshot();
-  const unlockedCities = region.cities.filter((city) => city.unlocked).length;
+  const availableRegionCandidates = region.linkCandidates.filter((candidate) => candidate.unlocked);
   return {
-    canQueueRegionLink: unlockedCities >= 2,
+    canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
+    canCycleRegionLink: availableRegionCandidates.length > 0,
     canOperateTech: tech.canOpen
   };
 }

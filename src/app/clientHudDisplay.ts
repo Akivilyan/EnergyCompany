@@ -2,6 +2,7 @@ import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
 import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
+import { formatSelectedRegionLink } from "./regionHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 
 export function formatLoanTierLabel(loanId: string): string {
@@ -72,6 +73,8 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   const building = s.gridLinks.filter((l) => l.status === "building").length;
   const finished = s.gridLinks.filter((l) => l.status === "finished").length;
   const unlockedCities = s.cities.filter((c) => c.unlocked).length;
+  const availableCandidates = s.linkCandidates.filter((candidate) => candidate.available).length;
+  const selectedLink = formatSelectedRegionLink(boot);
   const statusLine = t("hud.status.region", {
     level: s.companyLevel,
     funds: s.funds,
@@ -84,11 +87,13 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   });
   const statusLines = hudLines(
     t("hud.line.region_header", { level: s.companyLevel }),
-    t("hud.line.cities_unlocked", { cities: unlockedCities })
+    t("hud.line.cities_unlocked", { cities: unlockedCities }),
+    t("hud.line.region_candidates", { count: availableCandidates })
   );
   const detailLines = hudLines(
     t("hud.line.month", { month: s.month }),
-    t("hud.line.region_links", { building, finished })
+    t("hud.line.region_links", { building, finished }),
+    selectedLink
   );
   return { statusLine, detailLine, statusLines, detailLines };
 }

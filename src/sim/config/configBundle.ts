@@ -7,6 +7,7 @@ import type {
   DisasterConfig,
   FacilityConfig,
   LoanTierConfig,
+  RegionConfig,
   TechnologyConfig,
   RunConfig
 } from "./configRepo.js";
@@ -19,6 +20,7 @@ export const V0_CONFIG_JSON_FILES = {
   runConfig: "run_config.json",
   disasters: "campaign_disasters.json",
   facilities: "facilities_slice.json",
+  regions: "regions.json",
   cities: "cities.json",
   companyLevels: "company_levels.json",
   loanTiers: "loan_tiers.json",
@@ -31,6 +33,7 @@ export interface ConfigBundleInput {
   runConfig: RunConfig;
   disasters: DisasterConfig[];
   facilities: FacilityConfig[];
+  regions: RegionConfig[];
   cities: CityConfig[];
   companyLevels: CompanyLevelConfig[];
   loanTiers: LoanTierConfig[];
@@ -44,6 +47,7 @@ export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
     runConfig: input.runConfig,
     disasters: input.disasters,
     facilities: input.facilities,
+    regions: input.regions,
     cities: input.cities,
     companyLevels: input.companyLevels,
     loanTiers: input.loanTiers,

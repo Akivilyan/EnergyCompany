@@ -59,4 +59,28 @@ describe("ScreenRegion", () => {
     expect(link?.status).toBe("finished");
     expect(link?.monthsRemaining).toBe(0);
   });
+
+  it("exposes second-batch region and trunk link candidates after level III unlock", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 3;
+    const screen = createScreenRegion(controller);
+
+    const snapshot = screen.getSnapshot();
+    expect(
+      snapshot.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-MAP02-01" &&
+          candidate.toCityId === "CITY-MAP02-02" &&
+          candidate.linkType === "region"
+      )
+    ).toBe(true);
+    expect(
+      snapshot.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-START" &&
+          candidate.toCityId === "CITY-MAP02-01" &&
+          candidate.linkType === "trunk"
+      )
+    ).toBe(true);
+  });
 });
