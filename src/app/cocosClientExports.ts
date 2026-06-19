@@ -19,8 +19,12 @@ export { formatClientHudStatus } from "./clientHudController.js";
 export { buildClientHudDisplay, formatLoanTierLabel } from "./clientHudDisplay.js";
 export { getClientHudCapabilities } from "./clientHudCapabilities.js";
 export {
+  companyApplySelectedLoan,
   companyApplyFirstUnlockedLoan,
-  companyClaimCashByAd
+  companyClaimCashByAd,
+  companyCycleLoanCandidate,
+  formatSelectedLoanCandidate,
+  getCompanyHudSelectionSnapshot
 } from "./companyHudController.js";
 export {
   DEFAULT_DEV_TECH_ID,

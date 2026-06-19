@@ -6,7 +6,10 @@ import {
 } from "../../src/app/clientHudDisplay.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
 import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
-import { companyApplyFirstUnlockedLoan } from "../../src/app/companyHudController.js";
+import {
+  companyApplyFirstUnlockedLoan,
+  companyCycleLoanCandidate
+} from "../../src/app/companyHudController.js";
 import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 
 describe("clientHudDisplay", () => {
@@ -35,10 +38,21 @@ describe("clientHudDisplay", () => {
     const lines = [...display.statusLines, ...display.detailLines];
 
     expect(display.statusLines).toEqual(["公司 1 级", "资金 140", "广告剩余 10 次"]);
-    expect(display.detailLines).toEqual(["社会价值 0/1（升级进度）", "无在贷"]);
+    expect(display.detailLines).toEqual(["社会价值 0/1（升级进度）", "候选：小额贷款（30万） · 月供3", "无在贷"]);
     expect(lines.filter((line) => line.includes("社会价值"))).toHaveLength(1);
     expect(lines.some((line) => line.includes("返回层"))).toBe(false);
-    expect(lines).toHaveLength(5);
+    expect(lines).toHaveLength(6);
+  });
+
+  it("shows switched company loan candidate before applying", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 2;
+    clientNavOpenCompany(boot);
+    companyCycleLoanCandidate(boot);
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[1]).toContain("中额贷款（80万）");
+    expect(display.detailLines[2]).toBe("可切换贷款 2 档");
   });
 
   it("shows selected research candidate and researchable count on tech screen", () => {

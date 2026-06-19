@@ -23,8 +23,9 @@ import {
   clientNavOpenTechTree,
   regionCycleLinkCandidate,
   regionQueueDefaultLink,
-  companyApplyFirstUnlockedLoan,
+  companyApplySelectedLoan,
   companyClaimCashByAd,
+  companyCycleLoanCandidate,
   getClientHudCapabilities,
   readCityHudViewModel,
   techCancelActiveResearch,
@@ -66,6 +67,7 @@ export class CityHudPanel extends Component {
   private buildWindBtn: HudButton | null = null;
   private advanceMonthBtn: HudButton | null = null;
   private applyLoanBtn: HudButton | null = null;
+  private cycleLoanBtn: HudButton | null = null;
   private adCashBtn: HudButton | null = null;
   private startResearchBtn: HudButton | null = null;
   private cancelResearchBtn: HudButton | null = null;
@@ -148,6 +150,7 @@ export class CityHudPanel extends Component {
     this.advanceMonthBtn = this.createTapButton(shell, "AdvanceMonth", "hud.btn.next_month", () => this.onAdvanceMonth());
     this.ackEventBtn = this.createTapButton(shell, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
     this.applyLoanBtn = this.createTapButton(shell, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
+    this.cycleLoanBtn = this.createTapButton(shell, "CycleLoan", "hud.btn.cycle_loan", () => this.onCycleLoan());
     this.adCashBtn = this.createTapButton(shell, "AdCash", "hud.btn.ad_cash", () => this.onAdCash());
     this.startResearchBtn = this.createTapButton(shell, "StartResearch", "hud.btn.start_research", () =>
       this.onStartResearch()
@@ -200,6 +203,7 @@ export class CityHudPanel extends Component {
         this.cycleRegionLinkBtn,
         this.queueRegionLinkBtn,
         this.ackEventBtn,
+        this.cycleLoanBtn,
         this.applyLoanBtn,
         this.adCashBtn,
         this.startResearchBtn,
@@ -239,6 +243,7 @@ export class CityHudPanel extends Component {
       this.buildWindBtn,
       this.advanceMonthBtn,
       this.applyLoanBtn,
+      this.cycleLoanBtn,
       this.adCashBtn,
       this.startResearchBtn,
       this.cancelResearchBtn,
@@ -323,6 +328,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind");
     this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month");
     this.setButtonCaption(this.applyLoanBtn, "hud.btn.loan");
+    this.setButtonCaption(this.cycleLoanBtn, "hud.btn.cycle_loan");
     this.setButtonCaption(this.adCashBtn, "hud.btn.ad_cash");
     this.setButtonCaption(this.startResearchBtn, "hud.btn.start_research");
     this.setButtonCaption(this.cancelResearchBtn, "hud.btn.cancel_research");
@@ -357,13 +363,16 @@ export class CityHudPanel extends Component {
     const techSnapshot = this.boot.app.screens.tech.getSnapshot();
     const techSelection = getTechHudSelectionSnapshot(this.boot);
     const hasActiveResearch = !!techSnapshot.activeResearch;
+    const companySnapshot = this.boot.app.screens.company.getSnapshot();
+    const canSwitchLoanCandidate = onCompany && !companySnapshot.activeLoan;
 
     this.buildWindBtn!.node.active = onCity;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
-    this.applyLoanBtn!.node.active = onCompany;
+    this.applyLoanBtn!.node.active = canSwitchLoanCandidate;
+    this.cycleLoanBtn!.node.active = canSwitchLoanCandidate;
     this.adCashBtn!.node.active = onCompany;
     this.startResearchBtn!.node.active = onTech && caps.canOperateTech && !hasActiveResearch;
     this.cancelResearchBtn!.node.active = onTech && caps.canOperateTech && hasActiveResearch;
@@ -430,10 +439,18 @@ export class CityHudPanel extends Component {
 
   private onApplyLoan(): void {
     if (!this.boot) return;
-    const out = companyApplyFirstUnlockedLoan(this.boot);
+    const out = companyApplySelectedLoan(this.boot);
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] loan failed: ${out.uiErrorCode ?? "unknown"}`);
+  }
+
+  private onCycleLoan(): void {
+    if (!this.boot) return;
+    const out = companyCycleLoanCandidate(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] loan candidate failed: ${out.uiErrorCode ?? "unknown"}`);
   }
 
   private onAdCash(): void {

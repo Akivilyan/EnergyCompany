@@ -3,6 +3,7 @@ import { readCityHudViewModel } from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
 import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
+import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 
 export function formatLoanTierLabel(loanId: string): string {
@@ -43,6 +44,8 @@ function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): n
 
 function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.company.getSnapshot();
+  const selection = getCompanyHudSelectionSnapshot(boot);
+  const selectedLoan = formatSelectedLoanCandidate(boot);
   const nextThreshold = nextCompanyLevelThreshold(boot, s.companyLevel);
   const svLine =
     nextThreshold === null
@@ -64,7 +67,15 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         months: s.activeLoan.monthsRemaining
       })
     : t("hud.status.company_no_loan");
-  const detailLines = hudLines(svLine, loanPart);
+  const detailLines = s.activeLoan
+    ? hudLines(svLine, loanPart)
+    : hudLines(
+        svLine,
+        selectedLoan,
+        selection.candidates.length > 1
+          ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })
+          : loanPart
+      );
   return { statusLine, detailLine: detailLines.join(" · "), statusLines, detailLines };
 }
 
