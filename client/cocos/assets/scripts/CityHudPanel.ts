@@ -16,7 +16,9 @@ import {
 import {
   buildClientHudDisplay,
   cityHudAdvanceMonth,
+  cityHudBuildSelected,
   cityHudBuildWind,
+  cityHudCycleBuildCandidate,
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenRegion,
@@ -65,6 +67,7 @@ export class CityHudPanel extends Component {
   private statusLabel: Label | null = null;
   private hintLabel: Label | null = null;
   private buildWindBtn: HudButton | null = null;
+  private cycleBuildBtn: HudButton | null = null;
   private advanceMonthBtn: HudButton | null = null;
   private applyLoanBtn: HudButton | null = null;
   private cycleLoanBtn: HudButton | null = null;
@@ -147,6 +150,7 @@ export class CityHudPanel extends Component {
     this.hintLabel = this.createBandLabel(this.detailBand);
 
     this.buildWindBtn = this.createTapButton(shell, "BuildWind", "hud.btn.build_wind", () => this.onBuildWind());
+    this.cycleBuildBtn = this.createTapButton(shell, "CycleBuild", "hud.btn.cycle_build", () => this.onCycleBuild());
     this.advanceMonthBtn = this.createTapButton(shell, "AdvanceMonth", "hud.btn.next_month", () => this.onAdvanceMonth());
     this.ackEventBtn = this.createTapButton(shell, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
     this.applyLoanBtn = this.createTapButton(shell, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
@@ -196,7 +200,7 @@ export class CityHudPanel extends Component {
     this.hintLabel.fontSize = layout.detailFont;
     this.hintLabel.lineHeight = Math.round(layout.detailFont * 1.2);
 
-    this.placeRowButtons(layout.rows[0], [this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
+    this.placeRowButtons(layout.rows[0], [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
     this.placeRowButtons(
       layout.rows[1],
       [
@@ -241,6 +245,7 @@ export class CityHudPanel extends Component {
   private allButtons(): HudButton[] {
     return [
       this.buildWindBtn,
+      this.cycleBuildBtn,
       this.advanceMonthBtn,
       this.applyLoanBtn,
       this.cycleLoanBtn,
@@ -326,6 +331,7 @@ export class CityHudPanel extends Component {
 
   private syncButtonCaptions(): void {
     this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind");
+    this.setButtonCaption(this.cycleBuildBtn, "hud.btn.cycle_build");
     this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month");
     this.setButtonCaption(this.applyLoanBtn, "hud.btn.loan");
     this.setButtonCaption(this.cycleLoanBtn, "hud.btn.cycle_loan");
@@ -366,7 +372,8 @@ export class CityHudPanel extends Component {
     const companySnapshot = this.boot.app.screens.company.getSnapshot();
     const canSwitchLoanCandidate = onCompany && !companySnapshot.activeLoan;
 
-    this.buildWindBtn!.node.active = onCity;
+    this.buildWindBtn!.node.active = onCity && caps.canBuildInCity;
+    this.cycleBuildBtn!.node.active = onCity && caps.canCycleBuildCandidate;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
@@ -385,6 +392,9 @@ export class CityHudPanel extends Component {
     this.openTechBtn!.node.active = true;
     this.navBackBtn!.node.active = true;
     this.syncButtonCaptions();
+    if (onCity) {
+      this.setButtonCaption(this.buildWindBtn, "hud.btn.build_selected");
+    }
     if (onTech && !hasActiveResearch) {
       this.setButtonCaption(this.adSpeedupBtn, "hud.btn.cycle_research");
     }
@@ -397,9 +407,17 @@ export class CityHudPanel extends Component {
 
   private onBuildWind(): void {
     if (!this.boot) return;
-    const out = cityHudBuildWind(this.boot);
+    const out = cityHudBuildSelected(this.boot);
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] build failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onCycleBuild(): void {
+    if (!this.boot) return;
+    const out = cityHudCycleBuildCandidate(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] build candidate failed: ${out.errorCode ?? "unknown"}`);
   }
 
   private onAdvanceMonth(): void {

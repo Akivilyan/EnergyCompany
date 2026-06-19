@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.13.0
+version: 1.14.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -82,6 +82,7 @@ open_questions: []
 | 2026-06-19 | `FAST-01` 地图第二批可玩链路子步：把 `regions.json` 正式接入运行时配置，区域页/HUD 从“固定一条 MAP-01 铺线”扩到“可切换候选链路并执行当前候选”，覆盖 `MAP-02` 省内链路与 `CITY-START -> CITY-MAP02-01` 跨区 trunk，更长地图链路已能直接试玩 | `docs/design/data/vertical-slice-v0/regions.json` `src/sim/config/*.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `src/app/clientHudCapabilities.ts` `src/app/clientHudDisplay.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `client/cocos/assets/scripts/loadConfigFromResources.ts` `scripts/sync-client-assets.mjs` `client/cocos/assets/resources/config/v0/regions.json*` `tests/modules/screenRegion.test.ts` `tests/app/regionHudController.test.ts` `tests/app/clientHudCapabilities.test.ts` `tests/app/clientHudDisplay.test.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-19 | 仓库决断：Cocos Creator `.meta` 属于资源 UUID/导入元数据，项目内应随资源一并入库；补提交流水里遗漏的 `technology_config.json.meta`，避免配置资源目录继续半套入库 | `client/cocos/assets/resources/config/v0/technology_config.json.meta` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 无需额外测试；仅补齐资源元数据入库 |
 | 2026-06-19 | `FAST-01` 公司经营第三批可玩链路子步：公司页/HUD 从“固定申请首个已解锁贷款”扩到“显示当前贷款候选、切换候选并按当前候选申请”，与科技/区域 HUD 交互模式对齐；同时补候选摘要文案与 Cocos 按钮显隐，避免有在贷时继续暴露申请入口 | `src/app/companyHudController.ts` `src/app/clientHudDisplay.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/app/companyHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-19 | `FAST-01` 城市经营第四批可玩链路子步：城市页/HUD 从“固定只造风电”扩到“显示建造候选、切换候选并按当前候选建造”，把光伏/火电/水电/核电接入开发 HUD；同时在 `dispatch` 补齐建造前置校验，拦截未点亮科技、无河流水电、非核电资格城市与单城超上限建造 | `src/sim/config/configRepo.ts` `src/sim/core/dispatch.ts` `src/app/cityHudController.ts` `src/app/clientHudCapabilities.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudSmoke.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/sim/settle.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudCapabilities.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -119,3 +120,4 @@ open_questions: []
 | 1.11.0 | 2026-06-19 | 补记 `FAST-01` 地图第二批可玩链路子步：区域 HUD 支持切换并执行 `MAP-02` / trunk 候选链路，`regions.json` 正式接入运行时与客户端配置 |
 | 1.12.0 | 2026-06-19 | 补记仓库决断：Cocos `.meta` 作为项目资源元数据保留入库，并补齐 `technology_config.json.meta` |
 | 1.13.0 | 2026-06-19 | 补记 `FAST-01` 公司经营第三批可玩链路子步：公司 HUD 支持贷款候选切换与按当前候选申请 |
+| 1.14.0 | 2026-06-19 | 补记 `FAST-01` 城市经营第四批可玩链路子步：城市 HUD 支持建造候选切换与按当前候选建造，并补齐核心建造前置校验 |

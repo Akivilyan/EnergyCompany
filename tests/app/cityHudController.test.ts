@@ -5,8 +5,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 import {
   cityHudAdvanceMonth,
+  cityHudBuildSelected,
   cityHudBuildWind,
+  cityHudCycleBuildCandidate,
+  formatSelectedBuildCandidate,
   formatCityHudStatus,
+  getCityHudBuildSelectionSnapshot,
   readCityHudViewModel
 } from "../../src/app/cityHudController.js";
 import { mountGameClient } from "../../src/app/gameClientEntry.js";
@@ -49,6 +53,24 @@ describe("cityHudController", () => {
     expect(advance.monthFrom).toBe(1);
     expect(advance.monthTo).toBe(2);
     expect(advance.view.month).toBe(2);
+  });
+
+  it("cycles city build candidates and builds selected solar candidate", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const initial = getCityHudBuildSelectionSnapshot(boot);
+    expect(initial.selectedFacilityId).toBe("wind");
+
+    const cycle = cityHudCycleBuildCandidate(boot);
+    expect(cycle.ok).toBe(true);
+    expect(cycle.messageKey).toBe("city.action.selected_next_candidate");
+
+    const selected = formatSelectedBuildCandidate(boot);
+    expect(selected).toContain("光伏");
+
+    const build = cityHudBuildSelected(boot);
+    expect(build.ok).toBe(true);
+    expect(build.view.funds).toBeLessThan(140);
   });
 });
 

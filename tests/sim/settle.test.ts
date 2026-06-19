@@ -608,6 +608,61 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("not_unlocked");
   });
 
+  it("dispatch blocks hydro construction in city without river", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    syncOperableCities(state, config);
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-MAP01-02", facilityId: "hydro", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("invalid_command_payload");
+  });
+
+  it("dispatch blocks nuclear construction before tech is lit", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "nuclear", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
+  });
+
+  it("dispatch blocks second nuclear construction in same city after tech unlock", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 3;
+    state.litTechIds.push("nuclear_1");
+    state.facilities["fac-nuclear-1"] = {
+      id: "fac-nuclear-1",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 12,
+      monthlyFuel: 0
+    };
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "nuclear", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("conflict_in_progress");
+  });
+
   it("dispatch blocks research before company level II", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);

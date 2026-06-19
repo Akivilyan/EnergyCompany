@@ -5,6 +5,7 @@ import {
   formatLoanTierLabel
 } from "../../src/app/clientHudDisplay.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
+import { cityHudCycleBuildCandidate } from "../../src/app/cityHudController.js";
 import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
 import {
   companyApplyFirstUnlockedLoan,
@@ -73,10 +74,21 @@ describe("clientHudDisplay", () => {
   it("exposes locked hud capabilities before company level 2", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({
+      canBuildInCity: true,
+      canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
       canOperateTech: false
     });
+  });
+
+  it("shows selected city build candidate and candidate count on city screen", () => {
+    const boot = createGameBootstrapFromRepo();
+    cityHudCycleBuildCandidate(boot);
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("候选：光伏");
+    expect(display.detailLines[1]).toBe("可切换建造 4 项");
   });
 
   it("shows selected region link candidate and candidate count on region screen", () => {

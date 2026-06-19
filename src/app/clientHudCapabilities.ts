@@ -4,6 +4,8 @@ export interface ClientHudCapabilities {
   canQueueRegionLink: boolean;
   canCycleRegionLink: boolean;
   canOperateTech: boolean;
+  canBuildInCity: boolean;
+  canCycleBuildCandidate: boolean;
 }
 
 /**
@@ -13,10 +15,14 @@ export interface ClientHudCapabilities {
 export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabilities {
   const region = boot.app.screens.region.getSnapshot();
   const tech = boot.app.screens.tech.getSnapshot();
+  const cityId = boot.play.getNavigation().cityId ?? "CITY-START";
+  const city = boot.app.screens.city(cityId).getSnapshot();
   const availableRegionCandidates = region.linkCandidates.filter((candidate) => candidate.unlocked);
   return {
     canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
     canCycleRegionLink: availableRegionCandidates.length > 0,
-    canOperateTech: tech.canOpen
+    canOperateTech: tech.canOpen,
+    canBuildInCity: city !== null && boot.app.controller.state.constructionQueue.length < 3,
+    canCycleBuildCandidate: city !== null
   };
 }

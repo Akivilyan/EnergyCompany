@@ -5,6 +5,8 @@ export const en: Record<string, string> = {
   "hud.config_failed": "Config load failed",
 
   "hud.btn.build_wind": "Build Wind",
+  "hud.btn.build_selected": "Build Selected",
+  "hud.btn.cycle_build": "Cycle Build",
   "hud.btn.next_month": "Next Month",
   "hud.btn.loan": "Loan",
   "hud.btn.cycle_loan": "Cycle Loan",
@@ -58,6 +60,8 @@ export const en: Record<string, string> = {
   "hud.line.tech_researchable": "Researchable {count}",
   "hud.line.research_active": "Research {techId} {months}m left",
   "hud.status.city": "M{month} · {funds} · {city}",
+  "hud.status.city_selected_build": "Candidate: {facility} · cost {cost} · {months}m",
+  "hud.status.city_build_candidate_count": "Build options {count}",
   "hud.status.company": "Company · Lv{level} · {funds} · ads={ads}",
   "hud.status.company_loan_detail": "Loan: {loanName} · {months}m left",
   "hud.status.company_no_loan": "No active loan",
@@ -100,6 +104,12 @@ export const en: Record<string, string> = {
   "company.action.selected_next_candidate": "Loan candidate switched",
   "company.action.selected_only_candidate": "Only one loan tier",
   "company.action.no_loan_candidate": "No loan tier available",
+
+  "city.error.build_failed": "Build failed",
+  "city.error.advance_failed": "Advance month failed",
+  "city.action.selected_next_candidate": "Build candidate switched",
+  "city.action.selected_only_candidate": "Only one build candidate",
+  "city.action.no_build_candidate": "No build candidate available",
 
   "tech_tree.error.tech_locked": "Need company level II",
   "tech_tree.error.insufficient_funds": "Insufficient funds",

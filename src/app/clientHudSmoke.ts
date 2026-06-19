@@ -1,7 +1,9 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
 import {
   cityHudAdvanceMonth,
+  cityHudBuildSelected,
   cityHudBuildWind,
+  cityHudCycleBuildCandidate,
   formatCityHudStatus,
   readCityHudViewModel
 } from "./cityHudController.js";
@@ -58,6 +60,15 @@ export function runClientHudSmoke(boot: GameBootstrap): ClientHudSmokeStep[] {
     )
   );
   if (!month.ok) return steps;
+
+  const cycleBuild = cityHudCycleBuildCandidate(boot);
+  steps.push(
+    step(
+      "fast-01-city-cycle-build",
+      cycleBuild.ok,
+      cycleBuild.messageKey ?? (cycleBuild.errorCode ?? "unknown")
+    )
+  );
 
   const company = clientNavOpenCompany(boot);
   steps.push(

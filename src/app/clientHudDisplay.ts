@@ -1,5 +1,9 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
+import {
+  formatSelectedBuildCandidate,
+  getCityHudBuildSelectionSnapshot
+} from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
 import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
@@ -175,6 +179,8 @@ export function buildClientHudDisplay(
   } else {
     const view = readCityHudViewModel(boot);
     const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
+    const buildSelection = getCityHudBuildSelectionSnapshot(boot);
+    const selectedBuild = formatSelectedBuildCandidate(boot);
     const eventsHint = formatEventsHudHint(boot);
     const pending = formatPendingEventModalLines(boot);
     const statusLine = formatCityStatus(boot);
@@ -184,6 +190,10 @@ export function buildClientHudDisplay(
       t("hud.line.city", { city })
     );
     const detailLines = hudLines(
+      selectedBuild,
+      buildSelection.candidates.length > 1
+        ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })
+        : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
       t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),
       eventsHint,

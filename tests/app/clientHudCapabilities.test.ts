@@ -8,6 +8,8 @@ describe("getClientHudCapabilities", () => {
 
     expect(boot.app.controller.state.companyLevel).toBe(1);
     expect(getClientHudCapabilities(boot)).toEqual({
+      canBuildInCity: true,
+      canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
       canOperateTech: false
@@ -25,6 +27,8 @@ describe("getClientHudCapabilities", () => {
 
     expect(boot.app.controller.state.companyLevel).toBeGreaterThanOrEqual(2);
     expect(getClientHudCapabilities(boot)).toEqual({
+      canBuildInCity: true,
+      canCycleBuildCandidate: true,
       canQueueRegionLink: true,
       canCycleRegionLink: true,
       canOperateTech: true

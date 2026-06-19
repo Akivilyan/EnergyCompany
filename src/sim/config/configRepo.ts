@@ -28,6 +28,7 @@ export interface DisasterConfig {
 export interface FacilityConfig {
   facility_id: string;
   facility_type?: string;
+  tier?: number;
   build_cost_total: number;
   build_duration_months: number;
   installment_count: number;
@@ -35,6 +36,9 @@ export interface FacilityConfig {
   output_capacity_mw: number;
   is_eco_default?: boolean;
   requires_river: boolean;
+  max_per_city?: number;
+  unlock_tech_id?: string;
+  display_name?: string;
 }
 
 export interface CityConfig {
@@ -45,6 +49,7 @@ export interface CityConfig {
   has_river: boolean;
   unlock_company_level: number;
   city_type?: string;
+  is_nuclear_eligible?: boolean;
   display_name?: string;
 }
 

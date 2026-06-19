@@ -5,6 +5,8 @@ export const zhCN: Record<string, string> = {
   "hud.config_failed": "配置加载失败",
 
   "hud.btn.build_wind": "建造风场",
+  "hud.btn.build_selected": "建造候选",
+  "hud.btn.cycle_build": "切换建造",
   "hud.btn.next_month": "下一月",
   "hud.btn.loan": "申请贷款",
   "hud.btn.cycle_loan": "切换贷款",
@@ -58,6 +60,8 @@ export const zhCN: Record<string, string> = {
   "hud.line.tech_researchable": "可研 {count} 项",
   "hud.line.research_active": "在研 {techId} 剩{months}月",
   "hud.status.city": "第{month}月 · 资金{funds} · {city}",
+  "hud.status.city_selected_build": "候选：{facility} · {cost}资金 · {months}月",
+  "hud.status.city_build_candidate_count": "可切换建造 {count} 项",
   "hud.status.company": "公司 · {level}级 · 资金{funds} · 广告{ads}次",
   "hud.status.company_loan_detail": "在贷：{loanName} · 剩{months}月",
   "hud.status.company_no_loan": "无在贷",
@@ -100,6 +104,12 @@ export const zhCN: Record<string, string> = {
   "company.action.selected_next_candidate": "已切换贷款候选",
   "company.action.selected_only_candidate": "当前只有一个贷款档位",
   "company.action.no_loan_candidate": "当前没有可选贷款档位",
+
+  "city.error.build_failed": "建造失败",
+  "city.error.advance_failed": "推进月份失败",
+  "city.action.selected_next_candidate": "已切换建造候选",
+  "city.action.selected_only_candidate": "当前只有一个建造候选",
+  "city.action.no_build_candidate": "当前没有可建造候选",
 
   "tech_tree.error.tech_locked": "需公司2级才能开科技树",
   "tech_tree.error.insufficient_funds": "资金不足",

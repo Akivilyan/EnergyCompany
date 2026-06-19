@@ -40,6 +40,25 @@ function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResul
   return ok(true);
 }
 
+function countCityFacility(
+  state: GameState,
+  cityId: string,
+  facilityId: string
+): number {
+  let built = 0;
+  for (const fac of Object.values(state.facilities)) {
+    if (fac.cityId === cityId && fac.facilityId === facilityId) {
+      built += 1;
+    }
+  }
+  for (const item of state.constructionQueue) {
+    if (item.cityId === cityId && item.facilityId === facilityId) {
+      built += 1;
+    }
+  }
+  return built;
+}
+
 function isBlockedAllowedCommand(command: Command): boolean {
   return command.type === "advance_onboarding" || command.type === "skip_onboarding";
 }
@@ -97,6 +116,33 @@ export function dispatch(
       }
       if (next.constructionQueue.length >= 3) {
         return err("conflict_in_progress", "global construction queue full");
+      }
+      if (facility.unlock_tech_id && !next.litTechIds.includes(facility.unlock_tech_id)) {
+        return err("not_unlocked", "facility tech not lit", {
+          city_id: command.cityId,
+          facility_id: command.facilityId,
+          unlock_tech_id: facility.unlock_tech_id
+        });
+      }
+      if (facility.requires_river && !city.has_river) {
+        return err("invalid_command_payload", "facility requires river", {
+          city_id: command.cityId,
+          facility_id: command.facilityId
+        });
+      }
+      if (command.facilityId === "nuclear" && !city.is_nuclear_eligible) {
+        return err("invalid_command_payload", "facility requires nuclear eligible city", {
+          city_id: command.cityId,
+          facility_id: command.facilityId
+        });
+      }
+      const maxPerCity = facility.max_per_city ?? Number.POSITIVE_INFINITY;
+      if (countCityFacility(next, command.cityId, command.facilityId) >= maxPerCity) {
+        return err("conflict_in_progress", "facility maxed in city", {
+          city_id: command.cityId,
+          facility_id: command.facilityId,
+          max_per_city: maxPerCity
+        });
       }
       if (next.funds < facility.build_cost_total) {
         return err("insufficient_funds", "not enough funds for construction");

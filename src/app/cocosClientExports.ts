@@ -11,8 +11,12 @@ export {
 export type { GameBootstrap } from "./gameBootstrap.js";
 export {
   cityHudAdvanceMonth,
+  cityHudBuildSelected,
   cityHudBuildWind,
+  cityHudCycleBuildCandidate,
+  formatSelectedBuildCandidate,
   formatCityHudStatus,
+  getCityHudBuildSelectionSnapshot,
   readCityHudViewModel
 } from "./cityHudController.js";
 export { formatClientHudStatus } from "./clientHudController.js";
