@@ -29,6 +29,8 @@ import {
   companyApplySelectedLoan,
   companyClaimCashByAd,
   companyCycleLoanCandidate,
+  worldCycleTargetCandidate,
+  worldOpenSelectedTarget,
   getClientHudCapabilities,
   readCityHudViewModel,
   techCancelActiveResearch,
@@ -79,6 +81,8 @@ export class CityHudPanel extends Component {
   private ackEventBtn: HudButton | null = null;
   private queueRegionLinkBtn: HudButton | null = null;
   private cycleRegionLinkBtn: HudButton | null = null;
+  private openWorldTargetBtn: HudButton | null = null;
+  private cycleWorldTargetBtn: HudButton | null = null;
   private openCompanyBtn: HudButton | null = null;
   private openRegionBtn: HudButton | null = null;
   private openWorldBtn: HudButton | null = null;
@@ -170,6 +174,12 @@ export class CityHudPanel extends Component {
     this.cycleRegionLinkBtn = this.createTapButton(shell, "CycleRegionLink", "hud.btn.cycle_region_link", () =>
       this.onCycleRegionLink()
     );
+    this.openWorldTargetBtn = this.createTapButton(shell, "OpenWorldTarget", "hud.btn.world_open_target", () =>
+      this.onOpenWorldTarget()
+    );
+    this.cycleWorldTargetBtn = this.createTapButton(shell, "CycleWorldTarget", "hud.btn.world_cycle_target", () =>
+      this.onCycleWorldTarget()
+    );
     this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => this.onAdSpeedup());
     this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
     this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
@@ -210,6 +220,8 @@ export class CityHudPanel extends Component {
         this.cycleRegionLinkBtn,
         this.queueRegionLinkBtn,
         this.ackEventBtn,
+        this.cycleWorldTargetBtn,
+        this.openWorldTargetBtn,
         this.cycleLoanBtn,
         this.applyLoanBtn,
         this.adCashBtn,
@@ -263,6 +275,8 @@ export class CityHudPanel extends Component {
       this.ackEventBtn,
       this.queueRegionLinkBtn,
       this.cycleRegionLinkBtn,
+      this.openWorldTargetBtn,
+      this.cycleWorldTargetBtn,
       this.openCompanyBtn,
       this.openRegionBtn,
       this.openWorldBtn,
@@ -350,6 +364,8 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
     this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
     this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
+    this.setButtonCaption(this.openWorldTargetBtn, "hud.btn.world_open_target");
+    this.setButtonCaption(this.cycleWorldTargetBtn, "hud.btn.world_cycle_target");
     this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
     this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
     this.setButtonCaption(this.openWorldBtn, "hud.btn.world");
@@ -372,8 +388,9 @@ export class CityHudPanel extends Component {
     const caps = getClientHudCapabilities(this.boot);
     const onCompany = viewModel.screen === "screen_company";
     const onRegion = viewModel.screen === "screen_region";
+    const onWorld = viewModel.screen === "screen_world_map";
     const onTech = viewModel.screen === "screen_tech_tree";
-    const onCity = !onCompany && !onRegion && !onTech;
+    const onCity = !onCompany && !onRegion && !onWorld && !onTech;
     const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
     const techSnapshot = this.boot.app.screens.tech.getSnapshot();
     const techSelection = getTechHudSelectionSnapshot(this.boot);
@@ -386,6 +403,8 @@ export class CityHudPanel extends Component {
     this.advanceMonthBtn!.node.active = onCity || onRegion;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
+    this.openWorldTargetBtn!.node.active = onWorld;
+    this.cycleWorldTargetBtn!.node.active = onWorld;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
     this.applyLoanBtn!.node.active = canSwitchLoanCandidate;
     this.cycleLoanBtn!.node.active = canSwitchLoanCandidate;
@@ -545,5 +564,21 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] region candidate failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onOpenWorldTarget(): void {
+    if (!this.boot) return;
+    const out = worldOpenSelectedTarget(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] world open failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onCycleWorldTarget(): void {
+    if (!this.boot) return;
+    const out = worldCycleTargetCandidate(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] world cycle failed: ${out.errorCode ?? "unknown"}`);
   }
 }

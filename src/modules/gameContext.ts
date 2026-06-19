@@ -15,7 +15,7 @@ export interface GameAppScreens {
   city(cityId: string): ScreenCityDetail;
   company: ScreenCompany;
   tech: ScreenTechTree;
-  region: ScreenRegion;
+  region(regionId?: string): ScreenRegion;
   world: ScreenWorldMap;
   events: ScreenEventsPanel;
   onboarding: ScreenOnboarding;

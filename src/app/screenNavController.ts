@@ -29,15 +29,41 @@ export function clientNavOpenTechTree(boot: GameBootstrap): ClientNavResult {
 }
 
 export function clientNavOpenRegion(boot: GameBootstrap): ClientNavResult {
-  return clientNavOpenScreen(boot, "screen_region");
+  const navigation = boot.play.openScreen("screen_region", undefined, boot.play.getNavigation().regionId ?? "MAP-01");
+  return {
+    ok: true,
+    screen: navigation.currentScreen,
+    navigation,
+    view: readCityHudViewModel(boot)
+  };
 }
 
 export function clientNavOpenWorldMap(boot: GameBootstrap): ClientNavResult {
   return clientNavOpenScreen(boot, "screen_world_map");
 }
 
-export function clientNavOpenCity(boot: GameBootstrap): ClientNavResult {
-  return clientNavOpenScreen(boot, "screen_city_detail");
+export function clientNavOpenCity(
+  boot: GameBootstrap,
+  cityId?: string,
+  regionId?: string
+): ClientNavResult {
+  const navigation = boot.play.openScreen("screen_city_detail", cityId, regionId);
+  return {
+    ok: true,
+    screen: navigation.currentScreen,
+    navigation,
+    view: readCityHudViewModel(boot)
+  };
+}
+
+export function clientNavOpenRegionById(boot: GameBootstrap, regionId: string): ClientNavResult {
+  const navigation = boot.play.openScreen("screen_region", undefined, regionId);
+  return {
+    ok: true,
+    screen: navigation.currentScreen,
+    navigation,
+    view: readCityHudViewModel(boot)
+  };
 }
 
 export function clientNavBack(boot: GameBootstrap): ClientNavResult {

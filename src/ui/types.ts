@@ -11,4 +11,5 @@ export interface NavigationState {
   currentScreen: ScreenId;
   stack: ScreenId[];
   cityId: string | null;
+  regionId: string | null;
 }

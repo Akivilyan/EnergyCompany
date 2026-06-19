@@ -25,7 +25,7 @@ describe("regionHudController", () => {
     clientNavOpenRegion(boot);
     const out = regionQueueDefaultLink(boot);
     expect(out.ok).toBe(true);
-    const links = boot.app.screens.region.getSnapshot().gridLinks;
+    const links = boot.app.screens.region(boot.play.getNavigation().regionId ?? "MAP-01").getSnapshot().gridLinks;
     expect(links.some((l) => l.fromCityId === "CITY-START" && l.toCityId === "CITY-MAP01-02")).toBe(
       true
     );

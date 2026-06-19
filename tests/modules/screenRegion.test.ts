@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
-import { createScreenRegion } from "../../src/modules/screenRegion.js";
+import { createScreenRegion, createScreenRegionForRegion } from "../../src/modules/screenRegion.js";
 
 
 describe("ScreenRegion", () => {
@@ -63,7 +63,7 @@ describe("ScreenRegion", () => {
   it("exposes second-batch region and trunk link candidates after level III unlock", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 3;
-    const screen = createScreenRegion(controller);
+    const screen = createScreenRegionForRegion(controller, "MAP-02");
 
     const snapshot = screen.getSnapshot();
     expect(
@@ -77,8 +77,8 @@ describe("ScreenRegion", () => {
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>
-          candidate.fromCityId === "CITY-START" &&
-          candidate.toCityId === "CITY-MAP02-01" &&
+          candidate.fromCityId === "CITY-MAP02-01" &&
+          candidate.toCityId === "CITY-START" &&
           candidate.linkType === "trunk"
       )
     ).toBe(true);

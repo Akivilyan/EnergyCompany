@@ -53,7 +53,7 @@ export const zhCN: Record<string, string> = {
   "hud.line.social_value": "社会价值 {current}/{next}（升级进度）",
   "hud.line.social_value_max": "社会价值 {current}（已满级）",
   "hud.line.ads_remaining": "广告剩余 {ads} 次",
-  "hud.line.region_header": "区域 {level} 级",
+  "hud.line.region_header": "区域 {region} {level} 级",
   "hud.line.cities_unlocked": "已解锁 {cities} 城",
   "hud.line.region_candidates": "可玩链路 {count}",
   "hud.line.region_links": "线路 在建{building} 完工{finished}",
@@ -165,5 +165,17 @@ export const zhCN: Record<string, string> = {
   "onboarding.error.action_invalid": "当前阶段不能操作",
   "onboarding.error.action_failed": "操作失败",
 
-  "codex.error.page_not_found": "图鉴页不存在"
+  "codex.error.page_not_found": "图鉴页不存在",
+  "hud.status.world_selected_target": "当前候选：{type} {region}",
+  "hud.status.world_candidate_count": "地图候选 {count} 项",
+  "hud.btn.world_open_target": "进入候选",
+  "hud.btn.world_cycle_target": "切换地图",
+  "world.error.not_unlocked": "目标未解锁",
+  "world.success.open_region": "已进入区域",
+  "world.success.open_city": "已进入城市",
+  "world.action.selected_next_candidate": "已切换地图候选",
+  "world.action.selected_only_candidate": "当前只有一个地图候选",
+  "world.action.no_candidate": "当前没有可选地图候选",
+  "hud.world.target.region": "区域",
+  "hud.world.target.city": "城市"
 };

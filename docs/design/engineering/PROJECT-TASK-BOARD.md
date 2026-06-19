@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.15.0
+version: 1.16.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -84,6 +84,7 @@ open_questions: []
 | 2026-06-19 | `FAST-01` 公司经营第三批可玩链路子步：公司页/HUD 从“固定申请首个已解锁贷款”扩到“显示当前贷款候选、切换候选并按当前候选申请”，与科技/区域 HUD 交互模式对齐；同时补候选摘要文案与 Cocos 按钮显隐，避免有在贷时继续暴露申请入口 | `src/app/companyHudController.ts` `src/app/clientHudDisplay.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/app/companyHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-19 | `FAST-01` 城市经营第四批可玩链路子步：城市页/HUD 从“固定只造风电”扩到“显示建造候选、切换候选并按当前候选建造”，把光伏/火电/水电/核电接入开发 HUD；同时在 `dispatch` 补齐建造前置校验，拦截未点亮科技、无河流水电、非核电资格城市与单城超上限建造 | `src/sim/config/configRepo.ts` `src/sim/core/dispatch.ts` `src/app/cityHudController.ts` `src/app/clientHudCapabilities.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudSmoke.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/sim/settle.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudCapabilities.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-19 | `FAST-01` 大地图第五批可玩概览子步：新增 `screen_world_map` 运行时快照，把区域解锁、主干线进度和下一解锁阈值接入开发 HUD；同时把 Cocos 开发 HUD 底部导航扩到“公司 / 区域 / 大地图 / 科技”四个主标签，让 demo 具备全局地图进度感 | `src/modules/screenWorldMap.ts` `src/modules/gameContext.ts` `src/app/gameApp.ts` `src/app/screenNavController.ts` `src/app/clientHudDisplay.ts` `src/app/cocosClientExports.ts` `src/ui/gameShell.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `tests/app/screenNavController.test.ts` `tests/ui/gameShell.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` |
+| 2026-06-19 | `FAST-01` 大地图第六批入口闭环子步：把 `screen_world_map` 从只读概览补成可切换目标并进入对应区域/城市的最小地图入口；同时给导航状态补 `regionId` 上下文，让区域页按当前省份显示候选链路与 trunk 目标，Cocos HUD 新增“切换地图/进入候选”按钮并同步中英文本地化 | `src/app/worldHudController.ts` `src/modules/screenRegion.ts` `src/modules/gameContext.ts` `src/app/gameApp.ts` `src/app/screenNavController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/clientHudSmoke.ts` `src/app/regionHudController.ts` `src/app/cocosClientExports.ts` `src/ui/types.ts` `src/ui/gameShell.ts` `src/ui/gameSceneBridge.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/*` `tests/app/worldHudController.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/screenNavController.test.ts` `tests/app/regionHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -123,3 +124,4 @@ open_questions: []
 | 1.13.0 | 2026-06-19 | 补记 `FAST-01` 公司经营第三批可玩链路子步：公司 HUD 支持贷款候选切换与按当前候选申请 |
 | 1.14.0 | 2026-06-19 | 补记 `FAST-01` 城市经营第四批可玩链路子步：城市 HUD 支持建造候选切换与按当前候选建造，并补齐核心建造前置校验 |
 | 1.15.0 | 2026-06-19 | 补记 `FAST-01` 大地图第五批可玩概览子步：新增 `screen_world_map` 开发 HUD 页与四主标签导航 |
+| 1.16.0 | 2026-06-19 | 补记 `FAST-01` 大地图第六批入口闭环子步：世界地图 HUD 支持切换并进入候选目标，区域页带 `regionId` 上下文显示对应省份链路 |

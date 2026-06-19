@@ -53,8 +53,16 @@ export {
   regionQueueDefaultLink
 } from "./regionHudController.js";
 export {
+  formatSelectedWorldCandidate,
+  getWorldHudSelectionSnapshot,
+  worldCycleTargetCandidate,
+  worldOpenSelectedTarget
+} from "./worldHudController.js";
+export {
   clientNavBack,
   clientNavOpenCompany,
+  clientNavOpenCity,
+  clientNavOpenRegionById,
   clientNavOpenRegion,
   clientNavOpenWorldMap,
   clientNavOpenTechTree,

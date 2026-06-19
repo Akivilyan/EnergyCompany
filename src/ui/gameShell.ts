@@ -41,7 +41,8 @@ function cloneNavigation(state: NavigationState): NavigationState {
   return {
     currentScreen: state.currentScreen,
     stack: [...state.stack],
-    cityId: state.cityId
+    cityId: state.cityId,
+    regionId: state.regionId
   };
 }
 
@@ -49,7 +50,8 @@ export class GameShell {
   private navigation: NavigationState = {
     currentScreen: "screen_city_detail",
     stack: [],
-    cityId: DEFAULT_CITY_ID
+    cityId: DEFAULT_CITY_ID,
+    regionId: "MAP-01"
   };
 
   constructor(private readonly app: GameAppContext) {}
@@ -58,7 +60,7 @@ export class GameShell {
     return cloneNavigation(this.navigation);
   }
 
-  openScreen(screenId: ScreenId, cityId?: string): NavigationState {
+  openScreen(screenId: ScreenId, cityId?: string, regionId?: string): NavigationState {
     const from = this.navigation.currentScreen;
     if (from !== screenId) {
       const tabSwitch = isPrimaryTab(from) && isPrimaryTab(screenId);
@@ -70,8 +72,14 @@ export class GameShell {
     if (cityId) {
       this.navigation.cityId = cityId;
     }
+    if (regionId) {
+      this.navigation.regionId = regionId;
+    }
     if (screenId === "screen_city_detail" && !this.navigation.cityId) {
       this.navigation.cityId = DEFAULT_CITY_ID;
+    }
+    if (screenId === "screen_region" && !this.navigation.regionId) {
+      this.navigation.regionId = "MAP-01";
     }
     return this.getNavigation();
   }

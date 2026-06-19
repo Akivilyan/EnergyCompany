@@ -13,7 +13,8 @@ export interface ClientHudCapabilities {
  * “画面提示未解锁，但按钮仍可点”的误导性反馈。
  */
 export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabilities {
-  const region = boot.app.screens.region.getSnapshot();
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const region = boot.app.screens.region(regionId).getSnapshot();
   const tech = boot.app.screens.tech.getSnapshot();
   const cityId = boot.play.getNavigation().cityId ?? "CITY-START";
   const city = boot.app.screens.city(cityId).getSnapshot();

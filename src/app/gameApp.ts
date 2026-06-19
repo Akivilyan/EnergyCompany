@@ -13,7 +13,7 @@ import { createScreenCodex } from "../modules/screenCodex.js";
 import { createScreenCompany } from "../modules/screenCompany.js";
 import { createScreenEventsPanel } from "../modules/screenEventsPanel.js";
 import { createScreenOnboarding } from "../modules/screenOnboarding.js";
-import { createScreenRegion } from "../modules/screenRegion.js";
+import { createScreenRegionForRegion } from "../modules/screenRegion.js";
 import { createScreenRunResult } from "../modules/screenRunResult.js";
 import { createScreenTechTree } from "../modules/screenTechTree.js";
 import { createScreenWorldMap } from "../modules/screenWorldMap.js";
@@ -40,7 +40,7 @@ export function createGameApp(options: GameAppOptions = {}): GameAppContext {
     city: (cityId: string) => createScreenCityDetail(controller, cityId),
     company: createScreenCompany(controller, adProvider),
     tech: createScreenTechTree(controller, adProvider),
-    region: createScreenRegion(controller),
+    region: (regionId = "MAP-01") => createScreenRegionForRegion(controller, regionId),
     world: createScreenWorldMap(controller),
     events: createScreenEventsPanel(controller),
     onboarding: createScreenOnboarding(controller),

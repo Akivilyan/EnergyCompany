@@ -53,7 +53,7 @@ export const en: Record<string, string> = {
   "hud.line.social_value": "Social value {current}/{next} (to level up)",
   "hud.line.social_value_max": "Social value {current} (max level)",
   "hud.line.ads_remaining": "Ads left {ads}",
-  "hud.line.region_header": "Region Lv{level}",
+  "hud.line.region_header": "Region {region} Lv{level}",
   "hud.line.cities_unlocked": "Unlocked {cities} cities",
   "hud.line.region_candidates": "Playable links {count}",
   "hud.line.region_links": "Links building={building} done={finished}",
@@ -165,5 +165,17 @@ export const en: Record<string, string> = {
   "onboarding.error.action_invalid": "Invalid phase",
   "onboarding.error.action_failed": "Action failed",
 
-  "codex.error.page_not_found": "Codex page not found"
+  "codex.error.page_not_found": "Codex page not found",
+  "hud.status.world_selected_target": "Selected: {type} {region}",
+  "hud.status.world_candidate_count": "Map targets {count}",
+  "hud.btn.world_open_target": "Open Target",
+  "hud.btn.world_cycle_target": "Cycle Target",
+  "world.error.not_unlocked": "Target not unlocked",
+  "world.success.open_region": "Opened region",
+  "world.success.open_city": "Opened city",
+  "world.action.selected_next_candidate": "Map target switched",
+  "world.action.selected_only_candidate": "Only one map target",
+  "world.action.no_candidate": "No map target available",
+  "hud.world.target.region": "Region",
+  "hud.world.target.city": "City"
 };

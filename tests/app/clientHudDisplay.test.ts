@@ -94,11 +94,11 @@ describe("clientHudDisplay", () => {
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
-    boot.play.openScreen("screen_region");
+    boot.play.openScreen("screen_region", undefined, "MAP-02");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.statusLines).toContain("可玩链路 5");
-    expect(display.detailLines.some((line) => line.includes("当前候选：区域线 CITY-START->CITY-MAP01-02"))).toBe(
+    expect(display.statusLines).toContain("可玩链路 3");
+    expect(display.detailLines.some((line) => line.includes("CITY-MAP02-01->CITY-MAP02-02"))).toBe(
       true
     );
   });

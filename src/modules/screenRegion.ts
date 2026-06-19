@@ -34,6 +34,8 @@ export interface RegionLinkCandidate {
 }
 
 export interface ScreenRegionSnapshot {
+  regionId: string;
+  regionName: string;
   month: number;
   companyLevel: number;
   funds: number;
@@ -62,13 +64,20 @@ export interface RegionAdvanceMonthsOutput {
 }
 
 export class ScreenRegion {
-  constructor(private readonly controller: RunController) {}
+  constructor(
+    private readonly controller: RunController,
+    private readonly regionId: string
+  ) {}
 
   getSnapshot(): ScreenRegionSnapshot {
+    const regionConfig = this.controller.config.bundle.regions.find(
+      (region) => region.region_id === this.regionId
+    );
     const cityNameMap = new Map(
       this.controller.config.bundle.cities.map((city) => [city.city_id, city.display_name ?? city.city_id])
     );
     const cities = this.controller.config.bundle.cities
+      .filter((city) => city.region_id === this.regionId)
       .map((city) => {
         const runtime = this.controller.state.cities[city.city_id];
         return {
@@ -84,6 +93,7 @@ export class ScreenRegion {
       .sort((a, b) => a.cityId.localeCompare(b.cityId));
 
     const gridLinks = Object.values(this.controller.state.gridLinks)
+      .filter((link) => cities.some((city) => city.cityId === link.fromCityId || city.cityId === link.toCityId))
       .map((link) => ({
         linkId: link.linkId,
         fromCityId: link.fromCityId,
@@ -97,6 +107,8 @@ export class ScreenRegion {
     const linkCandidates = this.buildLinkCandidates(cityNameMap);
 
     return {
+      regionId: this.regionId,
+      regionName: regionConfig?.display_name ?? this.regionId,
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,
@@ -117,9 +129,9 @@ export class ScreenRegion {
       return !!this.controller.state.gridLinks[key];
     };
 
-    for (const region of this.controller.config.bundle.regions) {
-      const regionCities = unlockedCities.filter((city) => city.region_id === region.region_id);
-      if (regionCities.length < 2) continue;
+    const region = this.controller.config.bundle.regions.find((item) => item.region_id === this.regionId);
+    const regionCities = unlockedCities.filter((city) => city.region_id === this.regionId);
+    if (regionCities.length >= 2 && region) {
       const hubCity =
         regionCities.find((city) => city.city_type === "central") ?? regionCities[0];
       for (const city of regionCities) {
@@ -139,37 +151,40 @@ export class ScreenRegion {
       }
     }
 
-    const crossRegionHubs = this.controller.config.bundle.regions
-      .map((region) => {
-        const unlocked = level >= region.unlock_company_level;
-        const hubCity = this.controller.config.bundle.cities.find(
-          (city) => city.region_id === region.region_id && city.city_type === "central"
-        );
-        return unlocked && hubCity
-          ? {
-              regionId: region.region_id,
-              regionName: region.display_name ?? region.region_id,
-              cityId: hubCity.city_id,
-              cityName: cityNameMap.get(hubCity.city_id) ?? hubCity.city_id
-            }
-          : null;
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-      .sort((a, b) => a.regionId.localeCompare(b.regionId));
+    const currentHub =
+      this.controller.config.bundle.cities.find(
+        (city) => city.region_id === this.regionId && city.city_type === "central" && level >= city.unlock_company_level
+      ) ?? null;
+    if (currentHub) {
+      const otherUnlockedHubs = this.controller.config.bundle.regions
+        .filter((item) => item.region_id !== this.regionId && level >= item.unlock_company_level)
+        .map((item) => {
+          const hubCity = this.controller.config.bundle.cities.find(
+            (city) => city.region_id === item.region_id && city.city_type === "central"
+          );
+          return hubCity
+            ? {
+                regionId: item.region_id,
+                regionName: item.display_name ?? item.region_id,
+                cityId: hubCity.city_id,
+                cityName: cityNameMap.get(hubCity.city_id) ?? hubCity.city_id
+              }
+            : null;
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null)
+        .sort((a, b) => a.regionId.localeCompare(b.regionId));
 
-    const startHub = crossRegionHubs[0] ?? null;
-    if (startHub) {
-      for (const hub of crossRegionHubs.slice(1)) {
+      for (const hub of otherUnlockedHubs) {
         candidates.push({
-          candidateId: `${startHub.cityId}->${hub.cityId}:trunk`,
-          fromCityId: startHub.cityId,
+          candidateId: `${currentHub.city_id}->${hub.cityId}:trunk`,
+          fromCityId: currentHub.city_id,
           toCityId: hub.cityId,
           linkType: "trunk",
           unlocked: true,
-          available: !linkExists(startHub.cityId, hub.cityId),
+          available: !linkExists(currentHub.city_id, hub.cityId),
           regionId: null,
-          regionName: `${startHub.regionName} x ${hub.regionName}`,
-          fromCityName: startHub.cityName,
+          regionName: `${region?.display_name ?? this.regionId} x ${hub.regionName}`,
+          fromCityName: cityNameMap.get(currentHub.city_id) ?? currentHub.city_id,
           toCityName: hub.cityName
         });
       }
@@ -230,5 +245,12 @@ export class ScreenRegion {
 }
 
 export function createScreenRegion(controller: RunController): ScreenRegion {
-  return new ScreenRegion(controller);
+  return new ScreenRegion(controller, "MAP-01");
+}
+
+export function createScreenRegionForRegion(
+  controller: RunController,
+  regionId: string
+): ScreenRegion {
+  return new ScreenRegion(controller, regionId);
 }

@@ -64,7 +64,8 @@ function getLinkTypeLabel(linkType: "region" | "trunk"): string {
 }
 
 function getLinkCandidates(boot: GameBootstrap) {
-  return boot.app.screens.region
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  return boot.app.screens.region(regionId)
     .getSnapshot()
     .linkCandidates.filter((candidate) => candidate.unlocked)
     .map((candidate) => ({
@@ -123,7 +124,8 @@ export function formatSelectedRegionLink(boot: GameBootstrap): string | null {
 export function regionQueueDefaultLink(boot: GameBootstrap): RegionHudActionResult {
   const selected = ensureSelectedCandidate(boot);
   const { fromCityId, toCityId, linkType } = selected ?? DEFAULT_REGION_LINK;
-  const out = boot.app.screens.region.queueGridLink(fromCityId, toCityId, linkType);
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const out = boot.app.screens.region(regionId).queueGridLink(fromCityId, toCityId, linkType);
   if (out.result.ok) {
     return toActionResult(
       boot,

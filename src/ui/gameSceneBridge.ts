@@ -31,8 +31,8 @@ export class GameSceneBridge {
     return this.shell.getNavigation();
   }
 
-  openScreen(screenId: ScreenId, cityId?: string): NavigationState {
-    return this.run(() => this.shell.openScreen(screenId, cityId));
+  openScreen(screenId: ScreenId, cityId?: string, regionId?: string): NavigationState {
+    return this.run(() => this.shell.openScreen(screenId, cityId, regionId));
   }
 
   back(): NavigationState {

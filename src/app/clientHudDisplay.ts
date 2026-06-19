@@ -8,6 +8,7 @@ import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudCo
 import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
 import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
+import { formatSelectedWorldCandidate, getWorldHudSelectionSnapshot } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 
 export function formatLoanTierLabel(loanId: string): string {
@@ -84,7 +85,8 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
 }
 
 function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
-  const s = boot.app.screens.region.getSnapshot();
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const s = boot.app.screens.region(regionId).getSnapshot();
   const building = s.gridLinks.filter((l) => l.status === "building").length;
   const finished = s.gridLinks.filter((l) => l.status === "finished").length;
   const unlockedCities = s.cities.filter((c) => c.unlocked).length;
@@ -101,7 +103,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
     month: s.month
   });
   const statusLines = hudLines(
-    t("hud.line.region_header", { level: s.companyLevel }),
+    t("hud.line.region_header", { level: s.companyLevel, region: s.regionName }),
     t("hud.line.cities_unlocked", { cities: unlockedCities }),
     t("hud.line.region_candidates", { count: availableCandidates })
   );
@@ -134,6 +136,8 @@ function formatWorldConnectionStatus(status: string): string {
 
 function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.world.getSnapshot();
+  const selection = getWorldHudSelectionSnapshot(boot);
+  const selectedTarget = formatSelectedWorldCandidate(boot);
   const focusRegion =
     s.regions.find(
       (region) => region.unlocked && region.connectionStatus !== "capital" && region.connectionStatus !== "planned"
@@ -167,7 +171,9 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           totalCities: focusRegion.totalCities,
           trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)
         })
-      : null
+      : null,
+    selectedTarget,
+    selection.candidates.length > 1 ? t("hud.status.world_candidate_count", { count: selection.candidates.length }) : null
   );
   return {
     statusLine,

@@ -8,6 +8,8 @@ import { mountGameClient } from "../../src/app/gameClientEntry.js";
 import {
   clientNavBack,
   clientNavOpenCompany,
+  clientNavOpenCity,
+  clientNavOpenRegionById,
   clientNavOpenWorldMap,
   clientNavOpenTechTree,
   formatClientNavHint
@@ -59,6 +61,21 @@ describe("screenNavController", () => {
     expect(world.screen).toBe("screen_world_map");
     expect(host.getCurrentScene()).toBe("CityDetail");
     expect(world.navigation.stack).toEqual([]);
+  });
+
+  it("opens explicit region and city context through play surface", () => {
+    const config = loadTestConfig();
+    const host = new LoggingSceneHost();
+    const boot = mountGameClient({ configRepo: config, sceneHost: host, autoResumeSlot: false });
+
+    const region = clientNavOpenRegionById(boot, "MAP-02");
+    expect(region.navigation.regionId).toBe("MAP-02");
+    expect(region.screen).toBe("screen_region");
+
+    const city = clientNavOpenCity(boot, "CITY-MAP02-01", "MAP-02");
+    expect(city.navigation.cityId).toBe("CITY-MAP02-01");
+    expect(city.navigation.regionId).toBe("MAP-02");
+    expect(city.screen).toBe("screen_city_detail");
   });
 });
 

@@ -139,7 +139,9 @@ export function runClientHudSmoke(boot: GameBootstrap): ClientHudSmokeStep[] {
   );
   const regionLink = regionQueueDefaultLink(boot);
   const linkId = "CITY-MAP01-02::CITY-START";
-  const queued = boot.app.screens.region.getSnapshot().gridLinks.find((l) => l.linkId === linkId);
+  const queued = boot.app.screens.region(boot.play.getNavigation().regionId ?? "MAP-01").getSnapshot().gridLinks.find(
+    (l) => l.linkId === linkId
+  );
   steps.push(
     step(
       "t50-07-queue-link",
