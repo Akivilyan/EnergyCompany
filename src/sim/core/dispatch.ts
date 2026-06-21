@@ -225,6 +225,14 @@ export function dispatch(
       if (!tier) {
         return err("not_found", "loan tier not found");
       }
+      const unlockLevel = tier.unlock_level ?? 1;
+      if (next.companyLevel < unlockLevel) {
+        return err("not_unlocked", "loan tier not unlocked for current company level", {
+          company_level: next.companyLevel,
+          required_company_level: unlockLevel,
+          loan_id: tier.loan_id
+        });
+      }
       if (Object.keys(next.loans).length > 0) {
         return err("conflict_in_progress", "only one active loan allowed");
       }

@@ -30,13 +30,27 @@ describe("ScreenCompany", () => {
     expect(first.uiErrorCode).toBeNull();
     expect(first.after.activeLoan?.loanId).toBe("loan_1");
 
-    const second = screen.applyLoan("loan_2");
+    const second = screen.applyLoan("loan_1");
     expect(second.result.ok).toBe(false);
     expect(second.uiErrorCode).toBe("loan_already_active");
     expect(second.uiCopy).toEqual({
       messageKey: "company.error.loan_already_active",
       actionKey: "company.action.wait_or_repay"
     });
+  });
+
+  it("blocks applying a locked higher-tier loan before company level requirement", () => {
+    const controller = createTestController(repoRoot);
+    const screen = createScreenCompany(controller);
+
+    const out = screen.applyLoan("loan_3");
+    expect(out.result.ok).toBe(false);
+    expect(out.uiErrorCode).toBe("loan_tier_locked");
+    expect(out.uiCopy).toEqual({
+      messageKey: "company.error.loan_tier_locked",
+      actionKey: "company.action.level_up_first"
+    });
+    expect(out.after.activeLoan).toBeNull();
   });
 
   it("returns recent monthly cashflows from settlement reports", () => {
