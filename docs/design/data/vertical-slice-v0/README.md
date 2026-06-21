@@ -2,7 +2,7 @@
 id: data/vertical-slice-v0/README
 title: Playable v0 垂直切片数据包
 status: draft
-version: 0.3.3
+version: 0.3.5
 sources:
   - docs/design/engineering/vertical-slice-v0.md
   - docs/design/gdd/11-replayability.md
@@ -26,9 +26,9 @@ open_questions:
 | `run_config.json` | 单局参数 |
 | `difficulty_modifiers.json` | 简单档修正 |
 | `campaign_disasters.json` | 固定 4 场灾害轴 |
-| `company_levels.json` | I–V 门槛（占位 SV） |
+| `company_levels.json` | I–V 门槛（已拉回 V 级可达区间） |
 | `regions.json` | 10 个大地图节点解锁等级 |
-| `cities.json` | v0 城市样板（`MAP-01` 起始省 + `MAP-02` 外送省 + `MET-A` + `MAP-03~05` 后半程省壳） |
+| `cities.json` | v0 城市样板（`MAP-01` 起始省 + `MAP-02` 外送省 + `MET-A` + `MAP-03~08` + `MET-B` 后半程扩张样板） |
 | `facilities_slice.json` | 风/光/火/水/核 ·I 占位 |
 | `doctrine_meta_tech_l1.json` | tech 方针熟练度 1 |
 | `tutorial_run_config.json` | 教学局缩短 II 门槛（占位） |
@@ -37,7 +37,7 @@ open_questions:
 
 ## 裁剪说明
 
-- **城市**：当前覆盖 `MAP-01`、`MAP-02`、`MET-A` 与 `MAP-03~05` 的最小样板；采用「中心负荷城 + 外围资源城」分工模板，便于验证跨城输电与后半程扩张。
+- **城市**：当前覆盖 `MAP-01`、`MAP-02`、`MET-A`、`MAP-03~08` 与 `MET-B` 的最小样板；采用「中心负荷城 + 外围资源城」分工模板，便于验证跨城输电与后半程扩张。
 - **科技**：不全量导出；运行时 v0 可仍读未来 `technology.json`，开发阶段允许 **硬编码开局 lit**（`wind_1`, `solar_1`, `thermal_1`, `hydro_1` + tech 无顶）。
 - **事件**：无 `event_pool` 随机条；灾害条目引用 `event_id` 占位。
 
@@ -81,7 +81,7 @@ open_questions:
 
 ---
 
-## 后半程扩张模板（v0.3.4）
+## 后半程扩张模板（v0.3.5）
 
 | 区域 | 节点 | 关键数值意图 |
 |------|------|--------------|
@@ -89,6 +89,10 @@ open_questions:
 | `MAP-03` | 3 城 | IV 级第一块新增可经营省壳；偏水电与山地外送 |
 | `MAP-04` | 3 城 | IV 级第二块新增省壳；偏光伏与风电组合 |
 | `MAP-05` | 3 城 | IV 级第三块新增省壳；偏河谷水电与风光混合 |
+| `MAP-06` | 3 城 | V 级第一块新增沿海工业省；偏海风/光伏与核电承接 |
+| `MAP-07` | 3 城 | V 级第二块新增高原省；偏梯级水电与山脊风电 |
+| `MAP-08` | 3 城 | V 级第三块新增边疆平衡省；偏风光混合与河谷调峰 |
+| `MET-B` | `CITY-METB-01` | V 级终局都会；更高负荷与更高 SV，作为长线扩张的直接回报点 |
 
 ---
 
@@ -96,6 +100,7 @@ open_questions:
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 0.3.5 | 2026-06-21 | V 级后半程扩张：把 V 门槛压回可达区间，补齐 `MAP-06~08` 与 `MET-B` 最小城市样板 |
 | 0.3.4 | 2026-06-21 | 后半程试玩扩张：降低 IV 门槛到可达区间，补 `MET-A` 与 `MAP-03~05` 最小城市样板 |
 | 0.3.3 | 2026-05-28 | 灾害 debuff 改为大理石式长持续（8/10/10/12 月）；力度字段恢复 GDD 基准 |
 | 0.3.2 | 2026-05-28 | 应用首轮调参结果到主数据：开局资金、前中段灾害、广告梯度与外送城市需求 |

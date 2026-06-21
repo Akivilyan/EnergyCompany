@@ -37,4 +37,20 @@ describe("screenWorldMap", () => {
       "building"
     );
   });
+
+  it("shows all level-V regions unlocked and metropolis-b ready as late-demo target", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+
+    expect(snapshot.unlockedRegions).toBe(10);
+    expect(snapshot.nextUnlockRegion).toBeNull();
+    expect(snapshot.regions.find((region) => region.regionId === "MET-B")?.centralCityId).toBe(
+      "CITY-METB-01"
+    );
+    expect(snapshot.regions.find((region) => region.regionId === "MET-B")?.connectionStatus).toBe(
+      "available"
+    );
+  });
 });

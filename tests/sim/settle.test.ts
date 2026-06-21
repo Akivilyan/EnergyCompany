@@ -577,6 +577,52 @@ describe("settleNextMonth", () => {
     expect(month.value.state.companyLevel).toBe(3);
   });
 
+  it("M10 promotes to level V when level-IV network reaches expanded-demo threshold", () => {
+    const config = loadTestConfig();
+    const level5 = config.bundle.companyLevels.find((row) => row.level === 5);
+    expect(level5?.sv_threshold).toBe(176);
+    if (!level5) return;
+
+    const state = createInitialState(config);
+    state.companyLevel = 4;
+    for (const trunkTarget of [
+      "CITY-MAP02-01",
+      "CITY-META-01",
+      "CITY-MAP03-01",
+      "CITY-MAP04-01",
+      "CITY-MAP05-01"
+    ]) {
+      const linkId = ["CITY-START", trunkTarget].sort().join("::");
+      state.gridLinks[linkId] = {
+        linkId,
+        fromCityId: "CITY-START",
+        toCityId: trunkTarget,
+        linkType: "trunk",
+        status: "finished",
+        monthsRemaining: 0,
+        lossMw: 0
+      };
+    }
+    syncOperableCities(state, config);
+    for (const cityId of Object.keys(state.cities)) {
+      state.facilities[`fac-${cityId}`] = {
+        id: `fac-${cityId}`,
+        cityId,
+        facilityId: "wind",
+        tier: 1,
+        outputMw: state.cities[cityId].demandMw * 2,
+        monthlyOpex: 0,
+        monthlyFuel: 0
+      };
+    }
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.socialValueCurrent).toBeGreaterThanOrEqual(level5.sv_threshold);
+    expect(month.value.state.companyLevel).toBe(5);
+  });
+
   it("M13 resets bankrupt streak when funds recover", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);

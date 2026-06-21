@@ -77,4 +77,34 @@ describe("worldHudController", () => {
     expect(boot.play.getNavigation().regionId).toBe("MET-A");
     expect(boot.play.getNavigation().cityId).toBe("CITY-META-01");
   });
+
+  it("opens MET-B as a direct city target once level V is reached", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenWorldMap(boot);
+
+    let guard = 0;
+    while (
+      getWorldHudSelectionSnapshot(boot).candidates.find(
+        (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+      )?.regionId !== "MET-B" &&
+      guard < 16
+    ) {
+      const cycle = worldCycleTargetCandidate(boot);
+      expect(cycle.ok).toBe(true);
+      guard += 1;
+    }
+
+    const selected = getWorldHudSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+    );
+    expect(selected?.targetType).toBe("city");
+    expect(selected?.cityId).toBe("CITY-METB-01");
+
+    const open = worldOpenSelectedTarget(boot);
+    expect(open.ok).toBe(true);
+    expect(boot.play.getNavigation().currentScreen).toBe("screen_city_detail");
+    expect(boot.play.getNavigation().regionId).toBe("MET-B");
+    expect(boot.play.getNavigation().cityId).toBe("CITY-METB-01");
+  });
 });

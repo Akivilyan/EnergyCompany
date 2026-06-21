@@ -1,7 +1,7 @@
 {
   "package_id": "vertical-slice-v0",
-  "config_version": "0.3.4",
-  "description": "Playable v0 tuned placeholder balance with MAP-01~05 plus MET-A late-demo city-role templates",
+  "config_version": "0.3.5",
+  "description": "Playable v0 tuned placeholder balance with MAP-01~08 plus MET-A and MET-B late-demo city-role templates",
   "files": [
     "run_config.json",
     "difficulty_modifiers.json",
