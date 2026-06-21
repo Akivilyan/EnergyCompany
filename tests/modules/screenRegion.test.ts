@@ -98,4 +98,44 @@ describe("ScreenRegion", () => {
       )
     ).toBe(true);
   });
+
+  it("opens level-IV province as trunk-first region before local links unlock", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+    const screen = createScreenRegionForRegion(controller, "MAP-03");
+
+    const snapshot = screen.getSnapshot();
+    expect(snapshot.cities).toHaveLength(3);
+    expect(
+      snapshot.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-MAP03-01" &&
+          candidate.toCityId === "CITY-START" &&
+          candidate.linkType === "trunk"
+      )
+    ).toBe(true);
+    expect(
+      snapshot.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-MAP03-01" &&
+          candidate.toCityId === "CITY-MAP03-02" &&
+          candidate.linkType === "region"
+      )
+    ).toBe(false);
+
+    const queue = screen.queueGridLink("CITY-MAP03-01", "CITY-START", "trunk");
+    expect(queue.result.ok).toBe(true);
+    const advance = screen.advanceMonths(1);
+    expect(advance.failed).toBeNull();
+
+    const connected = screen.getSnapshot();
+    expect(
+      connected.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-MAP03-01" &&
+          candidate.toCityId === "CITY-MAP03-02" &&
+          candidate.linkType === "region"
+      )
+    ).toBe(true);
+  });
 });

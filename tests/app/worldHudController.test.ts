@@ -47,4 +47,34 @@ describe("worldHudController", () => {
     expect(boot.play.getNavigation().currentScreen).toBe("screen_region");
     expect(boot.play.getNavigation().regionId).toBe("MAP-02");
   });
+
+  it("opens MET-A as a direct city target once unlocked", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenWorldMap(boot);
+
+    let guard = 0;
+    while (
+      getWorldHudSelectionSnapshot(boot).candidates.find(
+        (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+      )?.regionId !== "MET-A" &&
+      guard < 12
+    ) {
+      const cycle = worldCycleTargetCandidate(boot);
+      expect(cycle.ok).toBe(true);
+      guard += 1;
+    }
+
+    const selected = getWorldHudSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+    );
+    expect(selected?.targetType).toBe("city");
+    expect(selected?.cityId).toBe("CITY-META-01");
+
+    const open = worldOpenSelectedTarget(boot);
+    expect(open.ok).toBe(true);
+    expect(boot.play.getNavigation().currentScreen).toBe("screen_city_detail");
+    expect(boot.play.getNavigation().regionId).toBe("MET-A");
+    expect(boot.play.getNavigation().cityId).toBe("CITY-META-01");
+  });
 });

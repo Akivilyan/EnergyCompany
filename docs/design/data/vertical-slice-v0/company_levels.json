@@ -1,7 +1,7 @@
 [
   { "level": 1, "sv_threshold": 0, "unlock_region_capital_count": 0, "unlock_region_ordinary_count": 0 },
   { "level": 2, "sv_threshold": 1, "unlock_region_capital_count": 0, "unlock_region_ordinary_count": 1, "unlock_notes": "MAP-01 full province" },
-  { "level": 3, "sv_threshold": 28, "unlock_region_capital_count": 1, "unlock_region_ordinary_count": 2, "unlock_notes": "MET-A + MAP-02; v0≈70% MAP-01满额(40)" },
-  { "level": 4, "sv_threshold": 800, "unlock_region_capital_count": 1, "unlock_region_ordinary_count": 5 },
-  { "level": 5, "sv_threshold": 1600, "unlock_region_capital_count": 2, "unlock_region_ordinary_count": 8 }
+  { "level": 3, "sv_threshold": 28, "unlock_region_capital_count": 1, "unlock_region_ordinary_count": 2, "unlock_notes": "MET-A + MAP-02；需先把 MAP-01 主体供起来" },
+  { "level": 4, "sv_threshold": 84, "unlock_region_capital_count": 1, "unlock_region_ordinary_count": 5, "unlock_notes": "把 MAP-01、MAP-02、MET-A 串成后半程试玩主链后，解锁 MAP-03~05" },
+  { "level": 5, "sv_threshold": 240, "unlock_region_capital_count": 2, "unlock_region_ordinary_count": 8, "unlock_notes": "V 级仍保留给后续补齐 MAP-06~08 + MET-B 后再正式开放" }
 ]

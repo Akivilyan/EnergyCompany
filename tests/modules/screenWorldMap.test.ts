@@ -15,7 +15,7 @@ describe("screenWorldMap", () => {
       "available"
     );
     expect(snapshot.regions.find((region) => region.regionId === "MET-A")?.connectionStatus).toBe(
-      "planned"
+      "available"
     );
   });
 
