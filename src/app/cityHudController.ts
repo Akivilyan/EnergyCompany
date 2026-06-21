@@ -1,4 +1,5 @@
 import { t } from "../i18n/index.js";
+import { getConstructionBuildCost } from "../sim/core/technologyEffects.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 
 export interface CityHudViewModel {
@@ -103,7 +104,11 @@ function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
     .map((facility) => ({
       facilityId: facility.facility_id,
       displayName: facility.display_name ?? facility.facility_id,
-      buildCost: facility.build_cost_total,
+      buildCost: getConstructionBuildCost(
+        boot.app.controller.state,
+        boot.app.controller.config,
+        facility.build_cost_total
+      ),
       buildMonths: facility.build_duration_months
     }))
     .sort((a, b) => {

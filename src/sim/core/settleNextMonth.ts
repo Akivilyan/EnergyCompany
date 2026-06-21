@@ -9,6 +9,11 @@ import type { GameState } from "../types/gameState.js";
 import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
 import type { SettlementReport, SettlementStepReport } from "../types/settlement.js";
+import {
+  getEcoCitySocialValue,
+  getMonthlyOperatingCost,
+  hasStorageOutputBoost
+} from "./technologyEffects.js";
 
 export interface SettleOutput {
   state: GameState;
@@ -165,7 +170,7 @@ function buildIslands(state: GameState): string[][] {
 }
 
 function recalcSupply(state: GameState): void {
-  const hasStorageBoost = state.litTechIds.some((id) => id.startsWith("storage_system_"));
+  const hasStorageBoost = hasStorageOutputBoost(state);
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
   const localSupplyByCity = new Map<string, number>();
   const localFullyEcoByCity = new Map<string, boolean>();
@@ -340,7 +345,7 @@ export function settleNextMonth(
   let opex = 0;
   let fuel = 0;
   for (const fac of Object.values(next.facilities)) {
-    opex += fac.monthlyOpex;
+    opex += getMonthlyOperatingCost(next, config, fac.monthlyOpex);
     fuel += fac.monthlyFuel;
   }
   next.funds -= opex + fuel;
@@ -362,7 +367,13 @@ export function settleNextMonth(
 
   let sv = 0;
   for (const city of Object.values(next.cities)) {
-    sv += Math.floor(city.cityBaseSocialValue * city.supplyRatio * city.ecoCapFactor);
+    const cityBaseSocialValue = getEcoCitySocialValue(
+      next,
+      config,
+      city.cityBaseSocialValue,
+      city.cityFullyEcoSupply
+    );
+    sv += Math.floor(cityBaseSocialValue * city.supplyRatio * city.ecoCapFactor);
   }
   next.socialValueCurrent = sv;
   steps.push(step("M9_social_value_settlement", `sv=${sv}`, { social_value: sv }));
@@ -383,7 +394,7 @@ export function settleNextMonth(
   const disaster = config.getDisasterForMonth(next.currentMonth);
   let disasterPenalty = 0;
   if (disaster && !next.disastersTriggered.includes(disaster.seq)) {
-    disasterPenalty = applyDisasterTrigger(next, disaster, disasterCashMult);
+    disasterPenalty = applyDisasterTrigger(next, config, disaster, disasterCashMult);
   }
   steps.push(
     step("M11_events_apply", `disaster_penalty=${disasterPenalty}`, {

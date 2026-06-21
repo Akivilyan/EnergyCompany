@@ -102,5 +102,44 @@
     "effect_type": "modifier",
     "effect_target": "construction",
     "effect_value": { "build_cost_pct": -8 }
+  },
+  {
+    "tech_id": "eng_ops_contract",
+    "display_name": "运维外包",
+    "tab": "engineering",
+    "company_level_min": 3,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 50,
+    "research_months": 3,
+    "effect_type": "modifier",
+    "effect_target": "operations",
+    "effect_value": { "opex_pct": -10 }
+  },
+  {
+    "tech_id": "eng_risk_reserve",
+    "display_name": "风险准备金",
+    "tab": "engineering",
+    "company_level_min": 4,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 68,
+    "research_months": 3,
+    "effect_type": "modifier",
+    "effect_target": "disaster",
+    "effect_value": { "disaster_cash_pct": -15 }
+  },
+  {
+    "tech_id": "eng_green_pr",
+    "display_name": "绿色品牌",
+    "tab": "engineering",
+    "company_level_min": 5,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 90,
+    "research_months": 4,
+    "effect_type": "modifier",
+    "effect_target": "social_value",
+    "effect_value": { "eco_city_sv_pct": 5 }
   }
 ]

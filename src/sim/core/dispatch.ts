@@ -4,6 +4,7 @@ import type { Command } from "../types/commands.js";
 import type { GameState } from "../types/gameState.js";
 import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
+import { getConstructionBuildCost } from "./technologyEffects.js";
 
 export interface DispatchOutput {
   state: GameState;
@@ -150,10 +151,11 @@ export function dispatch(
           max_per_city: maxPerCity
         });
       }
-      if (next.funds < facility.build_cost_total) {
+      const buildCost = getConstructionBuildCost(next, config, facility.build_cost_total);
+      if (next.funds < buildCost) {
         return err("insufficient_funds", "not enough funds for construction");
       }
-      next.funds -= facility.build_cost_total;
+      next.funds -= buildCost;
       next.constructionQueue.push({
         id: `cq-${next.constructionQueue.length + 1}`,
         cityId: command.cityId,

@@ -1,5 +1,7 @@
-import type { ActiveDebuff, GameState } from "../types/gameState.js";
 import type { DisasterConfig } from "../config/configRepo.js";
+import type { ConfigRepo } from "../config/configRepo.js";
+import type { ActiveDebuff, GameState } from "../types/gameState.js";
+import { getDisasterPenalty } from "../core/technologyEffects.js";
 
 export function aggregateIncomeMult(state: GameState): { num: number; den: number } {
   if (state.activeDebuffs.length === 0) {
@@ -22,10 +24,12 @@ export function tickDebuffs(state: GameState): void {
 
 export function applyDisasterTrigger(
   state: GameState,
+  config: ConfigRepo,
   disaster: DisasterConfig,
   cashMult: number
 ): number {
-  const penalty = Math.floor(disaster.immediate_cash_penalty * cashMult);
+  const basePenalty = Math.floor(disaster.immediate_cash_penalty * cashMult);
+  const penalty = getDisasterPenalty(state, config, basePenalty);
   state.funds -= penalty;
   state.disastersTriggered.push(disaster.seq);
   const debuff: ActiveDebuff = {

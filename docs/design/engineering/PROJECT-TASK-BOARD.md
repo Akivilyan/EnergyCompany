@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.19.0
+version: 1.20.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -46,7 +46,7 @@ open_questions: []
 ## 4. 下一步
 
 1. 把 V 级后新开的 `MAP-06~08` / `MET-B` 从“能进”推进到“有更强经营差异”
-2. 优先补 IV～V 级科技内容、电网主干能力与更长经营链路
+2. 继续补 III～V 级科技内容，优先把剩余 `eng_*` / 电网科技与更长经营差异补齐
 3. 继续保持 `build` / `test` / `build:client` / `verify:client` 持续可跑
 4. 再回头收正式 UI / SDK / 数值收敛
 
@@ -87,6 +87,7 @@ open_questions: []
 | 2026-06-21 | `FAST-01` 大地图第七批经营门槛子步：把外省“等级解锁”和“可经营激活”拆开，MAP-02 城市必须在跨区 trunk 完工后才写入运行态并开放建造；区域 HUD 未接通外省时只显示跨区主干候选，接通后再显示省内铺线候选 | `src/sim/core/settleNextMonth.ts` `src/sim/core/dispatch.ts` `src/modules/screenRegion.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-21 | `FAST-01` 后半程试玩扩张子步：补齐贷款档位等级门槛真理层；把公司 IV 级门槛从占位态拉回可达区间，并为 `MET-A` 与 `MAP-03~05` 补最小城市样板；世界地图现已可在 III 级直开 `MET-A` 都市，并在 IV 级进入新增省壳继续铺 trunk / 省内链路 | `src/sim/core/dispatch.ts` `docs/design/data/vertical-slice-v0/company_levels.json` `docs/design/data/vertical-slice-v0/cities.json` `docs/design/data/vertical-slice-v0/README.md` `docs/design/data/vertical-slice-v0/manifest.json` `tests/modules/screenCompany.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/worldHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-21 | `FAST-01` V 级扩图子步：把公司 V 级门槛从循环依赖态拉回可达区间，补齐 `MAP-06~08` 与 `MET-B` 最小城市样板并同步到客户端资源；世界地图与区域页现已支持 V 级省份 trunk-first 试玩，`MET-B` 也可作为都会直达入口打开 | `docs/design/data/vertical-slice-v0/company_levels.json` `docs/design/data/vertical-slice-v0/regions.json` `docs/design/data/vertical-slice-v0/cities.json` `docs/design/data/vertical-slice-v0/README.md` `docs/design/data/vertical-slice-v0/manifest.json` `client/cocos/assets/resources/config/v0/company_levels.json` `client/cocos/assets/resources/config/v0/regions.json` `client/cocos/assets/resources/config/v0/cities.json` `tests/sim/settle.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/worldHudController.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-21 | `FAST-01` 经营科技生效子步：把 `eng_bulk_procure` / `eng_ops_contract` / `eng_risk_reserve` / `eng_green_pr` 接入真实建造与月结效果；城市 HUD 现会显示集中采购后的折后造价，灾害减损 / 运维减负 / 纯绿城社会价值加成也已进入模拟层，顺手修正了 `storage_system_2/3` 误触发储能倍率的问题 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/sim/systems/debuff.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -130,3 +131,4 @@ open_questions: []
 | 1.17.0 | 2026-06-21 | 补记 `FAST-01` 大地图第七批经营门槛子步：外省城市需跨区 trunk 完工后才激活为可经营城市 |
 | 1.18.0 | 2026-06-21 | 补记 `FAST-01` 后半程试玩扩张子步：贷款档位补等级门槛，III→IV 试玩链路扩到 `MET-A` 与 `MAP-03~05` |
 | 1.19.0 | 2026-06-21 | 补记 `FAST-01` V 级扩图子步：V 门槛可达，`MAP-06~08` 与 `MET-B` 进入可试玩配置包与客户端资源 |
+| 1.20.0 | 2026-06-21 | 补记 `FAST-01` 经营科技生效子步：集中采购/运维外包/风险准备金/绿色品牌进入真实结算与 HUD 摘要 |

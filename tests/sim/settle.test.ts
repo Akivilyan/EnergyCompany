@@ -249,6 +249,23 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("not_unlocked");
   });
 
+  it("applies eng_bulk_procure build discount to construction dispatch", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    state.litTechIds.push("eng_bulk_procure");
+
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.funds).toBe(129);
+  });
+
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
@@ -306,6 +323,26 @@ describe("settleNextMonth", () => {
     expect(next.cities["CITY-START"].supplyRatio).toBe(0.69);
     expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0);
     expect(next.cities["CITY-MAP01-02"].netImportMw).toBe(0);
+  });
+
+  it("M4 only grants storage output boost from storage_system_1", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.litTechIds.push("storage_system_2");
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
   });
 
   it("dispatch rejects region link across different regions", () => {
@@ -427,6 +464,46 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     expect(month.value.state.companyLevel).toBe(3);
+  });
+
+  it("M6 applies eng_ops_contract opex discount", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.litTechIds.push("eng_ops_contract");
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 0,
+      monthlyOpex: 10,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(9);
+  });
+
+  it("M9 applies eng_green_pr bonus only to fully eco-supplied cities", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.litTechIds.push("eng_green_pr");
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 2000,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.socialValueCurrent).toBe(21);
   });
 
   it("M10 promotes tutorial run to level II with lowered threshold", () => {
@@ -655,6 +732,37 @@ describe("settleNextMonth", () => {
     expect(month.value.state.runResult).toBe("victory");
     expect(month.value.state.phase).toBe("run_result");
     expect(month.value.report.result).toBe("victory");
+  });
+
+  it("M11 applies eng_risk_reserve disaster cash reduction", () => {
+    const config = loadTestConfig();
+    const disaster = config.bundle.disasters.find((item) => item.trigger_month === 22);
+    expect(disaster).toBeTruthy();
+    if (!disaster) return;
+
+    let state = createInitialState(config);
+    state.litTechIds.push("eng_risk_reserve");
+    state.companyLevel = 4;
+    state.funds = 800;
+    while (state.currentMonth < 22 && state.runResult === null) {
+      const month = settleNextMonth(state, config, defaultPorts);
+      expect(month.ok).toBe(true);
+      if (!month.ok) return;
+      state = month.value.state;
+      state.funds = Math.max(state.funds, 100);
+    }
+
+    const month22 = settleNextMonth(state, config, defaultPorts);
+    expect(month22.ok).toBe(true);
+    if (!month22.ok) return;
+    const disasterCashMult =
+      config.bundle.difficulties.find((item) => item.difficulty_id === state.difficultyId)?.disaster_cash_mult ?? 1;
+    const expectedPenalty = Math.floor(
+      Math.floor(disaster.immediate_cash_penalty * disasterCashMult) * 0.85
+    );
+    expect(
+      month22.value.report.steps.find((step) => step.stepId === "M11_events_apply")?.metrics.disaster_penalty
+    ).toBe(expectedPenalty);
   });
 
   it("returns config_missing when final disaster is absent", () => {

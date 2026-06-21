@@ -91,6 +91,15 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toBe("可切换建造 4 项");
   });
 
+  it("shows eng_bulk_procure-adjusted build cost in city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 2;
+    boot.app.controller.state.litTechIds.push("eng_bulk_procure");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("11资金");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
