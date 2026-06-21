@@ -509,6 +509,45 @@ describe("settleNextMonth", () => {
     expect(month.value.state.cities["CITY-MAP01-03"]).toBeTruthy();
   });
 
+  it("syncOperableCities keeps outside-region cities inactive before trunk connection", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 3;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-MAP02-01"]).toBeUndefined();
+  });
+
+  it("syncOperableCities materializes outside-region cities after trunk finishes", () => {
+    const config = loadTestConfig();
+    let state = createInitialState(config);
+    state.companyLevel = 3;
+
+    const link = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP02-01",
+        linkType: "trunk"
+      },
+      config,
+      defaultPorts
+    );
+    expect(link.ok).toBe(true);
+    if (!link.ok) return;
+    state = link.value.state;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.gridLinks["CITY-MAP02-01::CITY-START"]?.status).toBe("finished");
+    expect(month.value.state.cities["CITY-MAP02-01"]).toBeTruthy();
+    expect(month.value.state.cities["CITY-MAP02-02"]).toBeTruthy();
+  });
+
   it("M10 promotes to level III when MAP-01 social value meets v0 threshold", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
@@ -606,6 +645,22 @@ describe("settleNextMonth", () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error).toBe("not_unlocked");
+  });
+
+  it("dispatch blocks construction in unlocked but inactive outside-region city", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 3;
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-MAP02-01", facilityId: "wind", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
+    expect(result.message).toContain("not operable");
   });
 
   it("dispatch blocks hydro construction in city without river", () => {

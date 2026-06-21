@@ -97,10 +97,8 @@ describe("clientHudDisplay", () => {
     boot.play.openScreen("screen_region", undefined, "MAP-02");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.statusLines).toContain("可玩链路 3");
-    expect(display.detailLines.some((line) => line.includes("CITY-MAP02-01->CITY-MAP02-02"))).toBe(
-      true
-    );
+    expect(display.statusLines).toContain("可玩链路 1");
+    expect(display.detailLines.some((line) => line.includes("CITY-MAP02-01->CITY-START"))).toBe(true);
   });
   it("shows world map unlock progress and next unlock", () => {
     const boot = createGameBootstrapFromRepo();

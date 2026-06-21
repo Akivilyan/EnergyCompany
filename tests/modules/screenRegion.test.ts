@@ -60,7 +60,7 @@ describe("ScreenRegion", () => {
     expect(link?.monthsRemaining).toBe(0);
   });
 
-  it("exposes second-batch region and trunk link candidates after level III unlock", () => {
+  it("exposes trunk first and region links after second-batch region is connected", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 3;
     const screen = createScreenRegionForRegion(controller, "MAP-02");
@@ -73,13 +73,28 @@ describe("ScreenRegion", () => {
           candidate.toCityId === "CITY-MAP02-02" &&
           candidate.linkType === "region"
       )
-    ).toBe(true);
+    ).toBe(false);
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>
           candidate.fromCityId === "CITY-MAP02-01" &&
           candidate.toCityId === "CITY-START" &&
           candidate.linkType === "trunk"
+      )
+    ).toBe(true);
+
+    const queue = screen.queueGridLink("CITY-MAP02-01", "CITY-START", "trunk");
+    expect(queue.result.ok).toBe(true);
+    const advance = screen.advanceMonths(1);
+    expect(advance.failed).toBeNull();
+
+    const connected = screen.getSnapshot();
+    expect(
+      connected.linkCandidates.some(
+        (candidate) =>
+          candidate.fromCityId === "CITY-MAP02-01" &&
+          candidate.toCityId === "CITY-MAP02-02" &&
+          candidate.linkType === "region"
       )
     ).toBe(true);
   });

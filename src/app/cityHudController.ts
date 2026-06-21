@@ -81,7 +81,9 @@ function getCurrentCityId(boot: GameBootstrap): string {
 }
 
 function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
-  const city = boot.app.controller.config.getCity(getCurrentCityId(boot));
+  const cityId = getCurrentCityId(boot);
+  if (!boot.app.controller.state.cities[cityId]) return [];
+  const city = boot.app.controller.config.getCity(cityId);
   if (!city) return [];
   const litTechIds = new Set(boot.app.controller.state.litTechIds);
   return boot.app.controller.config.bundle.facilities

@@ -114,6 +114,12 @@ export function dispatch(
       if (!unlocked.ok) {
         return unlocked;
       }
+      if (!next.cities[command.cityId]) {
+        return err("not_unlocked", "city is not operable before regional grid connection", {
+          city_id: command.cityId,
+          region_id: city.region_id ?? "unknown"
+        });
+      }
       if (next.constructionQueue.length >= 3) {
         return err("conflict_in_progress", "global construction queue full");
       }

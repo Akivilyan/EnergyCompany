@@ -13,6 +13,7 @@ import {
   getCityHudBuildSelectionSnapshot,
   readCityHudViewModel
 } from "../../src/app/cityHudController.js";
+import { clientNavOpenCity } from "../../src/app/screenNavController.js";
 import { mountGameClient } from "../../src/app/gameClientEntry.js";
 import {
   clearMountedGameClient,
@@ -71,6 +72,24 @@ describe("cityHudController", () => {
     const build = cityHudBuildSelected(boot);
     expect(build.ok).toBe(true);
     expect(build.view.funds).toBeLessThan(140);
+  });
+
+  it("hides build candidates for unlocked outside-region city before trunk connection", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenCity(boot, "CITY-MAP02-01", "MAP-02");
+
+    const before = getCityHudBuildSelectionSnapshot(boot);
+    expect(before.candidates).toHaveLength(0);
+
+    const queue = boot.app.screens.region("MAP-02").queueGridLink("CITY-MAP02-01", "CITY-START", "trunk");
+    expect(queue.result.ok).toBe(true);
+    const month = boot.app.controller.runNextMonth();
+    expect(month.ok).toBe(true);
+
+    const after = getCityHudBuildSelectionSnapshot(boot);
+    expect(after.candidates.some((candidate) => candidate.facilityId === "wind")).toBe(true);
   });
 });
 

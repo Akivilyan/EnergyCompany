@@ -124,14 +124,30 @@ export class ScreenRegion {
     const unlockedCities = this.controller.config.bundle.cities.filter(
       (city) => level >= city.unlock_company_level
     );
+    const cityIdsInRegion = new Set(
+      this.controller.config.bundle.cities
+        .filter((city) => city.region_id === this.regionId)
+        .map((city) => city.city_id)
+    );
     const linkExists = (fromCityId: string, toCityId: string): boolean => {
       const key = [fromCityId, toCityId].sort().join("::");
       return !!this.controller.state.gridLinks[key];
     };
+    const regionOperable =
+      this.regionId === "MAP-01" ||
+      Object.values(this.controller.state.gridLinks).some((link) => {
+        if (link.status !== "finished" || link.linkType !== "trunk") return false;
+        const fromInRegion = cityIdsInRegion.has(link.fromCityId);
+        const toInRegion = cityIdsInRegion.has(link.toCityId);
+        return (
+          (fromInRegion && !!this.controller.state.cities[link.toCityId]) ||
+          (toInRegion && !!this.controller.state.cities[link.fromCityId])
+        );
+      });
 
     const region = this.controller.config.bundle.regions.find((item) => item.region_id === this.regionId);
     const regionCities = unlockedCities.filter((city) => city.region_id === this.regionId);
-    if (regionCities.length >= 2 && region) {
+    if (regionOperable && regionCities.length >= 2 && region) {
       const hubCity =
         regionCities.find((city) => city.city_type === "central") ?? regionCities[0];
       for (const city of regionCities) {

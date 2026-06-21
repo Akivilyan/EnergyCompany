@@ -80,10 +80,37 @@ function getEffectiveSvThreshold(
   return baseThreshold;
 }
 
+function getStartRegionId(config: ConfigRepo): string | null {
+  return config.getCity("CITY-START")?.region_id ?? null;
+}
+
+function isRegionOperable(state: GameState, config: ConfigRepo, regionId: string | undefined): boolean {
+  if (!regionId) return true;
+  const startRegionId = getStartRegionId(config);
+  if (regionId === startRegionId) return true;
+
+  const regionCityIds = new Set(
+    config.bundle.cities
+      .filter((cityConfig) => cityConfig.region_id === regionId)
+      .map((cityConfig) => cityConfig.city_id)
+  );
+  for (const link of Object.values(state.gridLinks)) {
+    if (link.status !== "finished" || link.linkType !== "trunk") continue;
+    const fromInRegion = regionCityIds.has(link.fromCityId);
+    const toInRegion = regionCityIds.has(link.toCityId);
+    if (fromInRegion && state.cities[link.toCityId]) return true;
+    if (toInRegion && state.cities[link.fromCityId]) return true;
+  }
+  return false;
+}
+
 /** 将已解锁城市写入运行态，供 M4/M9 按城结算社会价值。 */
 export function syncOperableCities(state: GameState, config: ConfigRepo): void {
   for (const cityConfig of config.bundle.cities) {
     if (state.companyLevel < cityConfig.unlock_company_level) {
+      continue;
+    }
+    if (!isRegionOperable(state, config, cityConfig.region_id)) {
       continue;
     }
     if (state.cities[cityConfig.city_id]) {
