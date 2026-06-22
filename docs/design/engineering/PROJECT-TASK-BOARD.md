@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.25.0
+version: 1.26.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -93,6 +93,7 @@ open_questions: []
 | 2026-06-22 | 仓库格式约束补齐：新增根目录 `.editorconfig`，并把“默认 UTF-8 + LF、脚本文件保留 CRLF、避免顺手改无关格式”写回协作规则与会话约束；同时把 `.editorconfig` / `.gitattributes` 也纳入 `.gitattributes` 固定为 LF，降低 Windows 环境下的假脏与整段红绿 diff 噪音 | `.editorconfig` `.gitattributes` `AGENTS.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程/文档约束整理，无需跑测试 |
 | 2026-06-22 | `FAST-01` 后半程科技树与城市建造等级子步：补齐 `wind/solar/thermal/hydro` III～V、`storage_system_2/3` 与 `nuclear_2/3` 节点；同时把“科技点亮 → 城市 HUD 候选升到当前最高 tier → 建造与已完工机组自动同步 tier”这条链路接通，让后半程科技直接反映到建造与供能压力 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 核电后续经营分叉子步：新增 `nuclear_ops`，并把 modifier 运维效果从“只有全局运维”扩展为“全局运维 + 指定机组运维”叠加；V 级后核电路线现在能通过核电运维规程单独降低核电月运维，而不影响风电等其它机组 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-22 | `FAST-01` 储能后续经营分叉子步：把 `storage_system_2/3` 从单纯门槛推进为真实供能倍率节点；模拟核心现在读取已点亮 `storage_buff` 配置中的最大 `storage_mult`，风/光/水在储能 II/III 后会继续获得 3x/4x 本地供能倍率，而非停留在储能 I 的 2x | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -142,3 +143,4 @@ open_questions: []
 | 1.23.0 | 2026-06-22 | 补记仓库格式约束补齐：新增 `.editorconfig`，并把行尾/最小 diff 约束写回协作规则 |
 | 1.24.0 | 2026-06-22 | 补记 `FAST-01` 后半程科技树与城市建造等级子步：扩展 III～V 科技节点，并接通最高 tier 建造与已完工机组自动同步 |
 | 1.25.0 | 2026-06-22 | 补记 `FAST-01` 核电后续经营分叉子步：新增 `nuclear_ops`，支持指定机组运维 modifier |
+| 1.26.0 | 2026-06-22 | 补记 `FAST-01` 储能后续经营分叉子步：`storage_system_2/3` 进入真实供能倍率结算 |

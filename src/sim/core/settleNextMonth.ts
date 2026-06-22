@@ -13,7 +13,7 @@ import {
   getFacilityTierSpec,
   getEcoCitySocialValue,
   getMonthlyOperatingCost,
-  hasStorageOutputBoost,
+  getStorageOutputMultiplier,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
@@ -171,8 +171,7 @@ function buildIslands(state: GameState): string[][] {
   return islands;
 }
 
-function recalcSupply(state: GameState): void {
-  const hasStorageBoost = hasStorageOutputBoost(state);
+function recalcSupply(state: GameState, config: ConfigRepo): void {
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
   const localSupplyByCity = new Map<string, number>();
   const localFullyEcoByCity = new Map<string, boolean>();
@@ -184,8 +183,9 @@ function recalcSupply(state: GameState): void {
 
   for (const fac of Object.values(state.facilities)) {
     const current = localSupplyByCity.get(fac.cityId) ?? 0;
-    const boost =
-      hasStorageBoost && storageBoostTypes.has(fac.facilityId) ? 2 : 1;
+    const boost = storageBoostTypes.has(fac.facilityId)
+      ? getStorageOutputMultiplier(state, config, fac.facilityId)
+      : 1;
     localSupplyByCity.set(fac.cityId, current + fac.outputMw * boost);
     if (fac.facilityId === "thermal" || fac.facilityId === "nuclear") {
       localFullyEcoByCity.set(fac.cityId, false);
@@ -323,7 +323,7 @@ export function settleNextMonth(
   steps.push(runM1(next, config));
   syncFacilityRuntimeTiers(next, config);
   syncOperableCities(next, config);
-  recalcSupply(next);
+  recalcSupply(next, config);
   steps.push(
     step("M4_supply_recalc", "supply ratios updated", {
       supply_ratio: next.cities["CITY-START"]?.supplyRatio ?? 0

@@ -46,8 +46,27 @@ function applyPercent(baseValue: number, percentDelta: number, minValue = 0): nu
   return Math.max(minValue, Math.floor((baseValue * (100 + percentDelta)) / 100));
 }
 
-export function hasStorageOutputBoost(state: GameState): boolean {
-  return state.litTechIds.includes("storage_system_1");
+function technologyTargets(tech: TechnologyConfig): Set<string> {
+  return new Set(
+    tech.effect_target
+      .split(",")
+      .map((target) => target.trim())
+      .filter((target) => target.length > 0)
+  );
+}
+
+export function getStorageOutputMultiplier(
+  state: GameState,
+  config: ConfigRepo,
+  facilityId: string
+): number {
+  let multiplier = 1;
+  for (const tech of getLitTechnologies(state, config)) {
+    if (tech.effect_type !== "storage_buff") continue;
+    if (!technologyTargets(tech).has(facilityId)) continue;
+    multiplier = Math.max(multiplier, readNumericEffectValue(tech, "storage_mult"));
+  }
+  return multiplier;
 }
 
 function getFacilityTierTechMax(

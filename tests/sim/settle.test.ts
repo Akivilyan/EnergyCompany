@@ -405,7 +405,7 @@ describe("settleNextMonth", () => {
     expect(next.cities["CITY-MAP01-02"].netImportMw).toBe(0);
   });
 
-  it("M4 only grants storage output boost from storage_system_1", () => {
+  it("M4 applies highest lit storage output multiplier from config", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
     state.litTechIds.push("storage_system_2");
@@ -422,7 +422,7 @@ describe("settleNextMonth", () => {
     const month = settleNextMonth(state, config, defaultPorts);
     expect(month.ok).toBe(true);
     if (!month.ok) return;
-    expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
+    expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(1260);
   });
 
   it("M3 upgrades existing wind facilities to tier 2 when wind_2 lights", () => {
