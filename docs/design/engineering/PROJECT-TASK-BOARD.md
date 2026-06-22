@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.27.0
+version: 1.28.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -94,6 +94,7 @@ open_questions: []
 | 2026-06-22 | `FAST-01` 后半程科技树与城市建造等级子步：补齐 `wind/solar/thermal/hydro` III～V、`storage_system_2/3` 与 `nuclear_2/3` 节点；同时把“科技点亮 → 城市 HUD 候选升到当前最高 tier → 建造与已完工机组自动同步 tier”这条链路接通，让后半程科技直接反映到建造与供能压力 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 核电后续经营分叉子步：新增 `nuclear_ops`，并把 modifier 运维效果从“只有全局运维”扩展为“全局运维 + 指定机组运维”叠加；V 级后核电路线现在能通过核电运维规程单独降低核电月运维，而不影响风电等其它机组 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 储能科技口径收口：按 `04-energy-supply` / `07-tech` / `technology-tree` 恢复“仅 `storage_system_1` 提供 `storage_mult = 2`，`storage_system_2/3` 只做 IV/V tier 闸门”；同时补配置测试，锁住 `storage_system_2/3` 不得再携带 `storage_mult` 字段 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-22 | `OPS-01` 规则收紧：把“项目落地必须遵从设计文档；若发现文档错漏、冲突或更优方案，必须先停下来与用户核对，不允许擅自发挥违背设计文档”写入 `AGENTS.md` 与 `codex-project-rules.md`，作为后续 Agent 默认硬约束 | `AGENTS.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
 
 ## 6. 阶段摘要
 
@@ -145,3 +146,4 @@ open_questions: []
 | 1.25.0 | 2026-06-22 | 补记 `FAST-01` 核电后续经营分叉子步：新增 `nuclear_ops`，支持指定机组运维 modifier |
 | 1.26.0 | 2026-06-22 | 误记 `storage_system_2/3` 进入真实供能倍率结算；该口径已在 `1.27.0` 按设计文档更正 |
 | 1.27.0 | 2026-06-22 | 补记 `FAST-01` 储能科技口径收口：恢复 `storage_system_2/3` 仅作 tier 闸门，并补配置防回归测试 |
+| 1.28.0 | 2026-06-22 | 补记 `OPS-01` 规则收紧：新增“实现必须遵从设计文档，发现错漏或更优方案需先与用户核对”硬约束 |
