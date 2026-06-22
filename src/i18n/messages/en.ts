@@ -76,6 +76,7 @@ export const en: Record<string, string> = {
   "hud.status.region": "Region · Lv{level} · {funds} · {cities} cities",
   "hud.status.region_links": "M{month} · links building={building} done={finished}",
   "hud.status.region_selected_link": "Selected: {type} {from}->{to}",
+  "hud.status.region_selected_link_cost": "Selected: {type} {from}->{to} 路 cost {cost}",
   "hud.status.world": "World · Lv{level} · {funds} · unlocked {unlocked}/{total}",
   "hud.status.world_next_unlock": "Next unlock: {region} at Lv{level}",
   "hud.status.world_all_unlocked": "All regions unlocked",

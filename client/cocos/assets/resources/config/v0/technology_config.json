@@ -75,7 +75,7 @@
     "research_months": 3,
     "effect_type": "grid",
     "effect_target": "region",
-    "effect_value": { "unlock": "region" }
+    "effect_value": { "unlock": "region", "grid_link_cost_pct": -25 }
   },
   {
     "tech_id": "nuclear_1",

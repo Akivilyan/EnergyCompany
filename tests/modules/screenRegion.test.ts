@@ -43,6 +43,16 @@ describe("ScreenRegion", () => {
     expect(action.after.gridLinks.some((link) => link.linkId === linkId)).toBe(true);
   });
 
+  it("shows grid_regional-adjusted link cost in snapshot", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 3;
+    const screen = createScreenRegion(controller);
+    expect(screen.getSnapshot().gridLinkCost).toBe(8);
+
+    controller.state.litTechIds.push("grid_regional");
+    expect(screen.getSnapshot().gridLinkCost).toBe(6);
+  });
+
   it("advances month and finishes queued region link", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;

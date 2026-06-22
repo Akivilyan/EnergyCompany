@@ -76,6 +76,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.region": "区域 · {level}级 · 资金{funds} · 已解锁{cities}城",
   "hud.status.region_links": "第{month}月 · 线路 在建{building} 完工{finished}",
   "hud.status.region_selected_link": "当前候选：{type} {from}->{to}",
+  "hud.status.region_selected_link_cost": "当前候选：{type} {from}->{to} 路 {cost}资金",
   "hud.status.world": "大地图 · {level}级 · 资金{funds} · 已解锁{unlocked}/{total}",
   "hud.status.world_next_unlock": "下一解锁：{region}（{level}级）",
   "hud.status.world_all_unlocked": "全部区域已解锁",

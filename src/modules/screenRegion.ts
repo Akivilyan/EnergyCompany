@@ -1,4 +1,4 @@
-import type { GameState, SettlementReport, SimResult } from "../sim/index.js";
+import { getGridLinkBuildCost, type GameState, type SettlementReport, type SimResult } from "../sim/index.js";
 import type { RunController } from "./runController.js";
 
 export interface RegionCityItem {
@@ -39,6 +39,7 @@ export interface ScreenRegionSnapshot {
   month: number;
   companyLevel: number;
   funds: number;
+  gridLinkCost: number;
   cities: RegionCityItem[];
   gridLinks: RegionGridLinkItem[];
   linkCandidates: RegionLinkCandidate[];
@@ -112,6 +113,7 @@ export class ScreenRegion {
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,
+      gridLinkCost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8),
       cities,
       gridLinks,
       linkCandidates

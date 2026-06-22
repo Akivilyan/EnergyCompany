@@ -266,6 +266,28 @@ describe("settleNextMonth", () => {
     expect(result.value.state.funds).toBe(129);
   });
 
+  it("applies grid_regional link cost discount to grid link dispatch", () => {
+    const config = loadTestConfig();
+    const state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
+
+    const result = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.funds).toBe(134);
+  });
+
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);

@@ -4,7 +4,7 @@ import type { Command } from "../types/commands.js";
 import type { GameState } from "../types/gameState.js";
 import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
-import { getConstructionBuildCost } from "./technologyEffects.js";
+import { getConstructionBuildCost, getGridLinkBuildCost } from "./technologyEffects.js";
 
 export interface DispatchOutput {
   state: GameState;
@@ -207,10 +207,11 @@ export function dispatch(
       if (next.gridLinks[linkKey]) {
         return err("conflict_in_progress", "grid link already exists");
       }
-      if (next.funds < GRID_LINK_COST) {
+      const gridLinkCost = getGridLinkBuildCost(next, config, GRID_LINK_COST);
+      if (next.funds < gridLinkCost) {
         return err("insufficient_funds", "not enough funds for grid link");
       }
-      next.funds -= GRID_LINK_COST;
+      next.funds -= gridLinkCost;
       next.gridLinks[linkKey] = {
         linkId: linkKey,
         fromCityId: command.fromCityId,

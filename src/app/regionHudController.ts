@@ -24,6 +24,7 @@ export interface RegionHudSelectionSnapshot {
     linkType: "region" | "trunk";
     label: string;
     available: boolean;
+    cost: number;
   }>;
   selectedCandidateId: string | null;
 }
@@ -65,15 +66,15 @@ function getLinkTypeLabel(linkType: "region" | "trunk"): string {
 
 function getLinkCandidates(boot: GameBootstrap) {
   const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
-  return boot.app.screens.region(regionId)
-    .getSnapshot()
-    .linkCandidates.filter((candidate) => candidate.unlocked)
+  const snapshot = boot.app.screens.region(regionId).getSnapshot();
+  return snapshot.linkCandidates.filter((candidate) => candidate.unlocked)
     .map((candidate) => ({
       candidateId: candidate.candidateId,
       fromCityId: candidate.fromCityId,
       toCityId: candidate.toCityId,
       linkType: candidate.linkType,
       available: candidate.available,
+      cost: snapshot.gridLinkCost,
       label: t("region.candidate.label", {
         type: getLinkTypeLabel(candidate.linkType),
         from: candidate.fromCityName,
@@ -114,10 +115,11 @@ export function getRegionHudSelectionSnapshot(boot: GameBootstrap): RegionHudSel
 export function formatSelectedRegionLink(boot: GameBootstrap): string | null {
   const selected = ensureSelectedCandidate(boot);
   if (!selected) return null;
-  return t("hud.status.region_selected_link", {
+  return t("hud.status.region_selected_link_cost", {
     type: getLinkTypeLabel(selected.linkType),
     from: selected.fromCityId,
-    to: selected.toCityId
+    to: selected.toCityId,
+    cost: selected.cost
   });
 }
 
