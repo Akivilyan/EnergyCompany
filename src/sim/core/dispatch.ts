@@ -37,6 +37,13 @@ function makeUndirectedLinkKey(fromCityId: string, toCityId: string): string {
   return [fromCityId, toCityId].sort().join("::");
 }
 
+function getGridLinkLossMw(config: ConfigRepo, linkType: "region" | "trunk", litTechIds: string[]): number {
+  if (linkType === "region") return config.bundle.gridLoss.loss_regional_mw;
+  return litTechIds.includes("uhv_transmission")
+    ? config.bundle.gridLoss.loss_backbone_uhv_mw
+    : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
+}
+
 function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResult<true> {
   if (companyLevel < unlockLevel) {
     return err("not_unlocked", "city not unlocked for current company level", {
@@ -241,7 +248,7 @@ export function dispatch(
         linkType: command.linkType,
         status: "building",
         monthsRemaining: GRID_LINK_BUILD_MONTHS,
-        lossMw: 0
+        lossMw: getGridLinkLossMw(config, command.linkType, next.litTechIds)
       };
       break;
     }

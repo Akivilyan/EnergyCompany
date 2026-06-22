@@ -1,0 +1,7 @@
+{
+  "core_reference_demand_mw": 1200,
+  "ordinary_city_reference_demand_mw": 500,
+  "loss_regional_mw": 125,
+  "loss_backbone_uhv_mw": 500,
+  "loss_backbone_pre_uhv_mw": 750
+}

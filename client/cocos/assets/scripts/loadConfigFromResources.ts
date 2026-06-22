@@ -35,7 +35,8 @@ export async function loadConfigFromResources(): Promise<ConfigRepo> {
     loanTiers: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.loanTiers)),
     difficulties: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.difficulties)),
     adRewards: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.adRewards)),
-    technologies: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.technologies))
+    technologies: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.technologies)),
+    gridLoss: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.gridLoss))
   };
   return ConfigRepo.fromBundle(buildConfigBundle(input));
 }

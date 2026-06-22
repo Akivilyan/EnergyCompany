@@ -89,6 +89,14 @@ export interface AdRewardConfig {
   reward_cash: number;
 }
 
+export interface GridLossConfig {
+  core_reference_demand_mw: number;
+  ordinary_city_reference_demand_mw: number;
+  loss_regional_mw: number;
+  loss_backbone_uhv_mw: number;
+  loss_backbone_pre_uhv_mw: number;
+}
+
 export type TechnologyTab =
   | "wind"
   | "solar"
@@ -124,6 +132,7 @@ export interface ConfigBundle {
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
+  gridLoss: GridLossConfig;
 }
 
 export class ConfigRepo {

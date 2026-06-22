@@ -322,6 +322,9 @@ describe("settleNextMonth", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value.state.funds).toBe(134);
+    expect(result.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(
+      config.bundle.gridLoss.loss_regional_mw
+    );
   });
 
   it("applies grid_backbone trunk cost discount to grid link dispatch", () => {
@@ -344,6 +347,9 @@ describe("settleNextMonth", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value.state.funds).toBe(134);
+    expect(result.value.state.gridLinks["CITY-MAP03-01::CITY-START"]?.lossMw).toBe(
+      config.bundle.gridLoss.loss_backbone_pre_uhv_mw
+    );
   });
 
   it("M4 uses unified island rate when two cities are connected in v0", () => {
@@ -378,9 +384,46 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     const next = month.value.state;
-    expect(next.cities["CITY-START"].supplyRatio).toBe(0.5);
-    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0.5);
+    expect(next.cities["CITY-START"].supplyRatio).toBe(0.43);
+    expect(next.cities["CITY-MAP01-02"].supplyRatio).toBe(0.43);
     expect(next.cities["CITY-MAP01-02"].netImportMw).toBeGreaterThan(0);
+  });
+
+  it("M4 subtracts finished grid link losses from island supply", () => {
+    const config = loadTestConfig();
+    let state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 2;
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 920,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    const link = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(link.ok).toBe(true);
+    if (!link.ok) return;
+    state = link.value.state;
+    state.gridLinks["CITY-MAP01-02::CITY-START"].lossMw = 0;
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(125);
+    expect(month.value.state.cities["CITY-START"].effectiveSupplyMw).toBe(570);
+    expect(month.value.state.cities["CITY-MAP01-02"].effectiveSupplyMw).toBe(224);
   });
 
   it("M4 keeps cities isolated when no finished link exists", () => {

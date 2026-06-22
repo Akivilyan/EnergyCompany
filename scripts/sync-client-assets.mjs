@@ -19,7 +19,8 @@ const configFiles = [
   "loan_tiers.json",
   "difficulty_modifiers.json",
   "ad_rewards.json",
-  "technology_config.json"
+  "technology_config.json",
+  "grid_loss_config.json"
 ];
 
 fs.rmSync(sharedDir, { recursive: true, force: true });

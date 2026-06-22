@@ -24,7 +24,8 @@ export function loadConfigRepoFromJsonDir(configDir: string): ConfigRepo {
     loanTiers: readJsonFile(configDir, V0_CONFIG_JSON_FILES.loanTiers),
     difficulties: readJsonFile(configDir, V0_CONFIG_JSON_FILES.difficulties),
     adRewards: readJsonFile(configDir, V0_CONFIG_JSON_FILES.adRewards),
-    technologies: readJsonFile(configDir, V0_CONFIG_JSON_FILES.technologies)
+    technologies: readJsonFile(configDir, V0_CONFIG_JSON_FILES.technologies),
+    gridLoss: readJsonFile(configDir, V0_CONFIG_JSON_FILES.gridLoss)
   };
   return configRepoFromBundle(buildConfigBundle(input));
 }

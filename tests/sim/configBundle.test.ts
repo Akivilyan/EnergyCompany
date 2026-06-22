@@ -25,6 +25,15 @@ describe("buildConfigBundle", () => {
     const fromSlice = loadTestConfig();
     expect(fromRecords.bundle.facilities.length).toBe(fromSlice.bundle.facilities.length);
     expect(fromRecords.bundle.technologies.length).toBe(fromSlice.bundle.technologies.length);
+    expect(fromRecords.bundle.gridLoss.loss_regional_mw).toBe(fromSlice.bundle.gridLoss.loss_regional_mw);
+  });
+
+  it("keeps grid loss config aligned with grid design ratios", () => {
+    const config = loadTestConfig();
+    expect(config.bundle.gridLoss.ordinary_city_reference_demand_mw).toBe(500);
+    expect(config.bundle.gridLoss.loss_regional_mw).toBe(125);
+    expect(config.bundle.gridLoss.loss_backbone_uhv_mw).toBe(500);
+    expect(config.bundle.gridLoss.loss_backbone_pre_uhv_mw).toBe(750);
   });
 
   it("keeps storage tech effects aligned with design docs", () => {

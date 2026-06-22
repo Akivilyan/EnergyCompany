@@ -6,6 +6,7 @@ import type {
   DifficultyModifier,
   DisasterConfig,
   FacilityConfig,
+  GridLossConfig,
   LoanTierConfig,
   RegionConfig,
   TechnologyConfig,
@@ -26,7 +27,8 @@ export const V0_CONFIG_JSON_FILES = {
   loanTiers: "loan_tiers.json",
   difficulties: "difficulty_modifiers.json",
   adRewards: "ad_rewards.json",
-  technologies: "technology_config.json"
+  technologies: "technology_config.json",
+  gridLoss: "grid_loss_config.json"
 } as const;
 
 export interface ConfigBundleInput {
@@ -40,6 +42,7 @@ export interface ConfigBundleInput {
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
+  gridLoss: GridLossConfig;
 }
 
 export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
@@ -53,7 +56,8 @@ export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
     loanTiers: input.loanTiers,
     difficulties: input.difficulties,
     adRewards: input.adRewards,
-    technologies: input.technologies
+    technologies: input.technologies,
+    gridLoss: input.gridLoss
   };
 }
 

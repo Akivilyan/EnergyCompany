@@ -172,6 +172,18 @@ function buildIslands(state: GameState): string[][] {
   return islands;
 }
 
+function syncGridLinkLosses(state: GameState, config: ConfigRepo): void {
+  const trunkLoss = state.litTechIds.includes("uhv_transmission")
+    ? config.bundle.gridLoss.loss_backbone_uhv_mw
+    : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
+  for (const link of Object.values(state.gridLinks)) {
+    link.lossMw =
+      link.linkType === "region"
+        ? config.bundle.gridLoss.loss_regional_mw
+        : trunkLoss;
+  }
+}
+
 function getCityResourceMultiplier(
   config: ConfigRepo,
   cityId: string,
@@ -216,13 +228,22 @@ function recalcSupply(state: GameState, config: ConfigRepo): void {
   for (const island of islands) {
     let islandDemand = 0;
     let islandSupply = 0;
+    let islandLoss = 0;
+    const islandCityIds = new Set(island);
     for (const cityId of island) {
       const city = state.cities[cityId];
       islandDemand += city.demandMw;
       islandSupply += localSupplyByCity.get(cityId) ?? 0;
     }
+    for (const link of Object.values(state.gridLinks)) {
+      if (link.status !== "finished") continue;
+      if (islandCityIds.has(link.fromCityId) && islandCityIds.has(link.toCityId)) {
+        islandLoss += link.lossMw;
+      }
+    }
+    const availableSupply = Math.max(0, islandSupply - islandLoss);
     const islandRate =
-      islandDemand <= 0 ? 0 : Math.min(1, Math.max(0, islandSupply) / islandDemand);
+      islandDemand <= 0 ? 0 : Math.min(1, availableSupply / islandDemand);
     for (const cityId of island) {
       const city = state.cities[cityId];
       const localSupply = localSupplyByCity.get(cityId) ?? 0;
@@ -339,6 +360,7 @@ export function settleNextMonth(
 
   steps.push(runM2(next));
   steps.push(runM3(next));
+  syncGridLinkLosses(next, config);
   syncFacilityRuntimeTiers(next, config);
 
   steps.push(runM1(next, config));
