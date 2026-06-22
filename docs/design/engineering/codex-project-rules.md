@@ -78,6 +78,13 @@ infra 通过端口注入
 - 改 `docs/design/data/vertical-slice-v0/` 后，至少跑 `npm run build:client`
 - 若配置影响客户端联调，再补 `npm run verify:client`
 
+### 格式与行尾守则
+
+- 根目录 `.editorconfig` 与 `.gitattributes` 一起作为默认格式约束
+- 文本文件默认保持 `UTF-8 + LF`
+- `*.bat` / `*.cmd` / `*.ps1` 保持 `CRLF`
+- 非功能性改动不要顺手重排无关格式，避免制造只改一行逻辑却整段红绿 diff 的噪音
+
 ### 客户端验证守则
 
 - Cocos / HUD 改动，默认先跑 `npm run verify:client`

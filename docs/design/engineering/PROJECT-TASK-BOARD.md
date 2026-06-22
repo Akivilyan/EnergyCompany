@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.22.0
+version: 1.23.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -90,6 +90,7 @@ open_questions: []
 | 2026-06-21 | `FAST-01` 经营科技生效子步：把 `eng_bulk_procure` / `eng_ops_contract` / `eng_risk_reserve` / `eng_green_pr` 接入真实建造与月结效果；城市 HUD 现会显示集中采购后的折后造价，灾害减损 / 运维减负 / 纯绿城社会价值加成也已进入模拟层，顺手修正了 `storage_system_2/3` 误触发储能倍率的问题 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/sim/systems/debuff.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 电网科技生效子步：把 `grid_regional` 从配置占位推进为真实铺线成本折扣；`queue_grid_link` 现在按已点亮电网科技计算成本，区域快照与 HUD 会显示折后候选线路成本，点亮后基础铺线从 8 资金降至 6 资金 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/index.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/*` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone` 并把铺线成本从“统一价”细化为“区域线 / 主干线分别计算”；`grid_regional` 只影响省内链路，`grid_backbone` 只影响 trunk，区域快照、开发 HUD 与真实扣费现在都会按候选链路类型显示 8→6 的对应折扣 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-22 | 仓库格式约束补齐：新增根目录 `.editorconfig`，并把“默认 UTF-8 + LF、脚本文件保留 CRLF、避免顺手改无关格式”写回协作规则与会话约束；同时把 `.editorconfig` / `.gitattributes` 也纳入 `.gitattributes` 固定为 LF，降低 Windows 环境下的假脏与整段红绿 diff 噪音 | `.editorconfig` `.gitattributes` `AGENTS.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程/文档约束整理，无需跑测试 |
 
 ## 6. 阶段摘要
 
@@ -136,3 +137,4 @@ open_questions: []
 | 1.20.0 | 2026-06-21 | 补记 `FAST-01` 经营科技生效子步：集中采购/运维外包/风险准备金/绿色品牌进入真实结算与 HUD 摘要 |
 | 1.21.0 | 2026-06-22 | 补记 `FAST-01` 电网科技生效子步：`grid_regional` 降低真实铺线成本并显示到区域 HUD |
 | 1.22.0 | 2026-06-22 | 补记 `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone`，并按区域线 / 主干线分别计算科技折扣 |
+| 1.23.0 | 2026-06-22 | 补记仓库格式约束补齐：新增 `.editorconfig`，并把行尾/最小 diff 约束写回协作规则 |

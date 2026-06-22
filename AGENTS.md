@@ -39,6 +39,13 @@
 - 改了代码或任务状态，就更新 `docs/design/engineering/PROJECT-TASK-BOARD.md`
 - 回复里说明实际验证命令与结果
 
+### 4.1 格式与行尾
+
+- 根目录 `.editorconfig` 与 `.gitattributes` 视为仓库默认格式约束
+- 文本文件默认保持 `UTF-8 + LF`
+- `*.bat` / `*.cmd` / `*.ps1` 保持 `CRLF`
+- 非功能性改动不要顺手重排无关格式，避免制造“只改一行逻辑却整段红绿 diff”噪音
+
 ### 5. 回复语言
 
 简体中文。
