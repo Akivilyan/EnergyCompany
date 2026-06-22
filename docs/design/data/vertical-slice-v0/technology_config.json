@@ -156,6 +156,19 @@
     "effect_value": { "tier_max": 5 }
   },
   {
+    "tech_id": "eco_thermal",
+    "display_name": "清洁煤电改造",
+    "tab": "thermal",
+    "company_level_min": 4,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 76,
+    "research_months": 3,
+    "effect_type": "eco_sync",
+    "effect_target": "all_thermal",
+    "effect_value": {}
+  },
+  {
     "tech_id": "hydro_2",
     "display_name": "水电·II",
     "tab": "hydro",
@@ -310,6 +323,19 @@
     "effect_type": "facility_tier",
     "effect_target": "nuclear",
     "effect_value": { "tier_max": 3 }
+  },
+  {
+    "tech_id": "eco_nuclear",
+    "display_name": "无害化核废料",
+    "tab": "nuclear",
+    "company_level_min": 4,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 84,
+    "research_months": 3,
+    "effect_type": "eco_sync",
+    "effect_target": "all_nuclear",
+    "effect_value": {}
   },
   {
     "tech_id": "nuclear_ops",

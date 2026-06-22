@@ -40,4 +40,15 @@ describe("buildConfigBundle", () => {
     expect(storage3?.effect_type).toBe("storage_gate");
     expect(storage3?.effect_value.storage_mult).toBeUndefined();
   });
+
+  it("keeps eco sync tech effects aligned with design docs", () => {
+    const config = loadTestConfig();
+    const ecoThermal = config.getTechnology("eco_thermal");
+    const ecoNuclear = config.getTechnology("eco_nuclear");
+
+    expect(ecoThermal?.effect_type).toBe("eco_sync");
+    expect(ecoThermal?.effect_target).toBe("all_thermal");
+    expect(ecoNuclear?.effect_type).toBe("eco_sync");
+    expect(ecoNuclear?.effect_target).toBe("all_nuclear");
+  });
 });

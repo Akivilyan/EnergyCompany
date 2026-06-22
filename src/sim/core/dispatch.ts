@@ -8,7 +8,8 @@ import {
   getConstructionBuildCost,
   getFacilityBuildTierMax,
   getFacilityTierSpec,
-  getGridLinkBuildCost
+  getGridLinkBuildCost,
+  syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
 export interface DispatchOutput {
@@ -372,6 +373,7 @@ export function dispatch(
         if (!next.litTechIds.includes(activeResearch.techId)) {
           next.litTechIds.push(activeResearch.techId);
         }
+        syncFacilityRuntimeTiers(next, config);
       }
       next.adsRemaining -= 1;
       break;

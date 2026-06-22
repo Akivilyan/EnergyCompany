@@ -50,6 +50,24 @@ export function hasStorageOutputBoost(state: GameState): boolean {
   return state.litTechIds.includes("storage_system_1");
 }
 
+export function getFacilityEcoStatus(
+  state: GameState,
+  config: ConfigRepo,
+  facilityId: string
+): boolean {
+  const facility = config.getFacility(facilityId);
+  const ecoDefault = facility?.is_eco_default ?? true;
+  if (ecoDefault) return true;
+
+  const effectTarget =
+    facilityId === "thermal" ? "all_thermal" : facilityId === "nuclear" ? "all_nuclear" : null;
+  if (!effectTarget) return ecoDefault;
+
+  return getLitTechnologies(state, config).some(
+    (tech) => tech.effect_type === "eco_sync" && tech.effect_target === effectTarget
+  );
+}
+
 function getFacilityTierTechMax(
   state: GameState,
   config: ConfigRepo,
@@ -109,6 +127,7 @@ export function getFacilityTierSpec(
 
 export function syncFacilityRuntimeTiers(state: GameState, config: ConfigRepo): void {
   for (const facility of Object.values(state.facilities)) {
+    facility.isEco = getFacilityEcoStatus(state, config, facility.facilityId);
     const maxTier = getFacilityBuildTierMax(state, config, facility.facilityId);
     if (maxTier <= facility.tier) continue;
     const spec = getFacilityTierSpec(config, facility.facilityId, maxTier);

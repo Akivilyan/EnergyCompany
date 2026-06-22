@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.28.0
+version: 1.29.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-22 | `FAST-01` 生态改造经营分叉子步：补齐 `eco_thermal` / `eco_nuclear` 科技节点，并把 ECO 同步从“文档存在”推进到“模拟层真实生效”；已完工火/核机组现在会在 M3 完成拍或广告秒研后立即环保化，M4 供能环保判定与 M9 社会价值也会据此更新 | `docs/design/data/vertical-slice-v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `src/sim/core/dispatch.ts` `src/sim/types/gameState.ts` `tests/sim/settle.test.ts` `tests/modules/screenTechTree.test.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-04 | 收口 `T50-CLOSE`：客户端 HUD 聚合验证可用 | `src/app/clientHudSmoke.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
 | 2026-06-09 | 启动 `OPS-01`：收敛项目规则入口，整理工具箱与项目专用协作能力 | `README.md` `AGENTS.md` `docs/design/engineering/cursor-toolbox.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
 | 2026-06-17 | Codex 接手：补接手上下文，准备把项目规则从 Cursor 体系迁回正式文档 | `docs/design/engineering/codex-handoff.md` `README.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档整理，无需跑测试 |
@@ -147,3 +148,4 @@ open_questions: []
 | 1.26.0 | 2026-06-22 | 误记 `storage_system_2/3` 进入真实供能倍率结算；该口径已在 `1.27.0` 按设计文档更正 |
 | 1.27.0 | 2026-06-22 | 补记 `FAST-01` 储能科技口径收口：恢复 `storage_system_2/3` 仅作 tier 闸门，并补配置防回归测试 |
 | 1.28.0 | 2026-06-22 | 补记 `OPS-01` 规则收紧：新增“实现必须遵从设计文档，发现错漏或更优方案需先与用户核对”硬约束 |
+| 1.29.0 | 2026-06-22 | 补记 `FAST-01` 生态改造经营分叉子步：`eco_thermal` / `eco_nuclear` 进入真实 ECO 同步与结算链路 |

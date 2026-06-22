@@ -562,6 +562,34 @@ describe("settleNextMonth", () => {
     expect(next.cities["CITY-START"].ecoCapFactor).toBe(0.8);
   });
 
+  it("M3 eco_thermal completion immediately eco-syncs existing thermal facilities", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 4;
+    state.facilities["fac-thermal"] = {
+      id: "fac-thermal",
+      cityId: "CITY-START",
+      facilityId: "thermal",
+      tier: 1,
+      outputMw: 220,
+      monthlyOpex: 6,
+      monthlyFuel: 3
+    };
+    state.researches["eco_thermal"] = {
+      researchId: "rq-eco-thermal",
+      techId: "eco_thermal",
+      monthsRemaining: 1
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.litTechIds).toContain("eco_thermal");
+    expect(month.value.state.facilities["fac-thermal"]?.isEco).toBe(true);
+    expect(month.value.state.cities["CITY-START"].cityFullyEcoSupply).toBe(true);
+    expect(month.value.state.cities["CITY-START"].ecoCapFactor).toBe(1);
+  });
+
   it("M10 does not downgrade company level when SV drops", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
@@ -592,6 +620,37 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(9);
+  });
+
+  it("claim_ad_reward speedup immediately eco-syncs completed nuclear facilities", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 4;
+    state.facilities["fac-nuclear"] = {
+      id: "fac-nuclear",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 12,
+      monthlyFuel: 0
+    };
+    state.researches["eco_nuclear"] = {
+      researchId: "rq-eco-nuclear",
+      techId: "eco_nuclear",
+      monthsRemaining: 2
+    };
+
+    const speedup = dispatch(
+      state,
+      { type: "claim_ad_reward", adType: "speedup" },
+      config,
+      defaultPorts
+    );
+    expect(speedup.ok).toBe(true);
+    if (!speedup.ok) return;
+    expect(speedup.value.state.litTechIds).toContain("eco_nuclear");
+    expect(speedup.value.state.facilities["fac-nuclear"]?.isEco).toBe(true);
   });
 
   it("M6 applies nuclear_ops opex discount only to nuclear facilities", () => {

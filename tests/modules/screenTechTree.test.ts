@@ -120,16 +120,22 @@ describe("ScreenTechTree", () => {
     ]);
   });
 
-  it("unlocks grid_backbone as a level-IV research candidate", () => {
+  it("unlocks level-IV grid and eco technologies as research candidates", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 4;
     const screen = createScreenTechTree(controller);
 
     const snapshot = screen.getSnapshot();
     const backbone = snapshot.technologies.find((item) => item.techId === "grid_backbone");
+    const ecoThermal = snapshot.technologies.find((item) => item.techId === "eco_thermal");
+    const ecoNuclear = snapshot.technologies.find((item) => item.techId === "eco_nuclear");
 
     expect(backbone?.status).toBe("unlocked");
+    expect(ecoThermal?.status).toBe("unlocked");
+    expect(ecoNuclear?.status).toBe("unlocked");
     expect(snapshot.researchableTechIds).toContain("grid_backbone");
+    expect(snapshot.researchableTechIds).toContain("eco_thermal");
+    expect(snapshot.researchableTechIds).toContain("eco_nuclear");
   });
 
   it("keeps wind_3 locked until storage_system_1 and wind_2 are both lit", () => {

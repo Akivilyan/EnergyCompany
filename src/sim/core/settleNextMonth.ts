@@ -10,6 +10,7 @@ import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
 import type { SettlementReport, SettlementStepReport } from "../types/settlement.js";
 import {
+  getFacilityEcoStatus,
   getFacilityTierSpec,
   getEcoCitySocialValue,
   getMonthlyOperatingCost,
@@ -171,7 +172,7 @@ function buildIslands(state: GameState): string[][] {
   return islands;
 }
 
-function recalcSupply(state: GameState): void {
+function recalcSupply(state: GameState, config: ConfigRepo): void {
   const hasStorageBoost = hasStorageOutputBoost(state);
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
   const localSupplyByCity = new Map<string, number>();
@@ -187,7 +188,7 @@ function recalcSupply(state: GameState): void {
     const boost =
       hasStorageBoost && storageBoostTypes.has(fac.facilityId) ? 2 : 1;
     localSupplyByCity.set(fac.cityId, current + fac.outputMw * boost);
-    if (fac.facilityId === "thermal" || fac.facilityId === "nuclear") {
+    if (!(fac.isEco ?? getFacilityEcoStatus(state, config, fac.facilityId))) {
       localFullyEcoByCity.set(fac.cityId, false);
     }
   }
@@ -255,7 +256,8 @@ function runM1(state: GameState, config: ConfigRepo): SettlementStepReport {
         tier: facilitySpec.tier,
         outputMw: facilitySpec.outputMw,
         monthlyOpex: facilitySpec.monthlyOpex,
-        monthlyFuel: facilitySpec.monthlyFuel
+        monthlyFuel: facilitySpec.monthlyFuel,
+        isEco: getFacilityEcoStatus(state, config, item.facilityId)
       };
       completed.push(id);
     }
@@ -323,7 +325,7 @@ export function settleNextMonth(
   steps.push(runM1(next, config));
   syncFacilityRuntimeTiers(next, config);
   syncOperableCities(next, config);
-  recalcSupply(next);
+  recalcSupply(next, config);
   steps.push(
     step("M4_supply_recalc", "supply ratios updated", {
       supply_ratio: next.cities["CITY-START"]?.supplyRatio ?? 0

@@ -51,6 +51,7 @@ export interface FacilityRuntime {
   outputMw: number;
   monthlyOpex: number;
   monthlyFuel: number;
+  isEco?: boolean;
 }
 
 export interface CityRuntime {
