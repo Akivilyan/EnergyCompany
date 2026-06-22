@@ -111,6 +111,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("3");
   });
 
+  it("shows city build resource and storage multipliers", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("storage_system_1");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("产能");
+    expect(display.detailLines[0]).toContain("资源x");
+    expect(display.detailLines[0]).toContain("储能x2");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

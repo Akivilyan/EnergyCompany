@@ -2,7 +2,8 @@ import { getLocale, t } from "../i18n/index.js";
 import {
   getConstructionBuildCost,
   getFacilityBuildTierMax,
-  getFacilityTierSpec
+  getFacilityTierSpec,
+  hasStorageOutputBoost
 } from "../sim/core/technologyEffects.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 
@@ -31,6 +32,10 @@ export interface CityBuildCandidate {
   tier: number;
   buildCost: number;
   buildMonths: number;
+  outputMw: number;
+  effectiveOutputMw: number;
+  resourceMultiplier: number;
+  storageMultiplier: number;
 }
 
 export interface CityHudBuildSelectionSnapshot {
@@ -111,6 +116,27 @@ function formatFacilityTierDisplayName(facilityId: string, tier: number): string
   return locale === "zh-CN" ? `${baseLabel}·${tierLabel}` : `${baseLabel} ${tierLabel}`;
 }
 
+function getCityResourceMultiplier(boot: GameBootstrap, cityId: string, facilityId: string): number {
+  const city = boot.app.controller.config.getCity(cityId);
+  if (!city) return 1;
+  const resource =
+    facilityId === "wind"
+      ? city.wind_resource
+      : facilityId === "solar"
+        ? city.solar_resource
+        : facilityId === "hydro"
+          ? city.hydro_resource
+          : undefined;
+  return resource === "rich" ? 2 : 1;
+}
+
+function getStorageMultiplier(boot: GameBootstrap, facilityId: string): number {
+  return hasStorageOutputBoost(boot.app.controller.state) &&
+    (facilityId === "wind" || facilityId === "solar" || facilityId === "hydro")
+    ? 2
+    : 1;
+}
+
 function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
   const cityId = getCurrentCityId(boot);
   if (!boot.app.controller.state.cities[cityId]) return [];
@@ -139,6 +165,8 @@ function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
       );
       const spec = getFacilityTierSpec(boot.app.controller.config, facility.facility_id, tier);
       if (!spec) return null;
+      const resourceMultiplier = getCityResourceMultiplier(boot, city.city_id, facility.facility_id);
+      const storageMultiplier = getStorageMultiplier(boot, facility.facility_id);
       return {
         facilityId: facility.facility_id,
         displayName: formatFacilityTierDisplayName(facility.facility_id, spec.tier),
@@ -148,7 +176,11 @@ function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
           boot.app.controller.config,
           spec.buildCost
         ),
-        buildMonths: spec.buildMonths
+        buildMonths: spec.buildMonths,
+        outputMw: spec.outputMw,
+        effectiveOutputMw: spec.outputMw * resourceMultiplier * storageMultiplier,
+        resourceMultiplier,
+        storageMultiplier
       };
     })
     .filter((candidate): candidate is CityBuildCandidate => !!candidate)
@@ -251,7 +283,10 @@ export function formatSelectedBuildCandidate(boot: GameBootstrap): string | null
   return t("hud.status.city_selected_build", {
     facility: selected.displayName,
     cost: selected.buildCost,
-    months: selected.buildMonths
+    months: selected.buildMonths,
+    output: selected.effectiveOutputMw,
+    resource: selected.resourceMultiplier,
+    storage: selected.storageMultiplier
   });
 }
 

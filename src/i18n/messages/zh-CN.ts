@@ -64,7 +64,7 @@ export const zhCN: Record<string, string> = {
   "hud.line.tech_researchable": "可研 {count} 项",
   "hud.line.research_active": "在研 {techId} 剩{months}月",
   "hud.status.city": "第{month}月 · 资金{funds} · {city}",
-  "hud.status.city_selected_build": "候选：{facility} · {cost}资金 · {months}月",
+  "hud.status.city_selected_build": "候选：{facility} · {cost}资金 · {months}月 · 产能{output} · 资源x{resource} · 储能x{storage}",
   "hud.status.city_build_candidate_count": "可切换建造 {count} 项",
   "hud.status.company": "公司 · {level}级 · 资金{funds} · 广告{ads}次",
   "hud.status.company_loan_detail": "在贷：{loanName} · 剩{months}月",

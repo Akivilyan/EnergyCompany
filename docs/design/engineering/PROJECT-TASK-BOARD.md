@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.30.0
+version: 1.31.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` 城市建造资源差异可见化子步：把风/光/水候选的资源乘区、储能乘区与折后产能补进城市开发 HUD；后半程 `MAP-06~08` / `MET-B` 的 rich 资源差异现在不仅在 M4 生效，也能在建造候选阶段直接看到 | `src/app/cityHudController.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 后半程资源禀赋差异子步：把城市配置里的 `wind_resource` / `solar_resource` / `hydro_resource` 从“配置可见”推进到 M4 供能真实生效；风/光/常规水电在 rich 城市按设计获得 ×2 乘区，火电/核电不吃资源乘区，`MET-B` 光伏与 `MAP-07` 水风资源现已形成真实经营差异 | `src/sim/config/configRepo.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 生态改造经营分叉子步：补齐 `eco_thermal` / `eco_nuclear` 科技节点，并把 ECO 同步从“文档存在”推进到“模拟层真实生效”；已完工火/核机组现在会在 M3 完成拍或广告秒研后立即环保化，M4 供能环保判定与 M9 社会价值也会据此更新 | `docs/design/data/vertical-slice-v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/settleNextMonth.ts` `src/sim/core/dispatch.ts` `src/sim/types/gameState.ts` `tests/sim/settle.test.ts` `tests/modules/screenTechTree.test.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-04 | 收口 `T50-CLOSE`：客户端 HUD 聚合验证可用 | `src/app/clientHudSmoke.ts` `src/app/cocosHudCloseRunner.ts` `src/app/verifyClientCli.ts` `docs/design/engineering/cocos-client-setup.md` | `npm run verify:client` + `npm test` 通过 |
@@ -151,3 +152,4 @@ open_questions: []
 | 1.28.0 | 2026-06-22 | 补记 `OPS-01` 规则收紧：新增“实现必须遵从设计文档，发现错漏或更优方案需先与用户核对”硬约束 |
 | 1.29.0 | 2026-06-22 | 补记 `FAST-01` 生态改造经营分叉子步：`eco_thermal` / `eco_nuclear` 进入真实 ECO 同步与结算链路 |
 | 1.30.0 | 2026-06-22 | 补记 `FAST-01` 后半程资源禀赋差异子步：城市风/光/水 rich 标签进入 M4 真实供能乘区 |
+| 1.31.0 | 2026-06-23 | 补记 `FAST-01` 城市建造资源差异可见化子步：建造候选展示资源/储能乘区与折后产能 |

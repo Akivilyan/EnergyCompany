@@ -64,7 +64,7 @@ export const en: Record<string, string> = {
   "hud.line.tech_researchable": "Researchable {count}",
   "hud.line.research_active": "Research {techId} {months}m left",
   "hud.status.city": "M{month} · {funds} · {city}",
-  "hud.status.city_selected_build": "Candidate: {facility} · cost {cost} · {months}m",
+  "hud.status.city_selected_build": "Candidate: {facility} · cost {cost} · {months}m · output {output} · resource x{resource} · storage x{storage}",
   "hud.status.city_build_candidate_count": "Build options {count}",
   "hud.status.company": "Company · Lv{level} · {funds} · ads={ads}",
   "hud.status.company_loan_detail": "Loan: {loanName} · {months}m left",

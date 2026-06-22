@@ -91,6 +91,34 @@ describe("cityHudController", () => {
     expect(boot.app.controller.state.constructionQueue[0]?.tier).toBe(2);
   });
 
+  it("exposes resource and storage multipliers on build candidates", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const metB = config.getCity("CITY-METB-01");
+    expect(metB).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("storage_system_1");
+    boot.app.controller.state.cities["CITY-METB-01"] = {
+      cityId: "CITY-METB-01",
+      demandMw: metB?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: metB?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-METB-01", "MET-B");
+
+    const snapshot = getCityHudBuildSelectionSnapshot(boot);
+    const solar = snapshot.candidates.find((candidate) => candidate.facilityId === "solar");
+
+    expect(solar?.resourceMultiplier).toBe(2);
+    expect(solar?.storageMultiplier).toBe(2);
+    expect(solar?.effectiveOutputMw).toBe((solar?.outputMw ?? 0) * 4);
+  });
+
   it("hides build candidates for unlocked outside-region city before trunk connection", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
