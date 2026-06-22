@@ -10,9 +10,11 @@ import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
 import type { SettlementReport, SettlementStepReport } from "../types/settlement.js";
 import {
+  getFacilityTierSpec,
   getEcoCitySocialValue,
   getMonthlyOperatingCost,
-  hasStorageOutputBoost
+  hasStorageOutputBoost,
+  syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
 export interface SettleOutput {
@@ -243,17 +245,17 @@ function runM1(state: GameState, config: ConfigRepo): SettlementStepReport {
       item.monthsRemaining -= 1;
     }
     if (item.monthsRemaining <= 0) {
-      const facCfg = config.getFacility(item.facilityId);
-      if (!facCfg) continue;
+      const facilitySpec = getFacilityTierSpec(config, item.facilityId, item.tier);
+      if (!facilitySpec) continue;
       const id = `fac-${Object.keys(state.facilities).length + 1}`;
       state.facilities[id] = {
         id,
         cityId: item.cityId,
         facilityId: item.facilityId,
-        tier: item.tier,
-        outputMw: facCfg.output_capacity_mw,
-        monthlyOpex: facCfg.monthly_operating_cost,
-        monthlyFuel: item.facilityId === "thermal" ? 3 : 0
+        tier: facilitySpec.tier,
+        outputMw: facilitySpec.outputMw,
+        monthlyOpex: facilitySpec.monthlyOpex,
+        monthlyFuel: facilitySpec.monthlyFuel
       };
       completed.push(id);
     }
@@ -316,8 +318,10 @@ export function settleNextMonth(
 
   steps.push(runM2(next));
   steps.push(runM3(next));
+  syncFacilityRuntimeTiers(next, config);
 
   steps.push(runM1(next, config));
+  syncFacilityRuntimeTiers(next, config);
   syncOperableCities(next, config);
   recalcSupply(next);
   steps.push(

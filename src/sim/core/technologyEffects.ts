@@ -1,4 +1,4 @@
-import type { ConfigRepo, TechnologyConfig } from "../config/configRepo.js";
+import type { ConfigRepo, FacilityConfig, TechnologyConfig } from "../config/configRepo.js";
 import type { GameState } from "../types/gameState.js";
 
 function getLitTechnologies(state: GameState, config: ConfigRepo): TechnologyConfig[] {
@@ -42,6 +42,76 @@ function applyPercent(baseValue: number, percentDelta: number, minValue = 0): nu
 
 export function hasStorageOutputBoost(state: GameState): boolean {
   return state.litTechIds.includes("storage_system_1");
+}
+
+function getFacilityTierTechMax(
+  state: GameState,
+  config: ConfigRepo,
+  facilityId: string
+): number {
+  let tierMax = 1;
+  for (const tech of getLitTechnologies(state, config)) {
+    if (tech.effect_type !== "facility_tier") continue;
+    if (tech.effect_target !== facilityId) continue;
+    tierMax = Math.max(tierMax, readNumericEffectValue(tech, "tier_max"));
+  }
+  return tierMax;
+}
+
+export function getFacilityBuildTierMax(
+  state: GameState,
+  config: ConfigRepo,
+  facilityId: string
+): number {
+  const facility = config.getFacility(facilityId);
+  if (!facility) return 0;
+  return Math.max(facility.tier ?? 1, getFacilityTierTechMax(state, config, facilityId));
+}
+
+export interface FacilityTierSpec {
+  tier: number;
+  buildCost: number;
+  buildMonths: number;
+  outputMw: number;
+  monthlyOpex: number;
+  monthlyFuel: number;
+}
+
+function normalizeFacilityTier(baseFacility: FacilityConfig, requestedTier: number): number {
+  const baseTier = Math.max(1, baseFacility.tier ?? 1);
+  if (!Number.isFinite(requestedTier)) return baseTier;
+  return Math.max(baseTier, Math.floor(requestedTier));
+}
+
+export function getFacilityTierSpec(
+  config: ConfigRepo,
+  facilityId: string,
+  requestedTier: number
+): FacilityTierSpec | null {
+  const facility = config.getFacility(facilityId);
+  if (!facility) return null;
+  const tier = normalizeFacilityTier(facility, requestedTier);
+  return {
+    tier,
+    buildCost: Math.max(1, facility.build_cost_total * tier),
+    buildMonths: Math.max(1, facility.build_duration_months + tier - 1),
+    outputMw: Math.max(1, facility.output_capacity_mw * tier),
+    monthlyOpex: Math.max(0, facility.monthly_operating_cost * tier),
+    monthlyFuel: facility.facility_id === "thermal" ? 3 * tier : 0
+  };
+}
+
+export function syncFacilityRuntimeTiers(state: GameState, config: ConfigRepo): void {
+  for (const facility of Object.values(state.facilities)) {
+    const maxTier = getFacilityBuildTierMax(state, config, facility.facilityId);
+    if (maxTier <= facility.tier) continue;
+    const spec = getFacilityTierSpec(config, facility.facilityId, maxTier);
+    if (!spec) continue;
+    facility.tier = spec.tier;
+    facility.outputMw = spec.outputMw;
+    facility.monthlyOpex = spec.monthlyOpex;
+    facility.monthlyFuel = spec.monthlyFuel;
+  }
 }
 
 export function getConstructionBuildCost(

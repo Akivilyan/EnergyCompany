@@ -131,4 +131,21 @@ describe("ScreenTechTree", () => {
     expect(backbone?.status).toBe("unlocked");
     expect(snapshot.researchableTechIds).toContain("grid_backbone");
   });
+
+  it("keeps wind_3 locked until storage_system_1 and wind_2 are both lit", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 3;
+    const screen = createScreenTechTree(controller);
+
+    let snapshot = screen.getSnapshot();
+    expect(snapshot.technologies.find((item) => item.techId === "wind_3")?.status).toBe("locked");
+
+    controller.state.litTechIds.push("storage_system_1");
+    snapshot = screen.getSnapshot();
+    expect(snapshot.technologies.find((item) => item.techId === "wind_3")?.status).toBe("locked");
+
+    controller.state.litTechIds.push("wind_2");
+    snapshot = screen.getSnapshot();
+    expect(snapshot.technologies.find((item) => item.techId === "wind_3")?.status).toBe("unlocked");
+  });
 });

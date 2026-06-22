@@ -1,5 +1,9 @@
-import { t } from "../i18n/index.js";
-import { getConstructionBuildCost } from "../sim/core/technologyEffects.js";
+import { getLocale, t } from "../i18n/index.js";
+import {
+  getConstructionBuildCost,
+  getFacilityBuildTierMax,
+  getFacilityTierSpec
+} from "../sim/core/technologyEffects.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 
 export interface CityHudViewModel {
@@ -24,6 +28,7 @@ export interface CityHudAdvanceResult extends CityHudActionResult {
 export interface CityBuildCandidate {
   facilityId: string;
   displayName: string;
+  tier: number;
   buildCost: number;
   buildMonths: number;
 }
@@ -36,6 +41,23 @@ export interface CityHudBuildSelectionSnapshot {
 const DEFAULT_BUILD_FACILITY_ID = "wind";
 const selectedFacilityByBoot = new WeakMap<GameBootstrap, string>();
 const BUILD_CANDIDATE_ORDER = ["wind", "solar", "thermal", "hydro", "nuclear"] as const;
+const FACILITY_LABELS = {
+  "zh-CN": {
+    wind: "风电",
+    solar: "光伏",
+    thermal: "火电",
+    hydro: "水电",
+    nuclear: "核电"
+  },
+  en: {
+    wind: "Wind",
+    solar: "Solar",
+    thermal: "Thermal",
+    hydro: "Hydro",
+    nuclear: "Nuclear"
+  }
+} as const;
+const TIER_LABELS = ["I", "II", "III", "IV", "V"] as const;
 
 export function readCityHudViewModel(boot: GameBootstrap): CityHudViewModel {
   const nav = boot.play.getNavigation();
@@ -81,6 +103,14 @@ function getCurrentCityId(boot: GameBootstrap): string {
   return boot.play.getNavigation().cityId ?? "CITY-START";
 }
 
+function formatFacilityTierDisplayName(facilityId: string, tier: number): string {
+  const locale = getLocale();
+  const labels = FACILITY_LABELS[locale];
+  const baseLabel = labels[facilityId as keyof typeof labels] ?? facilityId;
+  const tierLabel = TIER_LABELS[Math.max(0, tier - 1)] ?? String(tier);
+  return locale === "zh-CN" ? `${baseLabel}·${tierLabel}` : `${baseLabel} ${tierLabel}`;
+}
+
 function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
   const cityId = getCurrentCityId(boot);
   if (!boot.app.controller.state.cities[cityId]) return [];
@@ -101,16 +131,27 @@ function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
       const maxPerCity = facility.max_per_city ?? Number.POSITIVE_INFINITY;
       return countCityFacility(boot, city.city_id, facility.facility_id) < maxPerCity;
     })
-    .map((facility) => ({
-      facilityId: facility.facility_id,
-      displayName: facility.display_name ?? facility.facility_id,
-      buildCost: getConstructionBuildCost(
+    .map((facility) => {
+      const tier = getFacilityBuildTierMax(
         boot.app.controller.state,
         boot.app.controller.config,
-        facility.build_cost_total
-      ),
-      buildMonths: facility.build_duration_months
-    }))
+        facility.facility_id
+      );
+      const spec = getFacilityTierSpec(boot.app.controller.config, facility.facility_id, tier);
+      if (!spec) return null;
+      return {
+        facilityId: facility.facility_id,
+        displayName: formatFacilityTierDisplayName(facility.facility_id, spec.tier),
+        tier: spec.tier,
+        buildCost: getConstructionBuildCost(
+          boot.app.controller.state,
+          boot.app.controller.config,
+          spec.buildCost
+        ),
+        buildMonths: spec.buildMonths
+      };
+    })
+    .filter((candidate): candidate is CityBuildCandidate => !!candidate)
     .sort((a, b) => {
       const aIndex = BUILD_CANDIDATE_ORDER.indexOf(a.facilityId as (typeof BUILD_CANDIDATE_ORDER)[number]);
       const bIndex = BUILD_CANDIDATE_ORDER.indexOf(b.facilityId as (typeof BUILD_CANDIDATE_ORDER)[number]);
@@ -150,9 +191,15 @@ export function cityHudBuildSelected(
   boot: GameBootstrap,
   facilityId?: string
 ): CityHudActionResult {
+  const candidates = getBuildCandidates(boot);
   const selected = ensureSelectedCandidate(boot);
-  const targetFacilityId = facilityId ?? selected?.facilityId ?? DEFAULT_BUILD_FACILITY_ID;
-  const out = boot.play.buildInCurrentCity(targetFacilityId, 1);
+  const target =
+    (facilityId
+      ? candidates.find((candidate) => candidate.facilityId === facilityId)
+      : null) ??
+    selected;
+  const targetFacilityId = target?.facilityId ?? facilityId ?? DEFAULT_BUILD_FACILITY_ID;
+  const out = boot.play.buildInCurrentCity(targetFacilityId, target?.tier ?? 1);
   return {
     ok: out.ok,
     view: readCityHudViewModel(boot),

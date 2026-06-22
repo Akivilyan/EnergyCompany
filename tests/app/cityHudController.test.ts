@@ -74,6 +74,23 @@ describe("cityHudController", () => {
     expect(build.view.funds).toBeLessThan(140);
   });
 
+  it("uses the highest lit wind tier for selected city build candidate", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    boot.app.controller.state.companyLevel = 2;
+    boot.app.controller.state.litTechIds.push("wind_2");
+
+    const snapshot = getCityHudBuildSelectionSnapshot(boot);
+    const wind = snapshot.candidates.find((candidate) => candidate.facilityId === "wind");
+    expect(wind?.tier).toBe(2);
+    expect(wind?.displayName).toContain("II");
+    expect(wind?.buildCost).toBe(24);
+
+    const build = cityHudBuildSelected(boot, "wind");
+    expect(build.ok).toBe(true);
+    expect(boot.app.controller.state.constructionQueue[0]?.tier).toBe(2);
+  });
+
   it("hides build candidates for unlocked outside-region city before trunk connection", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

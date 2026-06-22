@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.23.0
+version: 1.24.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -46,7 +46,7 @@ open_questions: []
 ## 4. 下一步
 
 1. 把 V 级后新开的 `MAP-06~08` / `MET-B` 从“能进”推进到“有更强经营差异”
-2. 继续补 III～V 级科技内容，优先把剩余 `eng_*` / 电网科技与更长经营差异补齐
+2. 继续把 III～V 级科技从“有节点”推进到“有后续经营分叉”，优先补生态改造、核电后续节点与更长经营差异
 3. 继续保持 `build` / `test` / `build:client` / `verify:client` 持续可跑
 4. 再回头收正式 UI / SDK / 数值收敛
 
@@ -91,6 +91,7 @@ open_questions: []
 | 2026-06-22 | `FAST-01` 电网科技生效子步：把 `grid_regional` 从配置占位推进为真实铺线成本折扣；`queue_grid_link` 现在按已点亮电网科技计算成本，区域快照与 HUD 会显示折后候选线路成本，点亮后基础铺线从 8 资金降至 6 资金 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/index.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/*` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone` 并把铺线成本从“统一价”细化为“区域线 / 主干线分别计算”；`grid_regional` 只影响省内链路，`grid_backbone` 只影响 trunk，区域快照、开发 HUD 与真实扣费现在都会按候选链路类型显示 8→6 的对应折扣 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | 仓库格式约束补齐：新增根目录 `.editorconfig`，并把“默认 UTF-8 + LF、脚本文件保留 CRLF、避免顺手改无关格式”写回协作规则与会话约束；同时把 `.editorconfig` / `.gitattributes` 也纳入 `.gitattributes` 固定为 LF，降低 Windows 环境下的假脏与整段红绿 diff 噪音 | `.editorconfig` `.gitattributes` `AGENTS.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅工程/文档约束整理，无需跑测试 |
+| 2026-06-22 | `FAST-01` 后半程科技树与城市建造等级子步：补齐 `wind/solar/thermal/hydro` III～V、`storage_system_2/3` 与 `nuclear_2/3` 节点；同时把“科技点亮 → 城市 HUD 候选升到当前最高 tier → 建造与已完工机组自动同步 tier”这条链路接通，让后半程科技直接反映到建造与供能压力 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -138,3 +139,4 @@ open_questions: []
 | 1.21.0 | 2026-06-22 | 补记 `FAST-01` 电网科技生效子步：`grid_regional` 降低真实铺线成本并显示到区域 HUD |
 | 1.22.0 | 2026-06-22 | 补记 `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone`，并按区域线 / 主干线分别计算科技折扣 |
 | 1.23.0 | 2026-06-22 | 补记仓库格式约束补齐：新增 `.editorconfig`，并把行尾/最小 diff 约束写回协作规则 |
+| 1.24.0 | 2026-06-22 | 补记 `FAST-01` 后半程科技树与城市建造等级子步：扩展 III～V 科技节点，并接通最高 tier 建造与已完工机组自动同步 |

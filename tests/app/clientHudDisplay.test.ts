@@ -100,6 +100,17 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("11资金");
   });
 
+  it("shows highest lit wind tier in city hud candidate text", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 2;
+    boot.app.controller.state.litTechIds.push("wind_2");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("II");
+    expect(display.detailLines[0]).toContain("24");
+    expect(display.detailLines[0]).toContain("3");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

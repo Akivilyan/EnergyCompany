@@ -266,6 +266,42 @@ describe("settleNextMonth", () => {
     expect(result.value.state.funds).toBe(129);
   });
 
+  it("dispatch rejects construction tier above lit max", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 2 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("not_unlocked");
+    expect(result.context?.tier_max).toBe(1);
+  });
+
+  it("dispatch supports tier-2 construction after matching tech is lit", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    state.litTechIds.push("wind_2");
+
+    const result = dispatch(
+      state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "wind", tier: 2 },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.funds).toBe(116);
+    expect(result.value.state.constructionQueue[0]?.tier).toBe(2);
+    expect(result.value.state.constructionQueue[0]?.monthsRemaining).toBe(3);
+  });
+
   it("applies grid_regional link cost discount to grid link dispatch", () => {
     const config = loadTestConfig();
     const state = withSecondCity(createInitialState(config), config);
@@ -387,6 +423,34 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
+  });
+
+  it("M3 upgrades existing wind facilities to tier 2 when wind_2 lights", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 2;
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 42,
+      monthlyOpex: 1,
+      monthlyFuel: 0
+    };
+    state.researches["wind_2"] = {
+      researchId: "rq-1-wind_2",
+      techId: "wind_2",
+      monthsRemaining: 1
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.litTechIds).toContain("wind_2");
+    expect(month.value.state.facilities["fac-a"]?.tier).toBe(2);
+    expect(month.value.state.facilities["fac-a"]?.outputMw).toBe(84);
+    expect(month.value.state.facilities["fac-a"]?.monthlyOpex).toBe(2);
   });
 
   it("dispatch rejects region link across different regions", () => {

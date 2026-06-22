@@ -4,7 +4,12 @@ import type { Command } from "../types/commands.js";
 import type { GameState } from "../types/gameState.js";
 import type { SimPorts } from "../types/ports.js";
 import { err, ok, type SimResult } from "../types/result.js";
-import { getConstructionBuildCost, getGridLinkBuildCost } from "./technologyEffects.js";
+import {
+  getConstructionBuildCost,
+  getFacilityBuildTierMax,
+  getFacilityTierSpec,
+  getGridLinkBuildCost
+} from "./technologyEffects.js";
 
 export interface DispatchOutput {
   state: GameState;
@@ -151,7 +156,23 @@ export function dispatch(
           max_per_city: maxPerCity
         });
       }
-      const buildCost = getConstructionBuildCost(next, config, facility.build_cost_total);
+      const tierMax = getFacilityBuildTierMax(next, config, command.facilityId);
+      if (command.tier < 1 || command.tier > tierMax) {
+        return err("not_unlocked", "facility tier not lit", {
+          city_id: command.cityId,
+          facility_id: command.facilityId,
+          requested_tier: command.tier,
+          tier_max: tierMax
+        });
+      }
+      const facilitySpec = getFacilityTierSpec(config, command.facilityId, command.tier);
+      if (!facilitySpec) {
+        return err("not_found", "facility tier config not found", {
+          facility_id: command.facilityId,
+          requested_tier: command.tier
+        });
+      }
+      const buildCost = getConstructionBuildCost(next, config, facilitySpec.buildCost);
       if (next.funds < buildCost) {
         return err("insufficient_funds", "not enough funds for construction");
       }
@@ -160,8 +181,8 @@ export function dispatch(
         id: `cq-${next.constructionQueue.length + 1}`,
         cityId: command.cityId,
         facilityId: command.facilityId,
-        tier: command.tier,
-        monthsRemaining: facility.build_duration_months,
+        tier: facilitySpec.tier,
+        monthsRemaining: facilitySpec.buildMonths,
         installmentRemaining: 0
       });
       break;

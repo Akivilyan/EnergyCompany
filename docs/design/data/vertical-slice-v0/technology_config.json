@@ -13,6 +13,45 @@
     "effect_value": { "tier_max": 2 }
   },
   {
+    "tech_id": "wind_3",
+    "display_name": "风电·III",
+    "tab": "wind",
+    "company_level_min": 3,
+    "requires_lit": ["wind_2", "storage_system_1"],
+    "starts_lit": false,
+    "research_cost": 60,
+    "research_months": 3,
+    "effect_type": "facility_tier",
+    "effect_target": "wind",
+    "effect_value": { "tier_max": 3 }
+  },
+  {
+    "tech_id": "wind_4",
+    "display_name": "风电·IV",
+    "tab": "wind",
+    "company_level_min": 4,
+    "requires_lit": ["wind_3", "storage_system_2"],
+    "starts_lit": false,
+    "research_cost": 82,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "wind",
+    "effect_value": { "tier_max": 4 }
+  },
+  {
+    "tech_id": "wind_5",
+    "display_name": "风电·V",
+    "tab": "wind",
+    "company_level_min": 5,
+    "requires_lit": ["wind_4", "storage_system_3"],
+    "starts_lit": false,
+    "research_cost": 110,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "wind",
+    "effect_value": { "tier_max": 5 }
+  },
+  {
     "tech_id": "solar_2",
     "display_name": "光伏·II",
     "tab": "solar",
@@ -24,6 +63,45 @@
     "effect_type": "facility_tier",
     "effect_target": "solar",
     "effect_value": { "tier_max": 2 }
+  },
+  {
+    "tech_id": "solar_3",
+    "display_name": "光伏·III",
+    "tab": "solar",
+    "company_level_min": 3,
+    "requires_lit": ["solar_2", "storage_system_1"],
+    "starts_lit": false,
+    "research_cost": 58,
+    "research_months": 3,
+    "effect_type": "facility_tier",
+    "effect_target": "solar",
+    "effect_value": { "tier_max": 3 }
+  },
+  {
+    "tech_id": "solar_4",
+    "display_name": "光伏·IV",
+    "tab": "solar",
+    "company_level_min": 4,
+    "requires_lit": ["solar_3", "storage_system_2"],
+    "starts_lit": false,
+    "research_cost": 80,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "solar",
+    "effect_value": { "tier_max": 4 }
+  },
+  {
+    "tech_id": "solar_5",
+    "display_name": "光伏·V",
+    "tab": "solar",
+    "company_level_min": 5,
+    "requires_lit": ["solar_4", "storage_system_3"],
+    "starts_lit": false,
+    "research_cost": 108,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "solar",
+    "effect_value": { "tier_max": 5 }
   },
   {
     "tech_id": "thermal_2",
@@ -39,6 +117,45 @@
     "effect_value": { "tier_max": 2 }
   },
   {
+    "tech_id": "thermal_3",
+    "display_name": "火电·III",
+    "tab": "thermal",
+    "company_level_min": 3,
+    "requires_lit": ["thermal_2"],
+    "starts_lit": false,
+    "research_cost": 64,
+    "research_months": 3,
+    "effect_type": "facility_tier",
+    "effect_target": "thermal",
+    "effect_value": { "tier_max": 3 }
+  },
+  {
+    "tech_id": "thermal_4",
+    "display_name": "火电·IV",
+    "tab": "thermal",
+    "company_level_min": 4,
+    "requires_lit": ["thermal_3"],
+    "starts_lit": false,
+    "research_cost": 88,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "thermal",
+    "effect_value": { "tier_max": 4 }
+  },
+  {
+    "tech_id": "thermal_5",
+    "display_name": "火电·V",
+    "tab": "thermal",
+    "company_level_min": 5,
+    "requires_lit": ["thermal_4"],
+    "starts_lit": false,
+    "research_cost": 118,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "thermal",
+    "effect_value": { "tier_max": 5 }
+  },
+  {
     "tech_id": "hydro_2",
     "display_name": "水电·II",
     "tab": "hydro",
@@ -52,6 +169,45 @@
     "effect_value": { "tier_max": 2 }
   },
   {
+    "tech_id": "hydro_3",
+    "display_name": "水电·III",
+    "tab": "hydro",
+    "company_level_min": 3,
+    "requires_lit": ["hydro_2", "storage_system_1"],
+    "starts_lit": false,
+    "research_cost": 62,
+    "research_months": 3,
+    "effect_type": "facility_tier",
+    "effect_target": "hydro",
+    "effect_value": { "tier_max": 3 }
+  },
+  {
+    "tech_id": "hydro_4",
+    "display_name": "水电·IV",
+    "tab": "hydro",
+    "company_level_min": 4,
+    "requires_lit": ["hydro_3", "storage_system_2"],
+    "starts_lit": false,
+    "research_cost": 86,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "hydro",
+    "effect_value": { "tier_max": 4 }
+  },
+  {
+    "tech_id": "hydro_5",
+    "display_name": "水电·V",
+    "tab": "hydro",
+    "company_level_min": 5,
+    "requires_lit": ["hydro_4", "storage_system_3"],
+    "starts_lit": false,
+    "research_cost": 116,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "hydro",
+    "effect_value": { "tier_max": 5 }
+  },
+  {
     "tech_id": "storage_system_1",
     "display_name": "储能系统·I",
     "tab": "wind",
@@ -63,6 +219,32 @@
     "effect_type": "storage_buff",
     "effect_target": "wind,solar,hydro",
     "effect_value": { "storage_mult": 2, "unlock_tier": 3 }
+  },
+  {
+    "tech_id": "storage_system_2",
+    "display_name": "储能系统·II",
+    "tab": "wind",
+    "company_level_min": 4,
+    "requires_lit": ["storage_system_1"],
+    "starts_lit": false,
+    "research_cost": 74,
+    "research_months": 3,
+    "effect_type": "storage_gate",
+    "effect_target": "wind,solar,hydro",
+    "effect_value": { "unlock_tier": 4 }
+  },
+  {
+    "tech_id": "storage_system_3",
+    "display_name": "储能系统·III",
+    "tab": "wind",
+    "company_level_min": 5,
+    "requires_lit": ["storage_system_2"],
+    "starts_lit": false,
+    "research_cost": 96,
+    "research_months": 4,
+    "effect_type": "storage_gate",
+    "effect_target": "wind,solar,hydro",
+    "effect_value": { "unlock_tier": 5 }
   },
   {
     "tech_id": "grid_regional",
@@ -92,7 +274,7 @@
   },
   {
     "tech_id": "nuclear_1",
-    "display_name": "核电",
+    "display_name": "核电·I",
     "tab": "nuclear",
     "company_level_min": 3,
     "requires_lit": [],
@@ -102,6 +284,32 @@
     "effect_type": "facility_tier",
     "effect_target": "nuclear",
     "effect_value": { "tier_max": 1 }
+  },
+  {
+    "tech_id": "nuclear_2",
+    "display_name": "核电·II",
+    "tab": "nuclear",
+    "company_level_min": 4,
+    "requires_lit": ["nuclear_1"],
+    "starts_lit": false,
+    "research_cost": 92,
+    "research_months": 4,
+    "effect_type": "facility_tier",
+    "effect_target": "nuclear",
+    "effect_value": { "tier_max": 2 }
+  },
+  {
+    "tech_id": "nuclear_3",
+    "display_name": "核电·III",
+    "tab": "nuclear",
+    "company_level_min": 5,
+    "requires_lit": ["nuclear_2"],
+    "starts_lit": false,
+    "research_cost": 128,
+    "research_months": 5,
+    "effect_type": "facility_tier",
+    "effect_target": "nuclear",
+    "effect_value": { "tier_max": 3 }
   },
   {
     "tech_id": "eng_bulk_procure",
