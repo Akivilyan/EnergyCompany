@@ -10,6 +10,7 @@ import { formatSelectedRegionLink } from "./regionHudController.js";
 import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
 import { formatSelectedWorldCandidate, getWorldHudSelectionSnapshot } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
+import type { ResourceKind } from "../modules/screenWorldMap.js";
 
 export function formatLoanTierLabel(loanId: string): string {
   const key = `loan.tier.${loanId}`;
@@ -38,6 +39,23 @@ function formatCityStatus(boot: GameBootstrap): string {
   const view = readCityHudViewModel(boot);
   const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
   return t("hud.status.city", { month: view.month, funds: view.funds, city });
+}
+
+function formatResourceKind(kind: ResourceKind): string {
+  switch (kind) {
+    case "wind":
+      return t("resource.wind");
+    case "solar":
+      return t("resource.solar");
+    case "hydro":
+      return t("resource.hydro");
+  }
+}
+
+function formatRichResources(resources: ResourceKind[]): string {
+  return resources.length > 0
+    ? resources.map(formatResourceKind).join("/")
+    : t("resource.none");
 }
 
 function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): number | null {
@@ -109,6 +127,11 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   );
   const detailLines = hudLines(
     t("hud.line.month", { month: s.month }),
+    t("hud.line.region_profile", {
+      demand: s.totalDemandMw,
+      sv: s.totalBaseSocialValue,
+      resources: formatRichResources(s.richResources)
+    }),
     t("hud.line.region_links", { building, finished }),
     selectedLink
   );
@@ -169,6 +192,9 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           state: focusRegion.unlocked ? t("hud.world.region_state.unlocked") : t("hud.world.region_state.locked"),
           cities: focusRegion.unlockedCities,
           totalCities: focusRegion.totalCities,
+          demand: focusRegion.totalDemandMw,
+          sv: focusRegion.totalBaseSocialValue,
+          resources: formatRichResources(focusRegion.richResources),
           trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)
         })
       : null,

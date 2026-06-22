@@ -1,5 +1,6 @@
 import { getGridLinkBuildCost, type GameState, type SettlementReport, type SimResult } from "../sim/index.js";
 import type { RunController } from "./runController.js";
+import type { ResourceKind } from "./screenWorldMap.js";
 
 export interface RegionCityItem {
   cityId: string;
@@ -37,6 +38,9 @@ export interface RegionLinkCandidate {
 export interface ScreenRegionSnapshot {
   regionId: string;
   regionName: string;
+  totalDemandMw: number;
+  totalBaseSocialValue: number;
+  richResources: ResourceKind[];
   month: number;
   companyLevel: number;
   funds: number;
@@ -93,6 +97,13 @@ export class ScreenRegion {
         };
       })
       .sort((a, b) => a.cityId.localeCompare(b.cityId));
+    const regionCities = this.controller.config.bundle.cities.filter(
+      (city) => city.region_id === this.regionId
+    );
+    const richResources: ResourceKind[] = [];
+    if (regionCities.some((city) => city.wind_resource === "rich")) richResources.push("wind");
+    if (regionCities.some((city) => city.solar_resource === "rich")) richResources.push("solar");
+    if (regionCities.some((city) => city.hydro_resource === "rich")) richResources.push("hydro");
 
     const gridLinks = Object.values(this.controller.state.gridLinks)
       .filter((link) => cities.some((city) => city.cityId === link.fromCityId || city.cityId === link.toCityId))
@@ -111,6 +122,9 @@ export class ScreenRegion {
     return {
       regionId: this.regionId,
       regionName: regionConfig?.display_name ?? this.regionId,
+      totalDemandMw: regionCities.reduce((sum, city) => sum + city.base_demand_mw, 0),
+      totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
+      richResources,
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,

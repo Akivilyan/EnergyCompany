@@ -173,6 +173,9 @@ describe("ScreenRegion", () => {
 
     const snapshot = screen.getSnapshot();
     expect(snapshot.cities).toHaveLength(3);
+    expect(snapshot.totalDemandMw).toBe(1920);
+    expect(snapshot.totalBaseSocialValue).toBe(38);
+    expect(snapshot.richResources).toEqual(["wind", "solar"]);
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>

@@ -65,6 +65,9 @@ export interface RegionConfig {
   region_id: string;
   region_type?: string;
   unlock_company_level: number;
+  wind_resource_bias?: "normal" | "rich";
+  solar_resource_bias?: "normal" | "rich";
+  hydro_resource_bias?: "normal" | "rich";
   display_name?: string;
   design_role?: string;
 }

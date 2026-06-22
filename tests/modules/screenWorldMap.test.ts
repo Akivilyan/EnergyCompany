@@ -43,14 +43,18 @@ describe("screenWorldMap", () => {
     controller.state.companyLevel = 5;
 
     const snapshot = createScreenWorldMap(controller).getSnapshot();
+    const map06 = snapshot.regions.find((region) => region.regionId === "MAP-06");
+    const metB = snapshot.regions.find((region) => region.regionId === "MET-B");
 
     expect(snapshot.unlockedRegions).toBe(10);
     expect(snapshot.nextUnlockRegion).toBeNull();
-    expect(snapshot.regions.find((region) => region.regionId === "MET-B")?.centralCityId).toBe(
-      "CITY-METB-01"
-    );
-    expect(snapshot.regions.find((region) => region.regionId === "MET-B")?.connectionStatus).toBe(
-      "available"
-    );
+    expect(map06?.totalDemandMw).toBe(1920);
+    expect(map06?.totalBaseSocialValue).toBe(38);
+    expect(map06?.richResources).toEqual(["wind", "solar"]);
+    expect(metB?.centralCityId).toBe("CITY-METB-01");
+    expect(metB?.totalDemandMw).toBe(2100);
+    expect(metB?.totalBaseSocialValue).toBe(28);
+    expect(metB?.richResources).toEqual(["solar", "hydro"]);
+    expect(metB?.connectionStatus).toBe("available");
   });
 });

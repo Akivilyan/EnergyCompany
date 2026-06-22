@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.32.0
+version: 1.33.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` V 级地图经营差异可见化子步：世界地图与区域页快照补入区域总负荷、总基础 SV 与富集资源摘要；开发 HUD 现在能在进入 `MAP-06~08` / `MET-B` 前直接看到后半程省份的负荷压力、SV 回报与风/光/水资源方向差异 | `src/sim/config/configRepo.ts` `src/modules/screenWorldMap.ts` `src/modules/screenRegion.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` 电网线损落地子步：新增 `grid_loss_config.json` 并接入配置包；区域线/主干线现在会在建链时写入固定线损，M4 并网岛会从岛内总供给扣除完工链路线损后再按需求比例分配，让跨区外送不再是免费供能池 | `docs/design/data/vertical-slice-v0/grid_loss_config.json` `client/cocos/assets/resources/config/v0/grid_loss_config.json` `client/cocos/assets/resources/config/v0/grid_loss_config.json.meta` `docs/design/data/vertical-slice-v0/manifest.json` `scripts/sync-client-assets.mjs` `src/sim/config/configRepo.ts` `src/sim/config/configRepo.node.ts` `src/sim/config/configBundle.ts` `src/app/loadConfigRecords.ts` `client/cocos/assets/scripts/loadConfigFromResources.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `tests/sim/configBundle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test` 普通沙箱命中已知 esbuild `spawn EPERM`，提权后通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` 城市建造资源差异可见化子步：把风/光/水候选的资源乘区、储能乘区与折后产能补进城市开发 HUD；后半程 `MAP-06~08` / `MET-B` 的 rich 资源差异现在不仅在 M4 生效，也能在建造候选阶段直接看到 | `src/app/cityHudController.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 后半程资源禀赋差异子步：把城市配置里的 `wind_resource` / `solar_resource` / `hydro_resource` 从“配置可见”推进到 M4 供能真实生效；风/光/常规水电在 rich 城市按设计获得 ×2 乘区，火电/核电不吃资源乘区，`MET-B` 光伏与 `MAP-07` 水风资源现已形成真实经营差异 | `src/sim/config/configRepo.ts` `src/sim/core/settleNextMonth.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm test` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
@@ -155,3 +156,4 @@ open_questions: []
 | 1.30.0 | 2026-06-22 | 补记 `FAST-01` 后半程资源禀赋差异子步：城市风/光/水 rich 标签进入 M4 真实供能乘区 |
 | 1.31.0 | 2026-06-23 | 补记 `FAST-01` 城市建造资源差异可见化子步：建造候选展示资源/储能乘区与折后产能 |
 | 1.32.0 | 2026-06-23 | 补记 `FAST-01` 电网线损落地子步：新增 `grid_loss_config`，区域线/主干线固定线损进入 M4 并网岛供能分配 |
+| 1.33.0 | 2026-06-23 | 补记 `FAST-01` V 级地图经营差异可见化子步：地图/区域 HUD 展示总负荷、总 SV 与富集资源摘要 |

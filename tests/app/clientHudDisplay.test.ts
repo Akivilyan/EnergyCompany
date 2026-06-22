@@ -131,6 +131,15 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines.some((line) => line.includes("CITY-MAP02-01->"))).toBe(true);
   });
 
+  it("shows level-V region demand, SV, and resource profile in region hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.play.openScreen("screen_region", undefined, "MAP-06");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines).toContain("负荷1920MW · SV38 · 富集风/光");
+  });
+
   it("shows grid_regional-adjusted region link cost in hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
@@ -164,5 +173,7 @@ describe("clientHudDisplay", () => {
     expect(display.statusLines.some((line) => line.includes("3/10"))).toBe(true);
     expect(display.detailLines[0]).toContain("4级");
     expect(display.detailLines[1]).toContain("主干线可建");
+    expect(display.detailLines[1]).toContain("负荷1440MW");
+    expect(display.detailLines[1]).toContain("富集风/光");
   });
 });
