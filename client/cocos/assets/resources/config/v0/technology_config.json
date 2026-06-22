@@ -229,9 +229,9 @@
     "starts_lit": false,
     "research_cost": 74,
     "research_months": 3,
-    "effect_type": "storage_buff",
+    "effect_type": "storage_gate",
     "effect_target": "wind,solar,hydro",
-    "effect_value": { "storage_mult": 3, "unlock_tier": 4 }
+    "effect_value": { "unlock_tier": 4 }
   },
   {
     "tech_id": "storage_system_3",
@@ -242,9 +242,9 @@
     "starts_lit": false,
     "research_cost": 96,
     "research_months": 4,
-    "effect_type": "storage_buff",
+    "effect_type": "storage_gate",
     "effect_target": "wind,solar,hydro",
-    "effect_value": { "storage_mult": 4, "unlock_tier": 5 }
+    "effect_value": { "unlock_tier": 5 }
   },
   {
     "tech_id": "grid_regional",

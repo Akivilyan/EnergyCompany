@@ -26,4 +26,18 @@ describe("buildConfigBundle", () => {
     expect(fromRecords.bundle.facilities.length).toBe(fromSlice.bundle.facilities.length);
     expect(fromRecords.bundle.technologies.length).toBe(fromSlice.bundle.technologies.length);
   });
+
+  it("keeps storage tech effects aligned with design docs", () => {
+    const config = loadTestConfig();
+    const storage1 = config.getTechnology("storage_system_1");
+    const storage2 = config.getTechnology("storage_system_2");
+    const storage3 = config.getTechnology("storage_system_3");
+
+    expect(storage1?.effect_type).toBe("storage_buff");
+    expect(storage1?.effect_value.storage_mult).toBe(2);
+    expect(storage2?.effect_type).toBe("storage_gate");
+    expect(storage2?.effect_value.storage_mult).toBeUndefined();
+    expect(storage3?.effect_type).toBe("storage_gate");
+    expect(storage3?.effect_value.storage_mult).toBeUndefined();
+  });
 });
