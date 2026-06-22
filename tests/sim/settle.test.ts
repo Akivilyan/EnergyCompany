@@ -425,6 +425,57 @@ describe("settleNextMonth", () => {
     expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
   });
 
+  it("M4 applies rich city resource multipliers to wind solar and hydro only", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    withCity(state, config, "CITY-METB-01");
+    withCity(state, config, "CITY-MAP07-01");
+    withCity(state, config, "CITY-MAP07-03");
+    state.facilities["fac-metb-solar"] = {
+      id: "fac-metb-solar",
+      cityId: "CITY-METB-01",
+      facilityId: "solar",
+      tier: 1,
+      outputMw: 100,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-metb-nuclear"] = {
+      id: "fac-metb-nuclear",
+      cityId: "CITY-METB-01",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 100,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-map07-hydro"] = {
+      id: "fac-map07-hydro",
+      cityId: "CITY-MAP07-01",
+      facilityId: "hydro",
+      tier: 1,
+      outputMw: 100,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-map07-wind"] = {
+      id: "fac-map07-wind",
+      cityId: "CITY-MAP07-03",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 100,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-METB-01"].localSupplyMw).toBe(300);
+    expect(month.value.state.cities["CITY-MAP07-01"].localSupplyMw).toBe(200);
+    expect(month.value.state.cities["CITY-MAP07-03"].localSupplyMw).toBe(200);
+  });
+
   it("M3 upgrades existing wind facilities to tier 2 when wind_2 lights", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);

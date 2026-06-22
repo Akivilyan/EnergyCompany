@@ -49,6 +49,9 @@ export interface CityConfig {
   has_river: boolean;
   unlock_company_level: number;
   city_type?: string;
+  wind_resource?: "normal" | "rich";
+  solar_resource?: "normal" | "rich";
+  hydro_resource?: "normal" | "rich";
   is_nuclear_eligible?: boolean;
   display_name?: string;
 }

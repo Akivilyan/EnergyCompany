@@ -172,6 +172,24 @@ function buildIslands(state: GameState): string[][] {
   return islands;
 }
 
+function getCityResourceMultiplier(
+  config: ConfigRepo,
+  cityId: string,
+  facilityId: string
+): number {
+  const city = config.getCity(cityId);
+  if (!city) return 1;
+  const resource =
+    facilityId === "wind"
+      ? city.wind_resource
+      : facilityId === "solar"
+        ? city.solar_resource
+        : facilityId === "hydro"
+          ? city.hydro_resource
+          : undefined;
+  return resource === "rich" ? 2 : 1;
+}
+
 function recalcSupply(state: GameState, config: ConfigRepo): void {
   const hasStorageBoost = hasStorageOutputBoost(state);
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
@@ -185,9 +203,10 @@ function recalcSupply(state: GameState, config: ConfigRepo): void {
 
   for (const fac of Object.values(state.facilities)) {
     const current = localSupplyByCity.get(fac.cityId) ?? 0;
+    const resourceBoost = getCityResourceMultiplier(config, fac.cityId, fac.facilityId);
     const boost =
       hasStorageBoost && storageBoostTypes.has(fac.facilityId) ? 2 : 1;
-    localSupplyByCity.set(fac.cityId, current + fac.outputMw * boost);
+    localSupplyByCity.set(fac.cityId, current + fac.outputMw * resourceBoost * boost);
     if (!(fac.isEco ?? getFacilityEcoStatus(state, config, fac.facilityId))) {
       localFullyEcoByCity.set(fac.cityId, false);
     }
