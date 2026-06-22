@@ -119,4 +119,16 @@ describe("ScreenTechTree", () => {
       "wind_2"
     ]);
   });
+
+  it("unlocks grid_backbone as a level-IV research candidate", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+    const screen = createScreenTechTree(controller);
+
+    const snapshot = screen.getSnapshot();
+    const backbone = snapshot.technologies.find((item) => item.techId === "grid_backbone");
+
+    expect(backbone?.status).toBe("unlocked");
+    expect(snapshot.researchableTechIds).toContain("grid_backbone");
+  });
 });

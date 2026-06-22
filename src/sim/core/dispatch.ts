@@ -207,7 +207,7 @@ export function dispatch(
       if (next.gridLinks[linkKey]) {
         return err("conflict_in_progress", "grid link already exists");
       }
-      const gridLinkCost = getGridLinkBuildCost(next, config, GRID_LINK_COST);
+      const gridLinkCost = getGridLinkBuildCost(next, config, GRID_LINK_COST, command.linkType);
       if (next.funds < gridLinkCost) {
         return err("insufficient_funds", "not enough funds for grid link");
       }

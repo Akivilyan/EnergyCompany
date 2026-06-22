@@ -114,10 +114,24 @@ describe("clientHudDisplay", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
     boot.app.controller.state.litTechIds.push("grid_regional");
-    boot.play.openScreen("screen_region", undefined, "MAP-02");
+    boot.play.openScreen("screen_region", undefined, "MAP-01");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines.some((line) => line.includes("CITY-MAP02-01->") && line.includes("6"))).toBe(true);
+    expect(
+      display.detailLines.some((line) => line.includes("CITY-START->") && line.includes("6"))
+    ).toBe(true);
+  });
+
+  it("shows grid_backbone-adjusted trunk link cost in hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.litTechIds.push("grid_backbone");
+    boot.play.openScreen("screen_region", undefined, "MAP-03");
+
+    const display = buildClientHudDisplay(boot);
+    expect(
+      display.detailLines.some((line) => line.includes("CITY-MAP03-01->") && line.includes("6"))
+    ).toBe(true);
   });
 
   it("shows world map unlock progress and next unlock", () => {

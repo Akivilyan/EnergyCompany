@@ -53,6 +53,23 @@ describe("ScreenRegion", () => {
     expect(screen.getSnapshot().gridLinkCost).toBe(6);
   });
 
+  it("shows grid_backbone-adjusted trunk candidate cost in snapshot", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+    const screen = createScreenRegionForRegion(controller, "MAP-03");
+
+    const before = screen
+      .getSnapshot()
+      .linkCandidates.find((candidate) => candidate.linkType === "trunk");
+    expect(before?.cost).toBe(8);
+
+    controller.state.litTechIds.push("grid_backbone");
+    const after = screen
+      .getSnapshot()
+      .linkCandidates.find((candidate) => candidate.linkType === "trunk");
+    expect(after?.cost).toBe(6);
+  });
+
   it("advances month and finishes queued region link", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 2;

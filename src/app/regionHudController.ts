@@ -74,7 +74,7 @@ function getLinkCandidates(boot: GameBootstrap) {
       toCityId: candidate.toCityId,
       linkType: candidate.linkType,
       available: candidate.available,
-      cost: snapshot.gridLinkCost,
+      cost: candidate.cost,
       label: t("region.candidate.label", {
         type: getLinkTypeLabel(candidate.linkType),
         from: candidate.fromCityName,

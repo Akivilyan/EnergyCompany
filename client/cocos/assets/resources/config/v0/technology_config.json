@@ -78,6 +78,19 @@
     "effect_value": { "unlock": "region", "grid_link_cost_pct": -25 }
   },
   {
+    "tech_id": "grid_backbone",
+    "display_name": "主干电网",
+    "tab": "grid",
+    "company_level_min": 4,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 72,
+    "research_months": 3,
+    "effect_type": "grid",
+    "effect_target": "trunk",
+    "effect_value": { "unlock": "trunk", "trunk_link_cost_pct": -25 }
+  },
+  {
     "tech_id": "nuclear_1",
     "display_name": "核电",
     "tab": "nuclear",

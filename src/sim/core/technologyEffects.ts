@@ -21,10 +21,16 @@ function sumModifierPercent(state: GameState, config: ConfigRepo, key: string): 
   return total;
 }
 
-function sumGridPercent(state: GameState, config: ConfigRepo, key: string): number {
+function sumGridPercent(
+  state: GameState,
+  config: ConfigRepo,
+  key: string,
+  effectTarget?: string
+): number {
   let total = 0;
   for (const tech of getLitTechnologies(state, config)) {
     if (tech.effect_type !== "grid") continue;
+    if (effectTarget && tech.effect_target !== effectTarget) continue;
     total += readNumericEffectValue(tech, key);
   }
   return total;
@@ -49,9 +55,14 @@ export function getConstructionBuildCost(
 export function getGridLinkBuildCost(
   state: GameState,
   config: ConfigRepo,
-  baseCost: number
+  baseCost: number,
+  linkType: "region" | "trunk" = "region"
 ): number {
-  return applyPercent(baseCost, sumGridPercent(state, config, "grid_link_cost_pct"), 1);
+  const percentDelta =
+    linkType === "trunk"
+      ? sumGridPercent(state, config, "trunk_link_cost_pct", "trunk")
+      : sumGridPercent(state, config, "grid_link_cost_pct", "region");
+  return applyPercent(baseCost, percentDelta, 1);
 }
 
 export function getMonthlyOperatingCost(
@@ -82,4 +93,3 @@ export function getEcoCitySocialValue(
     sumModifierPercent(state, config, "eco_city_sv_pct")
   );
 }
-

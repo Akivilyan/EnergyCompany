@@ -25,6 +25,7 @@ export interface RegionLinkCandidate {
   fromCityId: string;
   toCityId: string;
   linkType: "region" | "trunk";
+  cost: number;
   unlocked: boolean;
   available: boolean;
   regionId: string | null;
@@ -159,6 +160,7 @@ export class ScreenRegion {
           fromCityId: hubCity.city_id,
           toCityId: city.city_id,
           linkType: "region",
+          cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "region"),
           unlocked: true,
           available: !linkExists(hubCity.city_id, city.city_id),
           regionId: region.region_id,
@@ -198,6 +200,7 @@ export class ScreenRegion {
           fromCityId: currentHub.city_id,
           toCityId: hub.cityId,
           linkType: "trunk",
+          cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "trunk"),
           unlocked: true,
           available: !linkExists(currentHub.city_id, hub.cityId),
           regionId: null,

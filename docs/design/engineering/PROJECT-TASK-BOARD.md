@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.21.0
+version: 1.22.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -89,6 +89,7 @@ open_questions: []
 | 2026-06-21 | `FAST-01` V 级扩图子步：把公司 V 级门槛从循环依赖态拉回可达区间，补齐 `MAP-06~08` 与 `MET-B` 最小城市样板并同步到客户端资源；世界地图与区域页现已支持 V 级省份 trunk-first 试玩，`MET-B` 也可作为都会直达入口打开 | `docs/design/data/vertical-slice-v0/company_levels.json` `docs/design/data/vertical-slice-v0/regions.json` `docs/design/data/vertical-slice-v0/cities.json` `docs/design/data/vertical-slice-v0/README.md` `docs/design/data/vertical-slice-v0/manifest.json` `client/cocos/assets/resources/config/v0/company_levels.json` `client/cocos/assets/resources/config/v0/regions.json` `client/cocos/assets/resources/config/v0/cities.json` `tests/sim/settle.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/worldHudController.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-21 | `FAST-01` 经营科技生效子步：把 `eng_bulk_procure` / `eng_ops_contract` / `eng_risk_reserve` / `eng_green_pr` 接入真实建造与月结效果；城市 HUD 现会显示集中采购后的折后造价，灾害减损 / 运维减负 / 纯绿城社会价值加成也已进入模拟层，顺手修正了 `storage_system_2/3` 误触发储能倍率的问题 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/sim/systems/debuff.ts` `src/app/cityHudController.ts` `tests/sim/settle.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm test` `cmd.exe /c npm run build` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-22 | `FAST-01` 电网科技生效子步：把 `grid_regional` 从配置占位推进为真实铺线成本折扣；`queue_grid_link` 现在按已点亮电网科技计算成本，区域快照与 HUD 会显示折后候选线路成本，点亮后基础铺线从 8 资金降至 6 资金 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/index.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/*` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
+| 2026-06-22 | `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone` 并把铺线成本从“统一价”细化为“区域线 / 主干线分别计算”；`grid_regional` 只影响省内链路，`grid_backbone` 只影响 trunk，区域快照、开发 HUD 与真实扣费现在都会按候选链路类型显示 8→6 的对应折扣 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/modules/screenRegion.ts` `src/app/regionHudController.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` `cmd.exe /c npm test` `cmd.exe /c npm run lint:boundaries` `cmd.exe /c npm run build:client` `cmd.exe /c npm run verify:client` 通过 |
 
 ## 6. 阶段摘要
 
@@ -134,3 +135,4 @@ open_questions: []
 | 1.19.0 | 2026-06-21 | 补记 `FAST-01` V 级扩图子步：V 门槛可达，`MAP-06~08` 与 `MET-B` 进入可试玩配置包与客户端资源 |
 | 1.20.0 | 2026-06-21 | 补记 `FAST-01` 经营科技生效子步：集中采购/运维外包/风险准备金/绿色品牌进入真实结算与 HUD 摘要 |
 | 1.21.0 | 2026-06-22 | 补记 `FAST-01` 电网科技生效子步：`grid_regional` 降低真实铺线成本并显示到区域 HUD |
+| 1.22.0 | 2026-06-22 | 补记 `FAST-01` 主干电网科技扩张子步：新增 `grid_backbone`，并按区域线 / 主干线分别计算科技折扣 |

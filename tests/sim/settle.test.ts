@@ -288,6 +288,28 @@ describe("settleNextMonth", () => {
     expect(result.value.state.funds).toBe(134);
   });
 
+  it("applies grid_backbone trunk cost discount to grid link dispatch", () => {
+    const config = loadTestConfig();
+    const state = withCity(createInitialState(config), config, "CITY-MAP03-01");
+    state.companyLevel = 4;
+    state.litTechIds.push("grid_backbone");
+
+    const result = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP03-01",
+        linkType: "trunk"
+      },
+      config,
+      defaultPorts
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.funds).toBe(134);
+  });
+
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
