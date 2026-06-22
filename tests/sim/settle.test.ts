@@ -594,6 +594,36 @@ describe("settleNextMonth", () => {
     expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(9);
   });
 
+  it("M6 applies nuclear_ops opex discount only to nuclear facilities", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.litTechIds.push("nuclear_ops");
+    state.facilities["fac-nuclear"] = {
+      id: "fac-nuclear",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 0,
+      monthlyOpex: 50,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-wind"] = {
+      id: "fac-wind",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 0,
+      monthlyOpex: 10,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(51);
+  });
+
   it("M9 applies eng_green_pr bonus only to fully eco-supplied cities", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);

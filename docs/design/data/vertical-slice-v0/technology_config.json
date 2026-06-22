@@ -312,6 +312,19 @@
     "effect_value": { "tier_max": 3 }
   },
   {
+    "tech_id": "nuclear_ops",
+    "display_name": "核电运维规程",
+    "tab": "nuclear",
+    "company_level_min": 5,
+    "requires_lit": ["nuclear_2"],
+    "starts_lit": false,
+    "research_cost": 86,
+    "research_months": 3,
+    "effect_type": "modifier",
+    "effect_target": "nuclear",
+    "effect_value": { "opex_pct": -18 }
+  },
+  {
     "tech_id": "eng_bulk_procure",
     "display_name": "集中采购",
     "tab": "engineering",

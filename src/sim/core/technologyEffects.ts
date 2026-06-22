@@ -12,10 +12,16 @@ function readNumericEffectValue(tech: TechnologyConfig, key: string): number {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
-function sumModifierPercent(state: GameState, config: ConfigRepo, key: string): number {
+function sumModifierPercent(
+  state: GameState,
+  config: ConfigRepo,
+  key: string,
+  effectTarget?: string
+): number {
   let total = 0;
   for (const tech of getLitTechnologies(state, config)) {
     if (tech.effect_type !== "modifier") continue;
+    if (effectTarget && tech.effect_target !== effectTarget) continue;
     total += readNumericEffectValue(tech, key);
   }
   return total;
@@ -138,9 +144,14 @@ export function getGridLinkBuildCost(
 export function getMonthlyOperatingCost(
   state: GameState,
   config: ConfigRepo,
-  baseOpex: number
+  baseOpex: number,
+  facilityId?: string
 ): number {
-  return applyPercent(baseOpex, sumModifierPercent(state, config, "opex_pct"));
+  let percentDelta = sumModifierPercent(state, config, "opex_pct", "operations");
+  if (facilityId) {
+    percentDelta += sumModifierPercent(state, config, "opex_pct", facilityId);
+  }
+  return applyPercent(baseOpex, percentDelta);
 }
 
 export function getDisasterPenalty(

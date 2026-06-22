@@ -349,7 +349,7 @@ export function settleNextMonth(
   let opex = 0;
   let fuel = 0;
   for (const fac of Object.values(next.facilities)) {
-    opex += getMonthlyOperatingCost(next, config, fac.monthlyOpex);
+    opex += getMonthlyOperatingCost(next, config, fac.monthlyOpex, fac.facilityId);
     fuel += fac.monthlyFuel;
   }
   next.funds -= opex + fuel;
