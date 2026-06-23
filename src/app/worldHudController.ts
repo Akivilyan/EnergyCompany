@@ -17,6 +17,15 @@ export interface WorldHudSelectionSnapshot {
   selectedCandidateId: string | null;
 }
 
+export interface WorldHudTrunkCandidate {
+  fromCityId: string;
+  toCityId: string;
+  fromCityName: string;
+  toCityName: string;
+  cost: number;
+  available: boolean;
+}
+
 const selectedCandidateByBoot = new WeakMap<GameBootstrap, string>();
 
 function toActionResult(
@@ -70,6 +79,28 @@ function getFirstAvailableSuperHydroSlot(boot: GameBootstrap): string | null {
   return snapshot.slots.find((slot) => slot.status === "available")?.slotId ?? null;
 }
 
+export function getSelectedWorldTrunkCandidate(boot: GameBootstrap): WorldHudTrunkCandidate | null {
+  const selected = ensureSelectedCandidate(boot);
+  if (!selected || !selected.unlocked || selected.regionId === "MAP-01") return null;
+  const candidate = boot.app.screens
+    .region(selected.regionId)
+    .getSnapshot()
+    .linkCandidates.find(
+      (item) =>
+        item.linkType === "trunk" &&
+        (item.fromCityId === "CITY-START" || item.toCityId === "CITY-START")
+    );
+  if (!candidate) return null;
+  return {
+    fromCityId: candidate.fromCityId,
+    toCityId: candidate.toCityId,
+    fromCityName: candidate.fromCityName,
+    toCityName: candidate.toCityName,
+    cost: candidate.cost,
+    available: candidate.available
+  };
+}
+
 export function formatSelectedWorldSuperHydroSlot(boot: GameBootstrap): string | null {
   const snapshot = boot.app.screens.world.getSnapshot().superHydro;
   if (snapshot.totalSlots <= 0 || !snapshot.unlocked) return null;
@@ -102,6 +133,16 @@ export function formatSelectedWorldCandidate(boot: GameBootstrap): string | null
   return t("hud.status.world_selected_target", {
     type: selected.targetType === "city" ? t("hud.world.target.city") : t("hud.world.target.region"),
     region: selected.displayName
+  });
+}
+
+export function formatSelectedWorldTrunkCandidate(boot: GameBootstrap): string | null {
+  const candidate = getSelectedWorldTrunkCandidate(boot);
+  if (!candidate) return null;
+  return t("hud.status.world_selected_trunk", {
+    from: candidate.fromCityName,
+    to: candidate.toCityName,
+    cost: candidate.cost
   });
 }
 
@@ -150,6 +191,32 @@ export function worldOpenSelectedTarget(boot: GameBootstrap): CityHudActionResul
   }
   boot.play.openScreen("screen_region", undefined, selected.regionId);
   return toActionResult(boot, true, null, "world.success.open_region");
+}
+
+export function worldQueueSelectedTrunk(boot: GameBootstrap): CityHudActionResult {
+  const candidate = getSelectedWorldTrunkCandidate(boot);
+  if (!candidate) {
+    return toActionResult(boot, false, "not_found", "world.error.no_trunk_candidate");
+  }
+  if (!candidate.available) {
+    return toActionResult(boot, false, "conflict_in_progress", "world.error.no_trunk_candidate");
+  }
+  const out = boot.app.controller.runCommand({
+    type: "queue_grid_link",
+    fromCityId: candidate.fromCityId,
+    toCityId: candidate.toCityId,
+    linkType: "trunk"
+  });
+  if (!out.ok) {
+    const key =
+      out.error === "not_unlocked"
+        ? "world.error.not_unlocked"
+        : out.error === "insufficient_funds"
+          ? "world.error.trunk_funds"
+          : "world.error.trunk_failed";
+    return toActionResult(boot, false, out.error, key);
+  }
+  return toActionResult(boot, true, null, "world.success.trunk_queued");
 }
 
 export function worldQueueSuperHydro(boot: GameBootstrap): CityHudActionResult {

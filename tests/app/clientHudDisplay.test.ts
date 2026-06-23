@@ -11,6 +11,7 @@ import {
   companyApplyFirstUnlockedLoan,
   companyCycleLoanCandidate
 } from "../../src/app/companyHudController.js";
+import { worldCycleTargetCandidate } from "../../src/app/worldHudController.js";
 import { DEFAULT_LOCALE, setLocale } from "../../src/i18n/index.js";
 
 describe("clientHudDisplay", () => {
@@ -78,6 +79,7 @@ describe("clientHudDisplay", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: false
     });
@@ -176,6 +178,18 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("主干线可建");
     expect(display.detailLines[1]).toContain("负荷1440MW");
     expect(display.detailLines[1]).toContain("富集风/光");
+  });
+
+  it("shows selected world trunk candidate and queue capability", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenWorldMap(boot);
+    worldCycleTargetCandidate(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines.some((line) => line.includes("->") && line.includes("8"))).toBe(true);
+    expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(true);
   });
 
   it("shows level-V super hydro slot progress on world map hud", () => {

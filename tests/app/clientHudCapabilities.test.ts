@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
+import { clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
+import { worldCycleTargetCandidate } from "../../src/app/worldHudController.js";
 
 describe("getClientHudCapabilities", () => {
   it("hides locked region-link and tech actions at level 1", () => {
@@ -12,6 +14,7 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: false
     });
@@ -32,8 +35,21 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: true,
       canCycleRegionLink: true,
+      canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: true
     });
+  });
+
+  it("exposes selected world trunk queue capability only for an affordable map target", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenWorldMap(boot);
+    worldCycleTargetCandidate(boot);
+
+    expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(true);
+
+    boot.app.controller.state.funds = 7;
+    expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(false);
   });
 });

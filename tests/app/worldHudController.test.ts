@@ -4,6 +4,7 @@ import {
   getWorldHudSelectionSnapshot,
   worldCycleTargetCandidate,
   worldOpenSelectedTarget,
+  worldQueueSelectedTrunk,
   worldQueueSuperHydro
 } from "../../src/app/worldHudController.js";
 import { clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
@@ -47,6 +48,30 @@ describe("worldHudController", () => {
     expect(open.ok).toBe(true);
     expect(boot.play.getNavigation().currentScreen).toBe("screen_region");
     expect(boot.play.getNavigation().regionId).toBe("MAP-02");
+  });
+
+  it("queues selected world target trunk from the world hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenWorldMap(boot);
+
+    let guard = 0;
+    while (
+      getWorldHudSelectionSnapshot(boot).candidates.find(
+        (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+      )?.regionId !== "MAP-02" &&
+      guard < 12
+    ) {
+      const cycle = worldCycleTargetCandidate(boot);
+      expect(cycle.ok).toBe(true);
+      guard += 1;
+    }
+
+    const out = worldQueueSelectedTrunk(boot);
+
+    expect(out.ok).toBe(true);
+    expect(out.messageKey).toBe("world.success.trunk_queued");
+    expect(boot.app.controller.state.gridLinks["CITY-MAP02-01::CITY-START"]?.status).toBe("building");
   });
 
   it("opens MET-A as a direct city target once unlocked", () => {

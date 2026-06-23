@@ -1,8 +1,10 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
+import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
 
 export interface ClientHudCapabilities {
   canQueueRegionLink: boolean;
   canCycleRegionLink: boolean;
+  canQueueWorldTrunk: boolean;
   canQueueSuperHydro: boolean;
   canOperateTech: boolean;
   canBuildInCity: boolean;
@@ -21,9 +23,12 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
   const city = boot.app.screens.city(cityId).getSnapshot();
   const availableRegionCandidates = region.linkCandidates.filter((candidate) => candidate.unlocked);
   const superHydro = boot.app.screens.world.getSnapshot().superHydro;
+  const worldTrunk = getSelectedWorldTrunkCandidate(boot);
   return {
     canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
     canCycleRegionLink: availableRegionCandidates.length > 0,
+    canQueueWorldTrunk:
+      worldTrunk !== null && worldTrunk.available && boot.app.controller.state.funds >= worldTrunk.cost,
     canQueueSuperHydro:
       superHydro.unlocked &&
       superHydro.slots.some(

@@ -30,6 +30,7 @@ import {
   companyClaimCashByAd,
   companyCycleLoanCandidate,
   worldCycleTargetCandidate,
+  worldQueueSelectedTrunk,
   worldQueueSuperHydro,
   worldOpenSelectedTarget,
   getClientHudCapabilities,
@@ -84,6 +85,7 @@ export class CityHudPanel extends Component {
   private cycleRegionLinkBtn: HudButton | null = null;
   private openWorldTargetBtn: HudButton | null = null;
   private cycleWorldTargetBtn: HudButton | null = null;
+  private queueWorldTrunkBtn: HudButton | null = null;
   private queueSuperHydroBtn: HudButton | null = null;
   private openCompanyBtn: HudButton | null = null;
   private openRegionBtn: HudButton | null = null;
@@ -182,6 +184,9 @@ export class CityHudPanel extends Component {
     this.cycleWorldTargetBtn = this.createTapButton(shell, "CycleWorldTarget", "hud.btn.world_cycle_target", () =>
       this.onCycleWorldTarget()
     );
+    this.queueWorldTrunkBtn = this.createTapButton(shell, "QueueWorldTrunk", "hud.btn.world_queue_trunk", () =>
+      this.onQueueWorldTrunk()
+    );
     this.queueSuperHydroBtn = this.createTapButton(shell, "QueueSuperHydro", "hud.btn.super_hydro", () =>
       this.onQueueSuperHydro()
     );
@@ -227,6 +232,7 @@ export class CityHudPanel extends Component {
         this.ackEventBtn,
         this.cycleWorldTargetBtn,
         this.openWorldTargetBtn,
+        this.queueWorldTrunkBtn,
         this.queueSuperHydroBtn,
         this.cycleLoanBtn,
         this.applyLoanBtn,
@@ -283,6 +289,7 @@ export class CityHudPanel extends Component {
       this.cycleRegionLinkBtn,
       this.openWorldTargetBtn,
       this.cycleWorldTargetBtn,
+      this.queueWorldTrunkBtn,
       this.queueSuperHydroBtn,
       this.openCompanyBtn,
       this.openRegionBtn,
@@ -373,6 +380,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
     this.setButtonCaption(this.openWorldTargetBtn, "hud.btn.world_open_target");
     this.setButtonCaption(this.cycleWorldTargetBtn, "hud.btn.world_cycle_target");
+    this.setButtonCaption(this.queueWorldTrunkBtn, "hud.btn.world_queue_trunk");
     this.setButtonCaption(this.queueSuperHydroBtn, "hud.btn.super_hydro");
     this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
     this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
@@ -413,6 +421,7 @@ export class CityHudPanel extends Component {
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
     this.openWorldTargetBtn!.node.active = onWorld;
     this.cycleWorldTargetBtn!.node.active = onWorld;
+    this.queueWorldTrunkBtn!.node.active = onWorld && caps.canQueueWorldTrunk;
     this.queueSuperHydroBtn!.node.active = onWorld && caps.canQueueSuperHydro;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
     this.applyLoanBtn!.node.active = canSwitchLoanCandidate;
@@ -589,6 +598,14 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] world cycle failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onQueueWorldTrunk(): void {
+    if (!this.boot) return;
+    const out = worldQueueSelectedTrunk(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] world trunk failed: ${out.errorCode ?? "unknown"}`);
   }
 
   private onQueueSuperHydro(): void {

@@ -11,6 +11,7 @@ import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./c
 import {
   formatSelectedWorldCandidate,
   formatSelectedWorldSuperHydroSlot,
+  formatSelectedWorldTrunkCandidate,
   formatWorldSuperHydroStatus,
   getWorldHudSelectionSnapshot
 } from "./worldHudController.js";
@@ -206,6 +207,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
     formatWorldSuperHydroStatus(boot),
     formatSelectedWorldSuperHydroSlot(boot),
     selectedTarget,
+    formatSelectedWorldTrunkCandidate(boot),
     selection.candidates.length > 1 ? t("hud.status.world_candidate_count", { count: selection.candidates.length }) : null
   );
   return {

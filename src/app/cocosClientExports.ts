@@ -55,7 +55,10 @@ export {
 export {
   formatSelectedWorldCandidate,
   formatSelectedWorldSuperHydroSlot,
+  formatSelectedWorldTrunkCandidate,
+  getSelectedWorldTrunkCandidate,
   getWorldHudSelectionSnapshot,
+  worldQueueSelectedTrunk,
   worldQueueSuperHydro,
   worldCycleTargetCandidate,
   worldOpenSelectedTarget
