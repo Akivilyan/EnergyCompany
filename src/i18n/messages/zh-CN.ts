@@ -81,7 +81,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.world": "大地图 · {level}级 · 资金{funds} · 已解锁{unlocked}/{total}",
   "hud.status.world_next_unlock": "下一解锁：{region}（{level}级）",
   "hud.status.world_all_unlocked": "全部区域已解锁",
-  "hud.status.world_region_detail": "{region} · {state} · 城市{cities}/{totalCities} · 负荷{demand}MW · SV{sv} · 富集{resources} · {trunk}",
+  "hud.status.world_region_detail": "{region} · {state} · 城市{cities}/{totalCities} · 供给{supply}/{demand}MW({ratio}%) · SV{sv} · 富集{resources} · {trunk}",
   "hud.status.tech_header": "科技 · 已点亮{lit}项",
   "hud.status.tech_idle_hint": "当前无在研项目",
   "hud.status.tech_no_candidate_hint": "当前无可研发节点",

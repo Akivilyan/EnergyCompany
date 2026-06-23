@@ -204,6 +204,8 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           cities: focusRegion.unlockedCities,
           totalCities: focusRegion.totalCities,
           demand: focusRegion.totalDemandMw,
+          supply: focusRegion.totalEffectiveSupplyMw,
+          ratio: Math.round(focusRegion.supplyRatio * 100),
           sv: focusRegion.totalBaseSocialValue,
           resources: formatRichResources(focusRegion.richResources),
           trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)

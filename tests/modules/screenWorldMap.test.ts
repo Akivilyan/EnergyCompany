@@ -49,13 +49,39 @@ describe("screenWorldMap", () => {
     expect(snapshot.unlockedRegions).toBe(10);
     expect(snapshot.nextUnlockRegion).toBeNull();
     expect(map06?.totalDemandMw).toBe(1920);
+    expect(map06?.totalEffectiveSupplyMw).toBe(0);
+    expect(map06?.supplyRatio).toBe(0);
     expect(map06?.totalBaseSocialValue).toBe(38);
     expect(map06?.richResources).toEqual(["wind", "solar"]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.totalDemandMw).toBe(2100);
+    expect(metB?.totalEffectiveSupplyMw).toBe(0);
     expect(metB?.totalBaseSocialValue).toBe(28);
     expect(metB?.richResources).toEqual(["solar", "hydro"]);
     expect(metB?.connectionStatus).toBe("available");
+  });
+
+  it("summarizes regional effective supply from runtime city state", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+    controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: 1280,
+      localSupplyMw: 210,
+      effectiveSupplyMw: 420,
+      netImportMw: 210,
+      supplyRatio: 0.5,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: 18
+    };
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+    const map06 = snapshot.regions.find((region) => region.regionId === "MAP-06");
+
+    expect(map06?.totalDemandMw).toBe(1920);
+    expect(map06?.totalEffectiveSupplyMw).toBe(420);
+    expect(map06?.supplyRatio).toBeCloseTo(420 / 1920);
   });
 
   it("shows level-V super hydro slots once the tech is lit", () => {

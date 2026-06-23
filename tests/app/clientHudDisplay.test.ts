@@ -176,7 +176,7 @@ describe("clientHudDisplay", () => {
     expect(display.statusLines.some((line) => line.includes("3/10"))).toBe(true);
     expect(display.detailLines[0]).toContain("4级");
     expect(display.detailLines[1]).toContain("主干线可建");
-    expect(display.detailLines[1]).toContain("负荷1440MW");
+    expect(display.detailLines[1]).toContain("供给0/1440MW(0%)");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 
@@ -206,7 +206,7 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
     expect(display.detailLines[1]).toContain("省六");
-    expect(display.detailLines[1]).toContain("负荷1920MW");
+    expect(display.detailLines[1]).toContain("供给0/1920MW(0%)");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 

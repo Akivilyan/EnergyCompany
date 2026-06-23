@@ -81,7 +81,7 @@ export const en: Record<string, string> = {
   "hud.status.world": "World · Lv{level} · {funds} · unlocked {unlocked}/{total}",
   "hud.status.world_next_unlock": "Next unlock: {region} at Lv{level}",
   "hud.status.world_all_unlocked": "All regions unlocked",
-  "hud.status.world_region_detail": "{region} · {state} · cities {cities}/{totalCities} · demand {demand}MW · SV {sv} · rich {resources} · {trunk}",
+  "hud.status.world_region_detail": "{region} · {state} · cities {cities}/{totalCities} · supply {supply}/{demand}MW({ratio}%) · SV {sv} · rich {resources} · {trunk}",
   "hud.status.tech_header": "Tech | lit={lit}",
   "hud.status.tech_idle_hint": "No active research",
   "hud.status.tech_no_candidate_hint": "No research candidates",

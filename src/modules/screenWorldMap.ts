@@ -19,11 +19,16 @@ export interface WorldMapRegionItem {
   totalCities: number;
   unlockedCities: number;
   totalDemandMw: number;
+  totalEffectiveSupplyMw: number;
+  supplyRatio: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
   centralCityId: string | null;
   centralCityUnlocked: boolean;
   connectionStatus: WorldMapConnectionStatus;
+  trunkLinkId: string | null;
+  trunkMonthsRemaining: number | null;
+  trunkLossMw: number | null;
 }
 
 export interface WorldMapSuperHydroSlotItem {
@@ -90,8 +95,19 @@ export class ScreenWorldMap {
         const unlockedCities = regionCities.filter(
           (city) => state.companyLevel >= city.unlock_company_level
         ).length;
+        const totalDemandMw = regionCities.reduce((sum, city) => {
+          const runtime = state.cities[city.city_id];
+          return sum + (runtime?.demandMw ?? city.base_demand_mw);
+        }, 0);
+        const totalEffectiveSupplyMw = regionCities.reduce((sum, city) => {
+          const runtime = state.cities[city.city_id];
+          return sum + (runtime?.effectiveSupplyMw ?? 0);
+        }, 0);
 
         let connectionStatus: WorldMapConnectionStatus;
+        let trunkLinkId: string | null = null;
+        let trunkMonthsRemaining: number | null = null;
+        let trunkLossMw: number | null = null;
         if (region.region_id === "MAP-01") {
           connectionStatus = "capital";
         } else if (!unlocked) {
@@ -104,8 +120,14 @@ export class ScreenWorldMap {
             connectionStatus = "available";
           } else if (trunk.status === "finished") {
             connectionStatus = "connected";
+            trunkLinkId = trunk.linkId;
+            trunkMonthsRemaining = trunk.monthsRemaining;
+            trunkLossMw = trunk.lossMw;
           } else {
             connectionStatus = "building";
+            trunkLinkId = trunk.linkId;
+            trunkMonthsRemaining = trunk.monthsRemaining;
+            trunkLossMw = trunk.lossMw;
           }
         }
 
@@ -117,7 +139,9 @@ export class ScreenWorldMap {
           unlocked,
           totalCities: regionCities.length,
           unlockedCities,
-          totalDemandMw: regionCities.reduce((sum, city) => sum + city.base_demand_mw, 0),
+          totalDemandMw,
+          totalEffectiveSupplyMw,
+          supplyRatio: totalDemandMw > 0 ? totalEffectiveSupplyMw / totalDemandMw : 0,
           totalBaseSocialValue: regionCities.reduce(
             (sum, city) => sum + city.city_base_social_value,
             0
@@ -125,7 +149,10 @@ export class ScreenWorldMap {
           richResources: getRichResources(regionCities),
           centralCityId: centralCity?.city_id ?? null,
           centralCityUnlocked: centralCity ? state.companyLevel >= centralCity.unlock_company_level : false,
-          connectionStatus
+          connectionStatus,
+          trunkLinkId,
+          trunkMonthsRemaining,
+          trunkLossMw
         };
       })
       .sort(
