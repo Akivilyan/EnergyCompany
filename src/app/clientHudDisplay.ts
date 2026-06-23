@@ -10,6 +10,7 @@ import { formatSelectedRegionLink } from "./regionHudController.js";
 import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
 import {
   formatSelectedWorldCandidate,
+  formatSelectedWorldSuperHydroSlot,
   formatWorldSuperHydroStatus,
   getWorldHudSelectionSnapshot
 } from "./worldHudController.js";
@@ -203,6 +204,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
         })
       : null,
     formatWorldSuperHydroStatus(boot),
+    formatSelectedWorldSuperHydroSlot(boot),
     selectedTarget,
     selection.candidates.length > 1 ? t("hud.status.world_candidate_count", { count: selection.candidates.length }) : null
   );

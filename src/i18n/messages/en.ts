@@ -192,5 +192,9 @@ export const en: Record<string, string> = {
   "hud.world.target.city": "City",
   "hud.world.super_hydro.locked": "locked",
   "hud.world.super_hydro.unlocked": "ready",
-  "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {output}MW"
+  "hud.world.super_hydro.slot.available": "ready",
+  "hud.world.super_hydro.slot.building": "building",
+  "hud.world.super_hydro.slot.finished": "done",
+  "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {output}MW",
+  "hud.status.world_super_hydro_slot": "Super hydro candidate: {name} · {status} · cost {cost} · {months}m · {output}MW"
 };

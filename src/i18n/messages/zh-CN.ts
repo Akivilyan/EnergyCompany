@@ -192,5 +192,9 @@ export const zhCN: Record<string, string> = {
   "hud.world.target.city": "城市",
   "hud.world.super_hydro.locked": "未解锁",
   "hud.world.super_hydro.unlocked": "可建",
-  "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 出力{output}MW"
+  "hud.world.super_hydro.slot.available": "可建",
+  "hud.world.super_hydro.slot.building": "在建",
+  "hud.world.super_hydro.slot.finished": "完工",
+  "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 出力{output}MW",
+  "hud.status.world_super_hydro_slot": "超水电候选：{name} · {status} · {cost}资金 · {months}月 · {output}MW"
 };

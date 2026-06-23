@@ -25,7 +25,10 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
     canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
     canCycleRegionLink: availableRegionCandidates.length > 0,
     canQueueSuperHydro:
-      superHydro.unlocked && superHydro.slots.some((slot) => slot.status === "available"),
+      superHydro.unlocked &&
+      superHydro.slots.some(
+        (slot) => slot.status === "available" && boot.app.controller.state.funds >= slot.buildCost
+      ),
     canOperateTech: tech.canOpen,
     canBuildInCity: city !== null && boot.app.controller.state.constructionQueue.length < 3,
     canCycleBuildCandidate: city !== null

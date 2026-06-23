@@ -70,6 +70,23 @@ function getFirstAvailableSuperHydroSlot(boot: GameBootstrap): string | null {
   return snapshot.slots.find((slot) => slot.status === "available")?.slotId ?? null;
 }
 
+export function formatSelectedWorldSuperHydroSlot(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.world.getSnapshot().superHydro;
+  if (snapshot.totalSlots <= 0 || !snapshot.unlocked) return null;
+  const slot =
+    snapshot.slots.find((candidate) => candidate.status === "available") ??
+    snapshot.slots.find((candidate) => candidate.status === "building") ??
+    snapshot.slots.find((candidate) => candidate.status === "finished");
+  if (!slot) return null;
+  return t("hud.status.world_super_hydro_slot", {
+    name: slot.displayName,
+    status: t(`hud.world.super_hydro.slot.${slot.status}`),
+    cost: slot.buildCost,
+    months: slot.monthsRemaining,
+    output: slot.outputMw
+  });
+}
+
 export function getWorldHudSelectionSnapshot(boot: GameBootstrap): WorldHudSelectionSnapshot {
   const candidates = getCandidates(boot);
   const selected = ensureSelectedCandidate(boot);

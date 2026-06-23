@@ -54,6 +54,7 @@ export {
 } from "./regionHudController.js";
 export {
   formatSelectedWorldCandidate,
+  formatSelectedWorldSuperHydroSlot,
   getWorldHudSelectionSnapshot,
   worldQueueSuperHydro,
   worldCycleTargetCandidate,

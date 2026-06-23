@@ -187,5 +187,19 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
 
     expect(display.detailLines).toContain("超级水电可建 · 完工0/在建0/2 · 出力0MW");
+    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 160资金 · 6月 · 4200MW");
+  });
+
+  it("hides super hydro queue capability when the selected strategic slot is unaffordable", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 159;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 160资金 · 6月 · 4200MW");
+    expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(false);
   });
 });

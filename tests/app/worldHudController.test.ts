@@ -3,7 +3,8 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import {
   getWorldHudSelectionSnapshot,
   worldCycleTargetCandidate,
-  worldOpenSelectedTarget
+  worldOpenSelectedTarget,
+  worldQueueSuperHydro
 } from "../../src/app/worldHudController.js";
 import { clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
 
@@ -106,5 +107,20 @@ describe("worldHudController", () => {
     expect(boot.play.getNavigation().currentScreen).toBe("screen_city_detail");
     expect(boot.play.getNavigation().regionId).toBe("MET-B");
     expect(boot.play.getNavigation().cityId).toBe("CITY-METB-01");
+  });
+
+  it("queues the first available super hydro slot from the world hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 200;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenWorldMap(boot);
+
+    const out = worldQueueSuperHydro(boot);
+
+    expect(out.ok).toBe(true);
+    expect(out.messageKey).toBe("world.success.super_hydro_queued");
+    expect(boot.app.controller.state.superHydros.super_hydro_1?.status).toBe("building");
+    expect(boot.app.controller.state.funds).toBe(40);
   });
 });
