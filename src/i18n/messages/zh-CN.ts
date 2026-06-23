@@ -77,7 +77,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.region": "区域 · {level}级 · 资金{funds} · 已解锁{cities}城",
   "hud.status.region_links": "第{month}月 · 线路 在建{building} 完工{finished}",
   "hud.status.region_selected_link": "当前候选：{type} {from}->{to}",
-  "hud.status.region_selected_link_cost": "当前候选：{type} {from}->{to} 路 {cost}资金",
+  "hud.status.region_selected_link_cost": "当前候选：{type} {from}->{to} 路 {cost}资金 · 线损{loss}MW",
   "hud.status.world": "大地图 · {level}级 · 资金{funds} · 已解锁{unlocked}/{total}",
   "hud.status.world_next_unlock": "下一解锁：{region}（{level}级）",
   "hud.status.world_all_unlocked": "全部区域已解锁",
@@ -173,7 +173,7 @@ export const zhCN: Record<string, string> = {
 
   "codex.error.page_not_found": "图鉴页不存在",
   "hud.status.world_selected_target": "当前候选：{type} {region}",
-  "hud.status.world_selected_trunk": "主干候选：{from} -> {to} · {cost}资金",
+  "hud.status.world_selected_trunk": "主干候选：{from} -> {to} · {cost}资金 · 线损{loss}MW",
   "hud.status.world_candidate_count": "地图候选 {count} 项",
   "hud.btn.world_open_target": "进入候选",
   "hud.btn.world_cycle_target": "切换地图",
@@ -201,6 +201,10 @@ export const zhCN: Record<string, string> = {
   "hud.world.super_hydro.slot.available": "可建",
   "hud.world.super_hydro.slot.building": "在建",
   "hud.world.super_hydro.slot.finished": "完工",
-  "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 出力{output}MW",
-  "hud.status.world_super_hydro_slot": "超水电候选：{name} · {status} · {cost}资金 · {months}月 · {output}MW"
+  "hud.world.super_hydro.grid.not_built": "未建",
+  "hud.world.super_hydro.grid.isolated": "未接网",
+  "hud.world.super_hydro.grid.building_link": "接网中",
+  "hud.world.super_hydro.grid.connected": "已接网",
+  "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 接网出力{connected}/{output}MW",
+  "hud.status.world_super_hydro_slot": "超水电候选：{name} · {status} · {grid} · {cost}资金 · {months}月 · {output}MW"
 };

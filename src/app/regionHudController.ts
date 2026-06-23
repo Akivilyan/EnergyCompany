@@ -25,6 +25,7 @@ export interface RegionHudSelectionSnapshot {
     label: string;
     available: boolean;
     cost: number;
+    lossMw: number;
   }>;
   selectedCandidateId: string | null;
 }
@@ -75,6 +76,7 @@ function getLinkCandidates(boot: GameBootstrap) {
       linkType: candidate.linkType,
       available: candidate.available,
       cost: candidate.cost,
+      lossMw: candidate.lossMw,
       label: t("region.candidate.label", {
         type: getLinkTypeLabel(candidate.linkType),
         from: candidate.fromCityName,
@@ -119,7 +121,8 @@ export function formatSelectedRegionLink(boot: GameBootstrap): string | null {
     type: getLinkTypeLabel(selected.linkType),
     from: selected.fromCityId,
     to: selected.toCityId,
-    cost: selected.cost
+    cost: selected.cost,
+    loss: selected.lossMw
   });
 }
 

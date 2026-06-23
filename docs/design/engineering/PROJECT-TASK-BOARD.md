@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.37.0
+version: 1.38.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` 电网反馈可见化子步：区域/大地图 trunk 候选现在展示对应线损，世界地图详情跟随当前选中目标切换；超水电槽补齐未建/未接网/接网中/已接网状态，并把 HUD 出力拆成“已接网出力 / 完工总出力”，避免玩家误以为孤立超水电已经参与跨区供能 | `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/regionHudController.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图主干直建闭环子步：世界地图选中已解锁外省/都会后会显示对应 `CITY-START -> 省会枢纽` 主干候选与成本；Cocos 开发 HUD 新增“建主干”按钮，可在大地图直接排队 selected trunk，并按当前资金隐藏不可执行入口 | `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/CityHudPanel.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/worldHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `tests/app/clientHudCapabilities.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过；`cmd.exe /c npm test` 通过 |
 | 2026-06-23 | `FAST-01` 超级水电主干接入 HUD 闭环子步：区域页现在会把已完工超级水电节点作为 trunk 候选暴露给当前省会枢纽；开发 HUD 可切换到 `SUPER-HYDRO-*` 候选并直接排队建设，未完工超级水电仍不会作为电网端点出现；大地图 HUD 同步展示当前超水电槽的费用、工期、出力，并在资金不足时隐藏排队按钮 | `src/modules/screenRegion.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/app/regionHudController.test.ts` `tests/app/worldHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` 超级水电战略槽落地子步：补齐 `super_hydro` V 级科技、2 个大地图战略水电槽、运行态建造命令与 M2/M4 并网结算；世界地图 HUD 现在能展示超级水电锁定/可建/在建/完工与总出力，完工后可作为独立供能节点接入 trunk，并且不吃常规水电资源/储能乘区 | `docs/design/data/vertical-slice-v0/technology_config.json` `docs/design/data/vertical-slice-v0/super_hydro_slots.json` `docs/design/data/vertical-slice-v0/manifest.json` `client/cocos/assets/resources/config/v0/technology_config.json` `client/cocos/assets/resources/config/v0/super_hydro_slots.json` `scripts/sync-client-assets.mjs` `src/sim/config/*` `src/sim/types/*` `src/sim/core/*` `src/modules/screenWorldMap.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/*` `tests/sim/settle.test.ts` `tests/sim/configBundle.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
@@ -165,3 +166,4 @@ open_questions: []
 | 1.35.0 | 2026-06-23 | 补记 `FAST-01` 超级水电战略槽落地子步：2 个 V 级超水电槽进入大地图、HUD 与 M2/M4 结算 |
 | 1.36.0 | 2026-06-23 | 补记 `FAST-01` 超级水电主干接入 HUD 闭环子步：已完工超级水电节点进入区域 trunk 候选并可排队接入，大地图 HUD 显示槽位费用/工期/出力与资金门槛 |
 | 1.37.0 | 2026-06-23 | 补记 `FAST-01` 大地图主干直建闭环子步：世界地图 HUD 可显示并直接排队 selected trunk |
+| 1.38.0 | 2026-06-23 | 补记 `FAST-01` 电网反馈可见化子步：候选线损、选中地图详情与超水电接网出力进入 HUD |

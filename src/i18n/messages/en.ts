@@ -77,7 +77,7 @@ export const en: Record<string, string> = {
   "hud.status.region": "Region · Lv{level} · {funds} · {cities} cities",
   "hud.status.region_links": "M{month} · links building={building} done={finished}",
   "hud.status.region_selected_link": "Selected: {type} {from}->{to}",
-  "hud.status.region_selected_link_cost": "Selected: {type} {from}->{to} 路 cost {cost}",
+  "hud.status.region_selected_link_cost": "Selected: {type} {from}->{to} · cost {cost} · loss {loss}MW",
   "hud.status.world": "World · Lv{level} · {funds} · unlocked {unlocked}/{total}",
   "hud.status.world_next_unlock": "Next unlock: {region} at Lv{level}",
   "hud.status.world_all_unlocked": "All regions unlocked",
@@ -173,7 +173,7 @@ export const en: Record<string, string> = {
 
   "codex.error.page_not_found": "Codex page not found",
   "hud.status.world_selected_target": "Selected: {type} {region}",
-  "hud.status.world_selected_trunk": "Trunk candidate: {from} -> {to} · cost {cost}",
+  "hud.status.world_selected_trunk": "Trunk candidate: {from} -> {to} · cost {cost} · loss {loss}MW",
   "hud.status.world_candidate_count": "Map targets {count}",
   "hud.btn.world_open_target": "Open Target",
   "hud.btn.world_cycle_target": "Cycle Target",
@@ -201,6 +201,10 @@ export const en: Record<string, string> = {
   "hud.world.super_hydro.slot.available": "ready",
   "hud.world.super_hydro.slot.building": "building",
   "hud.world.super_hydro.slot.finished": "done",
-  "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {output}MW",
-  "hud.status.world_super_hydro_slot": "Super hydro candidate: {name} · {status} · cost {cost} · {months}m · {output}MW"
+  "hud.world.super_hydro.grid.not_built": "not built",
+  "hud.world.super_hydro.grid.isolated": "isolated",
+  "hud.world.super_hydro.grid.building_link": "linking",
+  "hud.world.super_hydro.grid.connected": "connected",
+  "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {connected}/{output}MW connected",
+  "hud.status.world_super_hydro_slot": "Super hydro candidate: {name} · {status} · {grid} · cost {cost} · {months}m · {output}MW"
 };

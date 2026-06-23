@@ -32,6 +32,7 @@ export interface WorldMapSuperHydroSlotItem {
   displayName: string;
   unlocked: boolean;
   status: "available" | "building" | "finished";
+  gridConnectionStatus: "not_built" | "isolated" | "building_link" | "connected";
   monthsRemaining: number;
   outputMw: number;
   buildCost: number;
@@ -57,6 +58,7 @@ export interface WorldMapSnapshot {
     buildingSlots: number;
     finishedSlots: number;
     totalOutputMw: number;
+    connectedOutputMw: number;
     slots: WorldMapSuperHydroSlotItem[];
   };
   regions: WorldMapRegionItem[];
@@ -137,12 +139,33 @@ export class ScreenWorldMap {
     const superHydroSlots: WorldMapSuperHydroSlotItem[] = config.bundle.superHydroSlots.map((slot) => {
       const runtime = state.superHydros?.[slot.slot_id];
       const status: WorldMapSuperHydroSlotItem["status"] = runtime?.status ?? "available";
+      const connectedLink = Object.values(state.gridLinks).some(
+        (link) =>
+          link.status === "finished" &&
+          link.linkType === "trunk" &&
+          (link.fromCityId === slot.node_id || link.toCityId === slot.node_id)
+      );
+      const buildingLink = Object.values(state.gridLinks).some(
+        (link) =>
+          link.status === "building" &&
+          link.linkType === "trunk" &&
+          (link.fromCityId === slot.node_id || link.toCityId === slot.node_id)
+      );
+      const gridConnectionStatus: WorldMapSuperHydroSlotItem["gridConnectionStatus"] =
+        status !== "finished"
+          ? "not_built"
+          : connectedLink
+            ? "connected"
+            : buildingLink
+              ? "building_link"
+              : "isolated";
       return {
         slotId: slot.slot_id,
         nodeId: slot.node_id,
         displayName: slot.display_name,
         unlocked: superHydroUnlocked,
         status,
+        gridConnectionStatus,
         monthsRemaining: runtime?.monthsRemaining ?? slot.build_duration_months,
         outputMw: runtime?.outputMw ?? slot.output_capacity_mw,
         buildCost: slot.build_cost_total
@@ -172,6 +195,9 @@ export class ScreenWorldMap {
         finishedSlots: superHydroSlots.filter((slot) => slot.status === "finished").length,
         totalOutputMw: superHydroSlots
           .filter((slot) => slot.status === "finished")
+          .reduce((sum, slot) => sum + slot.outputMw, 0),
+        connectedOutputMw: superHydroSlots
+          .filter((slot) => slot.gridConnectionStatus === "connected")
           .reduce((sum, slot) => sum + slot.outputMw, 0),
         slots: superHydroSlots
       },

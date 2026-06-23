@@ -167,10 +167,15 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.world.getSnapshot();
   const selection = getWorldHudSelectionSnapshot(boot);
   const selectedTarget = formatSelectedWorldCandidate(boot);
+  const selectedCandidate = selection.candidates.find(
+    (candidate) => candidate.candidateId === selection.selectedCandidateId
+  );
+  const selectedRegion = selectedCandidate
+    ? s.regions.find((region) => region.regionId === selectedCandidate.regionId)
+    : null;
   const focusRegion =
-    s.regions.find(
-      (region) => region.unlocked && region.connectionStatus !== "capital" && region.connectionStatus !== "planned"
-    ) ??
+    selectedRegion ??
+    s.regions.find((region) => region.unlocked && region.connectionStatus !== "capital" && region.connectionStatus !== "planned") ??
     s.regions.find((region) => region.unlocked && region.connectionStatus === "planned") ??
     s.regions.find((region) => !region.unlocked) ??
     s.regions[0];

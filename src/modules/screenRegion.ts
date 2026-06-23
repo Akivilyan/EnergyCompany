@@ -27,6 +27,7 @@ export interface RegionLinkCandidate {
   toCityId: string;
   linkType: "region" | "trunk";
   cost: number;
+  lossMw: number;
   unlocked: boolean;
   available: boolean;
   regionId: string | null;
@@ -175,6 +176,7 @@ export class ScreenRegion {
           toCityId: city.city_id,
           linkType: "region",
           cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "region"),
+          lossMw: this.controller.config.bundle.gridLoss.loss_regional_mw,
           unlocked: true,
           available: !linkExists(hubCity.city_id, city.city_id),
           regionId: region.region_id,
@@ -215,6 +217,9 @@ export class ScreenRegion {
           toCityId: hub.cityId,
           linkType: "trunk",
           cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "trunk"),
+          lossMw: this.controller.state.litTechIds.includes("uhv_transmission")
+            ? this.controller.config.bundle.gridLoss.loss_backbone_uhv_mw
+            : this.controller.config.bundle.gridLoss.loss_backbone_pre_uhv_mw,
           unlocked: true,
           available: !linkExists(currentHub.city_id, hub.cityId),
           regionId: null,
@@ -234,6 +239,9 @@ export class ScreenRegion {
           toCityId: slot.nodeId,
           linkType: "trunk",
           cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "trunk"),
+          lossMw: this.controller.state.litTechIds.includes("uhv_transmission")
+            ? this.controller.config.bundle.gridLoss.loss_backbone_uhv_mw
+            : this.controller.config.bundle.gridLoss.loss_backbone_pre_uhv_mw,
           unlocked: true,
           available: !linkExists(currentHub.city_id, slot.nodeId),
           regionId: null,

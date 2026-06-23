@@ -78,5 +78,40 @@ describe("screenWorldMap", () => {
     expect(snapshot.superHydro.finishedSlots).toBe(1);
     expect(snapshot.superHydro.availableSlots).toBe(1);
     expect(snapshot.superHydro.totalOutputMw).toBe(4200);
+    expect(snapshot.superHydro.connectedOutputMw).toBe(0);
+    expect(snapshot.superHydro.slots.find((slot) => slot.slotId === "super_hydro_1")?.gridConnectionStatus).toBe(
+      "isolated"
+    );
+  });
+
+  it("counts only grid-connected super hydro output as connected output", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+    controller.state.litTechIds.push("super_hydro");
+    controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    controller.state.gridLinks["CITY-MAP06-01::SUPER-HYDRO-1"] = {
+      linkId: "CITY-MAP06-01::SUPER-HYDRO-1",
+      fromCityId: "CITY-MAP06-01",
+      toCityId: "SUPER-HYDRO-1",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 500
+    };
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+
+    expect(snapshot.superHydro.totalOutputMw).toBe(4200);
+    expect(snapshot.superHydro.connectedOutputMw).toBe(4200);
+    expect(snapshot.superHydro.slots.find((slot) => slot.slotId === "super_hydro_1")?.gridConnectionStatus).toBe(
+      "connected"
+    );
   });
 });

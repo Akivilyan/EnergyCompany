@@ -23,6 +23,7 @@ export interface WorldHudTrunkCandidate {
   fromCityName: string;
   toCityName: string;
   cost: number;
+  lossMw: number;
   available: boolean;
 }
 
@@ -67,6 +68,7 @@ function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null 
   const remembered = selectedCandidateByBoot.get(boot);
   const selected =
     candidates.find((candidate) => candidate.candidateId === remembered) ??
+    candidates.find((candidate) => candidate.unlocked && candidate.regionId !== "MAP-01") ??
     candidates.find((candidate) => candidate.unlocked) ??
     candidates[0];
   selectedCandidateByBoot.set(boot, selected.candidateId);
@@ -97,6 +99,7 @@ export function getSelectedWorldTrunkCandidate(boot: GameBootstrap): WorldHudTru
     fromCityName: candidate.fromCityName,
     toCityName: candidate.toCityName,
     cost: candidate.cost,
+    lossMw: candidate.lossMw,
     available: candidate.available
   };
 }
@@ -112,6 +115,7 @@ export function formatSelectedWorldSuperHydroSlot(boot: GameBootstrap): string |
   return t("hud.status.world_super_hydro_slot", {
     name: slot.displayName,
     status: t(`hud.world.super_hydro.slot.${slot.status}`),
+    grid: t(`hud.world.super_hydro.grid.${slot.gridConnectionStatus}`),
     cost: slot.buildCost,
     months: slot.monthsRemaining,
     output: slot.outputMw
@@ -142,7 +146,8 @@ export function formatSelectedWorldTrunkCandidate(boot: GameBootstrap): string |
   return t("hud.status.world_selected_trunk", {
     from: candidate.fromCityName,
     to: candidate.toCityName,
-    cost: candidate.cost
+    cost: candidate.cost,
+    loss: candidate.lossMw
   });
 }
 
@@ -154,7 +159,8 @@ export function formatWorldSuperHydroStatus(boot: GameBootstrap): string | null 
     finished: s.finishedSlots,
     building: s.buildingSlots,
     total: s.totalSlots,
-    output: s.totalOutputMw
+    output: s.totalOutputMw,
+    connected: s.connectedOutputMw
   });
 }
 

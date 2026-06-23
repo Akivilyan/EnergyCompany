@@ -189,7 +189,25 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
 
     expect(display.detailLines.some((line) => line.includes("->") && line.includes("8"))).toBe(true);
+    expect(display.detailLines.some((line) => line.includes("线损750MW"))).toBe(true);
     expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(true);
+  });
+
+  it("updates world map operating profile when cycling the selected target", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenWorldMap(boot);
+
+    let guard = 0;
+    while (!buildClientHudDisplay(boot).detailLines[1]?.includes("省六") && guard < 12) {
+      worldCycleTargetCandidate(boot);
+      guard += 1;
+    }
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[1]).toContain("省六");
+    expect(display.detailLines[1]).toContain("负荷1920MW");
+    expect(display.detailLines[1]).toContain("富集风/光");
   });
 
   it("shows level-V super hydro slot progress on world map hud", () => {
@@ -200,8 +218,8 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines).toContain("超级水电可建 · 完工0/在建0/2 · 出力0MW");
-    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 160资金 · 6月 · 4200MW");
+    expect(display.detailLines).toContain("超级水电可建 · 完工0/在建0/2 · 接网出力0/0MW");
+    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
   });
 
   it("hides super hydro queue capability when the selected strategic slot is unaffordable", () => {
@@ -213,7 +231,7 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 160资金 · 6月 · 4200MW");
+    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
     expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(false);
   });
 });
