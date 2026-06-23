@@ -36,6 +36,17 @@ describe("buildConfigBundle", () => {
     expect(config.bundle.gridLoss.loss_backbone_pre_uhv_mw).toBe(750);
   });
 
+  it("keeps UHV transmission tech aligned with grid loss config", () => {
+    const config = loadTestConfig();
+    const uhv = config.getTechnology("uhv_transmission");
+
+    expect(uhv?.company_level_min).toBe(5);
+    expect(uhv?.requires_lit).toEqual(["grid_backbone"]);
+    expect(uhv?.effect_type).toBe("grid");
+    expect(uhv?.effect_target).toBe("trunk");
+    expect(uhv?.effect_value.trunk_loss_profile).toBe("uhv");
+  });
+
   it("keeps storage tech effects aligned with design docs", () => {
     const config = loadTestConfig();
     const storage1 = config.getTechnology("storage_system_1");

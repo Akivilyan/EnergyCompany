@@ -352,6 +352,55 @@ describe("settleNextMonth", () => {
     );
   });
 
+  it("applies UHV loss profile when queueing trunk links after uhv_transmission is lit", () => {
+    const config = loadTestConfig();
+    const state = withCity(createInitialState(config), config, "CITY-MAP06-01");
+    state.companyLevel = 5;
+    state.litTechIds.push("grid_backbone", "uhv_transmission");
+
+    const result = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP06-01",
+        linkType: "trunk"
+      },
+      config,
+      defaultPorts
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.gridLinks["CITY-MAP06-01::CITY-START"]?.lossMw).toBe(
+      config.bundle.gridLoss.loss_backbone_uhv_mw
+    );
+  });
+
+  it("refreshes existing trunk links to UHV loss profile during settle", () => {
+    const config = loadTestConfig();
+    const state = withCity(createInitialState(config), config, "CITY-MAP06-01");
+    state.companyLevel = 5;
+    state.litTechIds.push("grid_backbone", "uhv_transmission");
+    state.gridLinks["CITY-MAP06-01::CITY-START"] = {
+      linkId: "CITY-MAP06-01::CITY-START",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-MAP06-01",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: config.bundle.gridLoss.loss_backbone_pre_uhv_mw
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.gridLinks["CITY-MAP06-01::CITY-START"]?.lossMw).toBe(
+      config.bundle.gridLoss.loss_backbone_uhv_mw
+    );
+  });
+
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);

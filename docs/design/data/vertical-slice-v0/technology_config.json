@@ -286,6 +286,19 @@
     "effect_value": { "unlock": "trunk", "trunk_link_cost_pct": -25 }
   },
   {
+    "tech_id": "uhv_transmission",
+    "display_name": "特高压输电",
+    "tab": "grid",
+    "company_level_min": 5,
+    "requires_lit": ["grid_backbone"],
+    "starts_lit": false,
+    "research_cost": 98,
+    "research_months": 4,
+    "effect_type": "grid",
+    "effect_target": "trunk",
+    "effect_value": { "unlock": "uhv", "trunk_loss_profile": "uhv" }
+  },
+  {
     "tech_id": "nuclear_1",
     "display_name": "核电·I",
     "tab": "nuclear",
