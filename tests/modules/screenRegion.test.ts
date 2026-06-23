@@ -208,4 +208,56 @@ describe("ScreenRegion", () => {
       )
     ).toBe(true);
   });
+
+  it("exposes finished super hydro as trunk candidate from a level-V region", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    controller.state.litTechIds.push("super_hydro");
+    controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "Jinsha River UHV Hydro Base",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 1800
+    };
+    const screen = createScreenRegionForRegion(controller, "MAP-06");
+
+    const candidate = screen
+      .getSnapshot()
+      .linkCandidates.find(
+        (item) =>
+          item.fromCityId === "CITY-MAP06-01" &&
+          item.toCityId === "SUPER-HYDRO-1" &&
+          item.linkType === "trunk"
+      );
+    expect(candidate?.available).toBe(true);
+    expect(candidate?.toCityName).toBe("Jinsha River UHV Hydro Base");
+
+    const queue = screen.queueGridLink("CITY-MAP06-01", "SUPER-HYDRO-1", "trunk");
+    expect(queue.result.ok).toBe(true);
+  });
+
+  it("hides building super hydro from trunk candidates", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    controller.state.litTechIds.push("super_hydro");
+    controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "Jinsha River UHV Hydro Base",
+      status: "building",
+      monthsRemaining: 1,
+      outputMw: 1800
+    };
+    const screen = createScreenRegionForRegion(controller, "MAP-06");
+
+    expect(
+      screen
+        .getSnapshot()
+        .linkCandidates.some(
+          (item) => item.fromCityId === "CITY-MAP06-01" && item.toCityId === "SUPER-HYDRO-1"
+        )
+    ).toBe(false);
+  });
 });

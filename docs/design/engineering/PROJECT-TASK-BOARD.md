@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.35.0
+version: 1.36.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` 超级水电主干接入 HUD 闭环子步：区域页现在会把已完工超级水电节点作为 trunk 候选暴露给当前省会枢纽；开发 HUD 可切换到 `SUPER-HYDRO-*` 候选并直接排队建设，未完工超级水电仍不会作为电网端点出现；大地图 HUD 同步展示当前超水电槽的费用、工期、出力，并在资金不足时隐藏排队按钮 | `src/modules/screenRegion.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/app/regionHudController.test.ts` `tests/app/worldHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` 超级水电战略槽落地子步：补齐 `super_hydro` V 级科技、2 个大地图战略水电槽、运行态建造命令与 M2/M4 并网结算；世界地图 HUD 现在能展示超级水电锁定/可建/在建/完工与总出力，完工后可作为独立供能节点接入 trunk，并且不吃常规水电资源/储能乘区 | `docs/design/data/vertical-slice-v0/technology_config.json` `docs/design/data/vertical-slice-v0/super_hydro_slots.json` `docs/design/data/vertical-slice-v0/manifest.json` `client/cocos/assets/resources/config/v0/technology_config.json` `client/cocos/assets/resources/config/v0/super_hydro_slots.json` `scripts/sync-client-assets.mjs` `src/sim/config/*` `src/sim/types/*` `src/sim/core/*` `src/modules/screenWorldMap.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `client/cocos/assets/scripts/*` `tests/sim/settle.test.ts` `tests/sim/configBundle.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenTechTree.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` 特高压输电落地子步：按设计补齐 V 级 `uhv_transmission` 科技节点；主干线在特高压点亮后会使用 UHV 线损档，新建 trunk 与既有 trunk 在月结时都会从 750MW 降到 500MW，后半程跨区供能有了明确的 V 级降损目标 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `tests/sim/configBundle.test.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` V 级地图经营差异可见化子步：世界地图与区域页快照补入区域总负荷、总基础 SV 与富集资源摘要；开发 HUD 现在能在进入 `MAP-06~08` / `MET-B` 前直接看到后半程省份的负荷压力、SV 回报与风/光/水资源方向差异 | `src/sim/config/configRepo.ts` `src/modules/screenWorldMap.ts` `src/modules/screenRegion.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/modules/screenRegion.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
@@ -161,3 +162,4 @@ open_questions: []
 | 1.33.0 | 2026-06-23 | 补记 `FAST-01` V 级地图经营差异可见化子步：地图/区域 HUD 展示总负荷、总 SV 与富集资源摘要 |
 | 1.34.0 | 2026-06-23 | 补记 `FAST-01` 特高压输电落地子步：补齐 `uhv_transmission`，主干线线损可按 UHV 档刷新 |
 | 1.35.0 | 2026-06-23 | 补记 `FAST-01` 超级水电战略槽落地子步：2 个 V 级超水电槽进入大地图、HUD 与 M2/M4 结算 |
+| 1.36.0 | 2026-06-23 | 补记 `FAST-01` 超级水电主干接入 HUD 闭环子步：已完工超级水电节点进入区域 trunk 候选并可排队接入，大地图 HUD 显示槽位费用/工期/出力与资金门槛 |

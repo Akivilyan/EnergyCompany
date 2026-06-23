@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
-import { clientNavOpenRegion } from "../../src/app/screenNavController.js";
+import { clientNavOpenRegion, clientNavOpenRegionById } from "../../src/app/screenNavController.js";
 import {
   getRegionHudSelectionSnapshot,
   regionCycleLinkCandidate,
@@ -58,6 +58,46 @@ describe("regionHudController", () => {
     );
     expect(active?.fromCityId).toBe("CITY-START");
     expect(active?.toCityId).toBe("CITY-MAP02-01");
+    expect(active?.linkType).toBe("trunk");
+
+    const out = regionQueueDefaultLink(boot);
+    expect(out.ok).toBe(true);
+    expect(out.messageKey).toBe("region.success.trunk_queued");
+  });
+
+  it("cycles to finished super hydro trunk candidate and queues it", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "Jinsha River UHV Hydro Base",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 1800
+    };
+    clientNavOpenRegionById(boot, "MAP-06");
+
+    let guard = 0;
+    while (
+      getRegionHudSelectionSnapshot(boot).candidates.find(
+        (candidate) =>
+          candidate.candidateId === getRegionHudSelectionSnapshot(boot).selectedCandidateId
+      )?.toCityId !== "SUPER-HYDRO-1" &&
+      guard < 16
+    ) {
+      const cycle = regionCycleLinkCandidate(boot);
+      expect(cycle.ok).toBe(true);
+      guard += 1;
+    }
+
+    const selected = getRegionHudSelectionSnapshot(boot);
+    const active = selected.candidates.find(
+      (candidate) => candidate.candidateId === selected.selectedCandidateId
+    );
+    expect(active?.fromCityId).toBe("CITY-MAP06-01");
+    expect(active?.toCityId).toBe("SUPER-HYDRO-1");
     expect(active?.linkType).toBe("trunk");
 
     const out = regionQueueDefaultLink(boot);

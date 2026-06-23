@@ -223,6 +223,25 @@ export class ScreenRegion {
           toCityName: hub.cityName
         });
       }
+
+      const finishedSuperHydroNodes = Object.values(this.controller.state.superHydros ?? {})
+        .filter((slot) => slot.status === "finished")
+        .sort((a, b) => a.nodeId.localeCompare(b.nodeId));
+      for (const slot of finishedSuperHydroNodes) {
+        candidates.push({
+          candidateId: `${currentHub.city_id}->${slot.nodeId}:trunk`,
+          fromCityId: currentHub.city_id,
+          toCityId: slot.nodeId,
+          linkType: "trunk",
+          cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "trunk"),
+          unlocked: true,
+          available: !linkExists(currentHub.city_id, slot.nodeId),
+          regionId: null,
+          regionName: `${region?.display_name ?? this.regionId} x ${slot.displayName}`,
+          fromCityName: cityNameMap.get(currentHub.city_id) ?? currentHub.city_id,
+          toCityName: slot.displayName
+        });
+      }
     }
 
     return candidates.sort((a, b) => a.candidateId.localeCompare(b.candidateId));
