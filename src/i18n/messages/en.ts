@@ -161,6 +161,7 @@ export const en: Record<string, string> = {
   "hud.world.connection.available": "Trunk available",
   "hud.world.connection.building": "Trunk building",
   "hud.world.connection.connected": "Trunk connected",
+  "hud.world.connection.detail": "{status} 路 {months}m 路 loss {loss}MW",
   "resource.wind": "wind",
   "resource.solar": "solar",
   "resource.hydro": "hydro",

@@ -16,7 +16,7 @@ import {
   getWorldHudSelectionSnapshot
 } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
-import type { ResourceKind } from "../modules/screenWorldMap.js";
+import type { ResourceKind, WorldMapRegionItem } from "../modules/screenWorldMap.js";
 
 export function formatLoanTierLabel(loanId: string): string {
   const key = `loan.tier.${loanId}`;
@@ -144,7 +144,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   return { statusLine, detailLine, statusLines, detailLines };
 }
 
-function formatWorldConnectionStatus(status: string): string {
+function formatWorldConnectionLabel(status: string): string {
   switch (status) {
     case "capital":
       return t("hud.world.connection.capital");
@@ -161,6 +161,18 @@ function formatWorldConnectionStatus(status: string): string {
     default:
       return status;
   }
+}
+
+function formatWorldConnectionStatus(region: WorldMapRegionItem): string {
+  const status = formatWorldConnectionLabel(region.connectionStatus);
+  if (region.trunkLinkId && region.trunkLossMw !== null) {
+    return t("hud.world.connection.detail", {
+      status,
+      months: region.trunkMonthsRemaining ?? 0,
+      loss: region.trunkLossMw
+    });
+  }
+  return status;
 }
 
 function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
@@ -208,7 +220,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           ratio: Math.round(focusRegion.supplyRatio * 100),
           sv: focusRegion.totalBaseSocialValue,
           resources: formatRichResources(focusRegion.richResources),
-          trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)
+          trunk: formatWorldConnectionStatus(focusRegion)
         })
       : null,
     formatWorldSuperHydroStatus(boot),

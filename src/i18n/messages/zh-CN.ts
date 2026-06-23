@@ -161,6 +161,7 @@ export const zhCN: Record<string, string> = {
   "hud.world.connection.available": "主干线可建",
   "hud.world.connection.building": "主干线在建",
   "hud.world.connection.connected": "主干线已贯通",
+  "hud.world.connection.detail": "{status} · 剩{months}月 · 线损{loss}MW",
   "resource.wind": "风",
   "resource.solar": "光",
   "resource.hydro": "水",

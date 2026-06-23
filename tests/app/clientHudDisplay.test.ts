@@ -193,6 +193,26 @@ describe("clientHudDisplay", () => {
     expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(true);
   });
 
+  it("shows active world trunk progress and loss in the focused region detail", () => {
+    setLocale("en");
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    const queued = boot.app.controller.runCommand({
+      type: "queue_grid_link",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-MAP02-01",
+      linkType: "trunk"
+    });
+    expect(queued.ok).toBe(true);
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines[1]).toContain("Trunk building");
+    expect(display.detailLines[1]).toContain("1m");
+    expect(display.detailLines[1]).toContain("loss 750MW");
+  });
+
   it("updates world map operating profile when cycling the selected target", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;
