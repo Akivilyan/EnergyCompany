@@ -40,6 +40,10 @@ export interface ScreenRegionSnapshot {
   regionId: string;
   regionName: string;
   totalDemandMw: number;
+  totalLocalSupplyMw: number;
+  totalNetImportMw: number;
+  totalEffectiveSupplyMw: number;
+  supplyGapMw: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
   month: number;
@@ -105,6 +109,8 @@ export class ScreenRegion {
     if (regionCities.some((city) => city.wind_resource === "rich")) richResources.push("wind");
     if (regionCities.some((city) => city.solar_resource === "rich")) richResources.push("solar");
     if (regionCities.some((city) => city.hydro_resource === "rich")) richResources.push("hydro");
+    const totalDemandMw = cities.reduce((sum, city) => sum + city.demandMw, 0);
+    const totalEffectiveSupplyMw = cities.reduce((sum, city) => sum + city.effectiveSupplyMw, 0);
 
     const gridLinks = Object.values(this.controller.state.gridLinks)
       .filter((link) => cities.some((city) => city.cityId === link.fromCityId || city.cityId === link.toCityId))
@@ -123,7 +129,14 @@ export class ScreenRegion {
     return {
       regionId: this.regionId,
       regionName: regionConfig?.display_name ?? this.regionId,
-      totalDemandMw: regionCities.reduce((sum, city) => sum + city.base_demand_mw, 0),
+      totalDemandMw,
+      totalLocalSupplyMw: cities.reduce((sum, city) => sum + city.localSupplyMw, 0),
+      totalNetImportMw: cities.reduce((sum, city) => {
+        const runtime = this.controller.state.cities[city.cityId];
+        return sum + (runtime?.netImportMw ?? 0);
+      }, 0),
+      totalEffectiveSupplyMw,
+      supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
       totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
       richResources,
       month: this.controller.state.currentMonth,

@@ -135,6 +135,9 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
     t("hud.line.month", { month: s.month }),
     t("hud.line.region_profile", {
       demand: s.totalDemandMw,
+      local: s.totalLocalSupplyMw,
+      import: s.totalNetImportMw,
+      gap: s.supplyGapMw,
       sv: s.totalBaseSocialValue,
       resources: formatRichResources(s.richResources)
     }),
@@ -216,7 +219,10 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           cities: focusRegion.unlockedCities,
           totalCities: focusRegion.totalCities,
           demand: focusRegion.totalDemandMw,
+          local: focusRegion.totalLocalSupplyMw,
+          import: focusRegion.totalNetImportMw,
           supply: focusRegion.totalEffectiveSupplyMw,
+          gap: focusRegion.supplyGapMw,
           ratio: Math.round(focusRegion.supplyRatio * 100),
           sv: focusRegion.totalBaseSocialValue,
           resources: formatRichResources(focusRegion.richResources),

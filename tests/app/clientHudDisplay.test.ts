@@ -140,7 +140,7 @@ describe("clientHudDisplay", () => {
     boot.play.openScreen("screen_region", undefined, "MAP-06");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines).toContain("负荷1920MW · SV38 · 富集风/光");
+    expect(display.detailLines).toContain("负荷1920MW · 本地0/受入0/缺口1920MW · SV38 · 富集风/光");
   });
 
   it("shows grid_regional-adjusted region link cost in hud", () => {
@@ -177,6 +177,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("4级");
     expect(display.detailLines[1]).toContain("主干线可建");
     expect(display.detailLines[1]).toContain("供给0/1440MW(0%)");
+    expect(display.detailLines[1]).toContain("本地0/受入0/缺口1440MW");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 
@@ -227,6 +228,7 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
     expect(display.detailLines[1]).toContain("省六");
     expect(display.detailLines[1]).toContain("供给0/1920MW(0%)");
+    expect(display.detailLines[1]).toContain("本地0/受入0/缺口1920MW");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 

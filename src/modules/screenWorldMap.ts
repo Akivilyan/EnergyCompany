@@ -19,7 +19,10 @@ export interface WorldMapRegionItem {
   totalCities: number;
   unlockedCities: number;
   totalDemandMw: number;
+  totalLocalSupplyMw: number;
+  totalNetImportMw: number;
   totalEffectiveSupplyMw: number;
+  supplyGapMw: number;
   supplyRatio: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
@@ -99,10 +102,19 @@ export class ScreenWorldMap {
           const runtime = state.cities[city.city_id];
           return sum + (runtime?.demandMw ?? city.base_demand_mw);
         }, 0);
+        const totalLocalSupplyMw = regionCities.reduce((sum, city) => {
+          const runtime = state.cities[city.city_id];
+          return sum + (runtime?.localSupplyMw ?? 0);
+        }, 0);
+        const totalNetImportMw = regionCities.reduce((sum, city) => {
+          const runtime = state.cities[city.city_id];
+          return sum + (runtime?.netImportMw ?? 0);
+        }, 0);
         const totalEffectiveSupplyMw = regionCities.reduce((sum, city) => {
           const runtime = state.cities[city.city_id];
           return sum + (runtime?.effectiveSupplyMw ?? 0);
         }, 0);
+        const supplyGapMw = Math.max(0, totalDemandMw - totalEffectiveSupplyMw);
 
         let connectionStatus: WorldMapConnectionStatus;
         let trunkLinkId: string | null = null;
@@ -140,7 +152,10 @@ export class ScreenWorldMap {
           totalCities: regionCities.length,
           unlockedCities,
           totalDemandMw,
+          totalLocalSupplyMw,
+          totalNetImportMw,
           totalEffectiveSupplyMw,
+          supplyGapMw,
           supplyRatio: totalDemandMw > 0 ? totalEffectiveSupplyMw / totalDemandMw : 0,
           totalBaseSocialValue: regionCities.reduce(
             (sum, city) => sum + city.city_base_social_value,

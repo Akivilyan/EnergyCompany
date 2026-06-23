@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.40.0
+version: 1.41.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` 区域供能结构反馈子步：区域页与大地图区域详情补入本地供给、跨区受入与供能缺口汇总；`MAP-06~08` / `MET-B` 在接入前后可直接看出本地资源、外送依赖和缺口压力差异，不再只看总供给率 | `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图主干进度反馈子步：世界地图 HUD 的区域详情在主干在建/贯通后不再只显示状态名，会同步展示剩余月份与线损，让玩家在大地图层直接判断跨区接入的等待成本和损耗 | `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图区域供给摘要子步：世界地图区域快照补入区域实时有效供给、供给率与当前主干 link 摘要；HUD 区域详情从只看负荷改为显示 `供给/需求`，让后半程外省在接入、月结后能直接看到供能缺口变化 | `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 电网反馈可见化子步：区域/大地图 trunk 候选现在展示对应线损，世界地图详情跟随当前选中目标切换；超水电槽补齐未建/未接网/接网中/已接网状态，并把 HUD 出力拆成“已接网出力 / 完工总出力”，避免玩家误以为孤立超水电已经参与跨区供能 | `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/regionHudController.ts` `src/app/worldHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
@@ -171,3 +172,4 @@ open_questions: []
 | 1.38.0 | 2026-06-23 | 补记 `FAST-01` 电网反馈可见化子步：候选线损、选中地图详情与超水电接网出力进入 HUD |
 | 1.39.0 | 2026-06-23 | 补记 `FAST-01` 大地图区域供给摘要子步：区域供给/需求与主干摘要进入世界地图快照 |
 | 1.40.0 | 2026-06-23 | 补记 `FAST-01` 大地图主干进度反馈子步：区域详情显示主干剩余月份与线损 |
+| 1.41.0 | 2026-06-23 | 补记 `FAST-01` 区域供能结构反馈子步：区域/大地图 HUD 显示本地供给、受入与缺口 |

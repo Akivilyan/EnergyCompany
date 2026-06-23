@@ -49,13 +49,19 @@ describe("screenWorldMap", () => {
     expect(snapshot.unlockedRegions).toBe(10);
     expect(snapshot.nextUnlockRegion).toBeNull();
     expect(map06?.totalDemandMw).toBe(1920);
+    expect(map06?.totalLocalSupplyMw).toBe(0);
+    expect(map06?.totalNetImportMw).toBe(0);
     expect(map06?.totalEffectiveSupplyMw).toBe(0);
+    expect(map06?.supplyGapMw).toBe(1920);
     expect(map06?.supplyRatio).toBe(0);
     expect(map06?.totalBaseSocialValue).toBe(38);
     expect(map06?.richResources).toEqual(["wind", "solar"]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.totalDemandMw).toBe(2100);
+    expect(metB?.totalLocalSupplyMw).toBe(0);
+    expect(metB?.totalNetImportMw).toBe(0);
     expect(metB?.totalEffectiveSupplyMw).toBe(0);
+    expect(metB?.supplyGapMw).toBe(2100);
     expect(metB?.totalBaseSocialValue).toBe(28);
     expect(metB?.richResources).toEqual(["solar", "hydro"]);
     expect(metB?.connectionStatus).toBe("available");
@@ -80,7 +86,10 @@ describe("screenWorldMap", () => {
     const map06 = snapshot.regions.find((region) => region.regionId === "MAP-06");
 
     expect(map06?.totalDemandMw).toBe(1920);
+    expect(map06?.totalLocalSupplyMw).toBe(210);
+    expect(map06?.totalNetImportMw).toBe(210);
     expect(map06?.totalEffectiveSupplyMw).toBe(420);
+    expect(map06?.supplyGapMw).toBe(1500);
     expect(map06?.supplyRatio).toBeCloseTo(420 / 1920);
   });
 

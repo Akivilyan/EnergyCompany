@@ -174,6 +174,10 @@ describe("ScreenRegion", () => {
     const snapshot = screen.getSnapshot();
     expect(snapshot.cities).toHaveLength(3);
     expect(snapshot.totalDemandMw).toBe(1920);
+    expect(snapshot.totalLocalSupplyMw).toBe(0);
+    expect(snapshot.totalNetImportMw).toBe(0);
+    expect(snapshot.totalEffectiveSupplyMw).toBe(0);
+    expect(snapshot.supplyGapMw).toBe(1920);
     expect(snapshot.totalBaseSocialValue).toBe(38);
     expect(snapshot.richResources).toEqual(["wind", "solar"]);
     expect(
@@ -207,6 +211,31 @@ describe("ScreenRegion", () => {
           candidate.linkType === "region"
       )
     ).toBe(true);
+  });
+
+  it("summarizes regional local supply, net import, and gap from runtime cities", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: 1280,
+      localSupplyMw: 300,
+      effectiveSupplyMw: 900,
+      netImportMw: 600,
+      supplyRatio: 0.7,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: 18
+    };
+    const screen = createScreenRegionForRegion(controller, "MAP-06");
+
+    const snapshot = screen.getSnapshot();
+
+    expect(snapshot.totalDemandMw).toBe(1920);
+    expect(snapshot.totalLocalSupplyMw).toBe(300);
+    expect(snapshot.totalNetImportMw).toBe(600);
+    expect(snapshot.totalEffectiveSupplyMw).toBe(900);
+    expect(snapshot.supplyGapMw).toBe(1020);
   });
 
   it("exposes finished super hydro as trunk candidate from a level-V region", () => {
