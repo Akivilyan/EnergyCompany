@@ -12,6 +12,7 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canQueueSuperHydro: false,
       canOperateTech: false
     });
   });
@@ -31,6 +32,7 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: true,
       canCycleRegionLink: true,
+      canQueueSuperHydro: false,
       canOperateTech: true
     });
   });

@@ -78,6 +78,7 @@ describe("clientHudDisplay", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canQueueSuperHydro: false,
       canOperateTech: false
     });
   });
@@ -175,5 +176,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("主干线可建");
     expect(display.detailLines[1]).toContain("负荷1440MW");
     expect(display.detailLines[1]).toContain("富集风/光");
+  });
+
+  it("shows level-V super hydro slot progress on world map hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("超级水电可建 · 完工0/在建0/2 · 出力0MW");
   });
 });

@@ -89,6 +89,15 @@ export interface GridLinkRuntime {
   lossMw: number;
 }
 
+export interface SuperHydroRuntime {
+  slotId: string;
+  nodeId: string;
+  displayName: string;
+  status: "building" | "finished";
+  monthsRemaining: number;
+  outputMw: number;
+}
+
 export interface GameState {
   version: number;
   runId: string;
@@ -115,6 +124,7 @@ export interface GameState {
   cities: Record<string, CityRuntime>;
   facilities: Record<string, FacilityRuntime>;
   gridLinks: Record<string, GridLinkRuntime>;
+  superHydros: Record<string, SuperHydroRuntime>;
   constructionQueue: ConstructionQueueItem[];
   researches: Record<string, ResearchRuntime>;
   litTechIds: string[];

@@ -1173,6 +1173,93 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("invalid_command_payload");
   });
 
+  it("dispatch allows strategic super hydro only after its level-V tech is lit", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.funds = 500;
+
+    const locked = dispatch(
+      state,
+      { type: "queue_super_hydro", slotId: "super_hydro_1" },
+      config,
+      defaultPorts
+    );
+    expect(locked.ok).toBe(false);
+    if (locked.ok) return;
+    expect(locked.error).toBe("not_unlocked");
+
+    state.litTechIds.push("super_hydro");
+    const unlocked = dispatch(
+      state,
+      { type: "queue_super_hydro", slotId: "super_hydro_1" },
+      config,
+      defaultPorts
+    );
+    expect(unlocked.ok).toBe(true);
+    if (!unlocked.ok) return;
+    expect(unlocked.value.state.superHydros["super_hydro_1"]?.nodeId).toBe("SUPER-HYDRO-1");
+    expect(unlocked.value.state.superHydros["super_hydro_1"]?.status).toBe("building");
+  });
+
+  it("dispatch enforces one project per super hydro slot", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.funds = 500;
+    state.litTechIds.push("super_hydro");
+    state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "building",
+      monthsRemaining: 2,
+      outputMw: 4200
+    };
+
+    const result = dispatch(
+      state,
+      { type: "queue_super_hydro", slotId: "super_hydro_1" },
+      config,
+      defaultPorts
+    );
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toBe("conflict_in_progress");
+  });
+
+  it("M4 adds finished super hydro as an independent grid hub supply node", () => {
+    const config = loadTestConfig();
+    const state = withCity(createInitialState(config), config, "CITY-MAP07-01");
+    state.litTechIds.push("storage_system_1", "super_hydro");
+    state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    state.gridLinks["CITY-MAP07-01::SUPER-HYDRO-1"] = {
+      linkId: "CITY-MAP07-01::SUPER-HYDRO-1",
+      fromCityId: "SUPER-HYDRO-1",
+      toCityId: "CITY-MAP07-01",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-MAP07-01"].localSupplyMw).toBe(0);
+    expect(month.value.state.cities["CITY-MAP07-01"].netImportMw).toBeGreaterThan(0);
+    expect(month.value.state.cities["CITY-MAP07-01"].supplyRatio).toBe(1);
+  });
+
   it("dispatch blocks nuclear construction before tech is lit", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);

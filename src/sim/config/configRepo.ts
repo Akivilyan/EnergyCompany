@@ -100,6 +100,16 @@ export interface GridLossConfig {
   loss_backbone_pre_uhv_mw: number;
 }
 
+export interface SuperHydroSlotConfig {
+  slot_id: string;
+  node_id: string;
+  display_name: string;
+  unlock_tech_id: string;
+  build_cost_total: number;
+  build_duration_months: number;
+  output_capacity_mw: number;
+}
+
 export type TechnologyTab =
   | "wind"
   | "solar"
@@ -136,6 +146,7 @@ export interface ConfigBundle {
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
   gridLoss: GridLossConfig;
+  superHydroSlots: SuperHydroSlotConfig[];
 }
 
 export class ConfigRepo {
@@ -173,6 +184,10 @@ export class ConfigRepo {
 
   getTechnology(id: string): TechnologyConfig | undefined {
     return this.bundle.technologies.find((tech) => tech.tech_id === id);
+  }
+
+  getSuperHydroSlot(id: string): SuperHydroSlotConfig | undefined {
+    return this.bundle.superHydroSlots.find((slot) => slot.slot_id === id);
   }
 
   getStartingCash(difficultyId: "simple" | "normal"): number {

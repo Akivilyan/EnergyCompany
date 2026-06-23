@@ -8,7 +8,11 @@ import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudCo
 import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
 import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
-import { formatSelectedWorldCandidate, getWorldHudSelectionSnapshot } from "./worldHudController.js";
+import {
+  formatSelectedWorldCandidate,
+  formatWorldSuperHydroStatus,
+  getWorldHudSelectionSnapshot
+} from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 import type { ResourceKind } from "../modules/screenWorldMap.js";
 
@@ -198,6 +202,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           trunk: formatWorldConnectionStatus(focusRegion.connectionStatus)
         })
       : null,
+    formatWorldSuperHydroStatus(boot),
     selectedTarget,
     selection.candidates.length > 1 ? t("hud.status.world_candidate_count", { count: selection.candidates.length }) : null
   );

@@ -44,6 +44,13 @@ function getGridLinkLossMw(config: ConfigRepo, linkType: "region" | "trunk", lit
     : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
 }
 
+function getGridNodeRegion(config: ConfigRepo, state: GameState, nodeId: string): string | null {
+  const city = config.getCity(nodeId);
+  if (city) return city.region_id ?? null;
+  const superHydro = Object.values(state.superHydros ?? {}).find((slot) => slot.nodeId === nodeId);
+  return superHydro?.status === "finished" ? "SUPER-HYDRO" : null;
+}
+
 function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResult<true> {
   if (companyLevel < unlockLevel) {
     return err("not_unlocked", "city not unlocked for current company level", {
@@ -201,19 +208,29 @@ export function dispatch(
       }
       const from = config.getCity(command.fromCityId);
       const to = config.getCity(command.toCityId);
-      if (!from || !to) {
-        return err("not_found", "city not found for grid link");
+      if (command.linkType === "region" && (!from || !to)) {
+        return err("not_found", "city not found for regional grid link");
       }
-      const fromUnlocked = assertCityUnlocked(next.companyLevel, from.unlock_company_level);
-      if (!fromUnlocked.ok) {
-        return fromUnlocked;
+      if (from) {
+        const fromUnlocked = assertCityUnlocked(next.companyLevel, from.unlock_company_level);
+        if (!fromUnlocked.ok) {
+          return fromUnlocked;
+        }
       }
-      const toUnlocked = assertCityUnlocked(next.companyLevel, to.unlock_company_level);
-      if (!toUnlocked.ok) {
-        return toUnlocked;
+      if (to) {
+        const toUnlocked = assertCityUnlocked(next.companyLevel, to.unlock_company_level);
+        if (!toUnlocked.ok) {
+          return toUnlocked;
+        }
       }
-      const fromRegionId = from.region_id ?? "unknown";
-      const toRegionId = to.region_id ?? "unknown";
+      const fromRegionId = getGridNodeRegion(config, next, command.fromCityId) ?? "unknown";
+      const toRegionId = getGridNodeRegion(config, next, command.toCityId) ?? "unknown";
+      if (fromRegionId === "unknown" || toRegionId === "unknown") {
+        return err("not_found", "grid endpoint not found or not operable", {
+          from_city_id: command.fromCityId,
+          to_city_id: command.toCityId
+        });
+      }
       if (command.linkType === "region" && fromRegionId !== toRegionId) {
         return err("invalid_command_payload", "region link must stay in same region", {
           from_city_id: command.fromCityId,
@@ -249,6 +266,40 @@ export function dispatch(
         status: "building",
         monthsRemaining: GRID_LINK_BUILD_MONTHS,
         lossMw: getGridLinkLossMw(config, command.linkType, next.litTechIds)
+      };
+      break;
+    }
+    case "queue_super_hydro": {
+      const slot = config.getSuperHydroSlot(command.slotId);
+      if (!slot) {
+        return err("not_found", "super hydro slot not found", {
+          slot_id: command.slotId
+        });
+      }
+      if (!next.litTechIds.includes(slot.unlock_tech_id)) {
+        return err("not_unlocked", "super hydro tech not lit", {
+          slot_id: command.slotId,
+          unlock_tech_id: slot.unlock_tech_id
+        });
+      }
+      if (next.superHydros?.[slot.slot_id]) {
+        return err("conflict_in_progress", "super hydro slot already occupied", {
+          slot_id: slot.slot_id
+        });
+      }
+      const buildCost = getConstructionBuildCost(next, config, slot.build_cost_total);
+      if (next.funds < buildCost) {
+        return err("insufficient_funds", "not enough funds for super hydro");
+      }
+      next.funds -= buildCost;
+      next.superHydros ??= {};
+      next.superHydros[slot.slot_id] = {
+        slotId: slot.slot_id,
+        nodeId: slot.node_id,
+        displayName: slot.display_name,
+        status: "building",
+        monthsRemaining: slot.build_duration_months,
+        outputMw: slot.output_capacity_mw
       };
       break;
     }

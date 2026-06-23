@@ -55,6 +55,7 @@ export function createInitialState(
     cities,
     facilities: {},
     gridLinks: {},
+    superHydros: {},
     constructionQueue: [],
     researches: {},
     litTechIds: ["wind_1", "solar_1", "thermal_1", "hydro_1"],

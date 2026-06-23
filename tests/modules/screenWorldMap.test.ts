@@ -57,4 +57,26 @@ describe("screenWorldMap", () => {
     expect(metB?.richResources).toEqual(["solar", "hydro"]);
     expect(metB?.connectionStatus).toBe("available");
   });
+
+  it("shows level-V super hydro slots once the tech is lit", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+    controller.state.litTechIds.push("super_hydro");
+    controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+
+    expect(snapshot.superHydro.unlocked).toBe(true);
+    expect(snapshot.superHydro.totalSlots).toBe(2);
+    expect(snapshot.superHydro.finishedSlots).toBe(1);
+    expect(snapshot.superHydro.availableSlots).toBe(1);
+    expect(snapshot.superHydro.totalOutputMw).toBe(4200);
+  });
 });

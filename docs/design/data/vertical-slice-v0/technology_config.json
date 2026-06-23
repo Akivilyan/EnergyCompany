@@ -221,6 +221,19 @@
     "effect_value": { "tier_max": 5 }
   },
   {
+    "tech_id": "super_hydro",
+    "display_name": "超级水电站",
+    "tab": "hydro",
+    "company_level_min": 5,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 140,
+    "research_months": 5,
+    "effect_type": "strategic_project",
+    "effect_target": "super_hydro",
+    "effect_value": { "slot_count": 2, "resource_mult": 1, "storage_mult": 1 }
+  },
+  {
     "tech_id": "storage_system_1",
     "display_name": "储能系统·I",
     "tab": "wind",

@@ -26,6 +26,7 @@ describe("buildConfigBundle", () => {
     expect(fromRecords.bundle.facilities.length).toBe(fromSlice.bundle.facilities.length);
     expect(fromRecords.bundle.technologies.length).toBe(fromSlice.bundle.technologies.length);
     expect(fromRecords.bundle.gridLoss.loss_regional_mw).toBe(fromSlice.bundle.gridLoss.loss_regional_mw);
+    expect(fromRecords.bundle.superHydroSlots.length).toBe(fromSlice.bundle.superHydroSlots.length);
   });
 
   it("keeps grid loss config aligned with grid design ratios", () => {
@@ -45,6 +46,21 @@ describe("buildConfigBundle", () => {
     expect(uhv?.effect_type).toBe("grid");
     expect(uhv?.effect_target).toBe("trunk");
     expect(uhv?.effect_value.trunk_loss_profile).toBe("uhv");
+  });
+
+  it("keeps super hydro slots aligned with strategic map design", () => {
+    const config = loadTestConfig();
+    const superHydro = config.getTechnology("super_hydro");
+
+    expect(config.bundle.superHydroSlots).toHaveLength(2);
+    expect(config.bundle.superHydroSlots.map((slot) => slot.node_id)).toEqual([
+      "SUPER-HYDRO-1",
+      "SUPER-HYDRO-2"
+    ]);
+    expect(config.bundle.superHydroSlots.every((slot) => slot.unlock_tech_id === "super_hydro")).toBe(true);
+    expect(superHydro?.company_level_min).toBe(5);
+    expect(superHydro?.effect_type).toBe("strategic_project");
+    expect(superHydro?.effect_value.slot_count).toBe(2);
   });
 
   it("keeps storage tech effects aligned with design docs", () => {

@@ -138,6 +138,18 @@ describe("ScreenTechTree", () => {
     expect(snapshot.researchableTechIds).toContain("eco_nuclear");
   });
 
+  it("unlocks super hydro as a level-V hydro candidate", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    const screen = createScreenTechTree(controller);
+
+    const snapshot = screen.getSnapshot();
+    const superHydro = snapshot.technologies.find((item) => item.techId === "super_hydro");
+
+    expect(superHydro?.status).toBe("unlocked");
+    expect(snapshot.researchableTechIds).toContain("super_hydro");
+  });
+
   it("keeps wind_3 locked until storage_system_1 and wind_2 are both lit", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 3;

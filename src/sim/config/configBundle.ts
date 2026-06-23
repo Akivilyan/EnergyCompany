@@ -9,6 +9,7 @@ import type {
   GridLossConfig,
   LoanTierConfig,
   RegionConfig,
+  SuperHydroSlotConfig,
   TechnologyConfig,
   RunConfig
 } from "./configRepo.js";
@@ -28,7 +29,8 @@ export const V0_CONFIG_JSON_FILES = {
   difficulties: "difficulty_modifiers.json",
   adRewards: "ad_rewards.json",
   technologies: "technology_config.json",
-  gridLoss: "grid_loss_config.json"
+  gridLoss: "grid_loss_config.json",
+  superHydroSlots: "super_hydro_slots.json"
 } as const;
 
 export interface ConfigBundleInput {
@@ -43,6 +45,7 @@ export interface ConfigBundleInput {
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
   gridLoss: GridLossConfig;
+  superHydroSlots: SuperHydroSlotConfig[];
 }
 
 export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
@@ -57,7 +60,8 @@ export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
     difficulties: input.difficulties,
     adRewards: input.adRewards,
     technologies: input.technologies,
-    gridLoss: input.gridLoss
+    gridLoss: input.gridLoss,
+    superHydroSlots: input.superHydroSlots
   };
 }
 

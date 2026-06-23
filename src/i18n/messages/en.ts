@@ -176,12 +176,21 @@ export const en: Record<string, string> = {
   "hud.status.world_candidate_count": "Map targets {count}",
   "hud.btn.world_open_target": "Open Target",
   "hud.btn.world_cycle_target": "Cycle Target",
+  "hud.btn.super_hydro": "Super Hydro",
   "world.error.not_unlocked": "Target not unlocked",
+  "world.error.super_hydro_locked": "Super hydro locked",
+  "world.error.super_hydro_funds": "Not enough funds for super hydro",
+  "world.error.super_hydro_failed": "Super hydro build failed",
+  "world.error.no_super_hydro_slot": "No super hydro slot available",
   "world.success.open_region": "Opened region",
   "world.success.open_city": "Opened city",
+  "world.success.super_hydro_queued": "Super hydro queued",
   "world.action.selected_next_candidate": "Map target switched",
   "world.action.selected_only_candidate": "Only one map target",
   "world.action.no_candidate": "No map target available",
   "hud.world.target.region": "Region",
-  "hud.world.target.city": "City"
+  "hud.world.target.city": "City",
+  "hud.world.super_hydro.locked": "locked",
+  "hud.world.super_hydro.unlocked": "ready",
+  "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {output}MW"
 };

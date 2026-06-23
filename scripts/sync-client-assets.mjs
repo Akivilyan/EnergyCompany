@@ -20,7 +20,8 @@ const configFiles = [
   "difficulty_modifiers.json",
   "ad_rewards.json",
   "technology_config.json",
-  "grid_loss_config.json"
+  "grid_loss_config.json",
+  "super_hydro_slots.json"
 ];
 
 fs.rmSync(sharedDir, { recursive: true, force: true });

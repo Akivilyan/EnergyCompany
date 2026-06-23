@@ -11,6 +11,7 @@
     "cities.json",
     "facilities_slice.json",
     "grid_loss_config.json",
+    "super_hydro_slots.json",
     "technology_config.json",
     "doctrine_meta_tech_l1.json",
     "tutorial_run_config.json",

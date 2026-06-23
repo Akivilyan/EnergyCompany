@@ -64,6 +64,12 @@ function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null 
   return selected;
 }
 
+function getFirstAvailableSuperHydroSlot(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.world.getSnapshot().superHydro;
+  if (!snapshot.unlocked) return null;
+  return snapshot.slots.find((slot) => slot.status === "available")?.slotId ?? null;
+}
+
 export function getWorldHudSelectionSnapshot(boot: GameBootstrap): WorldHudSelectionSnapshot {
   const candidates = getCandidates(boot);
   const selected = ensureSelectedCandidate(boot);
@@ -79,6 +85,18 @@ export function formatSelectedWorldCandidate(boot: GameBootstrap): string | null
   return t("hud.status.world_selected_target", {
     type: selected.targetType === "city" ? t("hud.world.target.city") : t("hud.world.target.region"),
     region: selected.displayName
+  });
+}
+
+export function formatWorldSuperHydroStatus(boot: GameBootstrap): string | null {
+  const s = boot.app.screens.world.getSnapshot().superHydro;
+  if (s.totalSlots <= 0) return null;
+  return t("hud.status.world_super_hydro", {
+    state: s.unlocked ? t("hud.world.super_hydro.unlocked") : t("hud.world.super_hydro.locked"),
+    finished: s.finishedSlots,
+    building: s.buildingSlots,
+    total: s.totalSlots,
+    output: s.totalOutputMw
   });
 }
 
@@ -115,4 +133,22 @@ export function worldOpenSelectedTarget(boot: GameBootstrap): CityHudActionResul
   }
   boot.play.openScreen("screen_region", undefined, selected.regionId);
   return toActionResult(boot, true, null, "world.success.open_region");
+}
+
+export function worldQueueSuperHydro(boot: GameBootstrap): CityHudActionResult {
+  const slotId = getFirstAvailableSuperHydroSlot(boot);
+  if (!slotId) {
+    return toActionResult(boot, false, "conflict_in_progress", "world.error.no_super_hydro_slot");
+  }
+  const out = boot.app.controller.runCommand({ type: "queue_super_hydro", slotId });
+  if (!out.ok) {
+    const key =
+      out.error === "not_unlocked"
+        ? "world.error.super_hydro_locked"
+        : out.error === "insufficient_funds"
+          ? "world.error.super_hydro_funds"
+          : "world.error.super_hydro_failed";
+    return toActionResult(boot, false, out.error, key);
+  }
+  return toActionResult(boot, true, null, "world.success.super_hydro_queued");
 }

@@ -25,7 +25,8 @@ export function loadConfigRepoFromConfigDir(configDir: string): ConfigRepo {
     difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
     adRewards: readJson(path.join(configDir, "ad_rewards.json")),
     technologies: readJson(path.join(configDir, "technology_config.json")),
-    gridLoss: readJson(path.join(configDir, "grid_loss_config.json"))
+    gridLoss: readJson(path.join(configDir, "grid_loss_config.json")),
+    superHydroSlots: readJson(path.join(configDir, "super_hydro_slots.json"))
   };
   return ConfigRepo.fromBundle(bundle);
 }

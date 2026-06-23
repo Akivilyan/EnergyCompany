@@ -55,6 +55,7 @@ export {
 export {
   formatSelectedWorldCandidate,
   getWorldHudSelectionSnapshot,
+  worldQueueSuperHydro,
   worldCycleTargetCandidate,
   worldOpenSelectedTarget
 } from "./worldHudController.js";

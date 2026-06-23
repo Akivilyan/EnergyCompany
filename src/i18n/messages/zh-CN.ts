@@ -176,12 +176,21 @@ export const zhCN: Record<string, string> = {
   "hud.status.world_candidate_count": "地图候选 {count} 项",
   "hud.btn.world_open_target": "进入候选",
   "hud.btn.world_cycle_target": "切换地图",
+  "hud.btn.super_hydro": "超水电",
   "world.error.not_unlocked": "目标未解锁",
+  "world.error.super_hydro_locked": "超级水电未解锁",
+  "world.error.super_hydro_funds": "超级水电资金不足",
+  "world.error.super_hydro_failed": "超级水电建设失败",
+  "world.error.no_super_hydro_slot": "当前没有可用超级水电槽",
   "world.success.open_region": "已进入区域",
   "world.success.open_city": "已进入城市",
+  "world.success.super_hydro_queued": "已排队超级水电",
   "world.action.selected_next_candidate": "已切换地图候选",
   "world.action.selected_only_candidate": "当前只有一个地图候选",
   "world.action.no_candidate": "当前没有可选地图候选",
   "hud.world.target.region": "区域",
-  "hud.world.target.city": "城市"
+  "hud.world.target.city": "城市",
+  "hud.world.super_hydro.locked": "未解锁",
+  "hud.world.super_hydro.unlocked": "可建",
+  "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 出力{output}MW"
 };

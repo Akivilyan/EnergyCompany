@@ -140,9 +140,13 @@ export function syncOperableCities(state: GameState, config: ConfigRepo): void {
 
 function buildIslands(state: GameState): string[][] {
   const cityIds = Object.keys(state.cities);
+  const superHydroNodeIds = Object.values(state.superHydros ?? {})
+    .filter((slot) => slot.status === "finished")
+    .map((slot) => slot.nodeId);
+  const nodeIds = [...cityIds, ...superHydroNodeIds];
   const adj = new Map<string, Set<string>>();
-  for (const cityId of cityIds) {
-    adj.set(cityId, new Set());
+  for (const nodeId of nodeIds) {
+    adj.set(nodeId, new Set());
   }
   for (const link of Object.values(state.gridLinks)) {
     if (link.status !== "finished") continue;
@@ -152,11 +156,11 @@ function buildIslands(state: GameState): string[][] {
   }
   const visited = new Set<string>();
   const islands: string[][] = [];
-  for (const cityId of cityIds) {
-    if (visited.has(cityId)) continue;
+  for (const nodeId of nodeIds) {
+    if (visited.has(nodeId)) continue;
     const island: string[] = [];
-    const stack = [cityId];
-    visited.add(cityId);
+    const stack = [nodeId];
+    visited.add(nodeId);
     while (stack.length > 0) {
       const cur = stack.pop();
       if (!cur) continue;
@@ -223,6 +227,11 @@ function recalcSupply(state: GameState, config: ConfigRepo): void {
       localFullyEcoByCity.set(fac.cityId, false);
     }
   }
+  for (const slot of Object.values(state.superHydros ?? {})) {
+    if (slot.status !== "finished") continue;
+    localSupplyByCity.set(slot.nodeId, (localSupplyByCity.get(slot.nodeId) ?? 0) + slot.outputMw);
+    localFullyEcoByCity.set(slot.nodeId, true);
+  }
 
   const islands = buildIslands(state);
   for (const island of islands) {
@@ -231,6 +240,10 @@ function recalcSupply(state: GameState, config: ConfigRepo): void {
     let islandLoss = 0;
     const islandCityIds = new Set(island);
     for (const cityId of island) {
+      if (!state.cities[cityId]) {
+        islandSupply += localSupplyByCity.get(cityId) ?? 0;
+        continue;
+      }
       const city = state.cities[cityId];
       islandDemand += city.demandMw;
       islandSupply += localSupplyByCity.get(cityId) ?? 0;
@@ -245,6 +258,7 @@ function recalcSupply(state: GameState, config: ConfigRepo): void {
     const islandRate =
       islandDemand <= 0 ? 0 : Math.min(1, availableSupply / islandDemand);
     for (const cityId of island) {
+      if (!state.cities[cityId]) continue;
       const city = state.cities[cityId];
       const localSupply = localSupplyByCity.get(cityId) ?? 0;
       const effectiveSupply = Math.floor(city.demandMw * islandRate);
@@ -274,8 +288,20 @@ function runM2(state: GameState): SettlementStepReport {
       completed += 1;
     }
   }
+  for (const slot of Object.values(state.superHydros ?? {})) {
+    if (slot.status !== "building") continue;
+    if (slot.monthsRemaining > 0) {
+      slot.monthsRemaining -= 1;
+    }
+    if (slot.monthsRemaining <= 0) {
+      slot.status = "finished";
+      slot.monthsRemaining = 0;
+      completed += 1;
+    }
+  }
   return step("M2_grid_progress", `completed=${completed}`, {
-    grid_links_total: Object.keys(state.gridLinks).length
+    grid_links_total: Object.keys(state.gridLinks).length,
+    super_hydro_total: Object.keys(state.superHydros ?? {}).length
   });
 }
 

@@ -26,6 +26,17 @@ export interface WorldMapRegionItem {
   connectionStatus: WorldMapConnectionStatus;
 }
 
+export interface WorldMapSuperHydroSlotItem {
+  slotId: string;
+  nodeId: string;
+  displayName: string;
+  unlocked: boolean;
+  status: "available" | "building" | "finished";
+  monthsRemaining: number;
+  outputMw: number;
+  buildCost: number;
+}
+
 export interface WorldMapSnapshot {
   month: number;
   funds: number;
@@ -39,6 +50,15 @@ export interface WorldMapSnapshot {
     displayName: string;
     unlockCompanyLevel: number;
   } | null;
+  superHydro: {
+    unlocked: boolean;
+    totalSlots: number;
+    availableSlots: number;
+    buildingSlots: number;
+    finishedSlots: number;
+    totalOutputMw: number;
+    slots: WorldMapSuperHydroSlotItem[];
+  };
   regions: WorldMapRegionItem[];
 }
 
@@ -113,6 +133,21 @@ export class ScreenWorldMap {
       );
 
     const nextUnlockRegion = regions.find((region) => !region.unlocked) ?? null;
+    const superHydroUnlocked = state.companyLevel >= 5 && state.litTechIds.includes("super_hydro");
+    const superHydroSlots: WorldMapSuperHydroSlotItem[] = config.bundle.superHydroSlots.map((slot) => {
+      const runtime = state.superHydros?.[slot.slot_id];
+      const status: WorldMapSuperHydroSlotItem["status"] = runtime?.status ?? "available";
+      return {
+        slotId: slot.slot_id,
+        nodeId: slot.node_id,
+        displayName: slot.display_name,
+        unlocked: superHydroUnlocked,
+        status,
+        monthsRemaining: runtime?.monthsRemaining ?? slot.build_duration_months,
+        outputMw: runtime?.outputMw ?? slot.output_capacity_mw,
+        buildCost: slot.build_cost_total
+      };
+    });
 
     return {
       month: state.currentMonth,
@@ -129,6 +164,17 @@ export class ScreenWorldMap {
             unlockCompanyLevel: nextUnlockRegion.unlockCompanyLevel
           }
         : null,
+      superHydro: {
+        unlocked: superHydroUnlocked,
+        totalSlots: superHydroSlots.length,
+        availableSlots: superHydroSlots.filter((slot) => slot.status === "available").length,
+        buildingSlots: superHydroSlots.filter((slot) => slot.status === "building").length,
+        finishedSlots: superHydroSlots.filter((slot) => slot.status === "finished").length,
+        totalOutputMw: superHydroSlots
+          .filter((slot) => slot.status === "finished")
+          .reduce((sum, slot) => sum + slot.outputMw, 0),
+        slots: superHydroSlots
+      },
       regions
     };
   }
