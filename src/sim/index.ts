@@ -8,7 +8,11 @@ export {
 export type { ConfigBundleInput } from "./config/configBundle.js";
 export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
-export { getGridLinkBuildCost, getGridLinkLossMw } from "./core/technologyEffects.js";
+export {
+  getGridLinkBuildCost,
+  getGridLinkLossMw,
+  getLoanTierLevelBonus
+} from "./core/technologyEffects.js";
 export { settleNextMonth } from "./core/settleNextMonth.js";
 export { serializeState, deserializeState } from "./core/serialization.js";
 export type { GameState, RunResult } from "./types/gameState.js";

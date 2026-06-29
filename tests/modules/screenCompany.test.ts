@@ -53,6 +53,20 @@ describe("ScreenCompany", () => {
     expect(out.after.activeLoan).toBeNull();
   });
 
+  it("unlocks one higher loan tier after eng_cashflow is lit", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+    controller.state.litTechIds.push("eng_cashflow");
+    const screen = createScreenCompany(controller);
+
+    const loan5 = screen.getSnapshot().loanTierOptions.find((item) => item.loanId === "loan_5");
+    expect(loan5?.unlocked).toBe(true);
+
+    const out = screen.applyLoan("loan_5");
+    expect(out.result.ok).toBe(true);
+    expect(out.after.activeLoan?.loanId).toBe("loan_5");
+  });
+
   it("returns recent monthly cashflows from settlement reports", () => {
     const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);

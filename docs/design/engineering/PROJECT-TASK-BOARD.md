@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.51.0
+version: 1.52.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,9 +56,9 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-06-29 | `FAST-01` 补齐 IV 级经营科技 `eng_cashflow`：点亮后贷款可用档位 +1，HUD 与核心校验共用同一口径 |
 | 2026-06-29 | 删除 `PROJECT-LOG.md`：执行流水、验证记录和版本记录改由 Git commit 与最终回复承接 |
 | 2026-06-29 | `OPS-01` 文档瘦身：主看板保留当前态和下一步，流水与验证记录改由 Git 承接 |
-| 2026-06-29 | `FAST-01` 补齐 `cancel_grid_link`：在建区域线/主干线可退款取消，完工线路拒绝取消，区域开发 HUD 增加“取消线”入口 |
 
 ## 6. 文档分工
 
@@ -75,3 +75,4 @@ open_questions: []
 |------|------|------|
 | 1.50.0 | 2026-06-29 | 拆分主看板职责：主看板只保留当前状态、下一步和最近摘要 |
 | 1.51.0 | 2026-06-29 | 删除 `PROJECT-LOG.md` 入口：流水和验证记录改由 Git 历史与提交说明承接 |
+| 1.52.0 | 2026-06-29 | 记录 `eng_cashflow` 经营科技落地 |

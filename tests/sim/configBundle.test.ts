@@ -97,4 +97,14 @@ describe("buildConfigBundle", () => {
     expect(dispatchTech?.effect_target).toBe("grid_loss");
     expect(dispatchTech?.effect_value.regional_loss_pct).toBe(-10);
   });
+
+  it("keeps cashflow loan tier modifier aligned with tech design", () => {
+    const config = loadTestConfig();
+    const cashflowTech = config.getTechnology("eng_cashflow");
+
+    expect(cashflowTech?.company_level_min).toBe(4);
+    expect(cashflowTech?.effect_type).toBe("modifier");
+    expect(cashflowTech?.effect_target).toBe("loan");
+    expect(cashflowTech?.effect_value.loan_tier_bonus).toBe(1);
+  });
 });

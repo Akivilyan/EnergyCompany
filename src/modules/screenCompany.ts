@@ -1,4 +1,5 @@
 import type { GameState, SimResult } from "../sim/index.js";
+import { getLoanTierLevelBonus } from "../sim/index.js";
 import type { LoanTierConfig } from "../sim/config/configRepo.js";
 import type { SettlementReport, SettlementStepId } from "../sim/types/settlement.js";
 import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
@@ -123,7 +124,7 @@ function metric(report: SettlementReport, stepId: SettlementStepId, key: string)
   return step.metrics[key] ?? 0;
 }
 
-function toLoanOption(level: number, tier: LoanTierConfig): CompanyLoanTierOption {
+function toLoanOption(effectiveLevel: number, tier: LoanTierConfig): CompanyLoanTierOption {
   const unlockLevel = tier.unlock_level ?? DEFAULT_UNLOCK_LEVEL;
   return {
     loanId: tier.loan_id,
@@ -132,7 +133,7 @@ function toLoanOption(level: number, tier: LoanTierConfig): CompanyLoanTierOptio
     monthlyPayment: tier.monthly_payment_approx,
     totalInterest: tier.total_interest ?? 0,
     unlockLevel,
-    unlocked: level >= unlockLevel
+    unlocked: effectiveLevel >= unlockLevel
   };
 }
 
@@ -191,8 +192,10 @@ export class ScreenCompany {
   getSnapshot(): CompanySnapshot {
     const state = this.controller.state;
     const activeLoan = Object.values(state.loans)[0] ?? null;
+    const effectiveLoanLevel =
+      state.companyLevel + getLoanTierLevelBonus(state, this.controller.config);
     const loanTierOptions = this.controller.config.bundle.loanTiers.map((tier) =>
-      toLoanOption(state.companyLevel, tier)
+      toLoanOption(effectiveLoanLevel, tier)
     );
     return {
       month: state.currentMonth,

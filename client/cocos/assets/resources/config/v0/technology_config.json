@@ -416,6 +416,19 @@
     "effect_value": { "regional_loss_pct": -10 }
   },
   {
+    "tech_id": "eng_cashflow",
+    "display_name": "现金流管理",
+    "tab": "engineering",
+    "company_level_min": 4,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 66,
+    "research_months": 3,
+    "effect_type": "modifier",
+    "effect_target": "loan",
+    "effect_value": { "loan_tier_bonus": 1 }
+  },
+  {
     "tech_id": "eng_risk_reserve",
     "display_name": "风险准备金",
     "tab": "engineering",

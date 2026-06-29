@@ -10,6 +10,7 @@ import {
   getFacilityTierSpec,
   getGridLinkBuildCost,
   getGridLinkLossMw,
+  getLoanTierLevelBonus,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
@@ -321,9 +322,11 @@ export function dispatch(
         return err("not_found", "loan tier not found");
       }
       const unlockLevel = tier.unlock_level ?? 1;
-      if (next.companyLevel < unlockLevel) {
+      const effectiveLoanLevel = next.companyLevel + getLoanTierLevelBonus(next, config);
+      if (effectiveLoanLevel < unlockLevel) {
         return err("not_unlocked", "loan tier not unlocked for current company level", {
           company_level: next.companyLevel,
+          effective_loan_level: effectiveLoanLevel,
           required_company_level: unlockLevel,
           loan_id: tier.loan_id
         });

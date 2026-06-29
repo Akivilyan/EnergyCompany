@@ -197,6 +197,10 @@ export function getDisasterPenalty(
   return applyPercent(basePenalty, sumModifierPercent(state, config, "disaster_cash_pct"));
 }
 
+export function getLoanTierLevelBonus(state: GameState, config: ConfigRepo): number {
+  return Math.max(0, sumModifierPercent(state, config, "loan_tier_bonus", "loan"));
+}
+
 export function getEcoCitySocialValue(
   state: GameState,
   config: ConfigRepo,
