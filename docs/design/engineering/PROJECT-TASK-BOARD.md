@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.41.0
+version: 1.42.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-23 | `FAST-01` V 级区域经营定位反馈子步：区域页与大地图详情补入 `design_role` 本地化经营定位，并显示建设槽、河流城市数与核电资格城市数；`MAP-06~08` 能直接区分沿海工业外送、高原水风基地、边疆风光调峰等后半程经营差异，未定义定位的都会保持“待定”提示 | `src/sim/config/configRepo.ts` `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 区域供能结构反馈子步：区域页与大地图区域详情补入本地供给、跨区受入与供能缺口汇总；`MAP-06~08` / `MET-B` 在接入前后可直接看出本地资源、外送依赖和缺口压力差异，不再只看总供给率 | `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图主干进度反馈子步：世界地图 HUD 的区域详情在主干在建/贯通后不再只显示状态名，会同步展示剩余月份与线损，让玩家在大地图层直接判断跨区接入的等待成本和损耗 | `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图区域供给摘要子步：世界地图区域快照补入区域实时有效供给、供给率与当前主干 link 摘要；HUD 区域详情从只看负荷改为显示 `供给/需求`，让后半程外省在接入、月结后能直接看到供能缺口变化 | `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
@@ -173,3 +174,4 @@ open_questions: []
 | 1.39.0 | 2026-06-23 | 补记 `FAST-01` 大地图区域供给摘要子步：区域供给/需求与主干摘要进入世界地图快照 |
 | 1.40.0 | 2026-06-23 | 补记 `FAST-01` 大地图主干进度反馈子步：区域详情显示主干剩余月份与线损 |
 | 1.41.0 | 2026-06-23 | 补记 `FAST-01` 区域供能结构反馈子步：区域/大地图 HUD 显示本地供给、受入与缺口 |
+| 1.42.0 | 2026-06-23 | 补记 `FAST-01` V 级区域经营定位反馈子步：区域/大地图 HUD 显示设计文档已有经营定位、建设槽、河流与核电资格 |

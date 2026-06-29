@@ -64,6 +64,13 @@ function formatRichResources(resources: ResourceKind[]): string {
     : t("resource.none");
 }
 
+function formatRegionDesignRole(role: string | null): string {
+  if (!role) return t("region.role.unknown");
+  const key = `region.role.${role}`;
+  const label = t(key);
+  return label === key ? role : label;
+}
+
 function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): number | null {
   const row = boot.app.controller.config.bundle.companyLevels.find(
     (item) => item.level === companyLevel + 1
@@ -138,9 +145,13 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       local: s.totalLocalSupplyMw,
       import: s.totalNetImportMw,
       gap: s.supplyGapMw,
+      slots: s.totalBuildSlots,
+      river: s.riverCityCount,
+      nuclear: s.nuclearEligibleCityCount,
       sv: s.totalBaseSocialValue,
       resources: formatRichResources(s.richResources)
     }),
+    t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
     selectedLink
   );
@@ -223,8 +234,12 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           import: focusRegion.totalNetImportMw,
           supply: focusRegion.totalEffectiveSupplyMw,
           gap: focusRegion.supplyGapMw,
+          slots: focusRegion.totalBuildSlots,
+          river: focusRegion.riverCityCount,
+          nuclear: focusRegion.nuclearEligibleCityCount,
           ratio: Math.round(focusRegion.supplyRatio * 100),
           sv: focusRegion.totalBaseSocialValue,
+          role: formatRegionDesignRole(focusRegion.designRole),
           resources: formatRichResources(focusRegion.richResources),
           trunk: formatWorldConnectionStatus(focusRegion)
         })

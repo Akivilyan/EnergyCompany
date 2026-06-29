@@ -39,11 +39,15 @@ export interface RegionLinkCandidate {
 export interface ScreenRegionSnapshot {
   regionId: string;
   regionName: string;
+  designRole: string | null;
   totalDemandMw: number;
   totalLocalSupplyMw: number;
   totalNetImportMw: number;
   totalEffectiveSupplyMw: number;
   supplyGapMw: number;
+  totalBuildSlots: number;
+  riverCityCount: number;
+  nuclearEligibleCityCount: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
   month: number;
@@ -129,6 +133,7 @@ export class ScreenRegion {
     return {
       regionId: this.regionId,
       regionName: regionConfig?.display_name ?? this.regionId,
+      designRole: regionConfig?.design_role ?? null,
       totalDemandMw,
       totalLocalSupplyMw: cities.reduce((sum, city) => sum + city.localSupplyMw, 0),
       totalNetImportMw: cities.reduce((sum, city) => {
@@ -137,6 +142,9 @@ export class ScreenRegion {
       }, 0),
       totalEffectiveSupplyMw,
       supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
+      totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
+      riverCityCount: regionCities.filter((city) => city.has_river).length,
+      nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length,
       totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
       richResources,
       month: this.controller.state.currentMonth,

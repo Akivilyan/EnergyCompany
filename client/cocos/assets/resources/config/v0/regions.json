@@ -57,6 +57,7 @@
     "region_id": "MET-B",
     "region_type": "metropolis",
     "unlock_company_level": 5,
+    "design_role": "terminal_metropolis_load_hub",
     "display_name": "特大城B（终局都会）"
   }
 ]

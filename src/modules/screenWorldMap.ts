@@ -14,6 +14,7 @@ export interface WorldMapRegionItem {
   regionId: string;
   displayName: string;
   regionType: string;
+  designRole: string | null;
   unlockCompanyLevel: number;
   unlocked: boolean;
   totalCities: number;
@@ -23,6 +24,9 @@ export interface WorldMapRegionItem {
   totalNetImportMw: number;
   totalEffectiveSupplyMw: number;
   supplyGapMw: number;
+  totalBuildSlots: number;
+  riverCityCount: number;
+  nuclearEligibleCityCount: number;
   supplyRatio: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
@@ -115,6 +119,9 @@ export class ScreenWorldMap {
           return sum + (runtime?.effectiveSupplyMw ?? 0);
         }, 0);
         const supplyGapMw = Math.max(0, totalDemandMw - totalEffectiveSupplyMw);
+        const totalBuildSlots = regionCities.reduce((sum, city) => sum + city.build_slot_count, 0);
+        const riverCityCount = regionCities.filter((city) => city.has_river).length;
+        const nuclearEligibleCityCount = regionCities.filter((city) => city.is_nuclear_eligible).length;
 
         let connectionStatus: WorldMapConnectionStatus;
         let trunkLinkId: string | null = null;
@@ -147,6 +154,7 @@ export class ScreenWorldMap {
           regionId: region.region_id,
           displayName: region.display_name ?? region.region_id,
           regionType: region.region_type ?? "unknown",
+          designRole: region.design_role ?? null,
           unlockCompanyLevel: region.unlock_company_level,
           unlocked,
           totalCities: regionCities.length,
@@ -156,6 +164,9 @@ export class ScreenWorldMap {
           totalNetImportMw,
           totalEffectiveSupplyMw,
           supplyGapMw,
+          totalBuildSlots,
+          riverCityCount,
+          nuclearEligibleCityCount,
           supplyRatio: totalDemandMw > 0 ? totalEffectiveSupplyMw / totalDemandMw : 0,
           totalBaseSocialValue: regionCities.reduce(
             (sum, city) => sum + city.city_base_social_value,

@@ -135,12 +135,14 @@ describe("clientHudDisplay", () => {
   });
 
   it("shows level-V region demand, SV, and resource profile in region hud", () => {
+    setLocale("en");
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;
     boot.play.openScreen("screen_region", undefined, "MAP-06");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines).toContain("负荷1920MW · 本地0/受入0/缺口1920MW · SV38 · 富集风/光");
+    expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar");
+    expect(display.detailLines).toContain("Operating role: coastal industrial export");
   });
 
   it("shows grid_regional-adjusted region link cost in hud", () => {
@@ -178,6 +180,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("主干线可建");
     expect(display.detailLines[1]).toContain("供给0/1440MW(0%)");
     expect(display.detailLines[1]).toContain("本地0/受入0/缺口1440MW");
+    expect(display.detailLines[1]).toContain("定位资源外送省");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 
@@ -212,6 +215,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("Trunk building");
     expect(display.detailLines[1]).toContain("1m");
     expect(display.detailLines[1]).toContain("loss 750MW");
+    expect(display.detailLines[1]).toContain("slots 13/river 1/nuclear 1");
   });
 
   it("updates world map operating profile when cycling the selected target", () => {
@@ -229,6 +233,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("省六");
     expect(display.detailLines[1]).toContain("供给0/1920MW(0%)");
     expect(display.detailLines[1]).toContain("本地0/受入0/缺口1920MW");
+    expect(display.detailLines[1]).toContain("定位沿海工业外送");
     expect(display.detailLines[1]).toContain("富集风/光");
   });
 

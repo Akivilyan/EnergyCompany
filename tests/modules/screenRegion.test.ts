@@ -174,10 +174,14 @@ describe("ScreenRegion", () => {
     const snapshot = screen.getSnapshot();
     expect(snapshot.cities).toHaveLength(3);
     expect(snapshot.totalDemandMw).toBe(1920);
+    expect(snapshot.designRole).toBe("coastal_industrial_export_province");
     expect(snapshot.totalLocalSupplyMw).toBe(0);
     expect(snapshot.totalNetImportMw).toBe(0);
     expect(snapshot.totalEffectiveSupplyMw).toBe(0);
     expect(snapshot.supplyGapMw).toBe(1920);
+    expect(snapshot.totalBuildSlots).toBe(13);
+    expect(snapshot.riverCityCount).toBe(0);
+    expect(snapshot.nuclearEligibleCityCount).toBe(1);
     expect(snapshot.totalBaseSocialValue).toBe(38);
     expect(snapshot.richResources).toEqual(["wind", "solar"]);
     expect(

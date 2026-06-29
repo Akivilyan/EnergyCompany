@@ -46,6 +46,7 @@ export interface CityConfig {
   region_id?: string;
   base_demand_mw: number;
   city_base_social_value: number;
+  build_slot_count: number;
   has_river: boolean;
   unlock_company_level: number;
   city_type?: string;
