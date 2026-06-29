@@ -9,6 +9,7 @@ import {
   getFacilityBuildTierMax,
   getFacilityTierSpec,
   getGridLinkBuildCost,
+  getGridLinkLossMw,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
@@ -35,13 +36,6 @@ function cloneState(state: GameState): GameState {
 
 function makeUndirectedLinkKey(fromCityId: string, toCityId: string): string {
   return [fromCityId, toCityId].sort().join("::");
-}
-
-function getGridLinkLossMw(config: ConfigRepo, linkType: "region" | "trunk", litTechIds: string[]): number {
-  if (linkType === "region") return config.bundle.gridLoss.loss_regional_mw;
-  return litTechIds.includes("uhv_transmission")
-    ? config.bundle.gridLoss.loss_backbone_uhv_mw
-    : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
 }
 
 function getGridNodeRegion(config: ConfigRepo, state: GameState, nodeId: string): string | null {
@@ -265,7 +259,7 @@ export function dispatch(
         linkType: command.linkType,
         status: "building",
         monthsRemaining: GRID_LINK_BUILD_MONTHS,
-        lossMw: getGridLinkLossMw(config, command.linkType, next.litTechIds)
+        lossMw: getGridLinkLossMw(next, config, command.linkType)
       };
       break;
     }

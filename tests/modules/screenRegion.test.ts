@@ -53,6 +53,23 @@ describe("ScreenRegion", () => {
     expect(screen.getSnapshot().gridLinkCost).toBe(6);
   });
 
+  it("shows eng_grid_dispatch-adjusted regional loss in link candidates", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 3;
+    const screen = createScreenRegion(controller);
+
+    const before = screen
+      .getSnapshot()
+      .linkCandidates.find((candidate) => candidate.linkType === "region");
+    expect(before?.lossMw).toBe(125);
+
+    controller.state.litTechIds.push("eng_grid_dispatch");
+    const after = screen
+      .getSnapshot()
+      .linkCandidates.find((candidate) => candidate.linkType === "region");
+    expect(after?.lossMw).toBe(112);
+  });
+
   it("shows grid_backbone-adjusted trunk candidate cost in snapshot", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 4;

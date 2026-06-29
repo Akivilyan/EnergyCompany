@@ -160,6 +160,22 @@ export function getGridLinkBuildCost(
   return applyPercent(baseCost, percentDelta, 1);
 }
 
+export function getGridLinkLossMw(
+  state: GameState,
+  config: ConfigRepo,
+  linkType: "region" | "trunk"
+): number {
+  if (linkType === "trunk") {
+    return state.litTechIds.includes("uhv_transmission")
+      ? config.bundle.gridLoss.loss_backbone_uhv_mw
+      : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
+  }
+  return applyPercent(
+    config.bundle.gridLoss.loss_regional_mw,
+    sumModifierPercent(state, config, "regional_loss_pct", "grid_loss")
+  );
+}
+
 export function getMonthlyOperatingCost(
   state: GameState,
   config: ConfigRepo,

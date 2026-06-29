@@ -13,6 +13,7 @@ import {
   getFacilityEcoStatus,
   getFacilityTierSpec,
   getEcoCitySocialValue,
+  getGridLinkLossMw,
   getMonthlyOperatingCost,
   hasStorageOutputBoost,
   syncFacilityRuntimeTiers
@@ -177,14 +178,8 @@ function buildIslands(state: GameState): string[][] {
 }
 
 function syncGridLinkLosses(state: GameState, config: ConfigRepo): void {
-  const trunkLoss = state.litTechIds.includes("uhv_transmission")
-    ? config.bundle.gridLoss.loss_backbone_uhv_mw
-    : config.bundle.gridLoss.loss_backbone_pre_uhv_mw;
   for (const link of Object.values(state.gridLinks)) {
-    link.lossMw =
-      link.linkType === "region"
-        ? config.bundle.gridLoss.loss_regional_mw
-        : trunkLoss;
+    link.lossMw = getGridLinkLossMw(state, config, link.linkType);
   }
 }
 

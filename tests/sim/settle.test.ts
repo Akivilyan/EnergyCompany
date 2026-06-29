@@ -327,6 +327,29 @@ describe("settleNextMonth", () => {
     );
   });
 
+  it("applies eng_grid_dispatch regional loss reduction when queueing region links", () => {
+    const config = loadTestConfig();
+    const state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 3;
+    state.litTechIds.push("eng_grid_dispatch");
+
+    const result = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(112);
+  });
+
   it("applies grid_backbone trunk cost discount to grid link dispatch", () => {
     const config = loadTestConfig();
     const state = withCity(createInitialState(config), config, "CITY-MAP03-01");
@@ -473,6 +496,39 @@ describe("settleNextMonth", () => {
     expect(month.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(125);
     expect(month.value.state.cities["CITY-START"].effectiveSupplyMw).toBe(570);
     expect(month.value.state.cities["CITY-MAP01-02"].effectiveSupplyMw).toBe(224);
+  });
+
+  it("refreshes existing region links with smart dispatch loss reduction during settle", () => {
+    const config = loadTestConfig();
+    let state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 3;
+    state.litTechIds.push("eng_grid_dispatch");
+    state.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 920,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    state.gridLinks["CITY-MAP01-02::CITY-START"] = {
+      linkId: "CITY-MAP01-02::CITY-START",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-MAP01-02",
+      linkType: "region",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: config.bundle.gridLoss.loss_regional_mw
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(112);
+    expect(month.value.state.cities["CITY-START"].effectiveSupplyMw).toBe(579);
+    expect(month.value.state.cities["CITY-MAP01-02"].effectiveSupplyMw).toBe(228);
   });
 
   it("M4 keeps cities isolated when no finished link exists", () => {

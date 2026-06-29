@@ -403,6 +403,19 @@
     "effect_value": { "opex_pct": -10 }
   },
   {
+    "tech_id": "eng_grid_dispatch",
+    "display_name": "智能调度",
+    "tab": "engineering",
+    "company_level_min": 3,
+    "requires_lit": [],
+    "starts_lit": false,
+    "research_cost": 54,
+    "research_months": 3,
+    "effect_type": "modifier",
+    "effect_target": "grid_loss",
+    "effect_value": { "regional_loss_pct": -10 }
+  },
+  {
     "tech_id": "eng_risk_reserve",
     "display_name": "风险准备金",
     "tab": "engineering",

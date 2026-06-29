@@ -87,4 +87,14 @@ describe("buildConfigBundle", () => {
     expect(ecoNuclear?.effect_type).toBe("eco_sync");
     expect(ecoNuclear?.effect_target).toBe("all_nuclear");
   });
+
+  it("keeps smart dispatch regional loss modifier aligned with tech design", () => {
+    const config = loadTestConfig();
+    const dispatchTech = config.getTechnology("eng_grid_dispatch");
+
+    expect(dispatchTech?.company_level_min).toBe(3);
+    expect(dispatchTech?.effect_type).toBe("modifier");
+    expect(dispatchTech?.effect_target).toBe("grid_loss");
+    expect(dispatchTech?.effect_value.regional_loss_pct).toBe(-10);
+  });
 });

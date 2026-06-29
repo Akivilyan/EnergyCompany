@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.47.0
+version: 1.48.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-29 | `FAST-01` 智能调度区域线损子步：按 `07-tech` 已定义效果补齐 `eng_grid_dispatch` 科技，点亮后区域线损从 125MW 按 -10% 降到 112MW；新建区域线、既有区域线月结刷新与区域 HUD 候选展示统一走同一计算口径，主干线仍只受特高压档影响 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/sim/index.ts` `src/modules/screenRegion.ts` `tests/sim/configBundle.test.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client:fast` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-29 | `OPS-01` 全局规则归位修正：确认基础输出结构属于 `C:\Users\DCZX2\.codex\AGENTS.md` 全局规则，而非项目规则；项目 `AGENTS.md` 恢复为 Energy Company 专用约束，全局文件补充“适用于所有新窗口与所有项目”说明 | `C:\Users\DCZX2\.codex\AGENTS.md` `AGENTS.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
 | 2026-06-29 | `OPS-01` 新会话规则遵守修复：将 `AGENTS.md` 的启动要求前置为硬门槛，明确新开窗口必须先读本文件与看板、改动后按规则验证/提交，并在用户指出未遵守时优先回查协作入口 | `AGENTS.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
 | 2026-06-29 | `FAST-01` 城市经营画像 HUD 子步：城市页补入当前城市负荷、建设槽、临水/核电资格、经营定位与富集资源；进入 `MAP-06~08` / `MET-B` 的单城后，玩家能直接区分沿海工业枢纽、高原水电枢纽、边疆综合平衡与终局都会等后半程差异；未定义的化石运维折扣仍不擅自落地 | `src/sim/config/configRepo.ts` `src/app/cityHudController.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/cityHudController.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 首次因 HUD 新增首行导致旧断言索引失败，修正后提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client:fast` 提权通过 |
@@ -184,3 +185,4 @@ open_questions: []
 | 1.45.0 | 2026-06-29 | 补记 `FAST-01` 城市经营画像 HUD 子步：城市页显示负荷、槽位、临水/核电资格、经营定位与富集资源 |
 | 1.46.0 | 2026-06-29 | 补记 `OPS-01` 新会话规则遵守修复：`AGENTS.md` 前置启动硬门槛，要求新 Agent 先读协作入口与看板 |
 | 1.47.0 | 2026-06-29 | 补记 `OPS-01` 全局规则归位修正：基础输出结构归入用户级全局 `AGENTS.md`，项目文件恢复项目专用 |
+| 1.48.0 | 2026-06-29 | 补记 `FAST-01` 智能调度区域线损子步：`eng_grid_dispatch` 进入真实区域线损结算与 HUD 候选展示 |
