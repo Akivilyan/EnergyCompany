@@ -29,6 +29,7 @@ npm.cmd run doctor
 npm.cmd test
 npm.cmd run build
 npm.cmd run lint:boundaries
+npm.cmd run verify:client:fast
 npm.cmd run verify:client
 ```
 
@@ -44,6 +45,8 @@ cmd.exe /c npm run doctor:full
 说明：
 - `doctor`：检查项目主链路工具与外部 GUI 路径。
 - `doctor:full`：串行跑 `doctor`、`build`、`lint:boundaries`、`test`、`verify:client`，用于区分环境故障与仓库现有代码错误。
+- `verify:client:fast`：日常客户端快验，覆盖工程预检与 HUD 冒烟。
+- `verify:client`：阶段收口 / 真机前置 / 微信包排障使用。
 
 按改动类型选择更小命令，规则见 `docs/design/engineering/codex-project-rules.md`。
 

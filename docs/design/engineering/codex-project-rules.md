@@ -2,7 +2,7 @@
 id: engineering/codex-project-rules
 title: Codex 项目规则
 status: draft
-version: 0.2.0
+version: 0.3.0
 sources:
   - AGENTS.md
   - docs/design/engineering/architecture.md
@@ -55,7 +55,8 @@ infra 通过端口注入
 | 类型、入口装配、编译风险高 | `npm run build` |
 | 层间引用或边界 | `npm run lint:boundaries` |
 | `docs/design/data/vertical-slice-v0/` | `npm run build:client` |
-| `client/cocos/`、客户端脚本、HUD、场景 | `npm run verify:client` |
+| `client/cocos/`、客户端脚本、HUD、场景日常改动 | `npm run verify:client:fast` |
+| 客户端阶段收口、真机前置、微信包排障 | `npm run verify:client` |
 | 预览页探测 | `npm run check:cocos-preview` |
 | 仅文档 / 看板 / 规则 | 说明无需跑测试 |
 
@@ -83,7 +84,9 @@ infra 通过端口注入
 ### 配置同步守则
 
 - 改 `docs/design/data/vertical-slice-v0/` 后，至少跑 `npm run build:client`
-- 若配置影响客户端联调，再补 `npm run verify:client`
+- 日常连续改配置时可开 `npm run build:client:watch`
+- 若配置影响客户端联调，先补 `npm run verify:client:fast`
+- 阶段收口或真机前置，再跑 `npm run verify:client`
 
 ### 格式与行尾守则
 
@@ -94,8 +97,18 @@ infra 通过端口注入
 
 ### 客户端验证守则
 
-- Cocos / HUD 改动，默认先跑 `npm run verify:client`
+- Cocos / HUD 日常改动，默认先跑 `npm run verify:client:fast`
+- `npm run verify:client` 保留为 full：含存档恢复、事件恢复与微信包新鲜度检查
 - 需要探测编辑器预览是否起来，再跑 `npm run check:cocos-preview`
+
+### 客户端同步守则
+
+- `npm run build:client` 默认增量同步：重打共享包，只复制内容变化的 v0 JSON
+- `npm run build:client:bundle` 只重打共享包，适合只改 `src/`
+- `npm run build:client:config` 只同步配置，适合只改 v0 JSON
+- `npm run build:client:watch` 用于连续编码，不作为收口命令
+- `npm run build:client:clean` 用于 Cocos 资源缓存异常、shared 包疑似陈旧或收口前确认
+- `--skip-bundle` / `--skip-config` 只用于明确知道另一侧未变化的本地加速，禁止作为提交前验证口径
 
 ### 看板更新守则
 

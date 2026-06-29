@@ -19,6 +19,8 @@ const GAME_CLIENT_MJS_META = {
   userData: {}
 };
 
+fs.mkdirSync(sharedDir, { recursive: true });
+
 await esbuild.build({
   entryPoints: [entry],
   bundle: true,
@@ -31,7 +33,6 @@ await esbuild.build({
   logLevel: "info"
 });
 
-fs.mkdirSync(sharedDir, { recursive: true });
 fs.writeFileSync(outfileMeta, `${JSON.stringify(GAME_CLIENT_MJS_META, null, 2)}\n`, "utf8");
 
 for (const stale of ["game-client.mjs.map", "game-client.mjs.map.meta"]) {

@@ -2,7 +2,7 @@
 id: engineering/cocos-client-setup
 title: Cocos 客户端工程初始化清单
 status: draft
-version: 0.9.0
+version: 0.10.0
 sources:
   - docs/design/engineering/stack.md
   - client/cocos/scene-registry.json
@@ -19,12 +19,28 @@ open_questions: []
 npm run verify:client
 ```
 
-（等价于 `build:client` + 工程预检 + T50 HUD 全屏冒烟 + hide 存档恢复，**不打开 Cocos** 也能验证逻辑与资源。）
+（等价于 `build:client` + 工程预检 + T50 HUD 全屏冒烟 + hide 存档恢复 + 微信包新鲜度检查，**不打开 Cocos** 也能验证逻辑与资源。）
+
+日常编码优先走快路径：
+
+```bash
+npm run build:client:watch
+npm run verify:client:fast
+```
+
+- `build:client`：默认增量同步，只重打共享包，只复制内容变化的 v0 JSON。
+- `build:client:bundle`：只重打 `assets/shared/game-client.mjs`，用于只改 `src/` 的快速同步。
+- `build:client:config`：只复制内容变化的 v0 JSON，用于只改配置表的快速同步。
+- `build:client:clean`：清空并重建 `assets/shared`，用于 Cocos 资源缓存异常或收口前确认。
+- `build:client:watch`：监听 `src/` 与 `vertical-slice-v0` 配置，变更后自动同步客户端资源。
+- `verify:client:fast`：工程预检 + HUD 冒烟，不跑存档恢复，也不检查微信构建产物。
+- `verify:client`：阶段收口 / 真机前置 / 微信包排障使用。
 
 分项脚本：
 
 | 命令 | 用途 |
 |------|------|
+| `npm run verify:client:fast` | 日常客户端快验：工程预检 + HUD 冒烟 |
 | `npm run sim:cocos-hud-close` | 仅 T50 静态检查 + HUD 冒烟 |
 | `npm run sim:client-sync-spike` | 冒烟 + T49 存档恢复（playtest 子步骤） |
 | `npm run sim:cocos-init-spike` | 仅工程/资源预检 |
@@ -55,7 +71,7 @@ npm run check:cocos-preview
 | 工程路径 | 仓库内 **`client/cocos`**（含 `package.json` 的目录；不要选到 `client` 上一层） |
 | 工程骨架 | 已含 `package.json`、`settings/`、`.creator/`；**不要**在 Dashboard 新建空项目代替 |
 | 首次打开 | 编辑器会自动生成 `library/`、`temp/`（已在 `.gitignore`，勿提交） |
-| 同步   | 每次拉代码或改 `src/` 后执行 `npm run build:client`；改 `client/cocos/assets/scripts/*.ts` 后还必须让 Cocos 重新编译脚本并重新构建微信小游戏 |
+| 同步   | 日常改 `src/` 或 v0 JSON 时开 `npm run build:client:watch`；只改 `src/` 可跑 `npm run build:client:bundle`；只改配置可跑 `npm run build:client:config`；单次全同步用 `npm run build:client`；缓存异常再用 `npm run build:client:clean`；改 `client/cocos/assets/scripts/*.ts` 后还必须让 Cocos 重新编译脚本，真机前再重新构建微信小游戏 |
 
 
 ---
@@ -250,5 +266,4 @@ Console 红错：
 | 0.7.0 | 2026-06-18 | 修正构建日志判断：`SIGTERM` 不单独阻塞，启动模块完整时微信包验证通过 |
 | 0.8.0 | 2026-06-18 | 新增 T51 运行期冒烟用例与 Console 红错回传格式，转入运行期问题收集 |
 | 0.9.0 | 2026-06-18 | 补记一次真机/微信工具手工冒烟结果，明确当前“关掉再开保留进度”属于 `slot-main` 自动读档与 `onHide` 自动存档的预期行为 |
-
-
+| 0.10.0 | 2026-06-29 | 拆分日常快迭代与阶段收口：新增 `build:client:bundle`、`build:client:config`、`build:client:watch`、`build:client:clean`、`verify:client:fast` 说明 |

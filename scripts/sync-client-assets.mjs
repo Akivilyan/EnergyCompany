@@ -8,6 +8,10 @@ const bundleOut = path.join(sharedDir, "game-client.mjs");
 const configSrc = path.join(root, "docs", "design", "data", "vertical-slice-v0");
 const configDest = path.join(root, "client", "cocos", "assets", "resources", "config", "v0");
 const manifestPath = path.join(root, "client", "cocos", "sync-manifest.json");
+const args = new Set(process.argv.slice(2));
+const force = args.has("--force");
+const skipBundle = args.has("--skip-bundle");
+const skipConfig = args.has("--skip-config");
 
 const configFiles = [
   "run_config.json",
@@ -24,27 +28,45 @@ const configFiles = [
   "super_hydro_slots.json"
 ];
 
-fs.rmSync(sharedDir, { recursive: true, force: true });
+if (force) {
+  fs.rmSync(sharedDir, { recursive: true, force: true });
+}
 fs.mkdirSync(sharedDir, { recursive: true });
 
-execFileSync(process.execPath, [path.join(root, "scripts", "bundle-client-logic.mjs")], {
-  cwd: root,
-  stdio: "inherit"
-});
+if (!skipBundle) {
+  execFileSync(process.execPath, [path.join(root, "scripts", "bundle-client-logic.mjs")], {
+    cwd: root,
+    stdio: "inherit"
+  });
+}
 
 fs.mkdirSync(configDest, { recursive: true });
-for (const file of configFiles) {
-  fs.copyFileSync(path.join(configSrc, file), path.join(configDest, file));
+const copiedConfigFiles = [];
+if (!skipConfig) {
+  for (const file of configFiles) {
+    const sourcePath = path.join(configSrc, file);
+    const targetPath = path.join(configDest, file);
+    if (!fs.existsSync(targetPath) || fs.readFileSync(sourcePath).compare(fs.readFileSync(targetPath)) !== 0) {
+      fs.copyFileSync(sourcePath, targetPath);
+      copiedConfigFiles.push(file);
+    }
+  }
 }
 
 const manifest = {
-  version: 2,
+  version: 3,
   syncedAt: new Date().toISOString(),
+  mode: {
+    force,
+    skipBundle,
+    skipConfig
+  },
   configFiles,
+  copiedConfigFiles,
   sharedBundle: path.relative(root, bundleOut)
 };
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
 console.log(
-  `client sync ok: bundle=${path.relative(root, bundleOut)}, config=${path.relative(root, configDest)}`
+  `client sync ok: bundle=${skipBundle ? "skipped" : path.relative(root, bundleOut)}, config=${skipConfig ? "skipped" : `${copiedConfigFiles.length}/${configFiles.length} copied`}`
 );

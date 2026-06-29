@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.42.0
+version: 1.43.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -47,13 +47,14 @@ open_questions: []
 
 1. 把 V 级后新开的 `MAP-06~08` / `MET-B` 从“能进”推进到“有更强经营差异”
 2. 继续把 III～V 级科技从“有节点”推进到“有后续经营分叉”，优先补生态改造与更长经营差异
-3. 继续保持 `build` / `test` / `build:client` / `verify:client` 持续可跑
+3. 继续保持 `build` / `test` / `build:client` / `verify:client:fast` / `verify:client` 持续可跑
 4. 再回头收正式 UI / SDK / 数值收敛
 
 ## 5. 近期日志
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-29 | `FAST-01` coding 流程瘦身子步：客户端同步从默认清空重建改为增量同步，并新增 `build:client:bundle`、`build:client:config`、`build:client:watch`、`build:client:clean` 与 `verify:client:fast`；日常编码可走 watch/fast，阶段收口与真机前置仍保留 full `verify:client` | `package.json` `scripts/bundle-client-logic.mjs` `scripts/sync-client-assets.mjs` `scripts/watch-client-assets.mjs` `src/app/verifyClientFastCli.ts` `AGENTS.md` `README.md` `docs/design/engineering/cocos-client-setup.md` `docs/design/engineering/codex-project-rules.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run build:client:config` 通过；`cmd.exe /c npm run build:client` 提权通过；`node --check scripts/watch-client-assets.mjs` 通过；`cmd.exe /c npm run build:client:bundle` 提权通过；`cmd.exe /c npm run verify:client:fast` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-23 | `FAST-01` V 级区域经营定位反馈子步：区域页与大地图详情补入 `design_role` 本地化经营定位，并显示建设槽、河流城市数与核电资格城市数；`MAP-06~08` 能直接区分沿海工业外送、高原水风基地、边疆风光调峰等后半程经营差异，未定义定位的都会保持“待定”提示 | `src/sim/config/configRepo.ts` `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 区域供能结构反馈子步：区域页与大地图区域详情补入本地供给、跨区受入与供能缺口汇总；`MAP-06~08` / `MET-B` 在接入前后可直接看出本地资源、外送依赖和缺口压力差异，不再只看总供给率 | `src/modules/screenRegion.ts` `src/modules/screenWorldMap.ts` `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/modules/screenRegion.test.ts` `tests/modules/screenWorldMap.test.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
 | 2026-06-23 | `FAST-01` 大地图主干进度反馈子步：世界地图 HUD 的区域详情在主干在建/贯通后不再只显示状态名，会同步展示剩余月份与线损，让玩家在大地图层直接判断跨区接入的等待成本和损耗 | `src/app/clientHudDisplay.ts` `src/i18n/messages/zh-CN.ts` `src/i18n/messages/en.ts` `tests/app/clientHudDisplay.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 通过；`cmd.exe /c npm run build:client` 通过；`cmd.exe /c npm run verify:client` 通过 |
