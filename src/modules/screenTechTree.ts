@@ -100,6 +100,7 @@ export interface TechTreeNodeSnapshot {
   requiresLit: string[];
   researchCost: number;
   researchMonths: number;
+  effectSummary: string;
 }
 
 export interface TechTreeActionOutput {
@@ -147,6 +148,71 @@ function mapAdUiError(
   return "action_failed";
 }
 
+function readNumberEffect(tech: { effect_value: Record<string, unknown> }, key: string): number | null {
+  const value = tech.effect_value[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function formatSignedPercent(value: number): string {
+  return `${value > 0 ? "+" : ""}${value}%`;
+}
+
+function formatTechEffectSummary(tech: {
+  effect_type: string;
+  effect_target: string;
+  effect_value: Record<string, unknown>;
+}): string {
+  if (tech.effect_type === "facility_tier") {
+    const tierMax = readNumberEffect(tech, "tier_max");
+    return tierMax === null ? "facility tier unlock" : `${tech.effect_target} tier <= ${tierMax}`;
+  }
+  if (tech.effect_type === "eco_sync") {
+    return tech.effect_target === "all_thermal"
+      ? "thermal facilities become eco"
+      : tech.effect_target === "all_nuclear"
+        ? "nuclear facilities become eco"
+        : `${tech.effect_target} become eco`;
+  }
+  if (tech.effect_type === "strategic_project") {
+    const slotCount = readNumberEffect(tech, "slot_count");
+    return slotCount === null ? "strategic project unlocked" : `super hydro slots +${slotCount}`;
+  }
+  if (tech.effect_type === "storage_buff") {
+    const storageMult = readNumberEffect(tech, "storage_mult");
+    const unlockTier = readNumberEffect(tech, "unlock_tier");
+    return storageMult === null || unlockTier === null
+      ? "storage boost"
+      : `storage x${storageMult}, renewable tier ${unlockTier}`;
+  }
+  if (tech.effect_type === "storage_gate") {
+    const unlockTier = readNumberEffect(tech, "unlock_tier");
+    return unlockTier === null ? "storage gate" : `renewable tier ${unlockTier} gate`;
+  }
+  if (tech.effect_type === "grid") {
+    const regionalCost = readNumberEffect(tech, "grid_link_cost_pct");
+    const trunkCost = readNumberEffect(tech, "trunk_link_cost_pct");
+    if (regionalCost !== null) return `regional grid cost ${formatSignedPercent(regionalCost)}`;
+    if (trunkCost !== null) return `trunk grid cost ${formatSignedPercent(trunkCost)}`;
+    if (tech.effect_value.trunk_loss_profile === "uhv") return "trunk loss uses UHV profile";
+    return `${tech.effect_target} grid unlock`;
+  }
+  if (tech.effect_type === "modifier") {
+    const buildCost = readNumberEffect(tech, "build_cost_pct");
+    const opex = readNumberEffect(tech, "opex_pct");
+    const regionalLoss = readNumberEffect(tech, "regional_loss_pct");
+    const loanTierBonus = readNumberEffect(tech, "loan_tier_bonus");
+    const disasterCash = readNumberEffect(tech, "disaster_cash_pct");
+    const ecoCitySv = readNumberEffect(tech, "eco_city_sv_pct");
+    if (buildCost !== null) return `build cost ${formatSignedPercent(buildCost)}`;
+    if (opex !== null) return `${tech.effect_target} opex ${formatSignedPercent(opex)}`;
+    if (regionalLoss !== null) return `regional loss ${formatSignedPercent(regionalLoss)}`;
+    if (loanTierBonus !== null) return `loan tier +${loanTierBonus}`;
+    if (disasterCash !== null) return `disaster cash ${formatSignedPercent(disasterCash)}`;
+    if (ecoCitySv !== null) return `eco city SV ${formatSignedPercent(ecoCitySv)}`;
+  }
+  return tech.effect_type;
+}
+
 export class ScreenTechTree {
   private readonly adRewardService: AdRewardService;
 
@@ -185,7 +251,8 @@ export class ScreenTechTree {
           status,
           requiresLit: [...(tech.requires_lit ?? [])],
           researchCost: tech.research_cost,
-          researchMonths: tech.research_months
+          researchMonths: tech.research_months,
+          effectSummary: formatTechEffectSummary(tech)
         };
       })
       .sort((a, b) => a.companyLevelMin - b.companyLevelMin || a.techId.localeCompare(b.techId));

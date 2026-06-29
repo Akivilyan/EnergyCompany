@@ -111,6 +111,7 @@ describe("ScreenTechTree", () => {
     expect(wind2?.status).toBe("unlocked");
     expect(wind2?.displayName).toBe("风电·II");
     expect(storage1?.status).toBe("locked");
+    expect(wind2?.effectSummary).toBe("wind tier <= 2");
     expect(snapshot.researchableTechIds).toEqual([
       "eng_bulk_procure",
       "hydro_2",
@@ -136,6 +137,8 @@ describe("ScreenTechTree", () => {
     expect(snapshot.researchableTechIds).toContain("grid_backbone");
     expect(snapshot.researchableTechIds).toContain("eco_thermal");
     expect(snapshot.researchableTechIds).toContain("eco_nuclear");
+    expect(ecoThermal?.effectSummary).toBe("thermal facilities become eco");
+    expect(ecoNuclear?.effectSummary).toBe("nuclear facilities become eco");
   });
 
   it("unlocks super hydro as a level-V hydro candidate", () => {
@@ -148,6 +151,22 @@ describe("ScreenTechTree", () => {
 
     expect(superHydro?.status).toBe("unlocked");
     expect(snapshot.researchableTechIds).toContain("super_hydro");
+    expect(superHydro?.effectSummary).toBe("super hydro slots +2");
+  });
+
+  it("exposes engineering tech effect summaries for demo branch pressure", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    const screen = createScreenTechTree(controller);
+
+    const snapshot = screen.getSnapshot();
+    const cashflow = snapshot.technologies.find((item) => item.techId === "eng_cashflow");
+    const greenPr = snapshot.technologies.find((item) => item.techId === "eng_green_pr");
+    const riskReserve = snapshot.technologies.find((item) => item.techId === "eng_risk_reserve");
+
+    expect(cashflow?.effectSummary).toBe("loan tier +1");
+    expect(greenPr?.effectSummary).toBe("eco city SV +5%");
+    expect(riskReserve?.effectSummary).toBe("disaster cash -15%");
   });
 
   it("keeps wind_3 locked until storage_system_1 and wind_2 are both lit", () => {

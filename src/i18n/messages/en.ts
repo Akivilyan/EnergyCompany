@@ -88,7 +88,7 @@ export const en: Record<string, string> = {
   "hud.status.tech_header": "Tech | lit={lit}",
   "hud.status.tech_idle_hint": "No active research",
   "hud.status.tech_no_candidate_hint": "No research candidates",
-  "hud.status.tech_selected_hint": "Candidate: {tech} · cost {cost} · {months}m",
+  "hud.status.tech_selected_hint": "Candidate: {tech} · cost {cost} · {months}m · {effect}",
   "hud.status.tech_active_hint": "Research: {techId} · {months}m left",
 
   "loan.tier.loan_1": "Small loan (30)",

@@ -11,6 +11,7 @@ export interface TechHudCandidate {
   displayName: string;
   researchCost: number;
   researchMonths: number;
+  effectSummary: string;
 }
 
 export interface TechHudSelectionSnapshot {
@@ -49,7 +50,8 @@ function getResearchCandidates(boot: GameBootstrap): TechHudCandidate[] {
       techId: tech.techId,
       displayName: tech.displayName,
       researchCost: tech.researchCost,
-      researchMonths: tech.researchMonths
+      researchMonths: tech.researchMonths,
+      effectSummary: tech.effectSummary
     }));
 }
 
@@ -154,6 +156,7 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
   return t("hud.status.tech_selected_hint", {
     tech: selected.displayName,
     cost: selected.researchCost,
-    months: selected.researchMonths
+    months: selected.researchMonths,
+    effect: selected.effectSummary
   });
 }

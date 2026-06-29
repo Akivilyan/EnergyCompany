@@ -70,6 +70,7 @@ describe("clientHudDisplay", () => {
     expect(display.statusLines).toEqual(["已点亮 4 项科技", "可研 5 项"]);
     expect(display.detailLines[0]).toBe("当前无在研项目");
     expect(display.detailLines[1]).toContain("候选：风电·II");
+    expect(display.detailLines[1]).toContain("wind tier <= 2");
   });
 
   it("exposes locked hud capabilities before company level 2", () => {
