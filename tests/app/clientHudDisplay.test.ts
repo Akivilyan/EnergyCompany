@@ -145,7 +145,7 @@ describe("clientHudDisplay", () => {
     boot.play.openScreen("screen_region", undefined, "MAP-06");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar/fossil · build wind/solar/thermal/nuclear");
+    expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar/fossil · build wind/solar/thermal/nuclear · pressure high demand/supply gap/trunk first/no hydro/fossil transition/nuclear siting");
     expect(display.detailLines).toContain("Operating role: coastal industrial export");
   });
 
@@ -187,6 +187,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("定位资源外送省");
     expect(display.detailLines[1]).toContain("富集风/光");
     expect(display.detailLines[1]).toContain("建议风电/光伏");
+    expect(display.detailLines[1]).toContain("压力供给缺口/主干优先");
   });
 
   it("shows selected world trunk candidate and queue capability", () => {
@@ -241,6 +242,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("定位沿海工业外送");
     expect(display.detailLines[1]).toContain("富集风/光");
     expect(display.detailLines[1]).toContain("建议风电/光伏/火电/核电");
+    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/无水电/化石转型/核电选址");
   });
 
   it("shows level-V super hydro slot progress on world map hud", () => {

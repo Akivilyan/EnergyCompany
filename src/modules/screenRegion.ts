@@ -6,7 +6,13 @@ import {
   type SimResult
 } from "../sim/index.js";
 import type { RunController } from "./runController.js";
-import { getRecommendedBuilds, type RecommendedBuildKind, type ResourceKind } from "./screenWorldMap.js";
+import {
+  getOperatingPressureTags,
+  getRecommendedBuilds,
+  type OperatingPressureTag,
+  type RecommendedBuildKind,
+  type ResourceKind
+} from "./screenWorldMap.js";
 
 export interface RegionCityItem {
   cityId: string;
@@ -58,6 +64,7 @@ export interface ScreenRegionSnapshot {
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
   recommendedBuilds: RecommendedBuildKind[];
+  operatingPressureTags: OperatingPressureTag[];
   month: number;
   companyLevel: number;
   funds: number;
@@ -166,6 +173,15 @@ export class ScreenRegion {
       totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
       richResources,
       recommendedBuilds: getRecommendedBuilds(regionConfig ?? {}, regionCities),
+      operatingPressureTags: getOperatingPressureTags({
+        regionId: this.regionId,
+        totalDemandMw,
+        supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
+        totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
+        riverCityCount: regionCities.filter((city) => city.has_river).length,
+        fossilEnergy: !!regionConfig?.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
+        nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length
+      }),
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,

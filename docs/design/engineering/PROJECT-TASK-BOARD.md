@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.54.0
+version: 1.55.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-06-29 | `FAST-01` 为区域/大地图 HUD 增加经营压力标签：高负荷、供给缺口、主干优先、槽位紧、无水电、化石转型、核电选址 |
 | 2026-06-29 | `FAST-01` 为科技树/HUD 增加效果摘要：生态改造、贷款档位、绿色品牌、灾害减压等节点可直接显示经营分叉 |
 | 2026-06-29 | `FAST-01` 为区域/大地图 HUD 增加推荐建设路线：`MAP-06~08` / `MET-B` 按资源、火电、核电、水电条件显示差异化经营打法 |
 | 2026-06-29 | `FAST-01` 补齐 IV 级经营科技 `eng_cashflow`：点亮后贷款可用档位 +1，HUD 与核心校验共用同一口径 |
@@ -79,3 +80,4 @@ open_questions: []
 | 1.52.0 | 2026-06-29 | 记录 `eng_cashflow` 经营科技落地 |
 | 1.53.0 | 2026-06-29 | 记录区域/大地图推荐建设路线落地 |
 | 1.54.0 | 2026-06-29 | 记录科技树/HUD 效果摘要落地 |
+| 1.55.0 | 2026-06-29 | 记录区域/大地图经营压力标签落地 |

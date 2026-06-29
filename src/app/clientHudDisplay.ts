@@ -17,6 +17,7 @@ import {
 } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 import type {
+  OperatingPressureTag,
   RecommendedBuildKind,
   ResourceKind,
   WorldMapRegionItem
@@ -89,6 +90,18 @@ function formatRecommendedBuilds(builds: RecommendedBuildKind[]): string {
   return builds.length > 0
     ? builds.map(formatRecommendedBuildKind).join("/")
     : t("facility.none");
+}
+
+function formatOperatingPressureTag(tag: OperatingPressureTag): string {
+  const key = `pressure.${tag}`;
+  const label = t(key);
+  return label === key ? tag : label;
+}
+
+function formatOperatingPressureTags(tags: OperatingPressureTag[]): string {
+  return tags.length > 0
+    ? tags.map(formatOperatingPressureTag).join("/")
+    : t("pressure.none");
 }
 
 function formatRegionDesignRole(role: string | null): string {
@@ -184,7 +197,8 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       nuclear: s.nuclearEligibleCityCount,
       sv: s.totalBaseSocialValue,
       resources: formatRichResources(s.richResources),
-      builds: formatRecommendedBuilds(s.recommendedBuilds)
+      builds: formatRecommendedBuilds(s.recommendedBuilds),
+      pressure: formatOperatingPressureTags(s.operatingPressureTags)
     }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
@@ -277,6 +291,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           role: formatRegionDesignRole(focusRegion.designRole),
           resources: formatRichResources(focusRegion.richResources),
           builds: formatRecommendedBuilds(focusRegion.recommendedBuilds),
+          pressure: formatOperatingPressureTags(focusRegion.operatingPressureTags),
           trunk: formatWorldConnectionStatus(focusRegion)
         })
       : null,

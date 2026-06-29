@@ -61,6 +61,14 @@ describe("screenWorldMap", () => {
     expect(map06?.totalBaseSocialValue).toBe(38);
     expect(map06?.richResources).toEqual(["wind", "solar", "fossil"]);
     expect(map06?.recommendedBuilds).toEqual(["wind", "solar", "thermal", "nuclear"]);
+    expect(map06?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "no_hydro",
+      "fossil_transition",
+      "nuclear_siting"
+    ]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.designRole).toBe("terminal_metropolis_load_hub");
     expect(metB?.totalDemandMw).toBe(2100);
@@ -74,6 +82,13 @@ describe("screenWorldMap", () => {
     expect(metB?.totalBaseSocialValue).toBe(28);
     expect(metB?.richResources).toEqual(["solar", "hydro"]);
     expect(metB?.recommendedBuilds).toEqual(["solar", "hydro", "nuclear"]);
+    expect(metB?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "low_slot_density",
+      "nuclear_siting"
+    ]);
     expect(metB?.connectionStatus).toBe("available");
   });
 

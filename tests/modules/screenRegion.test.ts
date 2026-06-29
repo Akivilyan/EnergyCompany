@@ -219,6 +219,14 @@ describe("ScreenRegion", () => {
     expect(snapshot.totalBaseSocialValue).toBe(38);
     expect(snapshot.richResources).toEqual(["wind", "solar", "fossil"]);
     expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "thermal", "nuclear"]);
+    expect(snapshot.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "no_hydro",
+      "fossil_transition",
+      "nuclear_siting"
+    ]);
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>

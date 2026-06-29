@@ -2,6 +2,14 @@ import type { RunController } from "./runController.js";
 
 export type ResourceKind = "wind" | "solar" | "hydro" | "fossil";
 export type RecommendedBuildKind = "wind" | "solar" | "hydro" | "thermal" | "nuclear";
+export type OperatingPressureTag =
+  | "high_demand"
+  | "supply_gap"
+  | "trunk_first"
+  | "low_slot_density"
+  | "no_hydro"
+  | "fossil_transition"
+  | "nuclear_siting";
 
 export type WorldMapConnectionStatus =
   | "capital"
@@ -32,6 +40,7 @@ export interface WorldMapRegionItem {
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
   recommendedBuilds: RecommendedBuildKind[];
+  operatingPressureTags: OperatingPressureTag[];
   centralCityId: string | null;
   centralCityUnlocked: boolean;
   connectionStatus: WorldMapConnectionStatus;
@@ -129,6 +138,36 @@ export function getRecommendedBuilds(
   return recommended;
 }
 
+export function getOperatingPressureTags(input: {
+  regionId: string;
+  totalDemandMw: number;
+  supplyGapMw: number;
+  totalBuildSlots: number;
+  riverCityCount: number;
+  fossilEnergy: boolean;
+  nuclearEligibleCityCount: number;
+  connectionStatus?: WorldMapConnectionStatus;
+}): OperatingPressureTag[] {
+  const tags: OperatingPressureTag[] = [];
+  if (input.totalDemandMw >= 1800) tags.push("high_demand");
+  if (input.supplyGapMw > 0) tags.push("supply_gap");
+  if (
+    input.regionId !== "MAP-01" &&
+    (!input.connectionStatus ||
+      input.connectionStatus === "available" ||
+      input.connectionStatus === "building")
+  ) {
+    tags.push("trunk_first");
+  }
+  if (input.totalDemandMw > 0 && input.totalBuildSlots * 180 < input.totalDemandMw) {
+    tags.push("low_slot_density");
+  }
+  if (input.riverCityCount === 0) tags.push("no_hydro");
+  if (input.fossilEnergy) tags.push("fossil_transition");
+  if (input.nuclearEligibleCityCount > 0) tags.push("nuclear_siting");
+  return tags;
+}
+
 export class ScreenWorldMap {
   constructor(private readonly controller: RunController) {}
 
@@ -215,6 +254,16 @@ export class ScreenWorldMap {
           ),
           richResources: getRichResources(region, regionCities),
           recommendedBuilds: getRecommendedBuilds(region, regionCities),
+          operatingPressureTags: getOperatingPressureTags({
+            regionId: region.region_id,
+            totalDemandMw,
+            supplyGapMw,
+            totalBuildSlots,
+            riverCityCount,
+            fossilEnergy: !!region.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
+            nuclearEligibleCityCount,
+            connectionStatus
+          }),
           centralCityId: centralCity?.city_id ?? null,
           centralCityUnlocked: centralCity ? state.companyLevel >= centralCity.unlock_company_level : false,
           connectionStatus,
