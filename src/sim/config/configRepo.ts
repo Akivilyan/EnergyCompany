@@ -53,6 +53,7 @@ export interface CityConfig {
   wind_resource?: "normal" | "rich";
   solar_resource?: "normal" | "rich";
   hydro_resource?: "normal" | "rich";
+  fossil_energy?: boolean;
   is_nuclear_eligible?: boolean;
   display_name?: string;
 }
@@ -69,6 +70,7 @@ export interface RegionConfig {
   wind_resource_bias?: "normal" | "rich";
   solar_resource_bias?: "normal" | "rich";
   hydro_resource_bias?: "normal" | "rich";
+  fossil_energy?: boolean;
   display_name?: string;
   design_role?: string;
 }

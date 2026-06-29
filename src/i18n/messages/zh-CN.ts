@@ -173,6 +173,7 @@ export const zhCN: Record<string, string> = {
   "resource.wind": "风",
   "resource.solar": "光",
   "resource.hydro": "水",
+  "resource.fossil": "化石",
   "resource.none": "常规",
 
   "onboarding.error.not_tutorial_run": "非教学局",

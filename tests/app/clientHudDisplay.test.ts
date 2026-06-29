@@ -141,7 +141,7 @@ describe("clientHudDisplay", () => {
     boot.play.openScreen("screen_region", undefined, "MAP-06");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar");
+    expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar/fossil");
     expect(display.detailLines).toContain("Operating role: coastal industrial export");
   });
 

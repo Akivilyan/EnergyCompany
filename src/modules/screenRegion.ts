@@ -113,6 +113,9 @@ export class ScreenRegion {
     if (regionCities.some((city) => city.wind_resource === "rich")) richResources.push("wind");
     if (regionCities.some((city) => city.solar_resource === "rich")) richResources.push("solar");
     if (regionCities.some((city) => city.hydro_resource === "rich")) richResources.push("hydro");
+    if (regionConfig?.fossil_energy || regionCities.some((city) => city.fossil_energy)) {
+      richResources.push("fossil");
+    }
     const totalDemandMw = cities.reduce((sum, city) => sum + city.demandMw, 0);
     const totalEffectiveSupplyMw = cities.reduce((sum, city) => sum + city.effectiveSupplyMw, 0);
 

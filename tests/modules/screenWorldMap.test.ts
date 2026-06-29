@@ -59,7 +59,7 @@ describe("screenWorldMap", () => {
     expect(map06?.nuclearEligibleCityCount).toBe(1);
     expect(map06?.supplyRatio).toBe(0);
     expect(map06?.totalBaseSocialValue).toBe(38);
-    expect(map06?.richResources).toEqual(["wind", "solar"]);
+    expect(map06?.richResources).toEqual(["wind", "solar", "fossil"]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.designRole).toBe("terminal_metropolis_load_hub");
     expect(metB?.totalDemandMw).toBe(2100);

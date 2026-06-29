@@ -173,6 +173,7 @@ export const en: Record<string, string> = {
   "resource.wind": "wind",
   "resource.solar": "solar",
   "resource.hydro": "hydro",
+  "resource.fossil": "fossil",
   "resource.none": "normal",
 
   "onboarding.error.not_tutorial_run": "Not a tutorial run",

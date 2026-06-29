@@ -6,6 +6,7 @@
     "wind_resource_bias": "normal",
     "solar_resource_bias": "normal",
     "hydro_resource_bias": "rich",
+    "fossil_energy": true,
     "design_role": "load_center_plus_outer_generation",
     "display_name": "起始省（占位）"
   },
@@ -29,6 +30,7 @@
     "wind_resource_bias": "rich",
     "solar_resource_bias": "rich",
     "hydro_resource_bias": "normal",
+    "fossil_energy": true,
     "design_role": "coastal_industrial_export_province",
     "display_name": "省六（沿海工业走廊）"
   },

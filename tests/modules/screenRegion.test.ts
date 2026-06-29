@@ -183,7 +183,7 @@ describe("ScreenRegion", () => {
     expect(snapshot.riverCityCount).toBe(0);
     expect(snapshot.nuclearEligibleCityCount).toBe(1);
     expect(snapshot.totalBaseSocialValue).toBe(38);
-    expect(snapshot.richResources).toEqual(["wind", "solar"]);
+    expect(snapshot.richResources).toEqual(["wind", "solar", "fossil"]);
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>

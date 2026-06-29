@@ -55,6 +55,8 @@ function formatResourceKind(kind: ResourceKind): string {
       return t("resource.solar");
     case "hydro":
       return t("resource.hydro");
+    case "fossil":
+      return t("resource.fossil");
   }
 }
 

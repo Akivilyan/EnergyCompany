@@ -1,6 +1,6 @@
 import type { RunController } from "./runController.js";
 
-export type ResourceKind = "wind" | "solar" | "hydro";
+export type ResourceKind = "wind" | "solar" | "hydro" | "fossil";
 
 export type WorldMapConnectionStatus =
   | "capital"
@@ -80,11 +80,22 @@ function linkKey(a: string, b: string): string {
   return [a, b].sort().join("::");
 }
 
-function getRichResources(regionCities: Array<{ wind_resource?: string; solar_resource?: string; hydro_resource?: string }>): ResourceKind[] {
+function getRichResources(
+  region: { fossil_energy?: boolean },
+  regionCities: Array<{
+    wind_resource?: string;
+    solar_resource?: string;
+    hydro_resource?: string;
+    fossil_energy?: boolean;
+  }>
+): ResourceKind[] {
   const richResources: ResourceKind[] = [];
   if (regionCities.some((city) => city.wind_resource === "rich")) richResources.push("wind");
   if (regionCities.some((city) => city.solar_resource === "rich")) richResources.push("solar");
   if (regionCities.some((city) => city.hydro_resource === "rich")) richResources.push("hydro");
+  if (region.fossil_energy || regionCities.some((city) => city.fossil_energy)) {
+    richResources.push("fossil");
+  }
   return richResources;
 }
 
@@ -172,7 +183,7 @@ export class ScreenWorldMap {
             (sum, city) => sum + city.city_base_social_value,
             0
           ),
-          richResources: getRichResources(regionCities),
+          richResources: getRichResources(region, regionCities),
           centralCityId: centralCity?.city_id ?? null,
           centralCityUnlocked: centralCity ? state.companyLevel >= centralCity.unlock_company_level : false,
           connectionStatus,
