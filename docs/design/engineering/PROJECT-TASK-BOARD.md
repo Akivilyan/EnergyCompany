@@ -2,21 +2,19 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.50.0
+version: 1.51.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
-  - docs/design/engineering/PROJECT-LOG.md
 supersedes: []
 depends_on:
   - engineering/implementation-tasks
-  - engineering/project-log
 open_questions: []
 ---
 
 # 项目级任务看板
 
-本文件只回答“当前在干什么、下一步做什么”。执行流水、验证记录与版本记录见 `PROJECT-LOG.md`；更早历史见 `archive/project-task-board-history.md` 与 Git 历史。
+本文件只回答“当前在干什么、下一步做什么”。执行流水、验证记录与版本记录由 Git 历史和提交说明承接；更早历史见 `archive/project-task-board-history.md` 与 Git 历史。
 
 ## 1. 当前阶段
 
@@ -52,22 +50,21 @@ open_questions: []
 2. 继续把 III～V 级科技从“有节点”推进到“有后续经营分叉”，优先补生态改造与更长经营差异
 3. 继续保持 `build` / `test` / `build:client` / `verify:client:fast` / `verify:client` 持续可跑
 4. 再回头收正式 UI / SDK / 数值收敛
-5. 继续精简工程文档：入口文档保留决策信息，流水和历史移入日志/归档
+5. 继续精简工程文档：入口文档保留当前状态与决策信息，流水由 Git 承接
 
 ## 5. 最近进展摘要
 
 | 日期 | 摘要 |
 |------|------|
-| 2026-06-29 | `OPS-01` 拆分主看板与执行日志：主看板保留当前态和下一步，`PROJECT-LOG.md` 承接执行流水、验证记录与版本记录 |
+| 2026-06-29 | 删除 `PROJECT-LOG.md`：执行流水、验证记录和版本记录改由 Git commit 与最终回复承接 |
+| 2026-06-29 | `OPS-01` 文档瘦身：主看板保留当前态和下一步，流水与验证记录改由 Git 承接 |
 | 2026-06-29 | `FAST-01` 补齐 `cancel_grid_link`：在建区域线/主干线可退款取消，完工线路拒绝取消，区域开发 HUD 增加“取消线”入口 |
-| 2026-06-29 | `FAST-01` 补齐 `eng_grid_dispatch`：区域线损按科技效果从 125MW 降到 112MW，并统一新建/既有线路刷新口径 |
 
 ## 6. 文档分工
 
 | 用途 | 文件 |
 |------|------|
 | 当前状态与下一步 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
-| 执行流水、验证记录、版本记录 | `docs/design/engineering/PROJECT-LOG.md` |
 | 完整长历史 | `docs/design/engineering/archive/project-task-board-history.md` |
 | 可执行任务模板 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
 | 协作与验证规则 | `docs/design/engineering/codex-project-rules.md` |
@@ -76,4 +73,5 @@ open_questions: []
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| 1.50.0 | 2026-06-29 | 拆分主看板与执行日志：主看板只保留当前状态、下一步和最近摘要，长日志迁入 `PROJECT-LOG.md` |
+| 1.50.0 | 2026-06-29 | 拆分主看板职责：主看板只保留当前状态、下一步和最近摘要 |
+| 1.51.0 | 2026-06-29 | 删除 `PROJECT-LOG.md` 入口：流水和验证记录改由 Git 历史与提交说明承接 |

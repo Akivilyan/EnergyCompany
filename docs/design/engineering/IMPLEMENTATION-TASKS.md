@@ -2,7 +2,7 @@
 id: engineering/implementation-tasks
 title: v0 实现里程碑任务拆条
 status: draft
-version: 0.3.0
+version: 0.4.0
 sources:
   - docs/design/engineering/vertical-slice-v0.md
   - docs/design/engineering/stack.md
@@ -84,7 +84,7 @@ open_questions: []
 2. 完成最小实现
 3. 补对应测试或冒烟
 4. 跑最小验证
-5. 更新 `PROJECT-TASK-BOARD.md`（当前态变化）与 `PROJECT-LOG.md`（执行流水/验证）
+5. 如当前态变化，更新 `PROJECT-TASK-BOARD.md`
 6. 完成清晰子步骤后本地 commit
 
 ## 5. 风险控制
@@ -101,4 +101,5 @@ open_questions: []
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.2.0 | 2026-06-17 | 压缩为当前可执行里程碑，移除历史进展叙事 |
-| 0.3.0 | 2026-06-29 | 执行模板同步看板/日志拆分：当前态写看板，流水与验证写日志 |
+| 0.3.0 | 2026-06-29 | 执行模板同步看板职责：当前态写看板，流水与验证曾拆入独立日志 |
+| 0.4.0 | 2026-06-29 | 删除单独日志步骤：流水与验证改由 Git commit 和最终回复承接 |

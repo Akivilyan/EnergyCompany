@@ -16,7 +16,6 @@
 | 当前产品真相 | `docs/design/current-product-truth.md` |
 | Codex 协作规则 | `docs/design/engineering/codex-project-rules.md` |
 | 当前任务与下一步 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
-| 执行日志与验证记录 | `docs/design/engineering/PROJECT-LOG.md` |
 | 设计总览 | `docs/design/README.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
 | Cocos / 微信联调 | `docs/design/engineering/cocos-client-setup.md` |
@@ -59,7 +58,7 @@ cmd.exe /c npm run doctor:full
 | `docs/design/features/` | 面向实现与验收的功能规格 |
 | `docs/design/ui/` | 屏幕结构、组件与交互 |
 | `docs/design/data/` | 配置结构、字段说明、切片数据 |
-| `docs/design/engineering/` | 工程约束、实现拆条、联调、看板与执行日志 |
+| `docs/design/engineering/` | 工程约束、实现拆条、联调与当前看板 |
 
 ## 代码结构
 
@@ -78,6 +77,6 @@ cmd.exe /c npm run doctor:full
 - 涉及“当前版本到底做到哪、什么算阶段完成”时读 `docs/design/current-product-truth.md`
 - 涉及实现边界、验证选择、微信排障时读 `docs/design/engineering/codex-project-rules.md`
 - 涉及当前状态与下一步时读 `docs/design/engineering/PROJECT-TASK-BOARD.md`
-- 涉及最近做了什么、验证怎么跑时读 `docs/design/engineering/PROJECT-LOG.md`
+- 涉及最近做了什么、验证怎么跑时看 Git 历史与最近提交说明
 
 新会话无需重复说明提交策略、验证方式与架构边界。

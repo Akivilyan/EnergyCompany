@@ -55,7 +55,7 @@
 ### 4. 会话收尾
 
 - 改了当前阶段、当前任务、下一步，就更新 `docs/design/engineering/PROJECT-TASK-BOARD.md`
-- 记录执行流水、验证命令、版本记录，就更新 `docs/design/engineering/PROJECT-LOG.md`
+- 执行流水、验证命令、版本记录由 Git commit 与最终回复承接，不再维护单独日志文档
 - 回复里说明实际验证命令与结果
 
 ### 4.1 格式与行尾
@@ -81,7 +81,6 @@
 | 用途 | 文件 |
 |------|------|
 | 当前状态与下一步 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
-| 执行日志与验证记录 | `docs/design/engineering/PROJECT-LOG.md` |
 | 实现拆条 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
 | 协作细则 | `docs/design/engineering/codex-project-rules.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
