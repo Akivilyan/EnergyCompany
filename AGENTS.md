@@ -30,6 +30,7 @@
 
 ### 2.1 Windows / Codex 执行环境注意事项
 
+- PowerShell 读取中文 Markdown 时必须显式指定 UTF-8，例如 `Get-Content -Raw -Encoding UTF8 AGENTS.md`；不要用默认编码读取 `AGENTS.md` / 设计文档，避免中文乱码
 - 这台 Windows 机器在 Codex 受限沙箱里，Node 通过 `child_process` 启动项目内原生 `.exe` 时可能报 `spawn EPERM`
 - 已确认受影响链路包括 `esbuild` 服务进程，以及依赖它的 `vite` / `vitest` / `tsx` 相关命令
 - 典型失败：`npm test` 或 `npm run build:client` 在普通沙箱下报 `node_modules/esbuild/lib/main.js` 或 `node_modules/vite/node_modules/esbuild/lib/main.js` 的 `spawn EPERM`
