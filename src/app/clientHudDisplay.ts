@@ -1,5 +1,5 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
-import { readCityHudViewModel } from "./cityHudController.js";
+import { getCityHudProfileSnapshot, readCityHudViewModel } from "./cityHudController.js";
 import {
   formatSelectedBuildCandidate,
   getCityHudBuildSelectionSnapshot
@@ -69,6 +69,13 @@ function formatRichResources(resources: ResourceKind[]): string {
 function formatRegionDesignRole(role: string | null): string {
   if (!role) return t("region.role.unknown");
   const key = `region.role.${role}`;
+  const label = t(key);
+  return label === key ? role : label;
+}
+
+function formatCityPowerRole(role: string | null): string {
+  if (!role) return t("city.role.unknown");
+  const key = `city.role.${role}`;
   const label = t(key);
   return label === key ? role : label;
 }
@@ -330,6 +337,7 @@ export function buildClientHudDisplay(
     const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
     const buildSelection = getCityHudBuildSelectionSnapshot(boot);
     const selectedBuild = formatSelectedBuildCandidate(boot);
+    const profile = getCityHudProfileSnapshot(boot);
     const eventsHint = formatEventsHudHint(boot);
     const pending = formatPendingEventModalLines(boot);
     const statusLine = formatCityStatus(boot);
@@ -339,6 +347,16 @@ export function buildClientHudDisplay(
       t("hud.line.city", { city })
     );
     const detailLines = hudLines(
+      profile
+        ? t("hud.line.city_profile", {
+            demand: profile.demandMw,
+            slots: profile.buildSlots,
+            river: profile.hasRiver ? 1 : 0,
+            nuclear: profile.nuclearEligible ? 1 : 0,
+            role: formatCityPowerRole(profile.powerRole),
+            resources: formatRichResources(profile.richResources)
+          })
+        : null,
       selectedBuild,
       buildSelection.candidates.length > 1
         ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })

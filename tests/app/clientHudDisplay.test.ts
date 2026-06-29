@@ -90,8 +90,10 @@ describe("clientHudDisplay", () => {
     cityHudCycleBuildCandidate(boot);
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines[0]).toContain("候选：光伏");
-    expect(display.detailLines[1]).toBe("可切换建造 4 项");
+    expect(display.detailLines[0]).toContain("负荷1320MW");
+    expect(display.detailLines[0]).toContain("定位负荷中心");
+    expect(display.detailLines[1]).toContain("候选：光伏");
+    expect(display.detailLines[2]).toBe("可切换建造 4 项");
   });
 
   it("shows eng_bulk_procure-adjusted build cost in city hud", () => {
@@ -100,7 +102,7 @@ describe("clientHudDisplay", () => {
     boot.app.controller.state.litTechIds.push("eng_bulk_procure");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines[0]).toContain("11资金");
+    expect(display.detailLines[1]).toContain("11资金");
   });
 
   it("shows highest lit wind tier in city hud candidate text", () => {
@@ -109,9 +111,9 @@ describe("clientHudDisplay", () => {
     boot.app.controller.state.litTechIds.push("wind_2");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines[0]).toContain("II");
-    expect(display.detailLines[0]).toContain("24");
-    expect(display.detailLines[0]).toContain("3");
+    expect(display.detailLines[1]).toContain("II");
+    expect(display.detailLines[1]).toContain("24");
+    expect(display.detailLines[1]).toContain("3");
   });
 
   it("shows city build resource and storage multipliers", () => {
@@ -119,9 +121,9 @@ describe("clientHudDisplay", () => {
     boot.app.controller.state.litTechIds.push("storage_system_1");
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines[0]).toContain("产能");
-    expect(display.detailLines[0]).toContain("资源x");
-    expect(display.detailLines[0]).toContain("储能x2");
+    expect(display.detailLines[1]).toContain("产能");
+    expect(display.detailLines[1]).toContain("资源x");
+    expect(display.detailLines[1]).toContain("储能x2");
   });
 
   it("shows selected region link candidate and candidate count on region screen", () => {

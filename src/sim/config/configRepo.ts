@@ -55,6 +55,7 @@ export interface CityConfig {
   hydro_resource?: "normal" | "rich";
   fossil_energy?: boolean;
   is_nuclear_eligible?: boolean;
+  power_role?: string;
   display_name?: string;
 }
 

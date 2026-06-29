@@ -43,6 +43,15 @@ export interface CityHudBuildSelectionSnapshot {
   selectedFacilityId: string | null;
 }
 
+export interface CityHudProfileSnapshot {
+  demandMw: number;
+  buildSlots: number;
+  hasRiver: boolean;
+  nuclearEligible: boolean;
+  richResources: Array<"wind" | "solar" | "hydro" | "fossil">;
+  powerRole: string | null;
+}
+
 const DEFAULT_BUILD_FACILITY_ID = "wind";
 const selectedFacilityByBoot = new WeakMap<GameBootstrap, string>();
 const BUILD_CANDIDATE_ORDER = ["wind", "solar", "thermal", "hydro", "nuclear"] as const;
@@ -135,6 +144,25 @@ function getStorageMultiplier(boot: GameBootstrap, facilityId: string): number {
     (facilityId === "wind" || facilityId === "solar" || facilityId === "hydro")
     ? 2
     : 1;
+}
+
+export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSnapshot | null {
+  const city = boot.app.controller.config.getCity(getCurrentCityId(boot));
+  if (!city) return null;
+  const region = city.region_id ? boot.app.controller.config.getRegion(city.region_id) : undefined;
+  const richResources: CityHudProfileSnapshot["richResources"] = [];
+  if (city.wind_resource === "rich") richResources.push("wind");
+  if (city.solar_resource === "rich") richResources.push("solar");
+  if (city.hydro_resource === "rich") richResources.push("hydro");
+  if (city.fossil_energy || region?.fossil_energy) richResources.push("fossil");
+  return {
+    demandMw: city.base_demand_mw,
+    buildSlots: city.build_slot_count,
+    hasRiver: city.has_river,
+    nuclearEligible: !!city.is_nuclear_eligible,
+    richResources,
+    powerRole: city.power_role ?? null
+  };
 }
 
 function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {

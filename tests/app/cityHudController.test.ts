@@ -10,6 +10,7 @@ import {
   cityHudCycleBuildCandidate,
   formatSelectedBuildCandidate,
   formatCityHudStatus,
+  getCityHudProfileSnapshot,
   getCityHudBuildSelectionSnapshot,
   readCityHudViewModel
 } from "../../src/app/cityHudController.js";
@@ -117,6 +118,35 @@ describe("cityHudController", () => {
     expect(solar?.resourceMultiplier).toBe(2);
     expect(solar?.storageMultiplier).toBe(2);
     expect(solar?.effectiveOutputMw).toBe((solar?.outputMw ?? 0) * 4);
+  });
+
+  it("exposes city operating profile for level-V city HUD", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map06 = config.getCity("CITY-MAP06-01");
+    expect(map06).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: map06?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map06?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP06-01", "MAP-06");
+
+    expect(getCityHudProfileSnapshot(boot)).toEqual({
+      demandMw: 1280,
+      buildSlots: 6,
+      hasRiver: false,
+      nuclearEligible: true,
+      richResources: ["solar", "fossil"],
+      powerRole: "coastal_industrial_hub"
+    });
   });
 
   it("hides build candidates for unlocked outside-region city before trunk connection", () => {
