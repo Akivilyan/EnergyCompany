@@ -43,6 +43,23 @@ describe("ScreenRegion", () => {
     expect(action.after.gridLinks.some((link) => link.linkId === linkId)).toBe(true);
   });
 
+  it("cancels building grid link and restores funds in region screen", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenRegion(controller);
+    const initialFunds = controller.state.funds;
+
+    const queued = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
+    expect(queued.result.ok).toBe(true);
+    const linkId = "CITY-MAP01-02::CITY-START";
+    expect(queued.after.gridLinks.find((link) => link.linkId === linkId)?.buildCost).toBe(8);
+
+    const cancelled = screen.cancelGridLink(linkId);
+    expect(cancelled.result.ok).toBe(true);
+    expect(cancelled.after.funds).toBe(initialFunds);
+    expect(cancelled.after.gridLinks.some((link) => link.linkId === linkId)).toBe(false);
+  });
+
   it("shows grid_regional-adjusted link cost in snapshot", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 3;

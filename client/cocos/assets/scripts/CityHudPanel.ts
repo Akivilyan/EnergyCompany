@@ -25,6 +25,7 @@ import {
   clientNavOpenWorldMap,
   clientNavOpenTechTree,
   regionCycleLinkCandidate,
+  regionCancelSelectedLink,
   regionQueueDefaultLink,
   companyApplySelectedLoan,
   companyClaimCashByAd,
@@ -82,6 +83,7 @@ export class CityHudPanel extends Component {
   private adSpeedupBtn: HudButton | null = null;
   private ackEventBtn: HudButton | null = null;
   private queueRegionLinkBtn: HudButton | null = null;
+  private cancelRegionLinkBtn: HudButton | null = null;
   private cycleRegionLinkBtn: HudButton | null = null;
   private openWorldTargetBtn: HudButton | null = null;
   private cycleWorldTargetBtn: HudButton | null = null;
@@ -175,6 +177,9 @@ export class CityHudPanel extends Component {
     this.queueRegionLinkBtn = this.createTapButton(shell, "QueueRegionLink", "hud.btn.queue_link", () =>
       this.onQueueRegionLink()
     );
+    this.cancelRegionLinkBtn = this.createTapButton(shell, "CancelRegionLink", "hud.btn.cancel_link", () =>
+      this.onCancelRegionLink()
+    );
     this.cycleRegionLinkBtn = this.createTapButton(shell, "CycleRegionLink", "hud.btn.cycle_region_link", () =>
       this.onCycleRegionLink()
     );
@@ -229,6 +234,7 @@ export class CityHudPanel extends Component {
       [
         this.cycleRegionLinkBtn,
         this.queueRegionLinkBtn,
+        this.cancelRegionLinkBtn,
         this.ackEventBtn,
         this.cycleWorldTargetBtn,
         this.openWorldTargetBtn,
@@ -286,6 +292,7 @@ export class CityHudPanel extends Component {
       this.adSpeedupBtn,
       this.ackEventBtn,
       this.queueRegionLinkBtn,
+      this.cancelRegionLinkBtn,
       this.cycleRegionLinkBtn,
       this.openWorldTargetBtn,
       this.cycleWorldTargetBtn,
@@ -377,6 +384,7 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
     this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
     this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
+    this.setButtonCaption(this.cancelRegionLinkBtn, "hud.btn.cancel_link");
     this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
     this.setButtonCaption(this.openWorldTargetBtn, "hud.btn.world_open_target");
     this.setButtonCaption(this.cycleWorldTargetBtn, "hud.btn.world_cycle_target");
@@ -418,6 +426,7 @@ export class CityHudPanel extends Component {
     this.cycleBuildBtn!.node.active = onCity && caps.canCycleBuildCandidate;
     this.advanceMonthBtn!.node.active = onCity || onRegion;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
+    this.cancelRegionLinkBtn!.node.active = onRegion && caps.canCancelRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
     this.openWorldTargetBtn!.node.active = onWorld;
     this.cycleWorldTargetBtn!.node.active = onWorld;
@@ -574,6 +583,14 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] region link failed: ${out.errorCode ?? "unknown"}`);
+  }
+
+  private onCancelRegionLink(): void {
+    if (!this.boot) return;
+    const out = regionCancelSelectedLink(this.boot);
+    this.lastActionKey = out.messageKey;
+    this.refresh();
+    if (!out.ok) console.warn(`[CityHudPanel] cancel region link failed: ${out.errorCode ?? "unknown"}`);
   }
 
   private onCycleRegionLink(): void {

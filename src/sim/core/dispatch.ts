@@ -259,8 +259,26 @@ export function dispatch(
         linkType: command.linkType,
         status: "building",
         monthsRemaining: GRID_LINK_BUILD_MONTHS,
-        lossMw: getGridLinkLossMw(next, config, command.linkType)
+        lossMw: getGridLinkLossMw(next, config, command.linkType),
+        buildCost: gridLinkCost
       };
+      break;
+    }
+    case "cancel_grid_link": {
+      const link = next.gridLinks[command.linkId];
+      if (!link) {
+        return err("not_found", "grid link item not found", {
+          link_id: command.linkId
+        });
+      }
+      if (link.status !== "building") {
+        return err("conflict_in_progress", "only building grid links can be cancelled", {
+          link_id: command.linkId,
+          status: link.status
+        });
+      }
+      next.funds += link.buildCost ?? getGridLinkBuildCost(next, config, GRID_LINK_COST, link.linkType);
+      delete next.gridLinks[command.linkId];
       break;
     }
     case "queue_super_hydro": {

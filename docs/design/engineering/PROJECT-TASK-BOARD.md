@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.48.0
+version: 1.49.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -54,6 +54,7 @@ open_questions: []
 
 | 日期 | 结论 | 变更文件 | 验证 |
 |------|------|----------|------|
+| 2026-06-29 | `FAST-01` 在建线路取消子步：补齐设计已列出的 `cancel_grid_link` 命令；新铺线路记录实际扣费，在建区域线/主干线可全额退款并移出队列，已完工线路拒绝取消；区域开发 HUD 新增“取消线”入口并按当前区域在建线路门控 | `client/cocos/assets/scripts/CityHudPanel.ts` `src/app/clientHudCapabilities.ts` `src/app/cocosClientExports.ts` `src/app/regionHudController.ts` `src/i18n/messages/en.ts` `src/i18n/messages/zh-CN.ts` `src/modules/screenRegion.ts` `src/sim/core/dispatch.ts` `src/sim/types/commands.ts` `src/sim/types/gameState.ts` `tests/app/clientHudCapabilities.test.ts` `tests/app/clientHudDisplay.test.ts` `tests/app/regionHudController.test.ts` `tests/modules/screenRegion.test.ts` `tests/sim/settle.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client:fast` 提权通过 |
 | 2026-06-29 | `FAST-01` 智能调度区域线损子步：按 `07-tech` 已定义效果补齐 `eng_grid_dispatch` 科技，点亮后区域线损从 125MW 按 -10% 降到 112MW；新建区域线、既有区域线月结刷新与区域 HUD 候选展示统一走同一计算口径，主干线仍只受特高压档影响 | `docs/design/data/vertical-slice-v0/technology_config.json` `client/cocos/assets/resources/config/v0/technology_config.json` `src/sim/core/technologyEffects.ts` `src/sim/core/dispatch.ts` `src/sim/core/settleNextMonth.ts` `src/sim/index.ts` `src/modules/screenRegion.ts` `tests/sim/configBundle.test.ts` `tests/sim/settle.test.ts` `tests/modules/screenRegion.test.ts` `docs/design/engineering/PROJECT-TASK-BOARD.md` | `cmd.exe /c npm run build` 通过；`cmd.exe /c npm run lint:boundaries` 通过；`cmd.exe /c npm test` 提权通过；`cmd.exe /c npm run build:client` 提权通过；`cmd.exe /c npm run verify:client:fast` 提权通过；`cmd.exe /c npm run verify:client` 提权通过 |
 | 2026-06-29 | `OPS-01` 全局规则归位修正：确认基础输出结构属于 `C:\Users\DCZX2\.codex\AGENTS.md` 全局规则，而非项目规则；项目 `AGENTS.md` 恢复为 Energy Company 专用约束，全局文件补充“适用于所有新窗口与所有项目”说明 | `C:\Users\DCZX2\.codex\AGENTS.md` `AGENTS.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
 | 2026-06-29 | `OPS-01` 新会话规则遵守修复：将 `AGENTS.md` 的启动要求前置为硬门槛，明确新开窗口必须先读本文件与看板、改动后按规则验证/提交，并在用户指出未遵守时优先回查协作入口 | `AGENTS.md` `docs/design/engineering/PROJECT-TASK-BOARD.md` | 仅文档/规则整理，无需跑测试 |
@@ -186,3 +187,4 @@ open_questions: []
 | 1.46.0 | 2026-06-29 | 补记 `OPS-01` 新会话规则遵守修复：`AGENTS.md` 前置启动硬门槛，要求新 Agent 先读协作入口与看板 |
 | 1.47.0 | 2026-06-29 | 补记 `OPS-01` 全局规则归位修正：基础输出结构归入用户级全局 `AGENTS.md`，项目文件恢复项目专用 |
 | 1.48.0 | 2026-06-29 | 补记 `FAST-01` 智能调度区域线损子步：`eng_grid_dispatch` 进入真实区域线损结算与 HUD 候选展示 |
+| 1.49.0 | 2026-06-29 | 补记 `FAST-01` 在建线路取消子步：`cancel_grid_link` 进入模拟层、区域模块与开发 HUD |

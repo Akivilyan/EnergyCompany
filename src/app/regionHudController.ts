@@ -28,9 +28,18 @@ export interface RegionHudSelectionSnapshot {
     lossMw: number;
   }>;
   selectedCandidateId: string | null;
+  cancelableLinks: Array<{
+    linkId: string;
+    fromCityId: string;
+    toCityId: string;
+    linkType: "region" | "trunk";
+    label: string;
+    buildCost: number | null;
+  }>;
 }
 
 const selectedCandidateByBoot = new WeakMap<GameBootstrap, string>();
+const selectedCancelableLinkByBoot = new WeakMap<GameBootstrap, string>();
 
 function toActionResult(
   boot: GameBootstrap,
@@ -61,6 +70,17 @@ function resolveQueueErrorMessageKey(errorCode: string): string {
   }
 }
 
+function resolveCancelErrorMessageKey(errorCode: string): string {
+  switch (errorCode) {
+    case "not_found":
+      return "region.error.cancel_not_found";
+    case "conflict_in_progress":
+      return "region.error.cancel_finished";
+    default:
+      return "region.error.cancel_failed";
+  }
+}
+
 function getLinkTypeLabel(linkType: "region" | "trunk"): string {
   return linkType === "trunk" ? t("region.link_type.trunk") : t("region.link_type.region");
 }
@@ -83,6 +103,37 @@ function getLinkCandidates(boot: GameBootstrap) {
         to: candidate.toCityName
       })
     }));
+}
+
+function getCancelableLinks(boot: GameBootstrap) {
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const snapshot = boot.app.screens.region(regionId).getSnapshot();
+  return snapshot.gridLinks
+    .filter((link) => link.status === "building")
+    .map((link) => ({
+      linkId: link.linkId,
+      fromCityId: link.fromCityId,
+      toCityId: link.toCityId,
+      linkType: link.linkType,
+      buildCost: link.buildCost,
+      label: t("region.cancel.label", {
+        type: getLinkTypeLabel(link.linkType),
+        from: link.fromCityId,
+        to: link.toCityId
+      })
+    }));
+}
+
+function ensureSelectedCancelableLink(boot: GameBootstrap) {
+  const links = getCancelableLinks(boot);
+  if (links.length === 0) {
+    selectedCancelableLinkByBoot.delete(boot);
+    return null;
+  }
+  const remembered = selectedCancelableLinkByBoot.get(boot);
+  const selected = links.find((link) => link.linkId === remembered) ?? links[0];
+  selectedCancelableLinkByBoot.set(boot, selected.linkId);
+  return selected;
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap) {
@@ -108,9 +159,12 @@ function ensureSelectedCandidate(boot: GameBootstrap) {
 export function getRegionHudSelectionSnapshot(boot: GameBootstrap): RegionHudSelectionSnapshot {
   const candidates = getLinkCandidates(boot);
   const selected = ensureSelectedCandidate(boot);
+  const cancelableLinks = getCancelableLinks(boot);
+  ensureSelectedCancelableLink(boot);
   return {
     candidates,
-    selectedCandidateId: selected?.candidateId ?? null
+    selectedCandidateId: selected?.candidateId ?? null,
+    cancelableLinks
   };
 }
 
@@ -140,6 +194,20 @@ export function regionQueueDefaultLink(boot: GameBootstrap): RegionHudActionResu
     );
   }
   return toActionResult(boot, false, out.result.error, resolveQueueErrorMessageKey(out.result.error));
+}
+
+export function regionCancelSelectedLink(boot: GameBootstrap): RegionHudActionResult {
+  const selected = ensureSelectedCancelableLink(boot);
+  if (!selected) {
+    return toActionResult(boot, false, "not_found", "region.action.no_cancelable_link");
+  }
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const out = boot.app.screens.region(regionId).cancelGridLink(selected.linkId);
+  if (out.result.ok) {
+    selectedCancelableLinkByBoot.delete(boot);
+    return toActionResult(boot, true, null, "region.success.link_cancelled");
+  }
+  return toActionResult(boot, false, out.result.error, resolveCancelErrorMessageKey(out.result.error));
 }
 
 export function regionCycleLinkCandidate(boot: GameBootstrap): RegionHudActionResult {

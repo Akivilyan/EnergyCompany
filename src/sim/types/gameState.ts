@@ -87,6 +87,7 @@ export interface GridLinkRuntime {
   status: "building" | "finished";
   monthsRemaining: number;
   lossMw: number;
+  buildCost?: number;
 }
 
 export interface SuperHydroRuntime {

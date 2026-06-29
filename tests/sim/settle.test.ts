@@ -325,6 +325,68 @@ describe("settleNextMonth", () => {
     expect(result.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(
       config.bundle.gridLoss.loss_regional_mw
     );
+    expect(result.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.buildCost).toBe(6);
+  });
+
+  it("dispatch supports cancel_grid_link with full refund while building", () => {
+    const config = loadTestConfig();
+    let state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
+    const initialFunds = state.funds;
+
+    const queued = dispatch(
+      state,
+      {
+        type: "queue_grid_link",
+        fromCityId: "CITY-START",
+        toCityId: "CITY-MAP01-02",
+        linkType: "region"
+      },
+      config,
+      defaultPorts
+    );
+    expect(queued.ok).toBe(true);
+    if (!queued.ok) return;
+    state = queued.value.state;
+    expect(state.funds).toBe(initialFunds - 6);
+
+    const cancelled = dispatch(
+      state,
+      { type: "cancel_grid_link", linkId: "CITY-MAP01-02::CITY-START" },
+      config,
+      defaultPorts
+    );
+    expect(cancelled.ok).toBe(true);
+    if (!cancelled.ok) return;
+    expect(cancelled.value.state.funds).toBe(initialFunds);
+    expect(cancelled.value.state.gridLinks["CITY-MAP01-02::CITY-START"]).toBeUndefined();
+  });
+
+  it("dispatch blocks cancel_grid_link after link is finished", () => {
+    const config = loadTestConfig();
+    const state = withSecondCity(createInitialState(config), config);
+    state.companyLevel = 2;
+    state.gridLinks["CITY-MAP01-02::CITY-START"] = {
+      linkId: "CITY-MAP01-02::CITY-START",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-MAP01-02",
+      linkType: "region",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: config.bundle.gridLoss.loss_regional_mw,
+      buildCost: 8
+    };
+
+    const cancelled = dispatch(
+      state,
+      { type: "cancel_grid_link", linkId: "CITY-MAP01-02::CITY-START" },
+      config,
+      defaultPorts
+    );
+    expect(cancelled.ok).toBe(false);
+    if (cancelled.ok) return;
+    expect(cancelled.error).toBe("conflict_in_progress");
   });
 
   it("applies eng_grid_dispatch regional loss reduction when queueing region links", () => {

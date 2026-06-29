@@ -4,6 +4,7 @@ import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
 export interface ClientHudCapabilities {
   canQueueRegionLink: boolean;
   canCycleRegionLink: boolean;
+  canCancelRegionLink: boolean;
   canQueueWorldTrunk: boolean;
   canQueueSuperHydro: boolean;
   canOperateTech: boolean;
@@ -27,6 +28,7 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
   return {
     canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
     canCycleRegionLink: availableRegionCandidates.length > 0,
+    canCancelRegionLink: region.gridLinks.some((link) => link.status === "building"),
     canQueueWorldTrunk:
       worldTrunk !== null && worldTrunk.available && boot.app.controller.state.funds >= worldTrunk.cost,
     canQueueSuperHydro:

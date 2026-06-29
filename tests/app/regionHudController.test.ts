@@ -3,6 +3,7 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import { clientNavOpenRegion, clientNavOpenRegionById } from "../../src/app/screenNavController.js";
 import {
   getRegionHudSelectionSnapshot,
+  regionCancelSelectedLink,
   regionCycleLinkCandidate,
   regionQueueDefaultLink
 } from "../../src/app/regionHudController.js";
@@ -29,6 +30,23 @@ describe("regionHudController", () => {
     expect(links.some((l) => l.fromCityId === "CITY-START" && l.toCityId === "CITY-MAP01-02")).toBe(
       true
     );
+  });
+
+  it("cancels selected building region link from hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const level = techEnsureLevelIIForDev(boot);
+    expect(level.ok).toBe(true);
+    clientNavOpenRegion(boot);
+    const queued = regionQueueDefaultLink(boot);
+    expect(queued.ok).toBe(true);
+
+    const selection = getRegionHudSelectionSnapshot(boot);
+    expect(selection.cancelableLinks).toHaveLength(1);
+
+    const cancelled = regionCancelSelectedLink(boot);
+    expect(cancelled.ok).toBe(true);
+    expect(cancelled.messageKey).toBe("region.success.link_cancelled");
+    expect(getRegionHudSelectionSnapshot(boot).cancelableLinks).toHaveLength(0);
   });
 
   it("cycles to second-batch map candidate and queues trunk at company level III", () => {

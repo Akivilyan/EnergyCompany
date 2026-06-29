@@ -25,6 +25,7 @@ export interface RegionGridLinkItem {
   linkType: "region" | "trunk";
   status: "building" | "finished";
   monthsRemaining: number;
+  buildCost: number | null;
 }
 
 export interface RegionLinkCandidate {
@@ -66,6 +67,12 @@ export interface ScreenRegionSnapshot {
 }
 
 export interface RegionQueueGridLinkOutput {
+  before: ScreenRegionSnapshot;
+  after: ScreenRegionSnapshot;
+  result: SimResult<{ state: GameState }>;
+}
+
+export interface RegionCancelGridLinkOutput {
   before: ScreenRegionSnapshot;
   after: ScreenRegionSnapshot;
   result: SimResult<{ state: GameState }>;
@@ -133,7 +140,8 @@ export class ScreenRegion {
         toCityId: link.toCityId,
         linkType: link.linkType,
         status: link.status,
-        monthsRemaining: link.monthsRemaining
+        monthsRemaining: link.monthsRemaining,
+        buildCost: link.buildCost ?? null
       }))
       .sort((a, b) => a.linkId.localeCompare(b.linkId));
 
@@ -292,6 +300,16 @@ export class ScreenRegion {
       fromCityId,
       toCityId,
       linkType
+    });
+    const after = this.getSnapshot();
+    return { before, after, result };
+  }
+
+  cancelGridLink(linkId: string): RegionCancelGridLinkOutput {
+    const before = this.getSnapshot();
+    const result = this.controller.runCommand({
+      type: "cancel_grid_link",
+      linkId
     });
     const after = this.getSnapshot();
     return { before, after, result };

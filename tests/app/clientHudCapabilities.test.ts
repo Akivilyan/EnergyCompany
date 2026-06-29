@@ -14,6 +14,7 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: false
@@ -35,6 +36,7 @@ describe("getClientHudCapabilities", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: true,
       canCycleRegionLink: true,
+      canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: true

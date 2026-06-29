@@ -79,6 +79,7 @@ describe("clientHudDisplay", () => {
       canCycleBuildCandidate: true,
       canQueueRegionLink: false,
       canCycleRegionLink: false,
+      canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canOperateTech: false

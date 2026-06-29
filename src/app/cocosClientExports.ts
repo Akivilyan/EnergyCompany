@@ -49,6 +49,7 @@ export {
   DEFAULT_REGION_LINK,
   formatSelectedRegionLink,
   getRegionHudSelectionSnapshot,
+  regionCancelSelectedLink,
   regionCycleLinkCandidate,
   regionQueueDefaultLink
 } from "./regionHudController.js";
