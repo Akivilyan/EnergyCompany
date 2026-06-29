@@ -2,16 +2,18 @@
 id: engineering/codex-project-rules
 title: Codex 项目规则
 status: draft
-version: 0.3.0
+version: 0.4.0
 sources:
   - AGENTS.md
   - docs/design/engineering/architecture.md
   - docs/design/engineering/cocos-client-setup.md
   - docs/design/engineering/PROJECT-TASK-BOARD.md
+  - docs/design/engineering/PROJECT-LOG.md
 supersedes: []
 depends_on:
   - engineering/architecture
   - engineering/project-task-board
+  - engineering/project-log
 open_questions: []
 ---
 
@@ -26,9 +28,10 @@ open_questions: []
 1. `AGENTS.md`
 2. `docs/design/current-product-truth.md`
 3. `docs/design/engineering/PROJECT-TASK-BOARD.md`
-4. `docs/design/engineering/architecture.md`
-5. `docs/design/engineering/cocos-client-setup.md`（仅 Cocos / 微信相关）
-6. `docs/design/engineering/codex-handoff.md`（需要更完整工程上下文时）
+4. `docs/design/engineering/PROJECT-LOG.md`（需要追溯最近执行流水时）
+5. `docs/design/engineering/architecture.md`
+6. `docs/design/engineering/cocos-client-setup.md`（仅 Cocos / 微信相关）
+7. `docs/design/engineering/codex-handoff.md`（需要更完整工程上下文时）
 
 ## 2. 架构边界速查
 
@@ -112,9 +115,9 @@ infra 通过端口注入
 
 ### 看板更新守则
 
-- 对话结束前更新 `PROJECT-TASK-BOARD.md`
-- 只保留 1 个当前进行中的任务
-- 日志记录写本轮结论、涉及文件、验证结果
+- 当前阶段、当前任务、下一步只写 `PROJECT-TASK-BOARD.md`
+- 执行流水、涉及文件、验证结果、版本记录写 `PROJECT-LOG.md`
+- `PROJECT-TASK-BOARD.md` 只保留 1 个当前进行中的任务和最近 3 到 5 条摘要
 
 ## 5. 微信构建与联调
 
@@ -142,7 +145,8 @@ infra 通过端口注入
 | 用途 | 文件 |
 |------|------|
 | 当前版本真相 | `docs/design/current-product-truth.md` |
-| 当前状态 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
+| 当前状态与下一步 | `docs/design/engineering/PROJECT-TASK-BOARD.md` |
+| 执行日志与验证记录 | `docs/design/engineering/PROJECT-LOG.md` |
 | 实现拆条 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
 | 设计总览 | `docs/design/README.md` |
 | Cocos 初始化与真机冒烟 | `docs/design/engineering/cocos-client-setup.md` |
@@ -154,3 +158,4 @@ infra 通过端口注入
 |------|------|------|
 | 0.1.0 | 2026-06-17 | 首版：承接原项目规则、验证选择、边界守则与微信联调注意事项 |
 | 0.2.0 | 2026-06-22 | 新增设计文档守则：实现必须遵从设计文档，发现错漏或更优方案需先与用户核对 |
+| 0.4.0 | 2026-06-29 | 拆分看板与执行日志职责：看板保留当前态，日志承接流水与验证记录 |

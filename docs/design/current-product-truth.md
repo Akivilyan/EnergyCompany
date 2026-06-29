@@ -2,13 +2,14 @@
 id: design/current-product-truth
 title: 当前产品真相与阶段完成定义
 status: draft
-version: 0.3.0
+version: 0.4.0
 sources:
   - docs/design/gdd/00-vision.md
   - docs/design/gdd/01-core-loop.md
   - docs/design/gdd/03-social-value.md
   - docs/design/gdd/11-replayability.md
   - docs/design/engineering/PROJECT-TASK-BOARD.md
+  - docs/design/engineering/PROJECT-LOG.md
   - docs/design/engineering/cocos-client-setup.md
   - docs/design/engineering/architecture.md
 supersedes: []
@@ -16,6 +17,7 @@ depends_on:
   - gdd/00-vision
   - gdd/01-core-loop
   - engineering/project-task-board
+  - engineering/project-log
 open_questions: []
 ---
 
@@ -83,7 +85,7 @@ open_questions: []
 
 - 入口收敛为 `README.md`、`AGENTS.md`、`codex-project-rules.md`
 - `.cursor/` 已退出当前主路径
-- 主看板、设计摘要、历史归档职责清晰
+- 主看板、执行日志、设计摘要、历史归档职责清晰
 - 后续新会话不再依赖旧 Cursor 规则体系
 
 当前状态：已完成。
@@ -124,6 +126,7 @@ open_questions: []
 
 - 判断“现在做到哪了”，先看本页
 - 判断“当前在干什么”，看 `engineering/PROJECT-TASK-BOARD.md`
+- 判断“最近做了什么、验证怎么跑”，看 `engineering/PROJECT-LOG.md`
 - 判断“规则真相是什么”，看 `gdd/`、`features/`、`ui/` 对应页
 
 ## 变更记录
@@ -133,3 +136,4 @@ open_questions: []
 | 0.1.0 | 2026-06-17 | 首版：固定当前产品范围、已完成事实与阶段完成定义 |
 | 0.2.0 | 2026-06-17 | 按用户纠偏修正 `T51` 状态：已构建并在真机跑起，但仍未完成收口 |
 | 0.3.0 | 2026-06-18 | 基于最新真机反馈调整主线判断：真机不再作为统一阻塞项，转入 Playable Demo 快线推进 |
+| 0.4.0 | 2026-06-29 | 更新文档职责：当前态看 `PROJECT-TASK-BOARD.md`，执行流水与验证记录看 `PROJECT-LOG.md` |
