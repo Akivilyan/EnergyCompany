@@ -16,7 +16,11 @@ import {
   getWorldHudSelectionSnapshot
 } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
-import type { ResourceKind, WorldMapRegionItem } from "../modules/screenWorldMap.js";
+import type {
+  RecommendedBuildKind,
+  ResourceKind,
+  WorldMapRegionItem
+} from "../modules/screenWorldMap.js";
 
 export function formatLoanTierLabel(loanId: string): string {
   const key = `loan.tier.${loanId}`;
@@ -64,6 +68,27 @@ function formatRichResources(resources: ResourceKind[]): string {
   return resources.length > 0
     ? resources.map(formatResourceKind).join("/")
     : t("resource.none");
+}
+
+function formatRecommendedBuildKind(kind: RecommendedBuildKind): string {
+  switch (kind) {
+    case "wind":
+      return t("facility.wind");
+    case "solar":
+      return t("facility.solar");
+    case "hydro":
+      return t("facility.hydro");
+    case "thermal":
+      return t("facility.thermal");
+    case "nuclear":
+      return t("facility.nuclear");
+  }
+}
+
+function formatRecommendedBuilds(builds: RecommendedBuildKind[]): string {
+  return builds.length > 0
+    ? builds.map(formatRecommendedBuildKind).join("/")
+    : t("facility.none");
 }
 
 function formatRegionDesignRole(role: string | null): string {
@@ -158,7 +183,8 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       river: s.riverCityCount,
       nuclear: s.nuclearEligibleCityCount,
       sv: s.totalBaseSocialValue,
-      resources: formatRichResources(s.richResources)
+      resources: formatRichResources(s.richResources),
+      builds: formatRecommendedBuilds(s.recommendedBuilds)
     }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
@@ -250,6 +276,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           sv: focusRegion.totalBaseSocialValue,
           role: formatRegionDesignRole(focusRegion.designRole),
           resources: formatRichResources(focusRegion.richResources),
+          builds: formatRecommendedBuilds(focusRegion.recommendedBuilds),
           trunk: formatWorldConnectionStatus(focusRegion)
         })
       : null,

@@ -60,6 +60,7 @@ describe("screenWorldMap", () => {
     expect(map06?.supplyRatio).toBe(0);
     expect(map06?.totalBaseSocialValue).toBe(38);
     expect(map06?.richResources).toEqual(["wind", "solar", "fossil"]);
+    expect(map06?.recommendedBuilds).toEqual(["wind", "solar", "thermal", "nuclear"]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.designRole).toBe("terminal_metropolis_load_hub");
     expect(metB?.totalDemandMw).toBe(2100);
@@ -72,7 +73,33 @@ describe("screenWorldMap", () => {
     expect(metB?.nuclearEligibleCityCount).toBe(1);
     expect(metB?.totalBaseSocialValue).toBe(28);
     expect(metB?.richResources).toEqual(["solar", "hydro"]);
+    expect(metB?.recommendedBuilds).toEqual(["solar", "hydro", "nuclear"]);
     expect(metB?.connectionStatus).toBe("available");
+  });
+
+  it("keeps level-V province build recommendations differentiated", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-06")?.recommendedBuilds).toEqual([
+      "wind",
+      "solar",
+      "thermal",
+      "nuclear"
+    ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-07")?.recommendedBuilds).toEqual([
+      "wind",
+      "solar",
+      "hydro"
+    ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-08")?.recommendedBuilds).toEqual([
+      "wind",
+      "solar",
+      "hydro",
+      "nuclear"
+    ]);
   });
 
   it("summarizes regional effective supply from runtime city state", () => {

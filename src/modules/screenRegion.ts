@@ -6,7 +6,7 @@ import {
   type SimResult
 } from "../sim/index.js";
 import type { RunController } from "./runController.js";
-import type { ResourceKind } from "./screenWorldMap.js";
+import { getRecommendedBuilds, type RecommendedBuildKind, type ResourceKind } from "./screenWorldMap.js";
 
 export interface RegionCityItem {
   cityId: string;
@@ -57,6 +57,7 @@ export interface ScreenRegionSnapshot {
   nuclearEligibleCityCount: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
+  recommendedBuilds: RecommendedBuildKind[];
   month: number;
   companyLevel: number;
   funds: number;
@@ -164,6 +165,7 @@ export class ScreenRegion {
       nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length,
       totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
       richResources,
+      recommendedBuilds: getRecommendedBuilds(regionConfig ?? {}, regionCities),
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,
       funds: this.controller.state.funds,

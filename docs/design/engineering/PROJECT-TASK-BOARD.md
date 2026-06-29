@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.52.0
+version: 1.53.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -46,7 +46,7 @@ open_questions: []
 
 ## 4. 下一步
 
-1. 把 V 级后新开的 `MAP-06~08` / `MET-B` 从“能进”推进到“有更强经营差异”
+1. 继续把 V 级后新开的 `MAP-06~08` / `MET-B` 从“有差异提示”推进到“有差异化经营压力”
 2. 继续把 III～V 级科技从“有节点”推进到“有后续经营分叉”，优先补生态改造与更长经营差异
 3. 继续保持 `build` / `test` / `build:client` / `verify:client:fast` / `verify:client` 持续可跑
 4. 再回头收正式 UI / SDK / 数值收敛
@@ -56,9 +56,9 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-06-29 | `FAST-01` 为区域/大地图 HUD 增加推荐建设路线：`MAP-06~08` / `MET-B` 按资源、火电、核电、水电条件显示差异化经营打法 |
 | 2026-06-29 | `FAST-01` 补齐 IV 级经营科技 `eng_cashflow`：点亮后贷款可用档位 +1，HUD 与核心校验共用同一口径 |
 | 2026-06-29 | 删除 `PROJECT-LOG.md`：执行流水、验证记录和版本记录改由 Git commit 与最终回复承接 |
-| 2026-06-29 | `OPS-01` 文档瘦身：主看板保留当前态和下一步，流水与验证记录改由 Git 承接 |
 
 ## 6. 文档分工
 
@@ -76,3 +76,4 @@ open_questions: []
 | 1.50.0 | 2026-06-29 | 拆分主看板职责：主看板只保留当前状态、下一步和最近摘要 |
 | 1.51.0 | 2026-06-29 | 删除 `PROJECT-LOG.md` 入口：流水和验证记录改由 Git 历史与提交说明承接 |
 | 1.52.0 | 2026-06-29 | 记录 `eng_cashflow` 经营科技落地 |
+| 1.53.0 | 2026-06-29 | 记录区域/大地图推荐建设路线落地 |

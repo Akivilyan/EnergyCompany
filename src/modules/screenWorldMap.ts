@@ -1,6 +1,7 @@
 import type { RunController } from "./runController.js";
 
 export type ResourceKind = "wind" | "solar" | "hydro" | "fossil";
+export type RecommendedBuildKind = "wind" | "solar" | "hydro" | "thermal" | "nuclear";
 
 export type WorldMapConnectionStatus =
   | "capital"
@@ -30,6 +31,7 @@ export interface WorldMapRegionItem {
   supplyRatio: number;
   totalBaseSocialValue: number;
   richResources: ResourceKind[];
+  recommendedBuilds: RecommendedBuildKind[];
   centralCityId: string | null;
   centralCityUnlocked: boolean;
   connectionStatus: WorldMapConnectionStatus;
@@ -97,6 +99,34 @@ function getRichResources(
     richResources.push("fossil");
   }
   return richResources;
+}
+
+export function getRecommendedBuilds(
+  region: { fossil_energy?: boolean },
+  regionCities: Array<{
+    wind_resource?: string;
+    solar_resource?: string;
+    hydro_resource?: string;
+    fossil_energy?: boolean;
+    has_river?: boolean;
+    is_nuclear_eligible?: boolean;
+  }>
+): RecommendedBuildKind[] {
+  const recommended: RecommendedBuildKind[] = [];
+  if (regionCities.some((city) => city.wind_resource === "rich")) recommended.push("wind");
+  if (regionCities.some((city) => city.solar_resource === "rich")) recommended.push("solar");
+  if (
+    regionCities.some(
+      (city) => city.has_river && (city.hydro_resource === "rich" || regionCities.length === 1)
+    )
+  ) {
+    recommended.push("hydro");
+  }
+  if (region.fossil_energy || regionCities.some((city) => city.fossil_energy)) {
+    recommended.push("thermal");
+  }
+  if (regionCities.some((city) => city.is_nuclear_eligible)) recommended.push("nuclear");
+  return recommended;
 }
 
 export class ScreenWorldMap {
@@ -184,6 +214,7 @@ export class ScreenWorldMap {
             0
           ),
           richResources: getRichResources(region, regionCities),
+          recommendedBuilds: getRecommendedBuilds(region, regionCities),
           centralCityId: centralCity?.city_id ?? null,
           centralCityUnlocked: centralCity ? state.companyLevel >= centralCity.unlock_company_level : false,
           connectionStatus,
