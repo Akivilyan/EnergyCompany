@@ -201,6 +201,24 @@ export function getLoanTierLevelBonus(state: GameState, config: ConfigRepo): num
   return Math.max(0, sumModifierPercent(state, config, "loan_tier_bonus", "loan"));
 }
 
+export function getResearchCost(
+  state: GameState,
+  config: ConfigRepo,
+  baseCost: number
+): number {
+  if (state.doctrineId !== "tech") return baseCost;
+  return applyPercent(baseCost, config.bundle.doctrineMetaTechL1.research_cost_pct - 100);
+}
+
+export function getResearchMonths(
+  state: GameState,
+  config: ConfigRepo,
+  baseMonths: number
+): number {
+  if (state.doctrineId !== "tech") return baseMonths;
+  return Math.max(1, baseMonths - config.bundle.doctrineMetaTechL1.research_months_reduction);
+}
+
 export function getEcoCitySocialValue(
   state: GameState,
   config: ConfigRepo,

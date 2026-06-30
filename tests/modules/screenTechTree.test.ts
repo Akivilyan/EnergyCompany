@@ -41,7 +41,7 @@ describe("ScreenTechTree", () => {
     expect(cancel.uiErrorCode).toBeNull();
     expect(cancel.uiCopy).toBeNull();
     expect(cancel.after.activeResearch).toBeNull();
-    expect(cancel.after.funds).toBe(cancel.before.funds + 40);
+    expect(cancel.after.funds).toBe(cancel.before.funds + 32);
   });
 
   it("research can complete to lit through monthly settle", () => {
@@ -112,6 +112,8 @@ describe("ScreenTechTree", () => {
     expect(wind2?.displayName).toBe("风电·II");
     expect(storage1?.status).toBe("locked");
     expect(wind2?.effectSummary).toBe("wind tier <= 2");
+    expect(wind2?.researchCost).toBe(32);
+    expect(wind2?.researchMonths).toBe(1);
     expect(snapshot.researchableTechIds).toEqual([
       "eng_bulk_procure",
       "hydro_2",

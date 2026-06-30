@@ -36,6 +36,7 @@ export async function loadConfigFromResources(): Promise<ConfigRepo> {
     difficulties: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.difficulties)),
     adRewards: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.adRewards)),
     technologies: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.technologies)),
+    doctrineMetaTechL1: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.doctrineMetaTechL1)),
     gridLoss: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.gridLoss)),
     superHydroSlots: await loadJsonAsset(stripJsonSuffix(V0_CONFIG_JSON_FILES.superHydroSlots))
   };

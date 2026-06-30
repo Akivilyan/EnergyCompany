@@ -1,4 +1,5 @@
 import type { GameState, SimResult } from "../sim/index.js";
+import { getResearchCost, getResearchMonths } from "../sim/index.js";
 import type { TechnologyTab } from "../sim/config/configRepo.js";
 import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
 import {
@@ -250,8 +251,8 @@ export class ScreenTechTree {
           companyLevelMin: tech.company_level_min,
           status,
           requiresLit: [...(tech.requires_lit ?? [])],
-          researchCost: tech.research_cost,
-          researchMonths: tech.research_months,
+          researchCost: getResearchCost(this.controller.state, this.controller.config, tech.research_cost),
+          researchMonths: getResearchMonths(this.controller.state, this.controller.config, tech.research_months),
           effectSummary: formatTechEffectSummary(tech)
         };
       })

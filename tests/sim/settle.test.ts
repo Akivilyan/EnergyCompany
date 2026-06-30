@@ -109,8 +109,9 @@ describe("settleNextMonth", () => {
     expect(start.ok).toBe(true);
     if (!start.ok) return;
     state = start.value.state;
-    expect(state.funds).toBe(initialFunds - 40);
+    expect(state.funds).toBe(initialFunds - 32);
     expect(Object.keys(state.researches)).toContain("wind_2");
+    expect(state.researches["wind_2"]?.monthsRemaining).toBe(1);
 
     const second = dispatch(
       state,
@@ -121,6 +122,26 @@ describe("settleNextMonth", () => {
     expect(second.ok).toBe(false);
     if (second.ok) return;
     expect(second.error).toBe("conflict_in_progress");
+  });
+
+  it("keeps research table cost and months for non-tech doctrine", () => {
+    const config = loadTestConfig();
+    let state = createInitialState(config, { doctrineId: "renewable" });
+    state.companyLevel = 2;
+    const initialFunds = state.funds;
+
+    const start = dispatch(
+      state,
+      { type: "start_research", techId: "wind_2" },
+      config,
+      defaultPorts
+    );
+
+    expect(start.ok).toBe(true);
+    if (!start.ok) return;
+    state = start.value.state;
+    expect(state.funds).toBe(initialFunds - 40);
+    expect(state.researches["wind_2"]?.monthsRemaining).toBe(2);
   });
 
   it("dispatch supports cancel_research with full refund", () => {

@@ -25,6 +25,7 @@ export function loadConfigRepoFromConfigDir(configDir: string): ConfigRepo {
     difficulties: readJson(path.join(configDir, "difficulty_modifiers.json")),
     adRewards: readJson(path.join(configDir, "ad_rewards.json")),
     technologies: readJson(path.join(configDir, "technology_config.json")),
+    doctrineMetaTechL1: readJson(path.join(configDir, "doctrine_meta_tech_l1.json")),
     gridLoss: readJson(path.join(configDir, "grid_loss_config.json")),
     superHydroSlots: readJson(path.join(configDir, "super_hydro_slots.json"))
   };

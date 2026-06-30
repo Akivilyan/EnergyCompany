@@ -4,6 +4,7 @@ import type {
   CompanyLevelConfig,
   ConfigBundle,
   DifficultyModifier,
+  DoctrineMetaTechConfig,
   DisasterConfig,
   FacilityConfig,
   GridLossConfig,
@@ -29,6 +30,7 @@ export const V0_CONFIG_JSON_FILES = {
   difficulties: "difficulty_modifiers.json",
   adRewards: "ad_rewards.json",
   technologies: "technology_config.json",
+  doctrineMetaTechL1: "doctrine_meta_tech_l1.json",
   gridLoss: "grid_loss_config.json",
   superHydroSlots: "super_hydro_slots.json"
 } as const;
@@ -44,6 +46,7 @@ export interface ConfigBundleInput {
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
+  doctrineMetaTechL1: DoctrineMetaTechConfig;
   gridLoss: GridLossConfig;
   superHydroSlots: SuperHydroSlotConfig[];
 }
@@ -60,6 +63,7 @@ export function buildConfigBundle(input: ConfigBundleInput): ConfigBundle {
     difficulties: input.difficulties,
     adRewards: input.adRewards,
     technologies: input.technologies,
+    doctrineMetaTechL1: input.doctrineMetaTechL1,
     gridLoss: input.gridLoss,
     superHydroSlots: input.superHydroSlots
   };

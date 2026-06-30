@@ -24,6 +24,7 @@ const configFiles = [
   "difficulty_modifiers.json",
   "ad_rewards.json",
   "technology_config.json",
+  "doctrine_meta_tech_l1.json",
   "grid_loss_config.json",
   "super_hydro_slots.json"
 ];

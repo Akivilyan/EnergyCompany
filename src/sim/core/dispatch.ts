@@ -11,6 +11,8 @@ import {
   getGridLinkBuildCost,
   getGridLinkLossMw,
   getLoanTierLevelBonus,
+  getResearchCost,
+  getResearchMonths,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
 
@@ -372,14 +374,15 @@ export function dispatch(
       if (Object.keys(next.researches).length > 0) {
         return err("conflict_in_progress", "only one active research allowed");
       }
-      if (next.funds < tech.research_cost) {
+      const researchCost = getResearchCost(next, config, tech.research_cost);
+      if (next.funds < researchCost) {
         return err("insufficient_funds", "not enough funds for research");
       }
-      next.funds -= tech.research_cost;
+      next.funds -= researchCost;
       next.researches[command.techId] = {
         researchId: `rq-${next.currentMonth}-${command.techId}`,
         techId: command.techId,
-        monthsRemaining: tech.research_months
+        monthsRemaining: getResearchMonths(next, config, tech.research_months)
       };
       break;
     }
@@ -401,7 +404,7 @@ export function dispatch(
         });
       }
       delete next.researches[foundTechId];
-      next.funds += tech.research_cost;
+      next.funds += getResearchCost(next, config, tech.research_cost);
       break;
     }
     case "advance_onboarding": {

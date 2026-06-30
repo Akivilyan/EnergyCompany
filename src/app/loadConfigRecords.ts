@@ -25,6 +25,7 @@ export function loadConfigRepoFromJsonDir(configDir: string): ConfigRepo {
     difficulties: readJsonFile(configDir, V0_CONFIG_JSON_FILES.difficulties),
     adRewards: readJsonFile(configDir, V0_CONFIG_JSON_FILES.adRewards),
     technologies: readJsonFile(configDir, V0_CONFIG_JSON_FILES.technologies),
+    doctrineMetaTechL1: readJsonFile(configDir, V0_CONFIG_JSON_FILES.doctrineMetaTechL1),
     gridLoss: readJsonFile(configDir, V0_CONFIG_JSON_FILES.gridLoss),
     superHydroSlots: readJsonFile(configDir, V0_CONFIG_JSON_FILES.superHydroSlots)
   };

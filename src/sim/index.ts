@@ -11,7 +11,9 @@ export { dispatch } from "./core/dispatch.js";
 export {
   getGridLinkBuildCost,
   getGridLinkLossMw,
-  getLoanTierLevelBonus
+  getLoanTierLevelBonus,
+  getResearchCost,
+  getResearchMonths
 } from "./core/technologyEffects.js";
 export { settleNextMonth } from "./core/settleNextMonth.js";
 export { serializeState, deserializeState } from "./core/serialization.js";

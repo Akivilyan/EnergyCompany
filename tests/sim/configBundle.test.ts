@@ -107,4 +107,17 @@ describe("buildConfigBundle", () => {
     expect(cashflowTech?.effect_target).toBe("loan");
     expect(cashflowTech?.effect_value.loan_tier_bonus).toBe(1);
   });
+
+  it("loads tech doctrine L1 research meta from vertical slice config", () => {
+    const config = loadTestConfig();
+
+    expect(config.bundle.doctrineMetaTechL1).toEqual(
+      expect.objectContaining({
+        doctrine_id: "tech",
+        meta_level: 1,
+        research_cost_pct: 80,
+        research_months_reduction: 1
+      })
+    );
+  });
 });

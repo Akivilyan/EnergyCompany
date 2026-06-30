@@ -6,6 +6,14 @@ export interface RunConfig {
   tutorial_level2_sv_threshold?: number;
 }
 
+export interface DoctrineMetaTechConfig {
+  doctrine_id: "tech";
+  meta_level: number;
+  research_cost_pct: number;
+  research_months_reduction: number;
+  notes?: string;
+}
+
 export interface DisasterConfig {
   campaign_id: string;
   seq: number;
@@ -149,6 +157,7 @@ export interface ConfigBundle {
   difficulties: DifficultyModifier[];
   adRewards: AdRewardConfig[];
   technologies: TechnologyConfig[];
+  doctrineMetaTechL1: DoctrineMetaTechConfig;
   gridLoss: GridLossConfig;
   superHydroSlots: SuperHydroSlotConfig[];
 }
