@@ -5,12 +5,14 @@ export type RecommendedBuildKind = "wind" | "solar" | "hydro" | "thermal" | "nuc
 export type OperatingPlanHint =
   | "secure_trunk"
   | "close_supply_gap"
+  | "hydro_wind_export"
   | "local_renewables"
   | "thermal_bridge"
   | "nuclear_anchor"
   | "hydro_anchor"
   | "super_hydro_import"
-  | "slot_efficiency";
+  | "slot_efficiency"
+  | "hybrid_balancing";
 export type OperatingPressureTag =
   | "high_demand"
   | "supply_gap"
@@ -18,7 +20,9 @@ export type OperatingPressureTag =
   | "low_slot_density"
   | "no_hydro"
   | "fossil_transition"
-  | "nuclear_siting";
+  | "nuclear_siting"
+  | "hydro_site_bound"
+  | "mixed_dispatch";
 
 export type WorldMapConnectionStatus =
   | "capital"
@@ -150,6 +154,7 @@ export function getRecommendedBuilds(
 
 export function getOperatingPressureTags(input: {
   regionId: string;
+  designRole?: string | null;
   totalDemandMw: number;
   supplyGapMw: number;
   totalBuildSlots: number;
@@ -175,6 +180,8 @@ export function getOperatingPressureTags(input: {
   if (input.riverCityCount === 0) tags.push("no_hydro");
   if (input.fossilEnergy) tags.push("fossil_transition");
   if (input.nuclearEligibleCityCount > 0) tags.push("nuclear_siting");
+  if (input.designRole === "plateau_hydro_wind_province") tags.push("hydro_site_bound");
+  if (input.designRole === "frontier_hybrid_balancing_province") tags.push("mixed_dispatch");
   return tags;
 }
 
@@ -184,6 +191,7 @@ export function getOperatingPlanHints(input: {
   connectionStatus?: WorldMapConnectionStatus;
   supplyGapMw: number;
   regionType?: string;
+  designRole?: string | null;
   totalBuildSlots: number;
   totalDemandMw: number;
 }): OperatingPlanHint[] {
@@ -201,6 +209,9 @@ export function getOperatingPlanHints(input: {
   if (input.supplyGapMw > 0 || hasPressure("supply_gap")) {
     hints.push("close_supply_gap");
   }
+  if (input.designRole === "plateau_hydro_wind_province") {
+    hints.push("hydro_wind_export");
+  }
   if (hasBuild("wind") || hasBuild("solar")) {
     hints.push("local_renewables");
   }
@@ -215,6 +226,9 @@ export function getOperatingPlanHints(input: {
   }
   if (hasPressure("low_slot_density") || input.totalBuildSlots * 180 < input.totalDemandMw) {
     hints.push("slot_efficiency");
+  }
+  if (input.designRole === "frontier_hybrid_balancing_province") {
+    hints.push("hybrid_balancing");
   }
 
   return hints;
@@ -283,8 +297,10 @@ export class ScreenWorldMap {
         }
 
         const recommendedBuilds = getRecommendedBuilds(region, regionCities);
+        const richResources = getRichResources(region, regionCities);
         const operatingPressureTags = getOperatingPressureTags({
           regionId: region.region_id,
+          designRole: region.design_role,
           totalDemandMw,
           supplyGapMw,
           totalBuildSlots,
@@ -316,7 +332,7 @@ export class ScreenWorldMap {
             (sum, city) => sum + city.city_base_social_value,
             0
           ),
-          richResources: getRichResources(region, regionCities),
+          richResources,
           recommendedBuilds,
           operatingPressureTags,
           operatingPlanHints: getOperatingPlanHints({
@@ -325,6 +341,7 @@ export class ScreenWorldMap {
             connectionStatus,
             supplyGapMw,
             regionType: region.region_type,
+            designRole: region.design_role,
             totalBuildSlots,
             totalDemandMw
           }),

@@ -207,6 +207,23 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("经营定位：终局都会负荷");
   });
 
+  it("shows MAP-07 and MAP-08 differentiated level-V operating routes in region hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+
+    boot.play.openScreen("screen_region", undefined, "MAP-07");
+    const map07 = buildClientHudDisplay(boot);
+    expect(map07.detailLines[1]).toContain("负荷1670MW");
+    expect(map07.detailLines[1]).toContain("压力供给缺口/主干优先/水点绑定");
+    expect(map07.detailLines).toContain("经营路线：先接主干/补足缺口/水风外送/本地风光/水电锚点");
+
+    boot.play.openScreen("screen_region", undefined, "MAP-08");
+    const map08 = buildClientHudDisplay(boot);
+    expect(map08.detailLines[1]).toContain("负荷2020MW");
+    expect(map08.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/核电选址/混合调配");
+    expect(map08.detailLines).toContain("经营路线：先接主干/补足缺口/本地风光/水电锚点/核电锚点/混合调配");
+  });
+
   it("shows grid_regional-adjusted region link cost in hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

@@ -161,6 +161,7 @@ export class ScreenRegion {
     const recommendedBuilds = getRecommendedBuilds(regionConfig ?? {}, regionCities);
     const operatingPressureTags = getOperatingPressureTags({
       regionId: this.regionId,
+      designRole: regionConfig?.design_role,
       totalDemandMw,
       supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
       totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
@@ -193,6 +194,7 @@ export class ScreenRegion {
         operatingPressureTags,
         supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
         regionType: regionConfig?.region_type,
+        designRole: regionConfig?.design_role,
         totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
         totalDemandMw
       }),

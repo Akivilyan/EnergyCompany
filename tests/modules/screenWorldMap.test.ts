@@ -124,11 +124,38 @@ describe("screenWorldMap", () => {
       "solar",
       "hydro"
     ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-07")?.operatingPressureTags).toEqual([
+      "supply_gap",
+      "trunk_first",
+      "hydro_site_bound"
+    ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-07")?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "hydro_wind_export",
+      "local_renewables",
+      "hydro_anchor"
+    ]);
     expect(snapshot.regions.find((region) => region.regionId === "MAP-08")?.recommendedBuilds).toEqual([
       "wind",
       "solar",
       "hydro",
       "nuclear"
+    ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-08")?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "nuclear_siting",
+      "mixed_dispatch"
+    ]);
+    expect(snapshot.regions.find((region) => region.regionId === "MAP-08")?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "hydro_anchor",
+      "nuclear_anchor",
+      "hybrid_balancing"
     ]);
   });
 

@@ -267,6 +267,59 @@ describe("ScreenRegion", () => {
     ).toBe(true);
   });
 
+  it("exposes MAP-07 hydro-wind operating pressure and route", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    const screen = createScreenRegionForRegion(controller, "MAP-07");
+
+    const snapshot = screen.getSnapshot();
+
+    expect(snapshot.designRole).toBe("plateau_hydro_wind_province");
+    expect(snapshot.totalDemandMw).toBe(1670);
+    expect(snapshot.richResources).toEqual(["wind", "solar", "hydro"]);
+    expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "hydro"]);
+    expect(snapshot.operatingPressureTags).toEqual([
+      "supply_gap",
+      "trunk_first",
+      "hydro_site_bound"
+    ]);
+    expect(snapshot.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "hydro_wind_export",
+      "local_renewables",
+      "hydro_anchor"
+    ]);
+  });
+
+  it("exposes MAP-08 hybrid balancing operating pressure and route", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    const screen = createScreenRegionForRegion(controller, "MAP-08");
+
+    const snapshot = screen.getSnapshot();
+
+    expect(snapshot.designRole).toBe("frontier_hybrid_balancing_province");
+    expect(snapshot.totalDemandMw).toBe(2020);
+    expect(snapshot.richResources).toEqual(["wind", "solar", "hydro"]);
+    expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "hydro", "nuclear"]);
+    expect(snapshot.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "nuclear_siting",
+      "mixed_dispatch"
+    ]);
+    expect(snapshot.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "hydro_anchor",
+      "nuclear_anchor",
+      "hybrid_balancing"
+    ]);
+  });
+
   it("summarizes regional local supply, net import, and gap from runtime cities", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 5;
