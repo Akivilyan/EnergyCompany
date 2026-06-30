@@ -197,6 +197,7 @@ export const en: Record<string, string> = {
   "city.role.hydro_load_hub": "hydro load hub",
   "city.role.hydro_solar_node": "hydro-solar node",
   "city.role.ridge_generation_outpost": "ridge wind outpost",
+  "city.role.ridge_wind_outpost": "ridge wind outpost",
   "city.role.solar_load_hub": "solar load hub",
   "city.role.solar_generation_node": "solar generation base",
   "city.role.wind_outpost": "wind outpost",

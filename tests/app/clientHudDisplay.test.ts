@@ -172,6 +172,65 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/无水电/化石转型/核电选址");
   });
 
+  it("shows MAP-07 and MAP-08 late-map city pressure in city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const map07Hydro = boot.app.controller.config.getCity("CITY-MAP07-01");
+    const map07 = boot.app.controller.config.getCity("CITY-MAP07-03");
+    const map08 = boot.app.controller.config.getCity("CITY-MAP08-01");
+    expect(map07Hydro).toBeTruthy();
+    expect(map07).toBeTruthy();
+    expect(map08).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+
+    boot.app.controller.state.cities["CITY-MAP07-01"] = {
+      cityId: "CITY-MAP07-01",
+      demandMw: map07Hydro?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map07Hydro?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP07-01", "MAP-07");
+    const map07HydroDisplay = buildClientHudDisplay(boot);
+    expect(map07HydroDisplay.detailLines[0]).toContain("定位高原水电枢纽");
+    expect(map07HydroDisplay.detailLines[0]).toContain("压力供给缺口/槽位紧/水点绑定");
+
+    boot.app.controller.state.cities["CITY-MAP07-03"] = {
+      cityId: "CITY-MAP07-03",
+      demandMw: map07?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map07?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP07-03", "MAP-07");
+    const map07Display = buildClientHudDisplay(boot);
+    expect(map07Display.detailLines[0]).toContain("定位山脊风电");
+    expect(map07Display.detailLines[0]).toContain("压力供给缺口/无水电");
+
+    boot.app.controller.state.cities["CITY-MAP08-01"] = {
+      cityId: "CITY-MAP08-01",
+      demandMw: map08?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map08?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP08-01", "MAP-08");
+    const map08Display = buildClientHudDisplay(boot);
+    expect(map08Display.detailLines[0]).toContain("定位边疆综合平衡");
+    expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/混合调配");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

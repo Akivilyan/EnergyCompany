@@ -152,6 +152,25 @@ function getStorageMultiplier(boot: GameBootstrap, facilityId: string): number {
     : 1;
 }
 
+function appendCityRolePressureTags(
+  tags: OperatingPressureTag[],
+  powerRole: string | undefined
+): void {
+  if (
+    powerRole === "plateau_hydro_hub" ||
+    powerRole === "cascade_hydro_solar_node" ||
+    powerRole === "valley_hydro_outpost"
+  ) {
+    tags.push("hydro_site_bound");
+  }
+  if (
+    powerRole === "frontier_balancing_hub" ||
+    powerRole === "desert_hybrid_generation_node"
+  ) {
+    tags.push("mixed_dispatch");
+  }
+}
+
 export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSnapshot | null {
   const cityId = getCurrentCityId(boot);
   const city = boot.app.controller.config.getCity(cityId);
@@ -176,6 +195,7 @@ export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSn
   if (!city.has_river) operatingPressureTags.push("no_hydro");
   if (fossilEnergy) operatingPressureTags.push("fossil_transition");
   if (city.is_nuclear_eligible) operatingPressureTags.push("nuclear_siting");
+  appendCityRolePressureTags(operatingPressureTags, city.power_role);
   return {
     demandMw,
     localSupplyMw: runtime?.localSupplyMw ?? 0,

@@ -161,6 +161,54 @@ describe("cityHudController", () => {
     });
   });
 
+  it("exposes late-map city role pressure for MAP-07 and MAP-08 city HUD", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map07 = config.getCity("CITY-MAP07-01");
+    const map08 = config.getCity("CITY-MAP08-01");
+    expect(map07).toBeTruthy();
+    expect(map08).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+
+    boot.app.controller.state.cities["CITY-MAP07-01"] = {
+      cityId: "CITY-MAP07-01",
+      demandMw: map07?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map07?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP07-01", "MAP-07");
+    expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
+      "supply_gap",
+      "low_slot_density",
+      "hydro_site_bound"
+    ]);
+
+    boot.app.controller.state.cities["CITY-MAP08-01"] = {
+      cityId: "CITY-MAP08-01",
+      demandMw: map08?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map08?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP08-01", "MAP-08");
+    expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "low_slot_density",
+      "nuclear_siting",
+      "mixed_dispatch"
+    ]);
+  });
+
   it("hides build candidates for unlocked outside-region city before trunk connection", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

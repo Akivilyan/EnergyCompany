@@ -197,6 +197,7 @@ export const zhCN: Record<string, string> = {
   "city.role.hydro_load_hub": "水电负荷",
   "city.role.hydro_solar_node": "水光协同",
   "city.role.ridge_generation_outpost": "山脊风电",
+  "city.role.ridge_wind_outpost": "山脊风电",
   "city.role.solar_load_hub": "光伏负荷",
   "city.role.solar_generation_node": "光伏基地",
   "city.role.wind_outpost": "风电前哨",
