@@ -113,6 +113,30 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows grid tech branches on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("grid_regional", "grid_backbone", "uhv_transmission");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain(
+      "电网科技：区域线造价-25%/主干造价-25%/主干线损特高压档"
+    );
+  });
+
+  it("keeps grid tech branches visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("grid_regional", "uhv_transmission");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("电网科技：区域线造价-25%/主干线损特高压档");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows eco tech branches on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eco_thermal", "eco_nuclear", "eng_green_pr");

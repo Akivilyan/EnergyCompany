@@ -125,6 +125,28 @@ export function formatCompanyGridDispatchTechLine(boot: GameBootstrap): string |
     : null;
 }
 
+export function formatCompanyGridTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "grid") continue;
+    const regionalCost = tech.effect_value.grid_link_cost_pct;
+    if (typeof regionalCost === "number" && Number.isFinite(regionalCost) && regionalCost !== 0) {
+      parts.push(t("hud.status.company_grid_tech_region_item", { pct: Math.abs(regionalCost) }));
+    }
+    const trunkCost = tech.effect_value.trunk_link_cost_pct;
+    if (typeof trunkCost === "number" && Number.isFinite(trunkCost) && trunkCost !== 0) {
+      parts.push(t("hud.status.company_grid_tech_trunk_item", { pct: Math.abs(trunkCost) }));
+    }
+    if (tech.effect_value.trunk_loss_profile === "uhv") {
+      parts.push(t("hud.status.company_grid_tech_uhv_item"));
+    }
+  }
+  return parts.length > 0
+    ? t("hud.status.company_grid_tech", { items: parts.join("/") })
+    : null;
+}
+
 function formatEcoSyncTarget(target: string): string {
   const key = `hud.company.eco_target.${target}`;
   const label = t(key);

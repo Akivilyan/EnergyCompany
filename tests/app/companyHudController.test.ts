@@ -8,6 +8,7 @@ import {
   companyClaimCashByAd,
   formatCompanyEcoTechLine,
   formatCompanyGridDispatchTechLine,
+  formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
@@ -87,6 +88,15 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
 
     expect(formatCompanyGridDispatchTechLine(boot)).toBe("调度科技：区域线损-10%");
+  });
+
+  it("formats grid tech branches", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("grid_regional", "grid_backbone", "uhv_transmission");
+
+    expect(formatCompanyGridTechLine(boot)).toBe(
+      "电网科技：区域线造价-25%/主干造价-25%/主干线损特高压档"
+    );
   });
 
   it("formats eco tech branches", () => {

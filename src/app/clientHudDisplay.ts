@@ -20,6 +20,7 @@ import { formatSelectedRegionLink } from "./regionHudController.js";
 import {
   formatCompanyEcoTechLine,
   formatCompanyGridDispatchTechLine,
+  formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
@@ -212,6 +213,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
         loanPart
@@ -223,6 +225,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatUpcomingEventRiskLine(boot),
         formatCompanyLoanTierBonusLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
         selectedLoan,
