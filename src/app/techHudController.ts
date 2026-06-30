@@ -12,6 +12,7 @@ export interface TechHudCandidate {
   researchCost: number;
   researchMonths: number;
   effectSummary: string;
+  branchKind: TechBranchKind | null;
 }
 
 export interface TechHudSelectionSnapshot {
@@ -19,7 +20,7 @@ export interface TechHudSelectionSnapshot {
   selectedTechId: string | null;
 }
 
-type TechBranchKind =
+export type TechBranchKind =
   | "generation_tier"
   | "storage_gate"
   | "regional_grid"
@@ -28,6 +29,7 @@ type TechBranchKind =
   | "nuclear"
   | "eco"
   | "super_hydro"
+  | "construction"
   | "opex"
   | "dispatch"
   | "cashflow"
@@ -66,12 +68,13 @@ function getResearchCandidates(boot: GameBootstrap): TechHudCandidate[] {
       displayName: tech.displayName,
       researchCost: tech.researchCost,
       researchMonths: tech.researchMonths,
-      effectSummary: tech.effectSummary
+      effectSummary: tech.effectSummary,
+      branchKind: getTechBranchKind(tech.techId)
     }));
 }
 
 function getTechBranchKind(techId: string): TechBranchKind | null {
-  if (/^(wind|solar|thermal|hydro)_[3-5]$/.test(techId)) return "generation_tier";
+  if (/^(wind|solar|thermal|hydro)_[2-5]$/.test(techId)) return "generation_tier";
   if (techId.startsWith("storage_system_")) return "storage_gate";
   if (techId === "grid_regional") return "regional_grid";
   if (techId === "grid_backbone") return "backbone_grid";
@@ -80,6 +83,7 @@ function getTechBranchKind(techId: string): TechBranchKind | null {
   if (techId.startsWith("nuclear_")) return "nuclear";
   if (techId === "eco_thermal" || techId === "eco_nuclear") return "eco";
   if (techId === "super_hydro") return "super_hydro";
+  if (techId === "eng_bulk_procure") return "construction";
   if (techId === "eng_grid_dispatch") return "dispatch";
   if (techId === "eng_cashflow") return "cashflow";
   if (techId === "eng_risk_reserve") return "risk";
@@ -96,6 +100,7 @@ const TECH_BRANCH_ORDER: TechBranchKind[] = [
   "nuclear",
   "eco",
   "super_hydro",
+  "construction",
   "opex",
   "dispatch",
   "cashflow",
@@ -115,6 +120,19 @@ function formatTechBranchKinds(kinds: TechBranchKind[]): string {
     : t("tech.branch.none");
 }
 
+function formatTechBranchCounts(counts: Map<TechBranchKind, number>): string {
+  const parts = TECH_BRANCH_ORDER
+    .map((kind) => {
+      const count = counts.get(kind) ?? 0;
+      return count > 0 ? t("hud.status.tech_researchable_branch_item", {
+        branch: formatTechBranchKind(kind),
+        count
+      }) : null;
+    })
+    .filter((part): part is string => !!part);
+  return parts.length > 0 ? parts.join("/") : t("tech.branch.none");
+}
+
 export function formatTechProgressionSummary(boot: GameBootstrap): string | null {
   const levels = [3, 4, 5] as const;
   const technologies = boot.app.screens.tech.getSnapshot().technologies;
@@ -132,6 +150,19 @@ export function formatTechProgressionSummary(boot: GameBootstrap): string | null
     });
   });
   return parts.length > 0 ? t("hud.status.tech_branch_summary", { branches: parts.join(" · ") }) : null;
+}
+
+export function formatResearchableTechBranchSummary(boot: GameBootstrap): string | null {
+  const candidates = getResearchCandidates(boot);
+  if (candidates.length === 0) return null;
+  const counts = new Map<TechBranchKind, number>();
+  for (const candidate of candidates) {
+    if (!candidate.branchKind) continue;
+    counts.set(candidate.branchKind, (counts.get(candidate.branchKind) ?? 0) + 1);
+  }
+  return t("hud.status.tech_researchable_branch_summary", {
+    branches: formatTechBranchCounts(counts)
+  });
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {

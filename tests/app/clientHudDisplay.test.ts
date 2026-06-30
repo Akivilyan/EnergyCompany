@@ -86,10 +86,43 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("后续分叉：3级发电升档/储能闸门/区域网/核电/运维/调度");
     expect(display.detailLines[1]).toContain("4级发电升档/储能闸门/主干网/核电/ECO/现金流/灾害减损");
     expect(display.detailLines[1]).toContain("5级发电升档/储能闸门/特高压/核电/超水电/运维/绿色品牌");
-    expect(display.detailLines[2]).toContain("候选：风电·II");
-    expect(display.detailLines[2]).toContain("32资金");
-    expect(display.detailLines[2]).toContain("1月");
-    expect(display.detailLines[2]).toContain("wind tier <= 2");
+    expect(display.detailLines[2]).toBe("当前可研分叉：发电升档4/建设1");
+    expect(display.detailLines[3]).toContain("候选：风电·II");
+    expect(display.detailLines[3]).toContain("32资金");
+    expect(display.detailLines[3]).toContain("1月");
+    expect(display.detailLines[3]).toContain("wind tier <= 2");
+  });
+
+  it("shows researchable level-V tech branch mix in tech hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "wind_2",
+      "solar_2",
+      "thermal_2",
+      "hydro_2",
+      "storage_system_1",
+      "storage_system_2",
+      "grid_backbone",
+      "nuclear_1",
+      "nuclear_2"
+    );
+    boot.play.openScreen("screen_tech_tree");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines[2]).toContain("当前可研分叉：");
+    expect(display.detailLines[2]).toContain("发电升档4");
+    expect(display.detailLines[2]).toContain("储能闸门1");
+    expect(display.detailLines[2]).toContain("特高压1");
+    expect(display.detailLines[2]).toContain("核电1");
+    expect(display.detailLines[2]).toContain("ECO2");
+    expect(display.detailLines[2]).toContain("超水电1");
+    expect(display.detailLines[2]).toContain("建设1");
+    expect(display.detailLines[2]).toContain("运维2");
+    expect(display.detailLines[2]).toContain("现金流1");
+    expect(display.detailLines[2]).toContain("灾害减损1");
+    expect(display.detailLines[2]).toContain("绿色品牌1");
   });
 
   it("exposes locked hud capabilities before company level 2", () => {

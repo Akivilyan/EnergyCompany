@@ -6,6 +6,7 @@ import {
 } from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
 import {
+  formatResearchableTechBranchSummary,
   formatSelectedResearchCandidate,
   formatTechProgressionSummary,
   getTechHudSelectionSnapshot
@@ -376,6 +377,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   const selection = getTechHudSelectionSnapshot(boot);
   const selectedLine = formatSelectedResearchCandidate(boot);
   const branchSummary = formatTechProgressionSummary(boot);
+  const researchableBranchSummary = formatResearchableTechBranchSummary(boot);
   const detailLine = selectedLine ?? t("hud.status.tech_no_candidate_hint");
   return {
     statusLine,
@@ -384,6 +386,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     detailLines: hudLines(
       selection.candidates.length > 0 ? t("hud.status.tech_idle_hint") : null,
       branchSummary,
+      researchableBranchSummary,
       detailLine
     )
   };
