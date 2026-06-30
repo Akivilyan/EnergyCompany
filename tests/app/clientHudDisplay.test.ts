@@ -88,6 +88,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("5级发电升档/储能闸门/特高压/核电/超水电/运维/绿色品牌");
     expect(display.detailLines[2]).toBe("当前可研分叉：发电升档4/建设1");
     expect(display.detailLines[3]).toContain("候选：风电·II");
+    expect(display.detailLines[3]).toContain("分叉发电升档");
     expect(display.detailLines[3]).toContain("32资金");
     expect(display.detailLines[3]).toContain("1月");
     expect(display.detailLines[3]).toContain("wind tier <= 2");

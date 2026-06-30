@@ -265,6 +265,7 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
   if (!selected) return null;
   return t("hud.status.tech_selected_hint", {
     tech: selected.displayName,
+    branch: selected.branchKind ? formatTechBranchKind(selected.branchKind) : t("tech.branch.none"),
     cost: selected.researchCost,
     months: selected.researchMonths,
     effect: selected.effectSummary
