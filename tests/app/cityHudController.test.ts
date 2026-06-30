@@ -141,10 +141,22 @@ describe("cityHudController", () => {
 
     expect(getCityHudProfileSnapshot(boot)).toEqual({
       demandMw: 1280,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      supplyGapMw: 1280,
+      supplyRatio: 0,
       buildSlots: 6,
       hasRiver: false,
       nuclearEligible: true,
       richResources: ["solar", "fossil"],
+      operatingPressureTags: [
+        "high_demand",
+        "supply_gap",
+        "low_slot_density",
+        "no_hydro",
+        "fossil_transition",
+        "nuclear_siting"
+      ],
       powerRole: "coastal_industrial_hub"
     });
   });

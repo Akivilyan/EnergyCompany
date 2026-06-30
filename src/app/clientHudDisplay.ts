@@ -422,11 +422,17 @@ export function buildClientHudDisplay(
       profile
         ? t("hud.line.city_profile", {
             demand: profile.demandMw,
+            local: profile.localSupplyMw,
+            import: profile.effectiveSupplyMw - profile.localSupplyMw,
+            supply: profile.effectiveSupplyMw,
+            gap: profile.supplyGapMw,
+            ratio: Math.round(profile.supplyRatio * 100),
             slots: profile.buildSlots,
             river: profile.hasRiver ? 1 : 0,
             nuclear: profile.nuclearEligible ? 1 : 0,
             role: formatCityPowerRole(profile.powerRole),
-            resources: formatRichResources(profile.richResources)
+            resources: formatRichResources(profile.richResources),
+            pressure: formatOperatingPressureTags(profile.operatingPressureTags)
           })
         : null,
       selectedBuild,

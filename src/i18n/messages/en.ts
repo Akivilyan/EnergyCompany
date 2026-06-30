@@ -48,7 +48,7 @@ export const en: Record<string, string> = {
   "hud.line.month": "Month {month}",
   "hud.line.funds": "Funds {funds}",
   "hud.line.city": "City: {city}",
-  "hud.line.city_profile": "Demand {demand}MW · slots {slots}/river {river}/nuclear {nuclear} · role {role} · rich {resources}",
+  "hud.line.city_profile": "Demand {demand}MW · supply {supply}MW({ratio}%) · local {local}/import {import}/gap {gap}MW · slots {slots}/river {river}/nuclear {nuclear} · role {role} · rich {resources} · pressure {pressure}",
   "hud.line.nav_screen": "Screen: {screen}",
   "hud.line.nav_stack": "Back stack {stack}",
   "hud.line.company_header": "Company Lv{level}",

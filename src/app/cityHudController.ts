@@ -6,6 +6,7 @@ import {
   hasStorageOutputBoost
 } from "../sim/core/technologyEffects.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
+import type { OperatingPressureTag } from "../modules/screenWorldMap.js";
 
 export interface CityHudViewModel {
   month: number;
@@ -45,10 +46,15 @@ export interface CityHudBuildSelectionSnapshot {
 
 export interface CityHudProfileSnapshot {
   demandMw: number;
+  localSupplyMw: number;
+  effectiveSupplyMw: number;
+  supplyGapMw: number;
+  supplyRatio: number;
   buildSlots: number;
   hasRiver: boolean;
   nuclearEligible: boolean;
   richResources: Array<"wind" | "solar" | "hydro" | "fossil">;
+  operatingPressureTags: OperatingPressureTag[];
   powerRole: string | null;
 }
 
@@ -147,20 +153,40 @@ function getStorageMultiplier(boot: GameBootstrap, facilityId: string): number {
 }
 
 export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSnapshot | null {
-  const city = boot.app.controller.config.getCity(getCurrentCityId(boot));
+  const cityId = getCurrentCityId(boot);
+  const city = boot.app.controller.config.getCity(cityId);
   if (!city) return null;
+  const runtime = boot.app.controller.state.cities[cityId];
   const region = city.region_id ? boot.app.controller.config.getRegion(city.region_id) : undefined;
   const richResources: CityHudProfileSnapshot["richResources"] = [];
   if (city.wind_resource === "rich") richResources.push("wind");
   if (city.solar_resource === "rich") richResources.push("solar");
   if (city.hydro_resource === "rich") richResources.push("hydro");
   if (city.fossil_energy || region?.fossil_energy) richResources.push("fossil");
+  const demandMw = runtime?.demandMw ?? city.base_demand_mw;
+  const effectiveSupplyMw = runtime?.effectiveSupplyMw ?? 0;
+  const supplyGapMw = Math.max(0, demandMw - effectiveSupplyMw);
+  const fossilEnergy = !!city.fossil_energy || !!region?.fossil_energy;
+  const operatingPressureTags: OperatingPressureTag[] = [];
+  if (demandMw >= 1200) operatingPressureTags.push("high_demand");
+  if (supplyGapMw > 0) operatingPressureTags.push("supply_gap");
+  if (demandMw > 0 && city.build_slot_count * 180 < demandMw) {
+    operatingPressureTags.push("low_slot_density");
+  }
+  if (!city.has_river) operatingPressureTags.push("no_hydro");
+  if (fossilEnergy) operatingPressureTags.push("fossil_transition");
+  if (city.is_nuclear_eligible) operatingPressureTags.push("nuclear_siting");
   return {
-    demandMw: city.base_demand_mw,
+    demandMw,
+    localSupplyMw: runtime?.localSupplyMw ?? 0,
+    effectiveSupplyMw,
+    supplyGapMw,
+    supplyRatio: runtime?.supplyRatio ?? 0,
     buildSlots: city.build_slot_count,
     hasRiver: city.has_river,
     nuclearEligible: !!city.is_nuclear_eligible,
     richResources,
+    operatingPressureTags,
     powerRole: city.power_role ?? null
   };
 }

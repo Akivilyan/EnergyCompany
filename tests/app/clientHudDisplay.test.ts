@@ -144,6 +144,31 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("储能x2");
   });
 
+  it("shows level-V city operating pressure in city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const city = boot.app.controller.config.getCity("CITY-MAP06-01");
+    expect(city).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: city?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: city?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP06-01", "MAP-06");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("负荷1280MW");
+    expect(display.detailLines[0]).toContain("本地0/受入0/缺口1280MW");
+    expect(display.detailLines[0]).toContain("定位沿海工业枢纽");
+    expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/无水电/化石转型/核电选址");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

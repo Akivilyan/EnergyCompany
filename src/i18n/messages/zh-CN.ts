@@ -48,7 +48,7 @@ export const zhCN: Record<string, string> = {
   "hud.line.month": "第{month}月",
   "hud.line.funds": "资金 {funds}",
   "hud.line.city": "城市：{city}",
-  "hud.line.city_profile": "负荷{demand}MW · 槽{slots}/河{river}/核{nuclear} · 定位{role} · 富集{resources}",
+  "hud.line.city_profile": "负荷{demand}MW · 供给{supply}MW({ratio}%) · 本地{local}/受入{import}/缺口{gap}MW · 槽{slots}/河{river}/核{nuclear} · 定位{role} · 富集{resources} · 压力{pressure}",
   "hud.line.nav_screen": "界面：{screen}",
   "hud.line.nav_stack": "返回层 {stack}",
   "hud.line.company_header": "公司 {level} 级",
