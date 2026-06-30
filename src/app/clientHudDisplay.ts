@@ -19,6 +19,7 @@ import {
 import { formatSelectedRegionLink } from "./regionHudController.js";
 import {
   formatCompanyLoanTierBonusLine,
+  formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
 } from "./companyHudController.js";
@@ -208,6 +209,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         latestCashflow,
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
+        formatCompanyOpexTechLine(boot),
         loanPart
       )
     : hudLines(
@@ -216,6 +218,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatCompanyLoanTierBonusLine(boot),
+        formatCompanyOpexTechLine(boot),
         selectedLoan,
         selection.candidates.length > 1
           ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })

@@ -86,6 +86,31 @@ export function formatCompanyLoanTierBonusLine(boot: GameBootstrap): string | nu
   });
 }
 
+function formatOpexTarget(target: string): string {
+  const key = `hud.company.opex_target.${target}`;
+  const label = t(key);
+  return label === key ? target : label;
+}
+
+export function formatCompanyOpexTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "modifier") continue;
+    const value = tech.effect_value.opex_pct;
+    if (typeof value !== "number" || !Number.isFinite(value) || value === 0) continue;
+    parts.push(
+      t("hud.status.company_opex_tech_item", {
+        target: formatOpexTarget(tech.effect_target),
+        pct: Math.abs(value)
+      })
+    );
+  }
+  return parts.length > 0
+    ? t("hud.status.company_opex_tech", { items: parts.join("/") })
+    : null;
+}
+
 export function companyApplySelectedLoan(
   boot: GameBootstrap,
   loanId?: string

@@ -69,6 +69,28 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("可切换贷款 5 档");
   });
 
+  it("shows opex tech reductions on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("运维科技：通用运维-10%/核电运维-18%");
+  });
+
+  it("keeps opex tech reductions visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_ops_contract");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("运维科技：通用运维-10%");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows recent monthly cashflow on company hud after settlement", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.advanceMonthInCurrentCity();

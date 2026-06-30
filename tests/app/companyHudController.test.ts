@@ -7,6 +7,7 @@ import {
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
   formatCompanyLoanTierBonusLine,
+  formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
 } from "../../src/app/companyHudController.js";
@@ -70,5 +71,12 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_cashflow");
 
     expect(formatCompanyLoanTierBonusLine(boot)).toBe("现金流科技：贷款等级+1 · 有效5级");
+  });
+
+  it("formats opex tech reductions", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
+
+    expect(formatCompanyOpexTechLine(boot)).toBe("运维科技：通用运维-10%/核电运维-18%");
   });
 });
