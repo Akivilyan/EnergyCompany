@@ -113,6 +113,28 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows eco tech branches on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eco_thermal", "eco_nuclear", "eng_green_pr");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("生态科技：火电ECO/核电ECO/全环保城SV+5%");
+  });
+
+  it("keeps eco tech branches visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eco_thermal", "eng_green_pr");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("生态科技：火电ECO/全环保城SV+5%");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows recent monthly cashflow on company hud after settlement", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.advanceMonthInCurrentCity();

@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.71.0
+version: 1.72.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,11 +56,11 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-06-30 | `FAST-01` 为公司 HUD 增加生态科技提示：火电/核电 ECO 与绿色品牌 SV 分叉可见 |
 | 2026-06-30 | `FAST-01` 为公司 HUD 增加调度科技线损提示：`eng_grid_dispatch` 区域线损减免可见 |
 | 2026-06-30 | `FAST-01` 为 MET-B 增加终局负荷经营压力：区域、大地图与城市 HUD 均可见 |
 | 2026-06-30 | `FAST-01` 为公司 HUD 增加运维科技减压提示：通用运维与核电运维折扣可见 |
 | 2026-06-30 | `FAST-01` 为公司 HUD 增加现金流科技贷款等级提示：`eng_cashflow` 生效后的有效贷款等级和候选档数可见 |
-| 2026-06-30 | `FAST-01` 为城市 HUD 增加生态经营状态：非全环保 SV 上限、全环保、绿色品牌加成可见 |
 
 ## 6. 文档分工
 
@@ -97,3 +97,4 @@ open_questions: []
 | 1.69.0 | 2026-06-30 | 记录公司 HUD 运维科技减压提示落地 |
 | 1.70.0 | 2026-06-30 | 记录 MET-B 终局负荷经营压力落地 |
 | 1.71.0 | 2026-06-30 | 记录公司 HUD 调度科技线损提示落地 |
+| 1.72.0 | 2026-06-30 | 记录公司 HUD 生态科技提示落地 |

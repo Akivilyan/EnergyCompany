@@ -125,6 +125,35 @@ export function formatCompanyGridDispatchTechLine(boot: GameBootstrap): string |
     : null;
 }
 
+function formatEcoSyncTarget(target: string): string {
+  const key = `hud.company.eco_target.${target}`;
+  const label = t(key);
+  return label === key ? target : label;
+}
+
+export function formatCompanyEcoTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (!tech) continue;
+    if (tech.effect_type === "eco_sync") {
+      parts.push(
+        t("hud.status.company_eco_tech_sync_item", {
+          target: formatEcoSyncTarget(tech.effect_target)
+        })
+      );
+      continue;
+    }
+    if (tech.effect_type !== "modifier" || tech.effect_target !== "social_value") continue;
+    const value = tech.effect_value.eco_city_sv_pct;
+    if (typeof value !== "number" || !Number.isFinite(value) || value === 0) continue;
+    parts.push(t("hud.status.company_eco_tech_sv_item", { pct: Math.abs(value) }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_eco_tech", { items: parts.join("/") })
+    : null;
+}
+
 export function companyApplySelectedLoan(
   boot: GameBootstrap,
   loanId?: string

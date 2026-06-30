@@ -6,6 +6,7 @@ import {
   companyCycleLoanCandidate,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  formatCompanyEcoTechLine,
   formatCompanyGridDispatchTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyOpexTechLine,
@@ -86,5 +87,14 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
 
     expect(formatCompanyGridDispatchTechLine(boot)).toBe("调度科技：区域线损-10%");
+  });
+
+  it("formats eco tech branches", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eco_thermal", "eco_nuclear", "eng_green_pr");
+
+    expect(formatCompanyEcoTechLine(boot)).toBe(
+      "生态科技：火电ECO/核电ECO/全环保城SV+5%"
+    );
   });
 });
