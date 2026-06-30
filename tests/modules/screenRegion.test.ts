@@ -227,6 +227,13 @@ describe("ScreenRegion", () => {
       "fossil_transition",
       "nuclear_siting"
     ]);
+    expect(snapshot.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "thermal_bridge",
+      "nuclear_anchor"
+    ]);
     expect(
       snapshot.linkCandidates.some(
         (candidate) =>

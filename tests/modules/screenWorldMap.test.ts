@@ -69,6 +69,13 @@ describe("screenWorldMap", () => {
       "fossil_transition",
       "nuclear_siting"
     ]);
+    expect(map06?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "thermal_bridge",
+      "nuclear_anchor"
+    ]);
     expect(metB?.centralCityId).toBe("CITY-METB-01");
     expect(metB?.designRole).toBe("terminal_metropolis_load_hub");
     expect(metB?.totalDemandMw).toBe(2100);
@@ -88,6 +95,14 @@ describe("screenWorldMap", () => {
       "trunk_first",
       "low_slot_density",
       "nuclear_siting"
+    ]);
+    expect(metB?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "super_hydro_import",
+      "nuclear_anchor",
+      "slot_efficiency"
     ]);
     expect(metB?.connectionStatus).toBe("available");
   });

@@ -146,7 +146,21 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
     expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar/fossil · build wind/solar/thermal/nuclear · pressure high demand/supply gap/trunk first/no hydro/fossil transition/nuclear siting");
+    expect(display.detailLines).toContain("Operating plan: secure trunk/close supply gap/local renewables/thermal bridge/nuclear anchor");
     expect(display.detailLines).toContain("Operating role: coastal industrial export");
+  });
+
+  it("shows MET-B terminal operating route in region hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.play.openScreen("screen_region", undefined, "MET-B");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[1]).toContain("负荷2100MW");
+    expect(display.detailLines[1]).toContain("建议光伏/水电/核电");
+    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址");
+    expect(display.detailLines).toContain("经营路线：先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
+    expect(display.detailLines).toContain("经营定位：终局都会负荷");
   });
 
   it("shows grid_regional-adjusted region link cost in hud", () => {
@@ -243,6 +257,26 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("富集风/光");
     expect(display.detailLines[1]).toContain("建议风电/光伏/火电/核电");
     expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/无水电/化石转型/核电选址");
+    expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/火电兜底/核电锚点");
+  });
+
+  it("shows MET-B terminal operating route on world map hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenWorldMap(boot);
+
+    let guard = 0;
+    while (!buildClientHudDisplay(boot).detailLines[1]?.includes("特大城B") && guard < 12) {
+      worldCycleTargetCandidate(boot);
+      guard += 1;
+    }
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[1]).toContain("特大城B");
+    expect(display.detailLines[1]).toContain("定位终局都会负荷");
+    expect(display.detailLines[1]).toContain("建议光伏/水电/核电");
+    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址");
+    expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
   });
 
   it("shows level-V super hydro slot progress on world map hud", () => {

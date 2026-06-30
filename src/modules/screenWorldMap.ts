@@ -2,6 +2,15 @@ import type { RunController } from "./runController.js";
 
 export type ResourceKind = "wind" | "solar" | "hydro" | "fossil";
 export type RecommendedBuildKind = "wind" | "solar" | "hydro" | "thermal" | "nuclear";
+export type OperatingPlanHint =
+  | "secure_trunk"
+  | "close_supply_gap"
+  | "local_renewables"
+  | "thermal_bridge"
+  | "nuclear_anchor"
+  | "hydro_anchor"
+  | "super_hydro_import"
+  | "slot_efficiency";
 export type OperatingPressureTag =
   | "high_demand"
   | "supply_gap"
@@ -41,6 +50,7 @@ export interface WorldMapRegionItem {
   richResources: ResourceKind[];
   recommendedBuilds: RecommendedBuildKind[];
   operatingPressureTags: OperatingPressureTag[];
+  operatingPlanHints: OperatingPlanHint[];
   centralCityId: string | null;
   centralCityUnlocked: boolean;
   connectionStatus: WorldMapConnectionStatus;
@@ -168,6 +178,48 @@ export function getOperatingPressureTags(input: {
   return tags;
 }
 
+export function getOperatingPlanHints(input: {
+  recommendedBuilds: RecommendedBuildKind[];
+  operatingPressureTags: OperatingPressureTag[];
+  connectionStatus?: WorldMapConnectionStatus;
+  supplyGapMw: number;
+  regionType?: string;
+  totalBuildSlots: number;
+  totalDemandMw: number;
+}): OperatingPlanHint[] {
+  const hints: OperatingPlanHint[] = [];
+  const hasBuild = (kind: RecommendedBuildKind) => input.recommendedBuilds.includes(kind);
+  const hasPressure = (tag: OperatingPressureTag) => input.operatingPressureTags.includes(tag);
+
+  if (
+    input.connectionStatus === "available" ||
+    input.connectionStatus === "building" ||
+    hasPressure("trunk_first")
+  ) {
+    hints.push("secure_trunk");
+  }
+  if (input.supplyGapMw > 0 || hasPressure("supply_gap")) {
+    hints.push("close_supply_gap");
+  }
+  if (hasBuild("wind") || hasBuild("solar")) {
+    hints.push("local_renewables");
+  }
+  if (hasBuild("hydro")) {
+    hints.push(input.regionType === "metropolis" ? "super_hydro_import" : "hydro_anchor");
+  }
+  if (hasBuild("thermal")) {
+    hints.push("thermal_bridge");
+  }
+  if (hasBuild("nuclear")) {
+    hints.push("nuclear_anchor");
+  }
+  if (hasPressure("low_slot_density") || input.totalBuildSlots * 180 < input.totalDemandMw) {
+    hints.push("slot_efficiency");
+  }
+
+  return hints;
+}
+
 export class ScreenWorldMap {
   constructor(private readonly controller: RunController) {}
 
@@ -230,6 +282,18 @@ export class ScreenWorldMap {
           }
         }
 
+        const recommendedBuilds = getRecommendedBuilds(region, regionCities);
+        const operatingPressureTags = getOperatingPressureTags({
+          regionId: region.region_id,
+          totalDemandMw,
+          supplyGapMw,
+          totalBuildSlots,
+          riverCityCount,
+          fossilEnergy: !!region.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
+          nuclearEligibleCityCount,
+          connectionStatus
+        });
+
         return {
           regionId: region.region_id,
           displayName: region.display_name ?? region.region_id,
@@ -253,16 +317,16 @@ export class ScreenWorldMap {
             0
           ),
           richResources: getRichResources(region, regionCities),
-          recommendedBuilds: getRecommendedBuilds(region, regionCities),
-          operatingPressureTags: getOperatingPressureTags({
-            regionId: region.region_id,
-            totalDemandMw,
+          recommendedBuilds,
+          operatingPressureTags,
+          operatingPlanHints: getOperatingPlanHints({
+            recommendedBuilds,
+            operatingPressureTags,
+            connectionStatus,
             supplyGapMw,
+            regionType: region.region_type,
             totalBuildSlots,
-            riverCityCount,
-            fossilEnergy: !!region.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
-            nuclearEligibleCityCount,
-            connectionStatus
+            totalDemandMw
           }),
           centralCityId: centralCity?.city_id ?? null,
           centralCityUnlocked: centralCity ? state.companyLevel >= centralCity.unlock_company_level : false,

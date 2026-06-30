@@ -8,7 +8,9 @@ import {
 import type { RunController } from "./runController.js";
 import {
   getOperatingPressureTags,
+  getOperatingPlanHints,
   getRecommendedBuilds,
+  type OperatingPlanHint,
   type OperatingPressureTag,
   type RecommendedBuildKind,
   type ResourceKind
@@ -65,6 +67,7 @@ export interface ScreenRegionSnapshot {
   richResources: ResourceKind[];
   recommendedBuilds: RecommendedBuildKind[];
   operatingPressureTags: OperatingPressureTag[];
+  operatingPlanHints: OperatingPlanHint[];
   month: number;
   companyLevel: number;
   funds: number;
@@ -155,6 +158,17 @@ export class ScreenRegion {
 
     const linkCandidates = this.buildLinkCandidates(cityNameMap);
 
+    const recommendedBuilds = getRecommendedBuilds(regionConfig ?? {}, regionCities);
+    const operatingPressureTags = getOperatingPressureTags({
+      regionId: this.regionId,
+      totalDemandMw,
+      supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
+      totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
+      riverCityCount: regionCities.filter((city) => city.has_river).length,
+      fossilEnergy: !!regionConfig?.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
+      nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length
+    });
+
     return {
       regionId: this.regionId,
       regionName: regionConfig?.display_name ?? this.regionId,
@@ -172,15 +186,15 @@ export class ScreenRegion {
       nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length,
       totalBaseSocialValue: regionCities.reduce((sum, city) => sum + city.city_base_social_value, 0),
       richResources,
-      recommendedBuilds: getRecommendedBuilds(regionConfig ?? {}, regionCities),
-      operatingPressureTags: getOperatingPressureTags({
-        regionId: this.regionId,
-        totalDemandMw,
+      recommendedBuilds,
+      operatingPressureTags,
+      operatingPlanHints: getOperatingPlanHints({
+        recommendedBuilds,
+        operatingPressureTags,
         supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
+        regionType: regionConfig?.region_type,
         totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
-        riverCityCount: regionCities.filter((city) => city.has_river).length,
-        fossilEnergy: !!regionConfig?.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
-        nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length
+        totalDemandMw
       }),
       month: this.controller.state.currentMonth,
       companyLevel: this.controller.state.companyLevel,

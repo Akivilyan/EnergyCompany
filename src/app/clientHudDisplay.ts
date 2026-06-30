@@ -17,6 +17,7 @@ import {
 } from "./worldHudController.js";
 import { t, tScreenLabel } from "../i18n/index.js";
 import type {
+  OperatingPlanHint,
   OperatingPressureTag,
   RecommendedBuildKind,
   ResourceKind,
@@ -102,6 +103,18 @@ function formatOperatingPressureTags(tags: OperatingPressureTag[]): string {
   return tags.length > 0
     ? tags.map(formatOperatingPressureTag).join("/")
     : t("pressure.none");
+}
+
+function formatOperatingPlanHint(hint: OperatingPlanHint): string {
+  const key = `plan.${hint}`;
+  const label = t(key);
+  return label === key ? hint : label;
+}
+
+function formatOperatingPlanHints(hints: OperatingPlanHint[]): string {
+  return hints.length > 0
+    ? hints.map(formatOperatingPlanHint).join("/")
+    : t("plan.none");
 }
 
 function formatRegionDesignRole(role: string | null): string {
@@ -200,6 +213,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       builds: formatRecommendedBuilds(s.recommendedBuilds),
       pressure: formatOperatingPressureTags(s.operatingPressureTags)
     }),
+    t("hud.line.region_plan", { plan: formatOperatingPlanHints(s.operatingPlanHints) }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
     selectedLink
@@ -292,6 +306,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           resources: formatRichResources(focusRegion.richResources),
           builds: formatRecommendedBuilds(focusRegion.recommendedBuilds),
           pressure: formatOperatingPressureTags(focusRegion.operatingPressureTags),
+          plan: formatOperatingPlanHints(focusRegion.operatingPlanHints),
           trunk: formatWorldConnectionStatus(focusRegion)
         })
       : null,
