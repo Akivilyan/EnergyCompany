@@ -57,6 +57,20 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[2]).toBe("可切换贷款 2 档");
   });
 
+  it("shows recent monthly cashflow on company hud after settlement", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.play.advanceMonthInCurrentCity();
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+    const cashflowLine = display.detailLines.find((line) => line.startsWith("上月M1净现金流"));
+    expect(cashflowLine).toBeTruthy();
+    expect(cashflowLine).toContain("收入");
+    expect(cashflowLine).toContain("运维");
+    expect(cashflowLine).toContain("燃料");
+    expect(cashflowLine).toContain("贷款");
+  });
+
   it("shows selected research candidate and researchable count on tech screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.buildInCurrentCity("wind", 1);

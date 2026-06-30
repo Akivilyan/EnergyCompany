@@ -74,6 +74,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company": "公司 · {level}级 · 资金{funds} · 广告{ads}次",
   "hud.status.company_loan_detail": "在贷：{loanName} · 剩{months}月",
   "hud.status.company_no_loan": "无在贷",
+  "hud.status.company_cashflow": "上月M{month}净现金流 {net} · 收入{income}/运维{opex}/燃料{fuel}/贷款{loan}",
   "hud.status.company_selected_loan": "候选：{loanName} · 月供{monthlyPayment}",
   "hud.status.company_loan_candidate_count": "可切换贷款 {count} 档",
   "hud.status.tech_locked": "科技 · 未解锁（需2级，当前{level}级）",

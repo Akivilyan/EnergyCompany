@@ -138,10 +138,24 @@ function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): n
   return row?.sv_threshold ?? null;
 }
 
+function formatLatestCompanyCashflow(boot: GameBootstrap): string | null {
+  const latest = boot.app.screens.company.getRecentCashflows(1)[0];
+  if (!latest) return null;
+  return t("hud.status.company_cashflow", {
+    month: latest.monthFrom,
+    net: latest.netCashflow,
+    income: latest.income,
+    opex: latest.opex,
+    fuel: latest.fuel,
+    loan: latest.loanPaid
+  });
+}
+
 function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   const s = boot.app.screens.company.getSnapshot();
   const selection = getCompanyHudSelectionSnapshot(boot);
   const selectedLoan = formatSelectedLoanCandidate(boot);
+  const latestCashflow = formatLatestCompanyCashflow(boot);
   const nextThreshold = nextCompanyLevelThreshold(boot, s.companyLevel);
   const svLine =
     nextThreshold === null
@@ -164,9 +178,10 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
       })
     : t("hud.status.company_no_loan");
   const detailLines = s.activeLoan
-    ? hudLines(svLine, loanPart)
+    ? hudLines(svLine, latestCashflow, loanPart)
     : hudLines(
         svLine,
+        latestCashflow,
         selectedLoan,
         selection.candidates.length > 1
           ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })
