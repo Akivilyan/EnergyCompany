@@ -77,6 +77,15 @@ export function formatSelectedLoanCandidate(boot: GameBootstrap): string | null 
   });
 }
 
+export function formatCompanyLoanTierBonusLine(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.company.getSnapshot();
+  if (snapshot.loanTierLevelBonus <= 0) return null;
+  return t("hud.status.company_loan_tier_bonus", {
+    bonus: snapshot.loanTierLevelBonus,
+    effective: snapshot.effectiveLoanLevel
+  });
+}
+
 export function companyApplySelectedLoan(
   boot: GameBootstrap,
   loanId?: string

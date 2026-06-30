@@ -6,6 +6,7 @@ import {
   companyCycleLoanCandidate,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  formatCompanyLoanTierBonusLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
 } from "../../src/app/companyHudController.js";
@@ -61,5 +62,13 @@ describe("companyHudController", () => {
     const out = companyClaimCashByAd(boot);
     expect(out.ok).toBe(true);
     expect(boot.app.controller.state.funds).toBeGreaterThan(before);
+  });
+
+  it("formats cashflow tech loan tier bonus", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.litTechIds.push("eng_cashflow");
+
+    expect(formatCompanyLoanTierBonusLine(boot)).toBe("现金流科技：贷款等级+1 · 有效5级");
   });
 });

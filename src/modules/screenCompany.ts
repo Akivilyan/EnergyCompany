@@ -75,6 +75,8 @@ export interface CompanySnapshot {
   month: number;
   funds: number;
   companyLevel: number;
+  effectiveLoanLevel: number;
+  loanTierLevelBonus: number;
   socialValue: number;
   runResult: GameState["runResult"];
   adsRemaining: number;
@@ -192,8 +194,8 @@ export class ScreenCompany {
   getSnapshot(): CompanySnapshot {
     const state = this.controller.state;
     const activeLoan = Object.values(state.loans)[0] ?? null;
-    const effectiveLoanLevel =
-      state.companyLevel + getLoanTierLevelBonus(state, this.controller.config);
+    const loanTierLevelBonus = getLoanTierLevelBonus(state, this.controller.config);
+    const effectiveLoanLevel = state.companyLevel + loanTierLevelBonus;
     const loanTierOptions = this.controller.config.bundle.loanTiers.map((tier) =>
       toLoanOption(effectiveLoanLevel, tier)
     );
@@ -201,6 +203,8 @@ export class ScreenCompany {
       month: state.currentMonth,
       funds: state.funds,
       companyLevel: state.companyLevel,
+      effectiveLoanLevel,
+      loanTierLevelBonus,
       socialValue: state.socialValueCurrent,
       runResult: state.runResult,
       adsRemaining: state.adsRemaining,

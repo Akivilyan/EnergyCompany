@@ -57,6 +57,18 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[2]).toBe("可切换贷款 2 档");
   });
 
+  it("shows cashflow tech loan tier bonus on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.litTechIds.push("eng_cashflow");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("现金流科技：贷款等级+1 · 有效5级");
+    expect(display.detailLines).toContain("可切换贷款 5 档");
+  });
+
   it("shows recent monthly cashflow on company hud after settlement", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.advanceMonthInCurrentCity();

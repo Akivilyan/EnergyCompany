@@ -14,6 +14,8 @@ describe("ScreenCompany", () => {
     const snapshot = screen.getSnapshot();
     expect(snapshot.month).toBe(1);
     expect(snapshot.companyLevel).toBe(1);
+    expect(snapshot.effectiveLoanLevel).toBe(1);
+    expect(snapshot.loanTierLevelBonus).toBe(0);
     expect(snapshot.activeLoan).toBeNull();
     expect(snapshot.canApplyLoan).toBe(true);
     const loan1 = snapshot.loanTierOptions.find((item) => item.loanId === "loan_1");
@@ -59,7 +61,11 @@ describe("ScreenCompany", () => {
     controller.state.litTechIds.push("eng_cashflow");
     const screen = createScreenCompany(controller);
 
-    const loan5 = screen.getSnapshot().loanTierOptions.find((item) => item.loanId === "loan_5");
+    const snapshot = screen.getSnapshot();
+    expect(snapshot.effectiveLoanLevel).toBe(5);
+    expect(snapshot.loanTierLevelBonus).toBe(1);
+
+    const loan5 = snapshot.loanTierOptions.find((item) => item.loanId === "loan_5");
     expect(loan5?.unlocked).toBe(true);
 
     const out = screen.applyLoan("loan_5");
