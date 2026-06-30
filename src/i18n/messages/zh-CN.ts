@@ -28,6 +28,8 @@ export const zhCN: Record<string, string> = {
   "hud.events.pending": "灾害待确认：{title}",
   "hud.events.active": "进行中灾害 {count} 个",
   "hud.events.upcoming": "下一场 {id} 还有 {months} 月",
+  "hud.events.active_pressure": "灾害压力：剩{months}月 · 收入{income}% · 建设{build}% · 科研{research}%",
+  "hud.events.upcoming_risk": "灾害备考：M{month}现金冲击{adjusted}/{base} · 风险储备生效",
 
   "events.modal.disaster_exam_1.title": "考核灾害 I",
   "events.modal.disaster_exam_1.summary": "收入与建设节奏承压",

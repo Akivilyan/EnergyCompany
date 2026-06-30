@@ -4,7 +4,12 @@ import {
   formatSelectedBuildCandidate,
   getCityHudBuildSelectionSnapshot
 } from "./cityHudController.js";
-import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
+import {
+  formatActiveEventPressureLine,
+  formatEventsHudHint,
+  formatPendingEventModalLines,
+  formatUpcomingEventRiskLine
+} from "./eventsHudController.js";
 import {
   formatResearchableTechBranchSummary,
   formatSelectedResearchCandidate,
@@ -184,10 +189,18 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
       })
     : t("hud.status.company_no_loan");
   const detailLines = s.activeLoan
-    ? hudLines(svLine, latestCashflow, loanPart)
+    ? hudLines(
+        svLine,
+        latestCashflow,
+        formatActiveEventPressureLine(boot),
+        formatUpcomingEventRiskLine(boot),
+        loanPart
+      )
     : hudLines(
         svLine,
         latestCashflow,
+        formatActiveEventPressureLine(boot),
+        formatUpcomingEventRiskLine(boot),
         selectedLoan,
         selection.candidates.length > 1
           ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })

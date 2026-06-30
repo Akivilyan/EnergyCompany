@@ -11,6 +11,8 @@ export interface UpcomingDisasterEntry {
   examTier: number;
   isFinal: boolean;
   immediateCashPenalty: number;
+  adjustedCashPenalty: number;
+  cashPenaltyReduced: boolean;
   popupRequired: boolean;
 }
 
@@ -24,6 +26,10 @@ export interface ActiveDisasterEntry {
   isFinal: boolean;
   incomeMultNum: number;
   incomeMultDen: number;
+  buildDurationMultNum: number;
+  buildDurationMultDen: number;
+  researchDurationMultNum: number;
+  researchDurationMultDen: number;
   needsAcknowledgement: boolean;
 }
 
@@ -106,6 +112,16 @@ export interface EventsPanelActionOutput {
 
 export const ACTIVE_SLOT_LIMIT = 3;
 
+function getAdjustedDisasterPenalty(controller: RunController, basePenalty: number): number {
+  const percentDelta = controller.state.litTechIds.reduce((sum, techId) => {
+    const tech = controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "modifier") return sum;
+    const value = tech.effect_value.disaster_cash_pct;
+    return typeof value === "number" && Number.isFinite(value) ? sum + value : sum;
+  }, 0);
+  return Math.max(0, Math.floor((basePenalty * (100 + percentDelta)) / 100));
+}
+
 function resolveUiCopy(
   code: EventsPanelUiErrorCode | null
 ): EventsPanelUiCopySpec | null {
@@ -138,6 +154,10 @@ export class ScreenEventsPanel {
     const state = this.controller.state;
     const month = state.currentMonth;
     const disasters = this.controller.config.bundle.disasters;
+    const difficulty = this.controller.config.bundle.difficulties.find(
+      (item) => item.difficulty_id === state.difficultyId
+    );
+    const disasterCashMult = difficulty?.disaster_cash_mult ?? 1;
 
     const upcoming: UpcomingDisasterEntry[] = [];
     const active: ActiveDisasterEntry[] = [];
@@ -149,6 +169,8 @@ export class ScreenEventsPanel {
         (d) => d.disasterSeq === disaster.seq
       );
       if (!isTriggered && disaster.trigger_month >= month) {
+        const baseCashPenalty = Math.floor(disaster.immediate_cash_penalty * disasterCashMult);
+        const adjustedCashPenalty = getAdjustedDisasterPenalty(this.controller, baseCashPenalty);
         upcoming.push({
           lifecycle: "upcoming",
           seq: disaster.seq,
@@ -157,7 +179,9 @@ export class ScreenEventsPanel {
           monthsUntilTrigger: disaster.trigger_month - month,
           examTier: disaster.exam_tier,
           isFinal: disaster.is_final ?? false,
-          immediateCashPenalty: disaster.immediate_cash_penalty,
+          immediateCashPenalty: baseCashPenalty,
+          adjustedCashPenalty,
+          cashPenaltyReduced: adjustedCashPenalty < baseCashPenalty,
           popupRequired: disaster.popup_required ?? true
         });
         continue;
@@ -173,6 +197,10 @@ export class ScreenEventsPanel {
           isFinal: disaster.is_final ?? false,
           incomeMultNum: activeDebuff.incomeMultNum,
           incomeMultDen: activeDebuff.incomeMultDen,
+          buildDurationMultNum: activeDebuff.buildDurationMultNum,
+          buildDurationMultDen: activeDebuff.buildDurationMultDen,
+          researchDurationMultNum: activeDebuff.researchDurationMultNum,
+          researchDurationMultDen: activeDebuff.researchDurationMultDen,
           needsAcknowledgement:
             (disaster.popup_required ?? true) &&
             !state.acknowledgedDisasterSeqs.includes(disaster.seq)

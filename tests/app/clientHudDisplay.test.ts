@@ -71,6 +71,24 @@ describe("clientHudDisplay", () => {
     expect(cashflowLine).toContain("贷款");
   });
 
+  it("shows risk-reserve disaster prep and active pressure on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_risk_reserve");
+    clientNavOpenCompany(boot);
+
+    const prep = buildClientHudDisplay(boot);
+    expect(prep.detailLines).toContain("灾害备考：M22现金冲击7/9 · 风险储备生效");
+
+    boot.app.controller.state.funds = 10000;
+    while (boot.app.controller.state.currentMonth < 23) {
+      boot.play.advanceMonthInCurrentCity();
+    }
+    clientNavOpenCompany(boot);
+
+    const active = buildClientHudDisplay(boot);
+    expect(active.detailLines).toContain("灾害压力：剩8月 · 收入92% · 建设108% · 科研108%");
+  });
+
   it("shows selected research candidate and researchable count on tech screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.buildInCurrentCity("wind", 1);

@@ -23,6 +23,9 @@ describe("ScreenEventsPanel", () => {
     expect(snapshot.month).toBe(1);
     expect(snapshot.upcoming.map((e) => e.triggerMonth)).toEqual([22, 41, 63, 86]);
     expect(snapshot.upcoming[0].monthsUntilTrigger).toBe(21);
+    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(9);
+    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(9);
+    expect(snapshot.upcoming[0].cashPenaltyReduced).toBe(false);
     expect(snapshot.upcoming[3].isFinal).toBe(true);
     expect(snapshot.active).toHaveLength(0);
     expect(snapshot.visibleActive).toHaveLength(0);
@@ -44,6 +47,12 @@ describe("ScreenEventsPanel", () => {
     expect(first).toBeDefined();
     if (!first) return;
     expect(first.needsAcknowledgement).toBe(true);
+    expect(first.incomeMultNum).toBe(92);
+    expect(first.incomeMultDen).toBe(100);
+    expect(first.buildDurationMultNum).toBe(108);
+    expect(first.buildDurationMultDen).toBe(100);
+    expect(first.researchDurationMultNum).toBe(108);
+    expect(first.researchDurationMultDen).toBe(100);
     expect(snapshot.pendingFullscreenQueue.map((e) => e.seq)).toEqual([1]);
     expect(snapshot.pendingFullscreen?.seq).toBe(1);
     expect(snapshot.upcoming.map((e) => e.seq)).toEqual([2, 3, 4]);
@@ -77,6 +86,17 @@ describe("ScreenEventsPanel", () => {
       messageKey: "events_panel.error.no_pending_modal",
       actionKey: "events_panel.action.close_panel"
     });
+  });
+
+  it("surfaces risk reserve adjusted upcoming cash penalty", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.litTechIds.push("eng_risk_reserve");
+
+    const snapshot = createScreenEventsPanel(controller).getSnapshot();
+
+    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(9);
+    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(7);
+    expect(snapshot.upcoming[0].cashPenaltyReduced).toBe(true);
   });
 
   it("acknowledgeFullscreen reports not_active for not-yet-triggered disasters", () => {

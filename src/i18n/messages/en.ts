@@ -28,6 +28,8 @@ export const en: Record<string, string> = {
   "hud.events.pending": "Disaster pending: {title}",
   "hud.events.active": "Active disasters: {count}",
   "hud.events.upcoming": "Next {id} in {months} mo",
+  "hud.events.active_pressure": "Disaster pressure: {months}m left · income {income}% · build {build}% · research {research}%",
+  "hud.events.upcoming_risk": "Disaster prep: M{month} cash hit {adjusted}/{base} · risk reserve active",
 
   "events.modal.disaster_exam_1.title": "Exam Disaster I",
   "events.modal.disaster_exam_1.summary": "Income and build pace under pressure",

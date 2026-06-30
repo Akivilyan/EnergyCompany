@@ -67,3 +67,28 @@ export function formatEventsHudHint(boot: GameBootstrap): string | null {
   }
   return null;
 }
+
+function formatPercent(num: number, den: number): number {
+  return Math.round((num / den) * 100);
+}
+
+export function formatActiveEventPressureLine(boot: GameBootstrap): string | null {
+  const active = boot.app.screens.events.getSnapshot().active[0];
+  if (!active) return null;
+  return t("hud.events.active_pressure", {
+    months: active.monthsRemaining,
+    income: formatPercent(active.incomeMultNum, active.incomeMultDen),
+    build: formatPercent(active.buildDurationMultNum, active.buildDurationMultDen),
+    research: formatPercent(active.researchDurationMultNum, active.researchDurationMultDen)
+  });
+}
+
+export function formatUpcomingEventRiskLine(boot: GameBootstrap): string | null {
+  const next = boot.app.screens.events.getSnapshot().upcoming[0];
+  if (!next || !next.cashPenaltyReduced) return null;
+  return t("hud.events.upcoming_risk", {
+    month: next.triggerMonth,
+    adjusted: next.adjustedCashPenalty,
+    base: next.immediateCashPenalty
+  });
+}
