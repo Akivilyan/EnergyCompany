@@ -444,6 +444,27 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
   });
 
+  it("shows finished but isolated super hydro output as world map grid pressure", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("超级水电可建 · 完工1/在建0/2 · 接网出力0/4200MW");
+    expect(display.detailLines).toContain("超水电接网压力：未接网4200/4200MW");
+    expect(display.detailLines).toContain("超水电候选：超级水电二号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
+  });
+
   it("hides super hydro queue capability when the selected strategic slot is unaffordable", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

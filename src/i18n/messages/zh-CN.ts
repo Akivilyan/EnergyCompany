@@ -299,5 +299,6 @@ export const zhCN: Record<string, string> = {
   "hud.world.super_hydro.grid.building_link": "接网中",
   "hud.world.super_hydro.grid.connected": "已接网",
   "hud.status.world_super_hydro": "超级水电{state} · 完工{finished}/在建{building}/{total} · 接网出力{connected}/{output}MW",
+  "hud.status.world_super_hydro_pressure": "超水电接网压力：未接网{isolated}/{total}MW",
   "hud.status.world_super_hydro_slot": "超水电候选：{name} · {status} · {grid} · {cost}资金 · {months}月 · {output}MW"
 };

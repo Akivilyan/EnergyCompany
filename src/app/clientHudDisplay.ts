@@ -17,6 +17,7 @@ import {
   formatSelectedWorldCandidate,
   formatSelectedWorldSuperHydroSlot,
   formatSelectedWorldTrunkCandidate,
+  formatWorldSuperHydroGridPressure,
   formatWorldSuperHydroStatus,
   getWorldHudSelectionSnapshot
 } from "./worldHudController.js";
@@ -331,6 +332,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
         })
       : null,
     formatWorldSuperHydroStatus(boot),
+    formatWorldSuperHydroGridPressure(boot),
     formatSelectedWorldSuperHydroSlot(boot),
     selectedTarget,
     formatSelectedWorldTrunkCandidate(boot),

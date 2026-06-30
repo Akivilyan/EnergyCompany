@@ -299,5 +299,6 @@ export const en: Record<string, string> = {
   "hud.world.super_hydro.grid.building_link": "linking",
   "hud.world.super_hydro.grid.connected": "connected",
   "hud.status.world_super_hydro": "Super hydro {state} · done {finished}/building {building}/{total} · output {connected}/{output}MW connected",
+  "hud.status.world_super_hydro_pressure": "Super hydro grid pressure: {isolated}/{total}MW not connected",
   "hud.status.world_super_hydro_slot": "Super hydro candidate: {name} · {status} · {grid} · cost {cost} · {months}m · {output}MW"
 };

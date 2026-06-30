@@ -164,6 +164,15 @@ export function formatWorldSuperHydroStatus(boot: GameBootstrap): string | null 
   });
 }
 
+export function formatWorldSuperHydroGridPressure(boot: GameBootstrap): string | null {
+  const s = boot.app.screens.world.getSnapshot().superHydro;
+  if (!s.unlocked || s.totalOutputMw <= s.connectedOutputMw) return null;
+  return t("hud.status.world_super_hydro_pressure", {
+    isolated: s.totalOutputMw - s.connectedOutputMw,
+    total: s.totalOutputMw
+  });
+}
+
 export function worldCycleTargetCandidate(boot: GameBootstrap): CityHudActionResult {
   const candidates = getCandidates(boot);
   if (candidates.length === 0) {
