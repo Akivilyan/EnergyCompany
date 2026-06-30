@@ -84,6 +84,8 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_loan_tier_bonus": "现金流科技：贷款等级+{bonus} · 有效{effective}级",
   "hud.status.company_opex_tech": "运维科技：{items}",
   "hud.status.company_opex_tech_item": "{target}-{pct}%",
+  "hud.status.company_dispatch_tech": "调度科技：{items}",
+  "hud.status.company_dispatch_tech_item": "区域线损-{pct}%",
   "hud.company.opex_target.operations": "通用运维",
   "hud.company.opex_target.nuclear": "核电运维",
   "hud.status.company_loan_candidate_count": "可切换贷款 {count} 档",

@@ -84,6 +84,8 @@ export const en: Record<string, string> = {
   "hud.status.company_loan_tier_bonus": "Cashflow tech: loan level +{bonus} · effective Lv{effective}",
   "hud.status.company_opex_tech": "Opex tech: {items}",
   "hud.status.company_opex_tech_item": "{target} -{pct}%",
+  "hud.status.company_dispatch_tech": "Dispatch tech: {items}",
+  "hud.status.company_dispatch_tech_item": "regional loss -{pct}%",
   "hud.company.opex_target.operations": "general opex",
   "hud.company.opex_target.nuclear": "nuclear opex",
   "hud.status.company_loan_candidate_count": "Loan options {count}",

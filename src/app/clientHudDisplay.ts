@@ -18,6 +18,7 @@ import {
 } from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
 import {
+  formatCompanyGridDispatchTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
@@ -210,6 +211,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyGridDispatchTechLine(boot),
         loanPart
       )
     : hudLines(
@@ -219,6 +221,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatUpcomingEventRiskLine(boot),
         formatCompanyLoanTierBonusLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyGridDispatchTechLine(boot),
         selectedLoan,
         selection.candidates.length > 1
           ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })

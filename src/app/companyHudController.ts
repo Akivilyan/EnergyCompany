@@ -111,6 +111,20 @@ export function formatCompanyOpexTechLine(boot: GameBootstrap): string | null {
     : null;
 }
 
+export function formatCompanyGridDispatchTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "modifier" || tech.effect_target !== "grid_loss") continue;
+    const value = tech.effect_value.regional_loss_pct;
+    if (typeof value !== "number" || !Number.isFinite(value) || value === 0) continue;
+    parts.push(t("hud.status.company_dispatch_tech_item", { pct: Math.abs(value) }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_dispatch_tech", { items: parts.join("/") })
+    : null;
+}
+
 export function companyApplySelectedLoan(
   boot: GameBootstrap,
   loanId?: string

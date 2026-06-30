@@ -6,6 +6,7 @@ import {
   companyCycleLoanCandidate,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  formatCompanyGridDispatchTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
@@ -78,5 +79,12 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
 
     expect(formatCompanyOpexTechLine(boot)).toBe("运维科技：通用运维-10%/核电运维-18%");
+  });
+
+  it("formats grid dispatch loss reduction", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
+
+    expect(formatCompanyGridDispatchTechLine(boot)).toBe("调度科技：区域线损-10%");
   });
 });
