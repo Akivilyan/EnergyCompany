@@ -256,6 +256,7 @@ export const en: Record<string, string> = {
   "pressure.nuclear_siting": "nuclear siting",
   "pressure.hydro_site_bound": "hydro-site bound",
   "pressure.mixed_dispatch": "mixed dispatch",
+  "pressure.terminal_load": "terminal load",
   "pressure.none": "normal",
   "plan.secure_trunk": "secure trunk",
   "plan.close_supply_gap": "close supply gap",

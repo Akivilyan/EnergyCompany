@@ -240,6 +240,34 @@ describe("cityHudController", () => {
     ]);
   });
 
+  it("exposes MET-B terminal load pressure for city HUD", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const metB = config.getCity("CITY-METB-01");
+    expect(metB).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-METB-01"] = {
+      cityId: "CITY-METB-01",
+      demandMw: metB?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: metB?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-METB-01", "MET-B");
+
+    expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "low_slot_density",
+      "nuclear_siting",
+      "terminal_load"
+    ]);
+  });
+
   it("hides build candidates for unlocked outside-region city before trunk connection", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

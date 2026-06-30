@@ -344,6 +344,30 @@ describe("clientHudDisplay", () => {
     expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/混合调配");
   });
 
+  it("shows MET-B terminal load pressure in city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const metB = boot.app.controller.config.getCity("CITY-METB-01");
+    expect(metB).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-METB-01"] = {
+      cityId: "CITY-METB-01",
+      demandMw: metB?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: metB?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-METB-01", "MET-B");
+
+    const display = buildClientHudDisplay(boot);
+    expect(display.detailLines[0]).toContain("负荷2100MW");
+    expect(display.detailLines[0]).toContain("定位终局都会枢纽");
+    expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/终局负荷");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
@@ -374,7 +398,7 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
     expect(display.detailLines[1]).toContain("负荷2100MW");
     expect(display.detailLines[1]).toContain("建议光伏/水电/核电");
-    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址");
+    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/终局负荷");
     expect(display.detailLines).toContain("经营路线：先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
     expect(display.detailLines).toContain("经营定位：终局都会负荷");
   });
@@ -508,7 +532,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("特大城B");
     expect(display.detailLines[1]).toContain("定位终局都会负荷");
     expect(display.detailLines[1]).toContain("建议光伏/水电/核电");
-    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址");
+    expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/终局负荷");
     expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
   });
 

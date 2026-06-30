@@ -172,6 +172,9 @@ function appendCityRolePressureTags(
   ) {
     tags.push("mixed_dispatch");
   }
+  if (powerRole === "terminal_metropolis_hub") {
+    tags.push("terminal_load");
+  }
 }
 
 export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSnapshot | null {

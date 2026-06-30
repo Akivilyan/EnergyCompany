@@ -320,6 +320,35 @@ describe("ScreenRegion", () => {
     ]);
   });
 
+  it("exposes MET-B terminal load operating pressure and route", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 5;
+    const screen = createScreenRegionForRegion(controller, "MET-B");
+
+    const snapshot = screen.getSnapshot();
+
+    expect(snapshot.designRole).toBe("terminal_metropolis_load_hub");
+    expect(snapshot.totalDemandMw).toBe(2100);
+    expect(snapshot.richResources).toEqual(["solar", "hydro"]);
+    expect(snapshot.recommendedBuilds).toEqual(["solar", "hydro", "nuclear"]);
+    expect(snapshot.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "low_slot_density",
+      "nuclear_siting",
+      "terminal_load"
+    ]);
+    expect(snapshot.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "super_hydro_import",
+      "nuclear_anchor",
+      "slot_efficiency"
+    ]);
+  });
+
   it("summarizes regional local supply, net import, and gap from runtime cities", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 5;

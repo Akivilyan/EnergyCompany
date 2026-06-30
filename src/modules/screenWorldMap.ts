@@ -22,7 +22,8 @@ export type OperatingPressureTag =
   | "fossil_transition"
   | "nuclear_siting"
   | "hydro_site_bound"
-  | "mixed_dispatch";
+  | "mixed_dispatch"
+  | "terminal_load";
 
 export type WorldMapConnectionStatus =
   | "capital"
@@ -182,6 +183,7 @@ export function getOperatingPressureTags(input: {
   if (input.nuclearEligibleCityCount > 0) tags.push("nuclear_siting");
   if (input.designRole === "plateau_hydro_wind_province") tags.push("hydro_site_bound");
   if (input.designRole === "frontier_hybrid_balancing_province") tags.push("mixed_dispatch");
+  if (input.designRole === "terminal_metropolis_load_hub") tags.push("terminal_load");
   return tags;
 }
 

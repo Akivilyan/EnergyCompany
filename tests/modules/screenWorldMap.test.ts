@@ -94,7 +94,8 @@ describe("screenWorldMap", () => {
       "supply_gap",
       "trunk_first",
       "low_slot_density",
-      "nuclear_siting"
+      "nuclear_siting",
+      "terminal_load"
     ]);
     expect(metB?.operatingPlanHints).toEqual([
       "secure_trunk",

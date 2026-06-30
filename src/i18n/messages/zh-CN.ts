@@ -256,6 +256,7 @@ export const zhCN: Record<string, string> = {
   "pressure.nuclear_siting": "核电选址",
   "pressure.hydro_site_bound": "水点绑定",
   "pressure.mixed_dispatch": "混合调配",
+  "pressure.terminal_load": "终局负荷",
   "pressure.none": "常规",
   "plan.secure_trunk": "先接主干",
   "plan.close_supply_gap": "补足缺口",
