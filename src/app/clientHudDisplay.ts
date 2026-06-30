@@ -5,7 +5,11 @@ import {
   getCityHudBuildSelectionSnapshot
 } from "./cityHudController.js";
 import { formatEventsHudHint, formatPendingEventModalLines } from "./eventsHudController.js";
-import { formatSelectedResearchCandidate, getTechHudSelectionSnapshot } from "./techHudController.js";
+import {
+  formatSelectedResearchCandidate,
+  formatTechProgressionSummary,
+  getTechHudSelectionSnapshot
+} from "./techHudController.js";
 import { formatSelectedRegionLink } from "./regionHudController.js";
 import { formatSelectedLoanCandidate, getCompanyHudSelectionSnapshot } from "./companyHudController.js";
 import {
@@ -371,6 +375,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   }
   const selection = getTechHudSelectionSnapshot(boot);
   const selectedLine = formatSelectedResearchCandidate(boot);
+  const branchSummary = formatTechProgressionSummary(boot);
   const detailLine = selectedLine ?? t("hud.status.tech_no_candidate_hint");
   return {
     statusLine,
@@ -378,6 +383,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     statusLines,
     detailLines: hudLines(
       selection.candidates.length > 0 ? t("hud.status.tech_idle_hint") : null,
+      branchSummary,
       detailLine
     )
   };

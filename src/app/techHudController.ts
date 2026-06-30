@@ -19,6 +19,21 @@ export interface TechHudSelectionSnapshot {
   selectedTechId: string | null;
 }
 
+type TechBranchKind =
+  | "generation_tier"
+  | "storage_gate"
+  | "regional_grid"
+  | "backbone_grid"
+  | "uhv"
+  | "nuclear"
+  | "eco"
+  | "super_hydro"
+  | "opex"
+  | "dispatch"
+  | "cashflow"
+  | "risk"
+  | "green_pr";
+
 export interface TechHudActionResult {
   ok: boolean;
   view: ClientNavResult["view"];
@@ -53,6 +68,70 @@ function getResearchCandidates(boot: GameBootstrap): TechHudCandidate[] {
       researchMonths: tech.researchMonths,
       effectSummary: tech.effectSummary
     }));
+}
+
+function getTechBranchKind(techId: string): TechBranchKind | null {
+  if (/^(wind|solar|thermal|hydro)_[3-5]$/.test(techId)) return "generation_tier";
+  if (techId.startsWith("storage_system_")) return "storage_gate";
+  if (techId === "grid_regional") return "regional_grid";
+  if (techId === "grid_backbone") return "backbone_grid";
+  if (techId === "uhv_transmission") return "uhv";
+  if (techId === "eng_ops_contract" || techId === "nuclear_ops") return "opex";
+  if (techId.startsWith("nuclear_")) return "nuclear";
+  if (techId === "eco_thermal" || techId === "eco_nuclear") return "eco";
+  if (techId === "super_hydro") return "super_hydro";
+  if (techId === "eng_grid_dispatch") return "dispatch";
+  if (techId === "eng_cashflow") return "cashflow";
+  if (techId === "eng_risk_reserve") return "risk";
+  if (techId === "eng_green_pr") return "green_pr";
+  return null;
+}
+
+const TECH_BRANCH_ORDER: TechBranchKind[] = [
+  "generation_tier",
+  "storage_gate",
+  "regional_grid",
+  "backbone_grid",
+  "uhv",
+  "nuclear",
+  "eco",
+  "super_hydro",
+  "opex",
+  "dispatch",
+  "cashflow",
+  "risk",
+  "green_pr"
+];
+
+function formatTechBranchKind(kind: TechBranchKind): string {
+  const key = `tech.branch.${kind}`;
+  const label = t(key);
+  return label === key ? kind : label;
+}
+
+function formatTechBranchKinds(kinds: TechBranchKind[]): string {
+  return kinds.length > 0
+    ? kinds.map(formatTechBranchKind).join("/")
+    : t("tech.branch.none");
+}
+
+export function formatTechProgressionSummary(boot: GameBootstrap): string | null {
+  const levels = [3, 4, 5] as const;
+  const technologies = boot.app.screens.tech.getSnapshot().technologies;
+  const parts = levels.map((level) => {
+    const branches = new Set<TechBranchKind>();
+    for (const tech of technologies) {
+      if (tech.companyLevelMin !== level) continue;
+      const kind = getTechBranchKind(tech.techId);
+      if (kind) branches.add(kind);
+    }
+    const ordered = TECH_BRANCH_ORDER.filter((kind) => branches.has(kind));
+    return t("hud.status.tech_branch_level", {
+      level,
+      branches: formatTechBranchKinds(ordered)
+    });
+  });
+  return parts.length > 0 ? t("hud.status.tech_branch_summary", { branches: parts.join(" · ") }) : null;
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
