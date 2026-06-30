@@ -50,6 +50,9 @@ export interface CityHudProfileSnapshot {
   effectiveSupplyMw: number;
   supplyGapMw: number;
   supplyRatio: number;
+  cityFullyEcoSupply: boolean;
+  ecoCapFactor: number;
+  greenPrActive: boolean;
   buildSlots: number;
   hasRiver: boolean;
   nuclearEligible: boolean;
@@ -202,6 +205,10 @@ export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSn
     effectiveSupplyMw,
     supplyGapMw,
     supplyRatio: runtime?.supplyRatio ?? 0,
+    cityFullyEcoSupply: runtime?.cityFullyEcoSupply ?? true,
+    ecoCapFactor: runtime?.ecoCapFactor ?? 1,
+    greenPrActive:
+      !!runtime?.cityFullyEcoSupply && boot.app.controller.state.litTechIds.includes("eng_green_pr"),
     buildSlots: city.build_slot_count,
     hasRiver: city.has_river,
     nuclearEligible: !!city.is_nuclear_eligible,

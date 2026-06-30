@@ -145,6 +145,9 @@ describe("cityHudController", () => {
       effectiveSupplyMw: 0,
       supplyGapMw: 1280,
       supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      greenPrActive: false,
       buildSlots: 6,
       hasRiver: false,
       nuclearEligible: true,
@@ -159,6 +162,34 @@ describe("cityHudController", () => {
       ],
       powerRole: "coastal_industrial_hub"
     });
+  });
+
+  it("exposes city eco and green brand status for city HUD", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const start = config.getCity("CITY-START");
+    expect(start).toBeTruthy();
+    boot.app.controller.state.cities["CITY-START"] = {
+      cityId: "CITY-START",
+      demandMw: start?.base_demand_mw ?? 0,
+      localSupplyMw: 100,
+      effectiveSupplyMw: 100,
+      netImportMw: 0,
+      supplyRatio: 100 / (start?.base_demand_mw ?? 1),
+      cityFullyEcoSupply: false,
+      ecoCapFactor: 0.8,
+      cityBaseSocialValue: start?.city_base_social_value ?? 0
+    };
+
+    expect(getCityHudProfileSnapshot(boot)?.cityFullyEcoSupply).toBe(false);
+    expect(getCityHudProfileSnapshot(boot)?.ecoCapFactor).toBe(0.8);
+    expect(getCityHudProfileSnapshot(boot)?.greenPrActive).toBe(false);
+
+    boot.app.controller.state.cities["CITY-START"].cityFullyEcoSupply = true;
+    boot.app.controller.state.cities["CITY-START"].ecoCapFactor = 1;
+    boot.app.controller.state.litTechIds.push("eng_green_pr");
+
+    expect(getCityHudProfileSnapshot(boot)?.greenPrActive).toBe(true);
   });
 
   it("exposes late-map city role pressure for MAP-07 and MAP-08 city HUD", () => {

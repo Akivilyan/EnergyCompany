@@ -199,6 +199,33 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("储能x2");
   });
 
+  it("shows city eco status and green brand branch in city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const city = boot.app.controller.config.getCity("CITY-START");
+    expect(city).toBeTruthy();
+    boot.app.controller.state.cities["CITY-START"] = {
+      cityId: "CITY-START",
+      demandMw: city?.base_demand_mw ?? 0,
+      localSupplyMw: 100,
+      effectiveSupplyMw: 100,
+      netImportMw: 0,
+      supplyRatio: 100 / (city?.base_demand_mw ?? 1),
+      cityFullyEcoSupply: false,
+      ecoCapFactor: 0.8,
+      cityBaseSocialValue: city?.city_base_social_value ?? 0
+    };
+
+    const partial = buildClientHudDisplay(boot);
+    expect(partial.detailLines[0]).toContain("生态非全环保·SV上限80%");
+
+    boot.app.controller.state.cities["CITY-START"].cityFullyEcoSupply = true;
+    boot.app.controller.state.cities["CITY-START"].ecoCapFactor = 1;
+    boot.app.controller.state.litTechIds.push("eng_green_pr");
+
+    const green = buildClientHudDisplay(boot);
+    expect(green.detailLines[0]).toContain("生态全环保+绿色品牌");
+  });
+
   it("shows level-V city operating pressure in city hud", () => {
     const boot = createGameBootstrapFromRepo();
     const city = boot.app.controller.config.getCity("CITY-MAP06-01");

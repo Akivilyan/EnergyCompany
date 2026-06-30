@@ -142,6 +142,16 @@ function formatCityPowerRole(role: string | null): string {
   return label === key ? role : label;
 }
 
+function formatCityEcoStatus(profile: {
+  cityFullyEcoSupply: boolean;
+  ecoCapFactor: number;
+  greenPrActive: boolean;
+}): string {
+  if (profile.greenPrActive) return t("hud.city.eco.green_pr");
+  if (profile.cityFullyEcoSupply) return t("hud.city.eco.full");
+  return t("hud.city.eco.partial", { cap: Math.round(profile.ecoCapFactor * 100) });
+}
+
 function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): number | null {
   const row = boot.app.controller.config.bundle.companyLevels.find(
     (item) => item.level === companyLevel + 1
@@ -451,6 +461,7 @@ export function buildClientHudDisplay(
             supply: profile.effectiveSupplyMw,
             gap: profile.supplyGapMw,
             ratio: Math.round(profile.supplyRatio * 100),
+            eco: formatCityEcoStatus(profile),
             slots: profile.buildSlots,
             river: profile.hasRiver ? 1 : 0,
             nuclear: profile.nuclearEligible ? 1 : 0,
