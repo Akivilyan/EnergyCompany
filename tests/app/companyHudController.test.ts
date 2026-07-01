@@ -10,6 +10,7 @@ import {
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
+  formatCompanyNuclearTechLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -81,6 +82,13 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
 
     expect(formatCompanyOpexTechLine(boot)).toBe("运维科技：通用运维-10%/核电运维-18%");
+  });
+
+  it("formats nuclear build tier tech", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2", "nuclear_3");
+
+    expect(formatCompanyNuclearTechLine(boot)).toBe("核电科技：可建核电·3");
   });
 
   it("formats grid dispatch loss reduction", () => {

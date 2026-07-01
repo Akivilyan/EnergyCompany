@@ -91,6 +91,28 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows nuclear build tier tech on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2", "nuclear_3");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("核电科技：可建核电·3");
+  });
+
+  it("keeps nuclear build tier tech visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("核电科技：可建核电·2");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows grid dispatch tech loss reduction on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");

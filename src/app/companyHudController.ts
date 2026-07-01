@@ -147,6 +147,18 @@ export function formatCompanyGridTechLine(boot: GameBootstrap): string | null {
     : null;
 }
 
+export function formatCompanyNuclearTechLine(boot: GameBootstrap): string | null {
+  let tierMax = 0;
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "facility_tier" || tech.effect_target !== "nuclear") continue;
+    const value = tech.effect_value.tier_max;
+    if (typeof value !== "number" || !Number.isFinite(value)) continue;
+    tierMax = Math.max(tierMax, value);
+  }
+  return tierMax > 0 ? t("hud.status.company_nuclear_tech", { tier: tierMax }) : null;
+}
+
 function formatEcoSyncTarget(target: string): string {
   const key = `hud.company.eco_target.${target}`;
   const label = t(key);

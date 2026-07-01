@@ -22,6 +22,7 @@ import {
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
+  formatCompanyNuclearTechLine,
   formatCompanyOpexTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -213,6 +214,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyNuclearTechLine(boot),
         formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
@@ -225,6 +227,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatUpcomingEventRiskLine(boot),
         formatCompanyLoanTierBonusLine(boot),
         formatCompanyOpexTechLine(boot),
+        formatCompanyNuclearTechLine(boot),
         formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
