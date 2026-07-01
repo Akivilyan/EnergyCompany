@@ -91,6 +91,33 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows generation tier tech branches on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push(
+      "wind_3",
+      "solar_4",
+      "thermal_5",
+      "hydro_5"
+    );
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("发电科技：风·3/光·4/火·5/水·5");
+  });
+
+  it("keeps generation tier tech branches visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("wind_3", "hydro_4");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("发电科技：风·3/水·4");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows nuclear build tier tech on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2", "nuclear_3");

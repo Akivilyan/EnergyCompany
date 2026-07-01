@@ -7,6 +7,7 @@ import {
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
   formatCompanyEcoTechLine,
+  formatCompanyGenerationTechLine,
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
@@ -84,6 +85,19 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
 
     expect(formatCompanyOpexTechLine(boot)).toBe("运维科技：通用运维-10%/核电运维-18%");
+  });
+
+  it("formats generation tier tech branches", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push(
+      "wind_3",
+      "solar_4",
+      "thermal_5",
+      "hydro_5",
+      "nuclear_3"
+    );
+
+    expect(formatCompanyGenerationTechLine(boot)).toBe("发电科技：风·3/光·4/火·5/水·5");
   });
 
   it("formats nuclear build tier tech", () => {

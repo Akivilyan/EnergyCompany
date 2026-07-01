@@ -159,6 +159,43 @@ export function formatCompanyNuclearTechLine(boot: GameBootstrap): string | null
   return tierMax > 0 ? t("hud.status.company_nuclear_tech", { tier: tierMax }) : null;
 }
 
+function formatGenerationTechTarget(target: string): string {
+  const key = `hud.company.generation_target.${target}`;
+  const label = t(key);
+  return label === key ? target : label;
+}
+
+const generationTechTargetOrder = ["wind", "solar", "thermal", "hydro"];
+
+function compareGenerationTechTarget(a: string, b: string): number {
+  return generationTechTargetOrder.indexOf(a) - generationTechTargetOrder.indexOf(b);
+}
+
+export function formatCompanyGenerationTechLine(boot: GameBootstrap): string | null {
+  const tierByTarget = new Map<string, number>();
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "facility_tier" || tech.effect_target === "nuclear") continue;
+    const value = tech.effect_value.tier_max;
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 1) continue;
+    tierByTarget.set(
+      tech.effect_target,
+      Math.max(tierByTarget.get(tech.effect_target) ?? 0, value)
+    );
+  }
+  const parts = Array.from(tierByTarget.entries())
+    .sort(([a], [b]) => compareGenerationTechTarget(a, b))
+    .map(([target, tier]) =>
+      t("hud.status.company_generation_tech_item", {
+        target: formatGenerationTechTarget(target),
+        tier
+      })
+    );
+  return parts.length > 0
+    ? t("hud.status.company_generation_tech", { items: parts.join("/") })
+    : null;
+}
+
 export function formatCompanyStorageTechLine(boot: GameBootstrap): string | null {
   let storageMult = 0;
   const unlockTiers = new Set<number>();
