@@ -483,6 +483,38 @@ describe("settleNextMonth", () => {
     );
   });
 
+  it("dispatch applies eng_cashflow loan tier bonus when checking loan unlocks", () => {
+    const config = loadTestConfig();
+    const lockedState = createInitialState(config);
+    lockedState.companyLevel = 4;
+
+    const locked = dispatch(
+      lockedState,
+      { type: "apply_loan", loanId: "loan_5" },
+      config,
+      defaultPorts
+    );
+    expect(locked.ok).toBe(false);
+    if (locked.ok) return;
+    expect(locked.error).toBe("not_unlocked");
+    expect(locked.context?.effective_loan_level).toBe(4);
+
+    const unlockedState = createInitialState(config);
+    unlockedState.companyLevel = 4;
+    unlockedState.litTechIds.push("eng_cashflow");
+    const unlocked = dispatch(
+      unlockedState,
+      { type: "apply_loan", loanId: "loan_5" },
+      config,
+      defaultPorts
+    );
+
+    expect(unlocked.ok).toBe(true);
+    if (!unlocked.ok) return;
+    expect(unlocked.value.state.loans.loan_5?.principalRemaining).toBe(1200);
+    expect(unlocked.value.state.funds).toBe(unlockedState.funds + 1200);
+  });
+
   it("refreshes existing trunk links to UHV loss profile during settle", () => {
     const config = loadTestConfig();
     const state = withCity(createInitialState(config), config, "CITY-MAP06-01");
@@ -656,6 +688,38 @@ describe("settleNextMonth", () => {
     expect(month.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
   });
 
+  it("M4 and M5 apply storage_system_1 as a positive renewable output boost", () => {
+    const config = loadTestConfig();
+    const baseState = createInitialState(config);
+    baseState.facilities["fac-a"] = {
+      id: "fac-a",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+    const storageState = structuredClone(baseState);
+    storageState.litTechIds.push("storage_system_1");
+
+    const baseMonth = settleNextMonth(baseState, config, defaultPorts);
+    const storageMonth = settleNextMonth(storageState, config, defaultPorts);
+
+    expect(baseMonth.ok).toBe(true);
+    expect(storageMonth.ok).toBe(true);
+    if (!baseMonth.ok || !storageMonth.ok) return;
+    const baseIncome =
+      baseMonth.value.report.steps.find((step) => step.stepId === "M5_income_settlement")?.metrics.income ??
+      0;
+    const storageIncome =
+      storageMonth.value.report.steps.find((step) => step.stepId === "M5_income_settlement")?.metrics.income ??
+      0;
+    expect(baseMonth.value.state.cities["CITY-START"].localSupplyMw).toBe(420);
+    expect(storageMonth.value.state.cities["CITY-START"].localSupplyMw).toBe(840);
+    expect(storageIncome).toBeGreaterThan(baseIncome);
+  });
+
   it("M4 applies rich city resource multipliers to wind solar and hydro only", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
@@ -733,6 +797,51 @@ describe("settleNextMonth", () => {
     expect(month.value.state.facilities["fac-a"]?.tier).toBe(2);
     expect(month.value.state.facilities["fac-a"]?.outputMw).toBe(84);
     expect(month.value.state.facilities["fac-a"]?.monthlyOpex).toBe(2);
+  });
+
+  it("M3 syncs existing late-tier wind and nuclear facilities after level-V tech lights", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.facilities["fac-wind"] = {
+      id: "fac-wind",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 2,
+      outputMw: 84,
+      monthlyOpex: 2,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-nuclear"] = {
+      id: "fac-nuclear",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 420,
+      monthlyOpex: 12,
+      monthlyFuel: 0
+    };
+    state.researches["wind_5"] = {
+      researchId: "rq-1-wind_5",
+      techId: "wind_5",
+      monthsRemaining: 1
+    };
+    state.litTechIds.push("nuclear_3");
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.litTechIds).toContain("wind_5");
+    expect(month.value.state.facilities["fac-wind"]?.tier).toBe(5);
+    expect(month.value.state.facilities["fac-wind"]?.outputMw).toBe(210);
+    expect(month.value.state.facilities["fac-wind"]?.monthlyOpex).toBe(5);
+    expect(month.value.state.facilities["fac-nuclear"]?.tier).toBe(3);
+    expect(month.value.state.facilities["fac-nuclear"]?.outputMw).toBe(1260);
+    expect(month.value.state.facilities["fac-nuclear"]?.monthlyOpex).toBe(36);
+    expect(
+      month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex
+    ).toBe(41);
   });
 
   it("dispatch rejects region link across different regions", () => {
