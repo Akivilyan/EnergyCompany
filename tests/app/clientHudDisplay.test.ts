@@ -392,6 +392,48 @@ describe("clientHudDisplay", () => {
     expect(dispatch.detailLines[5]).toContain("候选：智能调度");
   });
 
+  it("shows fossil-transition eco pressure reason in tech hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "super_hydro",
+      "grid_regional",
+      "grid_backbone",
+      "uhv_transmission",
+      "nuclear_1",
+      "nuclear_2",
+      "nuclear_3",
+      "hydro_2",
+      "hydro_3",
+      "hydro_4",
+      "hydro_5",
+      "eng_grid_dispatch",
+      "storage_system_1",
+      "storage_system_2",
+      "storage_system_3",
+      "wind_2",
+      "wind_3",
+      "wind_4",
+      "wind_5",
+      "solar_2",
+      "solar_3",
+      "solar_4",
+      "solar_5",
+      "thermal_2",
+      "thermal_3",
+      "thermal_4",
+      "thermal_5"
+    );
+    boot.play.openScreen("screen_tech_tree");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines[3]).toContain("省六（沿海工业走廊）·化石转型->ECO");
+    expect(display.detailLines[4]).toBe("压力推荐：省六（沿海工业走廊） · 化石转型 -> ECO");
+    expect(display.detailLines[5]).toContain("候选：清洁煤电改造");
+    expect(display.detailLines[5]).toContain("分叉ECO");
+  });
+
   it("exposes locked hud capabilities before company level 2", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({

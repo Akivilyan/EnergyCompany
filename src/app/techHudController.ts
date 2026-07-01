@@ -229,7 +229,12 @@ function candidateForPressureTag(
     case "supply_gap":
       return candidateByBranch(candidates, "storage_gate", "generation_tier");
     case "fossil_transition":
-      return candidateByBranch(candidates, "eco", "opex");
+      return candidateByTechIdOrder(candidates, [
+        "eco_thermal",
+        "eng_ops_contract",
+        "eco_nuclear",
+        "nuclear_ops"
+      ]);
     default:
       return null;
   }
@@ -251,6 +256,17 @@ function candidateByTechId(
   predicate: (techId: string) => boolean
 ): TechHudCandidate | null {
   return candidates.find((candidate) => predicate(candidate.techId)) ?? null;
+}
+
+function candidateByTechIdOrder(
+  candidates: TechHudCandidate[],
+  techIds: string[]
+): TechHudCandidate | null {
+  for (const techId of techIds) {
+    const candidate = candidates.find((item) => item.techId === techId);
+    if (candidate) return candidate;
+  }
+  return null;
 }
 
 function latePressureRegions(boot: GameBootstrap): WorldMapRegionItem[] {
