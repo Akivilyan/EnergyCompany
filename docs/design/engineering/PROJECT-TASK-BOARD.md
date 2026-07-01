@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.96.0
+version: 1.97.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,11 +56,11 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-01 | `FAST-01` 让区域经营压力随主干接通状态收敛：接通后移除 trunk-first / secure-trunk |
 | 2026-07-01 | `FAST-01` 补强 III～V 科技经营闭环回归：最高阶发电/核电、储能 I、现金流贷款命令被测试覆盖 |
 | 2026-07-01 | `FAST-01` 让大地图默认目标按 late-map 压力优先级对齐：V 级默认聚焦 MET-B 终局负荷 |
 | 2026-07-01 | `FAST-01` 补强生态后段科技结算回归：核电 ECO 与绿色品牌 SV 限定被测试覆盖 |
 | 2026-07-01 | `FAST-01` 收紧化石转型解法点亮判定：只由火电 ECO / 通用运维覆盖化石压力 |
-| 2026-07-01 | `FAST-01` 固化科技 HUD 后段压力分叉：化石转型优先推荐火电 ECO |
 
 ## 6. 文档分工
 
@@ -122,3 +122,4 @@ open_questions: []
 | 1.94.0 | 2026-07-01 | 记录生态后段科技结算回归补强 |
 | 1.95.0 | 2026-07-01 | 记录大地图默认目标按 late-map 压力优先级对齐 |
 | 1.96.0 | 2026-07-01 | 记录 III～V 科技经营闭环回归补强 |
+| 1.97.0 | 2026-07-01 | 记录区域经营压力随主干接通状态收敛 |

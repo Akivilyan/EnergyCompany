@@ -13,7 +13,8 @@ import {
   type OperatingPlanHint,
   type OperatingPressureTag,
   type RecommendedBuildKind,
-  type ResourceKind
+  type ResourceKind,
+  type WorldMapConnectionStatus
 } from "./screenWorldMap.js";
 
 export interface RegionCityItem {
@@ -158,6 +159,7 @@ export class ScreenRegion {
 
     const linkCandidates = this.buildLinkCandidates(cityNameMap);
 
+    const connectionStatus = this.getRegionConnectionStatus(cities.map((city) => city.cityId));
     const recommendedBuilds = getRecommendedBuilds(regionConfig ?? {}, regionCities);
     const operatingPressureTags = getOperatingPressureTags({
       regionId: this.regionId,
@@ -167,7 +169,8 @@ export class ScreenRegion {
       totalBuildSlots: regionCities.reduce((sum, city) => sum + city.build_slot_count, 0),
       riverCityCount: regionCities.filter((city) => city.has_river).length,
       fossilEnergy: !!regionConfig?.fossil_energy || regionCities.some((city) => !!city.fossil_energy),
-      nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length
+      nuclearEligibleCityCount: regionCities.filter((city) => city.is_nuclear_eligible).length,
+      connectionStatus
     });
 
     return {
@@ -192,6 +195,7 @@ export class ScreenRegion {
       operatingPlanHints: getOperatingPlanHints({
         recommendedBuilds,
         operatingPressureTags,
+        connectionStatus,
         supplyGapMw: Math.max(0, totalDemandMw - totalEffectiveSupplyMw),
         regionType: regionConfig?.region_type,
         designRole: regionConfig?.design_role,
@@ -206,6 +210,20 @@ export class ScreenRegion {
       gridLinks,
       linkCandidates
     };
+  }
+
+  private getRegionConnectionStatus(cityIds: string[]): WorldMapConnectionStatus {
+    if (this.regionId === "MAP-01") return "capital";
+    const cityIdSet = new Set(cityIds);
+    for (const link of Object.values(this.controller.state.gridLinks)) {
+      if (link.linkType !== "trunk") continue;
+      const fromInRegion = cityIdSet.has(link.fromCityId);
+      const toInRegion = cityIdSet.has(link.toCityId);
+      if (!fromInRegion && !toInRegion) continue;
+      if (link.status === "finished") return "connected";
+      if (link.status === "building") return "building";
+    }
+    return "available";
   }
 
   private buildLinkCandidates(cityNameMap: Map<string, string>): RegionLinkCandidate[] {

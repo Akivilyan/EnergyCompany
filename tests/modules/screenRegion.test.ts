@@ -265,6 +265,19 @@ describe("ScreenRegion", () => {
           candidate.linkType === "region"
       )
     ).toBe(true);
+    expect(connected.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "no_hydro",
+      "fossil_transition",
+      "nuclear_siting"
+    ]);
+    expect(connected.operatingPlanHints).toEqual([
+      "close_supply_gap",
+      "local_renewables",
+      "thermal_bridge",
+      "nuclear_anchor"
+    ]);
   });
 
   it("exposes MAP-07 hydro-wind operating pressure and route", () => {
