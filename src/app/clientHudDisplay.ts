@@ -11,6 +11,7 @@ import {
   formatUpcomingEventRiskLine
 } from "./eventsHudController.js";
 import {
+  formatResearchableTechPressureSummary,
   formatResearchableTechBranchSummary,
   formatSelectedResearchPressureReason,
   formatSelectedResearchCandidate,
@@ -503,6 +504,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   const pressureReason = formatSelectedResearchPressureReason(boot);
   const branchSummary = formatTechProgressionSummary(boot);
   const researchableBranchSummary = formatResearchableTechBranchSummary(boot);
+  const pressureSummary = formatResearchableTechPressureSummary(boot);
   const detailLine = selectedLine ?? t("hud.status.tech_no_candidate_hint");
   return {
     statusLine,
@@ -512,6 +514,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
       selection.candidates.length > 0 ? t("hud.status.tech_idle_hint") : null,
       branchSummary,
       researchableBranchSummary,
+      pressureSummary,
       pressureReason,
       detailLine
     )

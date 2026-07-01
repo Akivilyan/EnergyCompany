@@ -341,9 +341,13 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[2]).toContain("现金流1");
     expect(display.detailLines[2]).toContain("灾害减损1");
     expect(display.detailLines[2]).toContain("绿色品牌1");
-    expect(display.detailLines[3]).toBe("压力推荐：特大城B（终局都会） · 终局负荷 -> 超水电");
-    expect(display.detailLines[4]).toContain("候选：超级水电站");
-    expect(display.detailLines[4]).toContain("分叉超水电");
+    expect(display.detailLines[3]).toContain("压力队列：");
+    expect(display.detailLines[3]).toContain("特大城B（终局都会）·终局负荷->超水电");
+    expect(display.detailLines[3]).toContain("省七（高原水风走廊）·水点绑定->发电升档");
+    expect(display.detailLines[3]).toContain("省八（边疆综合平衡带）·混合调配->调度");
+    expect(display.detailLines[4]).toBe("压力推荐：特大城B（终局都会） · 终局负荷 -> 超水电");
+    expect(display.detailLines[5]).toContain("候选：超级水电站");
+    expect(display.detailLines[5]).toContain("分叉超水电");
   });
 
   it("shows trunk tech as level-V pressure candidate after super hydro is lit", () => {
@@ -354,9 +358,10 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines[3]).toBe("压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网");
-    expect(display.detailLines[4]).toContain("候选：主干电网");
-    expect(display.detailLines[4]).toContain("分叉主干网");
+    expect(display.detailLines[3]).toContain("省六（沿海工业走廊）·主干优先->主干网");
+    expect(display.detailLines[4]).toBe("压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网");
+    expect(display.detailLines[5]).toContain("候选：主干电网");
+    expect(display.detailLines[5]).toContain("分叉主干网");
   });
 
   it("shows MAP-07 and MAP-08 pressure reasons in tech hud", () => {
@@ -374,14 +379,16 @@ describe("clientHudDisplay", () => {
     boot.play.openScreen("screen_tech_tree");
 
     const hydro = buildClientHudDisplay(boot);
-    expect(hydro.detailLines[3]).toBe("压力推荐：省七（高原水风走廊） · 水点绑定 -> 发电升档");
-    expect(hydro.detailLines[4]).toContain("候选：水电·II");
+    expect(hydro.detailLines[3]).toContain("省七（高原水风走廊）·水点绑定->发电升档");
+    expect(hydro.detailLines[4]).toBe("压力推荐：省七（高原水风走廊） · 水点绑定 -> 发电升档");
+    expect(hydro.detailLines[5]).toContain("候选：水电·II");
 
     boot.app.controller.state.litTechIds.push("hydro_2", "hydro_3", "hydro_4", "hydro_5");
 
     const dispatch = buildClientHudDisplay(boot);
-    expect(dispatch.detailLines[3]).toBe("压力推荐：省八（边疆综合平衡带） · 混合调配 -> 调度");
-    expect(dispatch.detailLines[4]).toContain("候选：智能调度");
+    expect(dispatch.detailLines[3]).toContain("省八（边疆综合平衡带）·混合调配->调度");
+    expect(dispatch.detailLines[4]).toBe("压力推荐：省八（边疆综合平衡带） · 混合调配 -> 调度");
+    expect(dispatch.detailLines[5]).toContain("候选：智能调度");
   });
 
   it("exposes locked hud capabilities before company level 2", () => {

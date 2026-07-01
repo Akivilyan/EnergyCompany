@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.86.0
+version: 1.87.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,11 +56,11 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-01 | `FAST-01` 为科技 HUD 增加 late-map 压力队列：可研分叉按 MET-B / MAP-06~08 压力优先级扫读 |
 | 2026-07-01 | `FAST-01` 补齐 MAP-07 / MAP-08 科技压力推荐：水点绑定推水电升档，混合调配推调度科技 |
 | 2026-07-01 | `FAST-01` 为科技 HUD 增加 pressure-aware 推荐理由：把 MET-B / MAP-06 压力和科技分叉直接连起来 |
 | 2026-07-01 | `FAST-01` 让科技 HUD 默认候选读取 late-map 压力：终局负荷优先超水电，已覆盖后转主干接网 |
 | 2026-07-01 | `FAST-01` 让科技 HUD 默认候选跟随后续经营分叉：V 级优先推超水电战略项目 |
-| 2026-07-01 | `FAST-01` 让大地图默认目标跟随 V 级高压区域：MAP-06 首屏焦点可直接进入压力链路 |
 
 ## 6. 文档分工
 
@@ -112,3 +112,4 @@ open_questions: []
 | 1.84.0 | 2026-07-01 | 记录科技 HUD 默认候选按 late-map 压力对齐 |
 | 1.85.0 | 2026-07-01 | 记录科技 HUD pressure-aware 推荐理由落地 |
 | 1.86.0 | 2026-07-01 | 记录 MAP-07 / MAP-08 科技压力推荐补齐 |
+| 1.87.0 | 2026-07-01 | 记录科技 HUD late-map 压力队列落地 |

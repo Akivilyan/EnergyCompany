@@ -3,6 +3,7 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import { clientNavOpenTechTree } from "../../src/app/screenNavController.js";
 import {
   DEFAULT_DEV_TECH_ID,
+  formatResearchableTechPressureSummary,
   formatSelectedResearchPressureReason,
   getTechHudSelectionSnapshot,
   techCycleResearchCandidate,
@@ -51,6 +52,9 @@ describe("techHudController", () => {
     const selection = getTechHudSelectionSnapshot(boot);
 
     expect(selection.selectedTechId).toBe("super_hydro");
+    expect(formatResearchableTechPressureSummary(boot)).toContain(
+      "特大城B（终局都会）·终局负荷->超水电"
+    );
     expect(formatSelectedResearchPressureReason(boot)).toBe(
       "压力推荐：特大城B（终局都会） · 终局负荷 -> 超水电"
     );
@@ -113,6 +117,9 @@ describe("techHudController", () => {
     const selection = getTechHudSelectionSnapshot(boot);
 
     expect(selection.selectedTechId).toBe("eng_grid_dispatch");
+    expect(formatResearchableTechPressureSummary(boot)).toContain(
+      "省八（边疆综合平衡带）·混合调配->调度"
+    );
     expect(formatSelectedResearchPressureReason(boot)).toBe(
       "压力推荐：省八（边疆综合平衡带） · 混合调配 -> 调度"
     );

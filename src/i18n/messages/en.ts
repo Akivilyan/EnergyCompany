@@ -137,6 +137,8 @@ export const en: Record<string, string> = {
   "hud.status.tech_no_candidate_hint": "No research candidates",
   "hud.status.tech_selected_hint": "Candidate: {tech} · branch {branch} · cost {cost} · {months}m · {effect}",
   "hud.status.tech_pressure_reason": "Pressure pick: {region} · {pressure} -> {branch}",
+  "hud.status.tech_pressure_queue": "Pressure queue: {items}",
+  "hud.status.tech_pressure_queue_item": "{region}·{pressure}->{branch}",
   "hud.status.tech_active_hint": "Research: {techId} · {months}m left",
   "hud.status.tech_branch_summary": "Next branches: {branches}",
   "hud.status.tech_branch_level": "Lv{level} {branches}",

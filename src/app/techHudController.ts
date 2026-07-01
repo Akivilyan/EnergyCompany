@@ -44,6 +44,12 @@ export interface TechHudActionResult {
   messageKey: string | null;
 }
 
+interface TechPressureRecommendation {
+  region: WorldMapRegionItem;
+  pressureTag: OperatingPressureTag;
+  candidate: TechHudCandidate;
+}
+
 const selectedTechByBoot = new WeakMap<GameBootstrap, string>();
 
 function toActionResult(
@@ -205,6 +211,30 @@ function findRecommendedTechCandidate(
   return null;
 }
 
+function candidateForPressureTag(
+  candidates: TechHudCandidate[],
+  tag: OperatingPressureTag
+): TechHudCandidate | null {
+  switch (tag) {
+    case "terminal_load":
+      return candidateByBranch(candidates, "super_hydro");
+    case "trunk_first":
+      return candidateByBranch(candidates, "uhv", "backbone_grid", "regional_grid");
+    case "nuclear_siting":
+      return candidateByBranch(candidates, "nuclear");
+    case "hydro_site_bound":
+      return candidateByTechId(candidates, (techId) => /^hydro_[2-5]$/.test(techId));
+    case "mixed_dispatch":
+      return candidateByBranch(candidates, "dispatch");
+    case "supply_gap":
+      return candidateByBranch(candidates, "storage_gate", "generation_tier");
+    case "fossil_transition":
+      return candidateByBranch(candidates, "eco", "opex");
+    default:
+      return null;
+  }
+}
+
 function candidateByBranch(
   candidates: TechHudCandidate[],
   ...branchKinds: TechBranchKind[]
@@ -231,45 +261,35 @@ function latePressureRegions(boot: GameBootstrap): WorldMapRegionItem[] {
     );
 }
 
-function hasLatePressure(regions: WorldMapRegionItem[], tag: OperatingPressureTag): boolean {
-  return regions.some((region) => region.operatingPressureTags.includes(tag));
+function getPressureRecommendations(
+  boot: GameBootstrap,
+  candidates: TechHudCandidate[]
+): TechPressureRecommendation[] {
+  const regions = latePressureRegions(boot);
+  if (regions.length === 0) return [];
+  const priority: OperatingPressureTag[] = [
+    "terminal_load",
+    "trunk_first",
+    "nuclear_siting",
+    "hydro_site_bound",
+    "mixed_dispatch",
+    "supply_gap",
+    "fossil_transition"
+  ];
+  const items: TechPressureRecommendation[] = [];
+  for (const pressureTag of priority) {
+    const region = regions.find((item) => item.operatingPressureTags.includes(pressureTag));
+    const candidate = candidateForPressureTag(candidates, pressureTag);
+    if (region && candidate) items.push({ region, pressureTag, candidate });
+  }
+  return items;
 }
 
 function findPressureRecommendedTechCandidate(
   boot: GameBootstrap,
   candidates: TechHudCandidate[]
 ): TechHudCandidate | null {
-  const regions = latePressureRegions(boot);
-  if (regions.length === 0) return null;
-  if (hasLatePressure(regions, "terminal_load")) {
-    const strategic = candidateByBranch(candidates, "super_hydro");
-    if (strategic) return strategic;
-  }
-  if (hasLatePressure(regions, "trunk_first")) {
-    const grid = candidateByBranch(candidates, "uhv", "backbone_grid", "regional_grid");
-    if (grid) return grid;
-  }
-  if (hasLatePressure(regions, "nuclear_siting")) {
-    const nuclear = candidateByBranch(candidates, "nuclear");
-    if (nuclear) return nuclear;
-  }
-  if (hasLatePressure(regions, "hydro_site_bound")) {
-    const hydro = candidateByTechId(candidates, (techId) => /^hydro_[2-5]$/.test(techId));
-    if (hydro) return hydro;
-  }
-  if (hasLatePressure(regions, "mixed_dispatch")) {
-    const dispatch = candidateByBranch(candidates, "dispatch");
-    if (dispatch) return dispatch;
-  }
-  if (hasLatePressure(regions, "supply_gap")) {
-    const supply = candidateByBranch(candidates, "storage_gate", "generation_tier");
-    if (supply) return supply;
-  }
-  if (hasLatePressure(regions, "fossil_transition")) {
-    const transition = candidateByBranch(candidates, "eco", "opex");
-    if (transition) return transition;
-  }
-  return null;
+  return getPressureRecommendations(boot, candidates)[0]?.candidate ?? null;
 }
 
 function pressureTagForCandidate(candidate: TechHudCandidate | null): OperatingPressureTag | null {
@@ -402,6 +422,23 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
     months: selected.researchMonths,
     effect: selected.effectSummary
   });
+}
+
+export function formatResearchableTechPressureSummary(boot: GameBootstrap): string | null {
+  const candidates = getResearchCandidates(boot);
+  if (candidates.length === 0) return null;
+  const items = getPressureRecommendations(boot, candidates).map((item) =>
+    t("hud.status.tech_pressure_queue_item", {
+      region: item.region.displayName,
+      pressure: formatOperatingPressureTag(item.pressureTag),
+      branch: item.candidate.branchKind
+        ? formatTechBranchKind(item.candidate.branchKind)
+        : t("tech.branch.none")
+    })
+  );
+  return items.length > 0
+    ? t("hud.status.tech_pressure_queue", { items: items.join("/") })
+    : null;
 }
 
 export function formatSelectedResearchPressureReason(boot: GameBootstrap): string | null {
