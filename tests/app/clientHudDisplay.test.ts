@@ -497,6 +497,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("本地0/受入0/缺口1280MW");
     expect(display.detailLines[0]).toContain("定位沿海工业枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/无水电/化石转型/核电选址");
+    expect(display.detailLines).toContain("科技解法：核电选址->核电/供给缺口->储能/发电升档/化石转型->ECO/运维");
     expect(display.detailLines).toContain("建造建议：本地风光/火电过渡/核电锚点/高效占槽");
   });
 
@@ -525,6 +526,7 @@ describe("clientHudDisplay", () => {
     const map07HydroDisplay = buildClientHudDisplay(boot);
     expect(map07HydroDisplay.detailLines[0]).toContain("定位高原水电枢纽");
     expect(map07HydroDisplay.detailLines[0]).toContain("压力供给缺口/槽位紧/水点绑定");
+    expect(map07HydroDisplay.detailLines).toContain("科技解法：水点绑定->水电升档/供给缺口->储能/发电升档");
 
     boot.app.controller.state.cities["CITY-MAP07-03"] = {
       cityId: "CITY-MAP07-03",
@@ -557,6 +559,7 @@ describe("clientHudDisplay", () => {
     const map08Display = buildClientHudDisplay(boot);
     expect(map08Display.detailLines[0]).toContain("定位边疆综合平衡");
     expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/混合调配");
+    expect(map08Display.detailLines).toContain("科技解法：核电选址->核电/混合调配->调度/供给缺口->储能/发电升档");
     expect(map08Display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽/混合调配");
   });
 
@@ -582,6 +585,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("负荷2100MW");
     expect(display.detailLines[0]).toContain("定位终局都会枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/终局负荷");
+    expect(display.detailLines).toContain("科技解法：终局负荷->超水电/核电选址->核电/供给缺口->储能/发电升档");
     expect(display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽");
   });
 

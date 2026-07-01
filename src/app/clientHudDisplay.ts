@@ -593,6 +593,7 @@ export function buildClientHudDisplay(
       buildSelection.candidates.length > 1
         ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })
         : null,
+      profile ? formatOperatingPressureTechSolutions(profile.operatingPressureTags) : null,
       profile ? formatCityBuildAction(profile) : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
       t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),
