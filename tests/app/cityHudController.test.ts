@@ -155,6 +155,7 @@ describe("cityHudController", () => {
       operatingPressureTags: [
         "high_demand",
         "supply_gap",
+        "trunk_first",
         "low_slot_density",
         "no_hydro",
         "fossil_transition",
@@ -241,6 +242,7 @@ describe("cityHudController", () => {
     clientNavOpenCity(boot, "CITY-MAP07-01", "MAP-07");
     expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
       "supply_gap",
+      "trunk_first",
       "low_slot_density",
       "hydro_site_bound"
     ]);
@@ -260,6 +262,7 @@ describe("cityHudController", () => {
     expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
       "high_demand",
       "supply_gap",
+      "trunk_first",
       "low_slot_density",
       "nuclear_siting",
       "mixed_dispatch"
@@ -285,6 +288,24 @@ describe("cityHudController", () => {
     };
     clientNavOpenCity(boot, "CITY-METB-01", "MET-B");
 
+    expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
+      "high_demand",
+      "supply_gap",
+      "trunk_first",
+      "low_slot_density",
+      "nuclear_siting",
+      "terminal_load"
+    ]);
+
+    boot.app.controller.state.gridLinks["CITY-METB-01::CITY-START"] = {
+      linkId: "CITY-METB-01::CITY-START",
+      fromCityId: "CITY-METB-01",
+      toCityId: "CITY-START",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 500
+    };
     expect(getCityHudProfileSnapshot(boot)?.operatingPressureTags).toEqual([
       "high_demand",
       "supply_gap",

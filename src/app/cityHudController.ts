@@ -177,6 +177,23 @@ function appendCityRolePressureTags(
   }
 }
 
+function isCityRegionTrunkConnected(boot: GameBootstrap, cityId: string): boolean {
+  const city = boot.app.controller.config.getCity(cityId);
+  const startRegionId = boot.app.controller.config.getCity("CITY-START")?.region_id;
+  if (!city?.region_id || city.region_id === startRegionId) return true;
+  const regionCityIds = new Set(
+    boot.app.controller.config.bundle.cities
+      .filter((item) => item.region_id === city.region_id)
+      .map((item) => item.city_id)
+  );
+  return Object.values(boot.app.controller.state.gridLinks).some(
+    (link) =>
+      link.status === "finished" &&
+      link.linkType === "trunk" &&
+      (regionCityIds.has(link.fromCityId) || regionCityIds.has(link.toCityId))
+  );
+}
+
 export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSnapshot | null {
   const cityId = getCurrentCityId(boot);
   const city = boot.app.controller.config.getCity(cityId);
@@ -195,6 +212,7 @@ export function getCityHudProfileSnapshot(boot: GameBootstrap): CityHudProfileSn
   const operatingPressureTags: OperatingPressureTag[] = [];
   if (demandMw >= 1200) operatingPressureTags.push("high_demand");
   if (supplyGapMw > 0) operatingPressureTags.push("supply_gap");
+  if (!isCityRegionTrunkConnected(boot, cityId)) operatingPressureTags.push("trunk_first");
   if (demandMw > 0 && city.build_slot_count * 180 < demandMw) {
     operatingPressureTags.push("low_slot_density");
   }
