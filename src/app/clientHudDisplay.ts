@@ -171,16 +171,76 @@ function formatOperatingPressureBreakdown(input: {
     : null;
 }
 
-function formatOperatingPressureTechSolutions(tags: OperatingPressureTag[]): string | null {
+function hasOperatingPressureTechSolution(boot: GameBootstrap, tag: OperatingPressureTag): boolean {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  switch (tag) {
+    case "terminal_load":
+      return lit.has("super_hydro");
+    case "trunk_first":
+      return lit.has("grid_backbone") || lit.has("uhv_transmission");
+    case "nuclear_siting":
+      return ["nuclear_1", "nuclear_2", "nuclear_3"].some((techId) => lit.has(techId));
+    case "hydro_site_bound":
+      return ["hydro_2", "hydro_3", "hydro_4", "hydro_5"].some((techId) => lit.has(techId));
+    case "mixed_dispatch":
+      return lit.has("eng_grid_dispatch");
+    case "supply_gap":
+      return [
+        "storage_system_1",
+        "storage_system_2",
+        "storage_system_3",
+        "wind_2",
+        "wind_3",
+        "wind_4",
+        "wind_5",
+        "solar_2",
+        "solar_3",
+        "solar_4",
+        "solar_5",
+        "thermal_2",
+        "thermal_3",
+        "thermal_4",
+        "thermal_5",
+        "hydro_2",
+        "hydro_3",
+        "hydro_4",
+        "hydro_5"
+      ].some((techId) => lit.has(techId));
+    case "fossil_transition":
+      return ["eco_thermal", "eco_nuclear", "eng_ops_contract", "nuclear_ops"].some((techId) =>
+        lit.has(techId)
+      );
+    default:
+      return false;
+  }
+}
+
+function formatTechSolutionStatus(boot: GameBootstrap, tag: OperatingPressureTag): string {
+  return hasOperatingPressureTechSolution(boot, tag)
+    ? t("hud.tech_solution.status.lit")
+    : t("hud.tech_solution.status.pending");
+}
+
+function formatOperatingPressureTechSolutions(
+  boot: GameBootstrap,
+  tags: OperatingPressureTag[]
+): string | null {
   const tagSet = new Set(tags);
   const parts: string[] = [];
-  if (tagSet.has("terminal_load")) parts.push(t("hud.tech_solution.terminal_load"));
-  if (tagSet.has("trunk_first")) parts.push(t("hud.tech_solution.trunk_first"));
-  if (tagSet.has("nuclear_siting")) parts.push(t("hud.tech_solution.nuclear_siting"));
-  if (tagSet.has("hydro_site_bound")) parts.push(t("hud.tech_solution.hydro_site_bound"));
-  if (tagSet.has("mixed_dispatch")) parts.push(t("hud.tech_solution.mixed_dispatch"));
-  if (tagSet.has("supply_gap")) parts.push(t("hud.tech_solution.supply_gap"));
-  if (tagSet.has("fossil_transition")) parts.push(t("hud.tech_solution.fossil_transition"));
+  const pushSolution = (tag: OperatingPressureTag, key: string): void => {
+    if (!tagSet.has(tag)) return;
+    parts.push(t("hud.tech_solution.item", {
+      solution: t(key),
+      status: formatTechSolutionStatus(boot, tag)
+    }));
+  };
+  pushSolution("terminal_load", "hud.tech_solution.terminal_load");
+  pushSolution("trunk_first", "hud.tech_solution.trunk_first");
+  pushSolution("nuclear_siting", "hud.tech_solution.nuclear_siting");
+  pushSolution("hydro_site_bound", "hud.tech_solution.hydro_site_bound");
+  pushSolution("mixed_dispatch", "hud.tech_solution.mixed_dispatch");
+  pushSolution("supply_gap", "hud.tech_solution.supply_gap");
+  pushSolution("fossil_transition", "hud.tech_solution.fossil_transition");
   return parts.length > 0 ? t("hud.line.tech_solution", { items: parts.join("/") }) : null;
 }
 
@@ -360,7 +420,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       totalBuildSlots: s.totalBuildSlots,
       operatingPressureTags: s.operatingPressureTags
     }),
-    formatOperatingPressureTechSolutions(s.operatingPressureTags),
+    formatOperatingPressureTechSolutions(boot, s.operatingPressureTags),
     t("hud.line.region_plan", { plan: formatOperatingPlanHints(s.operatingPlanHints) }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
@@ -467,7 +527,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           operatingPressureTags: focusRegion.operatingPressureTags
         })
       : null,
-    focusRegion ? formatOperatingPressureTechSolutions(focusRegion.operatingPressureTags) : null,
+    focusRegion ? formatOperatingPressureTechSolutions(boot, focusRegion.operatingPressureTags) : null,
     formatWorldSuperHydroStatus(boot),
     formatWorldSuperHydroGridPressure(boot),
     formatSelectedWorldSuperHydroSlot(boot),
@@ -593,7 +653,7 @@ export function buildClientHudDisplay(
       buildSelection.candidates.length > 1
         ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })
         : null,
-      profile ? formatOperatingPressureTechSolutions(profile.operatingPressureTags) : null,
+      profile ? formatOperatingPressureTechSolutions(boot, profile.operatingPressureTags) : null,
       profile ? formatCityBuildAction(profile) : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
       t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),

@@ -497,7 +497,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("本地0/受入0/缺口1280MW");
     expect(display.detailLines[0]).toContain("定位沿海工业枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/无水电/化石转型/核电选址");
-    expect(display.detailLines).toContain("科技解法：核电选址->核电/供给缺口->储能/发电升档/化石转型->ECO/运维");
+    expect(display.detailLines).toContain("科技解法：核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)/化石转型->ECO/运维(待研发)");
     expect(display.detailLines).toContain("建造建议：本地风光/火电过渡/核电锚点/高效占槽");
   });
 
@@ -526,7 +526,7 @@ describe("clientHudDisplay", () => {
     const map07HydroDisplay = buildClientHudDisplay(boot);
     expect(map07HydroDisplay.detailLines[0]).toContain("定位高原水电枢纽");
     expect(map07HydroDisplay.detailLines[0]).toContain("压力供给缺口/槽位紧/水点绑定");
-    expect(map07HydroDisplay.detailLines).toContain("科技解法：水点绑定->水电升档/供给缺口->储能/发电升档");
+    expect(map07HydroDisplay.detailLines).toContain("科技解法：水点绑定->水电升档(待研发)/供给缺口->储能/发电升档(待研发)");
 
     boot.app.controller.state.cities["CITY-MAP07-03"] = {
       cityId: "CITY-MAP07-03",
@@ -559,7 +559,7 @@ describe("clientHudDisplay", () => {
     const map08Display = buildClientHudDisplay(boot);
     expect(map08Display.detailLines[0]).toContain("定位边疆综合平衡");
     expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/混合调配");
-    expect(map08Display.detailLines).toContain("科技解法：核电选址->核电/混合调配->调度/供给缺口->储能/发电升档");
+    expect(map08Display.detailLines).toContain("科技解法：核电选址->核电(待研发)/混合调配->调度(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(map08Display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽/混合调配");
   });
 
@@ -585,8 +585,32 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("负荷2100MW");
     expect(display.detailLines[0]).toContain("定位终局都会枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/终局负荷");
-    expect(display.detailLines).toContain("科技解法：终局负荷->超水电/核电选址->核电/供给缺口->储能/发电升档");
+    expect(display.detailLines).toContain("科技解法：终局负荷->超水电(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽");
+  });
+
+  it("marks city pressure tech solutions as lit after matching research", () => {
+    const boot = createGameBootstrapFromRepo();
+    const map08 = boot.app.controller.config.getCity("CITY-MAP08-01");
+    expect(map08).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("nuclear_1", "eng_grid_dispatch", "storage_system_1");
+    boot.app.controller.state.cities["CITY-MAP08-01"] = {
+      cityId: "CITY-MAP08-01",
+      demandMw: map08?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map08?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP08-01", "MAP-08");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("科技解法：核电选址->核电(已点亮)/混合调配->调度(已点亮)/供给缺口->储能/发电升档(已点亮)");
   });
 
   it("shows selected region link candidate and candidate count on region screen", () => {
@@ -608,7 +632,7 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
     expect(display.detailLines).toContain("Demand 1920MW · local 0/import 0/gap 1920MW · slots 13/river 0/nuclear 1 · SV 38 · rich wind/solar/fossil · build wind/solar/thermal/nuclear · pressure high demand/supply gap/trunk first/no hydro/fossil transition/nuclear siting");
     expect(display.detailLines).toContain("Pressure breakdown: gap 1920MW · trunk first · no hydro · fossil transition · nuclear siting");
-    expect(display.detailLines).toContain("Tech solution: trunk first->backbone grid/nuclear siting->nuclear/supply gap->storage/generation tier/fossil transition->ECO/opex");
+    expect(display.detailLines).toContain("Tech solution: trunk first->backbone grid (pending)/nuclear siting->nuclear (pending)/supply gap->storage/generation tier (pending)/fossil transition->ECO/opex (pending)");
     expect(display.detailLines).toContain("Operating plan: secure trunk/close supply gap/local renewables/thermal bridge/nuclear anchor");
     expect(display.detailLines).toContain("Operating role: coastal industrial export");
     expect(display.detailLines).toContain("Action: build trunk first to unlock local links");
@@ -624,7 +648,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("建议光伏/水电/核电");
     expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/终局负荷");
     expect(display.detailLines).toContain("压力拆解：缺口2100MW · 主干优先 · 槽位7 · 核电选址 · 终局负荷2100MW");
-    expect(display.detailLines).toContain("科技解法：终局负荷->超水电/主干优先->主干网/核电选址->核电/供给缺口->储能/发电升档");
+    expect(display.detailLines).toContain("科技解法：终局负荷->超水电(待研发)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(display.detailLines).toContain("经营路线：先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
     expect(display.detailLines).toContain("经营定位：终局都会负荷");
   });
@@ -637,7 +661,7 @@ describe("clientHudDisplay", () => {
     const map07 = buildClientHudDisplay(boot);
     expect(map07.detailLines[1]).toContain("负荷1670MW");
     expect(map07.detailLines[1]).toContain("压力供给缺口/主干优先/水点绑定");
-    expect(map07.detailLines).toContain("科技解法：主干优先->主干网/水点绑定->水电升档/供给缺口->储能/发电升档");
+    expect(map07.detailLines).toContain("科技解法：主干优先->主干网(待研发)/水点绑定->水电升档(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(map07.detailLines).toContain("经营路线：先接主干/补足缺口/水风外送/本地风光/水电锚点");
 
     boot.play.openScreen("screen_region", undefined, "MAP-08");
@@ -645,7 +669,7 @@ describe("clientHudDisplay", () => {
     expect(map08.detailLines[1]).toContain("负荷2020MW");
     expect(map08.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/核电选址/混合调配");
     expect(map08.detailLines).toContain("压力拆解：缺口2020MW · 主干优先 · 核电选址 · 混合调配");
-    expect(map08.detailLines).toContain("科技解法：主干优先->主干网/核电选址->核电/混合调配->调度/供给缺口->储能/发电升档");
+    expect(map08.detailLines).toContain("科技解法：主干优先->主干网(待研发)/核电选址->核电(待研发)/混合调配->调度(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(map08.detailLines).toContain("经营路线：先接主干/补足缺口/本地风光/水电锚点/核电锚点/混合调配");
   });
 
@@ -745,7 +769,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/无水电/化石转型/核电选址");
     expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/火电兜底/核电锚点");
     expect(display.detailLines).toContain("压力拆解：缺口1920MW · 主干优先 · 无水电 · 化石转型 · 核电选址");
-    expect(display.detailLines).toContain("科技解法：主干优先->主干网/核电选址->核电/供给缺口->储能/发电升档/化石转型->ECO/运维");
+    expect(display.detailLines).toContain("科技解法：主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)/化石转型->ECO/运维(待研发)");
     expect(display.detailLines).toContain("行动建议：先建主干，进入区域补供给");
   });
 
@@ -767,7 +791,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/终局负荷");
     expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/超水电受入/核电锚点/高效占槽");
     expect(display.detailLines).toContain("压力拆解：缺口2100MW · 主干优先 · 槽位7 · 核电选址 · 终局负荷2100MW");
-    expect(display.detailLines).toContain("科技解法：终局负荷->超水电/主干优先->主干网/核电选址->核电/供给缺口->储能/发电升档");
+    expect(display.detailLines).toContain("科技解法：终局负荷->超水电(待研发)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
   });
 
   it("shows level-V super hydro slot progress on world map hud", () => {
