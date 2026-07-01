@@ -69,9 +69,19 @@ describe("techHudController", () => {
     const selection = getTechHudSelectionSnapshot(boot);
 
     expect(selection.selectedTechId).toBe("grid_backbone");
+    expect(selection.candidates.slice(0, 4).map((candidate) => candidate.techId)).toEqual([
+      "grid_backbone",
+      "nuclear_1",
+      "hydro_2",
+      "eng_grid_dispatch"
+    ]);
     expect(formatSelectedResearchPressureReason(boot)).toBe(
       "压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网"
     );
+
+    const cycle = techCycleResearchCandidate(boot);
+    expect(cycle.ok).toBe(true);
+    expect(getTechHudSelectionSnapshot(boot).selectedTechId).toBe("nuclear_1");
   });
 
   it("switches to hydro tier tech when trunk and nuclear pressure are covered", () => {

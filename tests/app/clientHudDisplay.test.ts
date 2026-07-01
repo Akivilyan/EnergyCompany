@@ -362,6 +362,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[4]).toBe("压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网");
     expect(display.detailLines[5]).toContain("候选：主干电网");
     expect(display.detailLines[5]).toContain("分叉主干网");
+    expect(display.detailLines[5]).not.toContain("候选：风电·II");
   });
 
   it("shows MAP-07 and MAP-08 pressure reasons in tech hud", () => {

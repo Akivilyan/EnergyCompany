@@ -292,6 +292,21 @@ function findPressureRecommendedTechCandidate(
   return getPressureRecommendations(boot, candidates)[0]?.candidate ?? null;
 }
 
+function getOrderedResearchCandidates(boot: GameBootstrap): TechHudCandidate[] {
+  const candidates = getResearchCandidates(boot);
+  if (boot.app.controller.state.companyLevel <= 2) return candidates;
+  const orderedIds = new Set(
+    getPressureRecommendations(boot, candidates).map((item) => item.candidate.techId)
+  );
+  if (orderedIds.size === 0) return candidates;
+  return [
+    ...[...orderedIds]
+      .map((techId) => candidates.find((candidate) => candidate.techId === techId))
+      .filter((candidate): candidate is TechHudCandidate => !!candidate),
+    ...candidates.filter((candidate) => !orderedIds.has(candidate.techId))
+  ];
+}
+
 function pressureTagForCandidate(candidate: TechHudCandidate | null): OperatingPressureTag | null {
   if (!candidate) return null;
   if (/^hydro_[2-5]$/.test(candidate.techId)) return "hydro_site_bound";
@@ -317,7 +332,7 @@ function pressureTagForCandidate(candidate: TechHudCandidate | null): OperatingP
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
-  const candidates = getResearchCandidates(boot);
+  const candidates = getOrderedResearchCandidates(boot);
   if (candidates.length === 0) {
     selectedTechByBoot.delete(boot);
     return null;
@@ -333,7 +348,7 @@ function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
 }
 
 export function getTechHudSelectionSnapshot(boot: GameBootstrap): TechHudSelectionSnapshot {
-  const candidates = getResearchCandidates(boot);
+  const candidates = getOrderedResearchCandidates(boot);
   const selected = ensureSelectedCandidate(boot);
   return {
     candidates,
@@ -387,7 +402,7 @@ export function techSpeedupResearchByAd(boot: GameBootstrap): TechHudActionResul
 }
 
 export function techCycleResearchCandidate(boot: GameBootstrap): TechHudActionResult {
-  const candidates = getResearchCandidates(boot);
+  const candidates = getOrderedResearchCandidates(boot);
   if (candidates.length === 0) {
     return toActionResult(
       boot,
