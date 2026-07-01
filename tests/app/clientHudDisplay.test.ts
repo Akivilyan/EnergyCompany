@@ -341,6 +341,8 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[2]).toContain("现金流1");
     expect(display.detailLines[2]).toContain("灾害减损1");
     expect(display.detailLines[2]).toContain("绿色品牌1");
+    expect(display.detailLines[3]).toContain("候选：超级水电站");
+    expect(display.detailLines[3]).toContain("分叉超水电");
   });
 
   it("exposes locked hud capabilities before company level 2", () => {

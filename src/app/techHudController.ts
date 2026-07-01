@@ -108,6 +108,23 @@ const TECH_BRANCH_ORDER: TechBranchKind[] = [
   "green_pr"
 ];
 
+const RECOMMENDED_TECH_BRANCH_ORDER: TechBranchKind[] = [
+  "super_hydro",
+  "storage_gate",
+  "uhv",
+  "backbone_grid",
+  "regional_grid",
+  "nuclear",
+  "eco",
+  "generation_tier",
+  "dispatch",
+  "opex",
+  "cashflow",
+  "risk",
+  "green_pr",
+  "construction"
+];
+
 function formatTechBranchKind(kind: TechBranchKind): string {
   const key = `tech.branch.${kind}`;
   const label = t(key);
@@ -165,6 +182,20 @@ export function formatResearchableTechBranchSummary(boot: GameBootstrap): string
   });
 }
 
+function findRecommendedTechCandidate(
+  boot: GameBootstrap,
+  candidates: TechHudCandidate[]
+): TechHudCandidate | null {
+  if (boot.app.controller.state.companyLevel <= 2) {
+    return candidates.find((candidate) => candidate.techId === DEFAULT_DEV_TECH_ID) ?? null;
+  }
+  for (const branchKind of RECOMMENDED_TECH_BRANCH_ORDER) {
+    const candidate = candidates.find((item) => item.branchKind === branchKind);
+    if (candidate) return candidate;
+  }
+  return null;
+}
+
 function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
   const candidates = getResearchCandidates(boot);
   if (candidates.length === 0) {
@@ -174,6 +205,7 @@ function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
   const remembered = selectedTechByBoot.get(boot);
   const selected =
     candidates.find((candidate) => candidate.techId === remembered) ??
+    findRecommendedTechCandidate(boot, candidates) ??
     candidates.find((candidate) => candidate.techId === DEFAULT_DEV_TECH_ID) ??
     candidates[0];
   selectedTechByBoot.set(boot, selected.techId);

@@ -42,6 +42,16 @@ describe("techHudController", () => {
     expect(boot.app.screens.tech.getSnapshot().activeResearch?.techId).toBe(after.selectedTechId);
   });
 
+  it("defaults to strategic branch research at level V", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("super_hydro");
+  });
+
   it("cancels active research with refund", () => {
     const boot = createGameBootstrapFromRepo();
     techEnsureLevelIIForDev(boot);
