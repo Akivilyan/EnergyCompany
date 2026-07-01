@@ -164,6 +164,32 @@ describe("cityHudController", () => {
     });
   });
 
+  it("prefers pressure-aligned build candidates for late-map cities", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map06 = config.getCity("CITY-MAP06-01");
+    expect(map06).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: map06?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map06?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP06-01", "MAP-06");
+
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("solar");
+
+    const cycle = cityHudCycleBuildCandidate(boot);
+    expect(cycle.ok).toBe(true);
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("thermal");
+  });
+
   it("exposes city eco and green brand status for city HUD", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

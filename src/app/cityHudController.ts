@@ -286,10 +286,33 @@ function ensureSelectedCandidate(boot: GameBootstrap): CityBuildCandidate | null
   const remembered = selectedFacilityByBoot.get(boot);
   const selected =
     candidates.find((candidate) => candidate.facilityId === remembered) ??
+    findRecommendedBuildCandidate(boot, candidates) ??
     candidates.find((candidate) => candidate.facilityId === DEFAULT_BUILD_FACILITY_ID) ??
     candidates[0];
   selectedFacilityByBoot.set(boot, selected.facilityId);
   return selected;
+}
+
+function findRecommendedBuildCandidate(
+  boot: GameBootstrap,
+  candidates: CityBuildCandidate[]
+): CityBuildCandidate | null {
+  if (boot.app.controller.state.companyLevel < 5) return null;
+  const profile = getCityHudProfileSnapshot(boot);
+  if (!profile || profile.supplyGapMw <= 0) return null;
+  const tags = new Set(profile.operatingPressureTags);
+  const preferredFacilityIds: string[] = [];
+  if (profile.richResources.includes("wind")) preferredFacilityIds.push("wind");
+  if (profile.richResources.includes("solar")) preferredFacilityIds.push("solar");
+  if (profile.hasRiver) preferredFacilityIds.push("hydro");
+  if (tags.has("fossil_transition")) preferredFacilityIds.push("thermal");
+  if (profile.nuclearEligible) preferredFacilityIds.push("nuclear");
+  if (tags.has("mixed_dispatch")) preferredFacilityIds.push("hydro", "nuclear");
+  for (const facilityId of preferredFacilityIds) {
+    const candidate = candidates.find((item) => item.facilityId === facilityId);
+    if (candidate) return candidate;
+  }
+  return null;
 }
 
 export function getCityHudBuildSelectionSnapshot(
