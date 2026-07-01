@@ -181,6 +181,28 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows strategic tech branches on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("战略科技：超级水电槽+2");
+  });
+
+  it("keeps strategic tech branches visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("战略科技：超级水电槽+2");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows recent monthly cashflow on company hud after settlement", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.advanceMonthInCurrentCity();

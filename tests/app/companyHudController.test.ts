@@ -12,6 +12,7 @@ import {
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearTechLine,
   formatCompanyOpexTechLine,
+  formatCompanyStrategicTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
 } from "../../src/app/companyHudController.js";
@@ -114,5 +115,12 @@ describe("companyHudController", () => {
     expect(formatCompanyEcoTechLine(boot)).toBe(
       "生态科技：火电ECO/核电ECO/全环保城SV+5%"
     );
+  });
+
+  it("formats strategic tech branches", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("super_hydro");
+
+    expect(formatCompanyStrategicTechLine(boot)).toBe("战略科技：超级水电槽+2");
   });
 });

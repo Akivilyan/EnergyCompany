@@ -159,6 +159,20 @@ export function formatCompanyNuclearTechLine(boot: GameBootstrap): string | null
   return tierMax > 0 ? t("hud.status.company_nuclear_tech", { tier: tierMax }) : null;
 }
 
+export function formatCompanyStrategicTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "strategic_project" || tech.effect_target !== "super_hydro") continue;
+    const value = tech.effect_value.slot_count;
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) continue;
+    parts.push(t("hud.status.company_strategic_tech_super_hydro_item", { count: value }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_strategic_tech", { items: parts.join("/") })
+    : null;
+}
+
 function formatEcoSyncTarget(target: string): string {
   const key = `hud.company.eco_target.${target}`;
   const label = t(key);
