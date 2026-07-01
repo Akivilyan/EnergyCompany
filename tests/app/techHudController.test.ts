@@ -3,6 +3,7 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import { clientNavOpenTechTree } from "../../src/app/screenNavController.js";
 import {
   DEFAULT_DEV_TECH_ID,
+  formatSelectedResearchPressureReason,
   getTechHudSelectionSnapshot,
   techCycleResearchCandidate,
   techCancelActiveResearch,
@@ -50,6 +51,9 @@ describe("techHudController", () => {
     const selection = getTechHudSelectionSnapshot(boot);
 
     expect(selection.selectedTechId).toBe("super_hydro");
+    expect(formatSelectedResearchPressureReason(boot)).toBe(
+      "压力推荐：特大城B（终局都会） · 终局负荷 -> 超水电"
+    );
   });
 
   it("switches to trunk tech when level V strategic pressure is covered", () => {
@@ -61,6 +65,9 @@ describe("techHudController", () => {
     const selection = getTechHudSelectionSnapshot(boot);
 
     expect(selection.selectedTechId).toBe("grid_backbone");
+    expect(formatSelectedResearchPressureReason(boot)).toBe(
+      "压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网"
+    );
   });
 
   it("cancels active research with refund", () => {

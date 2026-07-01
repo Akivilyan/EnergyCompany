@@ -183,6 +183,12 @@ export function formatResearchableTechBranchSummary(boot: GameBootstrap): string
   });
 }
 
+function formatOperatingPressureTag(tag: OperatingPressureTag): string {
+  const key = `pressure.${tag}`;
+  const label = t(key);
+  return label === key ? tag : label;
+}
+
 function findRecommendedTechCandidate(
   boot: GameBootstrap,
   candidates: TechHudCandidate[]
@@ -249,6 +255,27 @@ function findPressureRecommendedTechCandidate(
     if (transition) return transition;
   }
   return null;
+}
+
+function pressureTagForBranchKind(branchKind: TechBranchKind | null): OperatingPressureTag | null {
+  switch (branchKind) {
+    case "super_hydro":
+      return "terminal_load";
+    case "uhv":
+    case "backbone_grid":
+    case "regional_grid":
+      return "trunk_first";
+    case "nuclear":
+      return "nuclear_siting";
+    case "storage_gate":
+    case "generation_tier":
+      return "supply_gap";
+    case "eco":
+    case "opex":
+      return "fossil_transition";
+    default:
+      return null;
+  }
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): TechHudCandidate | null {
@@ -356,5 +383,20 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
     cost: selected.researchCost,
     months: selected.researchMonths,
     effect: selected.effectSummary
+  });
+}
+
+export function formatSelectedResearchPressureReason(boot: GameBootstrap): string | null {
+  const selected = ensureSelectedCandidate(boot);
+  const pressureTag = pressureTagForBranchKind(selected?.branchKind ?? null);
+  if (!selected?.branchKind || !pressureTag) return null;
+  const region = latePressureRegions(boot).find((item) =>
+    item.operatingPressureTags.includes(pressureTag)
+  );
+  if (!region) return null;
+  return t("hud.status.tech_pressure_reason", {
+    region: region.displayName,
+    pressure: formatOperatingPressureTag(pressureTag),
+    branch: formatTechBranchKind(selected.branchKind)
   });
 }

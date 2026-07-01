@@ -341,8 +341,9 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[2]).toContain("现金流1");
     expect(display.detailLines[2]).toContain("灾害减损1");
     expect(display.detailLines[2]).toContain("绿色品牌1");
-    expect(display.detailLines[3]).toContain("候选：超级水电站");
-    expect(display.detailLines[3]).toContain("分叉超水电");
+    expect(display.detailLines[3]).toBe("压力推荐：特大城B（终局都会） · 终局负荷 -> 超水电");
+    expect(display.detailLines[4]).toContain("候选：超级水电站");
+    expect(display.detailLines[4]).toContain("分叉超水电");
   });
 
   it("shows trunk tech as level-V pressure candidate after super hydro is lit", () => {
@@ -353,8 +354,9 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines[3]).toContain("候选：主干电网");
-    expect(display.detailLines[3]).toContain("分叉主干网");
+    expect(display.detailLines[3]).toBe("压力推荐：省六（沿海工业走廊） · 主干优先 -> 主干网");
+    expect(display.detailLines[4]).toContain("候选：主干电网");
+    expect(display.detailLines[4]).toContain("分叉主干网");
   });
 
   it("exposes locked hud capabilities before company level 2", () => {
