@@ -935,6 +935,35 @@ describe("settleNextMonth", () => {
     expect(speedup.value.state.facilities["fac-nuclear"]?.isEco).toBe(true);
   });
 
+  it("M3 eco_nuclear completion immediately eco-syncs city supply status", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 4;
+    state.facilities["fac-nuclear"] = {
+      id: "fac-nuclear",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 2000,
+      monthlyOpex: 12,
+      monthlyFuel: 0
+    };
+    state.researches["eco_nuclear"] = {
+      researchId: "rq-eco-nuclear",
+      techId: "eco_nuclear",
+      monthsRemaining: 1
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.litTechIds).toContain("eco_nuclear");
+    expect(month.value.state.facilities["fac-nuclear"]?.isEco).toBe(true);
+    expect(month.value.state.cities["CITY-START"].cityFullyEcoSupply).toBe(true);
+    expect(month.value.state.cities["CITY-START"].ecoCapFactor).toBe(1);
+  });
+
   it("M6 applies nuclear_ops opex discount only to nuclear facilities", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
@@ -983,6 +1012,28 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     expect(month.value.state.socialValueCurrent).toBe(21);
+  });
+
+  it("M9 does not apply eng_green_pr bonus to non-eco supplied cities", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.litTechIds.push("eng_green_pr");
+    state.facilities["fac-thermal"] = {
+      id: "fac-thermal",
+      cityId: "CITY-START",
+      facilityId: "thermal",
+      tier: 1,
+      outputMw: 2000,
+      monthlyOpex: 0,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.cities["CITY-START"].cityFullyEcoSupply).toBe(false);
+    expect(month.value.state.socialValueCurrent).toBe(16);
   });
 
   it("M10 promotes tutorial run to level II with lowered threshold", () => {
