@@ -448,6 +448,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("本地0/受入0/缺口1280MW");
     expect(display.detailLines[0]).toContain("定位沿海工业枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/无水电/化石转型/核电选址");
+    expect(display.detailLines).toContain("建造建议：本地风光/火电过渡/核电锚点/高效占槽");
   });
 
   it("shows MAP-07 and MAP-08 late-map city pressure in city hud", () => {
@@ -507,6 +508,7 @@ describe("clientHudDisplay", () => {
     const map08Display = buildClientHudDisplay(boot);
     expect(map08Display.detailLines[0]).toContain("定位边疆综合平衡");
     expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/混合调配");
+    expect(map08Display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽/混合调配");
   });
 
   it("shows MET-B terminal load pressure in city hud", () => {
@@ -531,6 +533,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("负荷2100MW");
     expect(display.detailLines[0]).toContain("定位终局都会枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/槽位紧/核电选址/终局负荷");
+    expect(display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽");
   });
 
   it("shows selected region link candidate and candidate count on region screen", () => {

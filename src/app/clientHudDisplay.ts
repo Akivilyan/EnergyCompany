@@ -193,6 +193,29 @@ function formatCityEcoStatus(profile: {
   return t("hud.city.eco.partial", { cap: Math.round(profile.ecoCapFactor * 100) });
 }
 
+function formatCityBuildAction(profile: {
+  supplyGapMw: number;
+  richResources: ResourceKind[];
+  operatingPressureTags: OperatingPressureTag[];
+  hasRiver: boolean;
+  nuclearEligible: boolean;
+}): string | null {
+  if (profile.supplyGapMw <= 0) return null;
+  const tags = new Set(profile.operatingPressureTags);
+  const parts: string[] = [];
+  if (profile.richResources.includes("wind") || profile.richResources.includes("solar")) {
+    parts.push(t("hud.city.action.local_renewables"));
+  }
+  if (profile.hasRiver) parts.push(t("hud.city.action.hydro"));
+  if (tags.has("fossil_transition")) parts.push(t("hud.city.action.thermal_bridge"));
+  if (profile.nuclearEligible) parts.push(t("hud.city.action.nuclear"));
+  if (tags.has("low_slot_density") || tags.has("terminal_load")) {
+    parts.push(t("hud.city.action.slot_efficiency"));
+  }
+  if (tags.has("mixed_dispatch")) parts.push(t("hud.city.action.mixed_dispatch"));
+  return parts.length > 0 ? t("hud.line.city_action", { items: parts.join("/") }) : null;
+}
+
 function nextCompanyLevelThreshold(boot: GameBootstrap, companyLevel: number): number | null {
   const row = boot.app.controller.config.bundle.companyLevels.find(
     (item) => item.level === companyLevel + 1
@@ -549,6 +572,7 @@ export function buildClientHudDisplay(
       buildSelection.candidates.length > 1
         ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })
         : null,
+      profile ? formatCityBuildAction(profile) : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
       t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),
       eventsHint,
