@@ -1,4 +1,5 @@
 import { t } from "../i18n/index.js";
+import type { OperatingPressureTag } from "../modules/screenWorldMap.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel, type CityHudActionResult } from "./cityHudController.js";
 
@@ -10,6 +11,9 @@ export interface WorldHudCandidate {
   displayName: string;
   unlocked: boolean;
   connectionStatus: string;
+  unlockCompanyLevel: number;
+  supplyGapMw: number;
+  operatingPressureTags: OperatingPressureTag[];
 }
 
 export interface WorldHudSelectionSnapshot {
@@ -55,8 +59,25 @@ function getCandidates(boot: GameBootstrap): WorldHudCandidate[] {
     cityId: region.centralCityUnlocked ? region.centralCityId : null,
     displayName: region.displayName,
     unlocked: region.unlocked,
-    connectionStatus: region.connectionStatus
+    connectionStatus: region.connectionStatus,
+    unlockCompanyLevel: region.unlockCompanyLevel,
+    supplyGapMw: region.supplyGapMw,
+    operatingPressureTags: region.operatingPressureTags
   }));
+}
+
+function findRecommendedWorldCandidate(candidates: WorldHudCandidate[]): WorldHudCandidate | null {
+  const latePressureCandidates = candidates.filter(
+    (candidate) =>
+      candidate.unlocked && candidate.unlockCompanyLevel >= 5 && candidate.supplyGapMw > 0
+  );
+  return (
+    latePressureCandidates.find((candidate) =>
+      candidate.operatingPressureTags.includes("high_demand")
+    ) ??
+    latePressureCandidates[0] ??
+    null
+  );
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null {
@@ -68,6 +89,7 @@ function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null 
   const remembered = selectedCandidateByBoot.get(boot);
   const selected =
     candidates.find((candidate) => candidate.candidateId === remembered) ??
+    findRecommendedWorldCandidate(candidates) ??
     candidates.find((candidate) => candidate.unlocked && candidate.regionId !== "MAP-01") ??
     candidates.find((candidate) => candidate.unlocked) ??
     candidates[0];

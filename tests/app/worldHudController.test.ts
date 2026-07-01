@@ -74,6 +74,20 @@ describe("worldHudController", () => {
     expect(boot.app.controller.state.gridLinks["CITY-MAP02-01::CITY-START"]?.status).toBe("building");
   });
 
+  it("defaults to a level V high-pressure region once late map is unlocked", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenWorldMap(boot);
+
+    const selection = getWorldHudSelectionSnapshot(boot);
+    const selected = selection.candidates.find(
+      (candidate) => candidate.candidateId === selection.selectedCandidateId
+    );
+
+    expect(selected?.regionId).toBe("MAP-06");
+    expect(selected?.targetType).toBe("region");
+  });
+
   it("opens MET-A as a direct city target once unlocked", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;
