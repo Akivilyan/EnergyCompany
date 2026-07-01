@@ -171,6 +171,19 @@ function formatOperatingPressureBreakdown(input: {
     : null;
 }
 
+function formatOperatingPressureTechSolutions(tags: OperatingPressureTag[]): string | null {
+  const tagSet = new Set(tags);
+  const parts: string[] = [];
+  if (tagSet.has("terminal_load")) parts.push(t("hud.tech_solution.terminal_load"));
+  if (tagSet.has("trunk_first")) parts.push(t("hud.tech_solution.trunk_first"));
+  if (tagSet.has("nuclear_siting")) parts.push(t("hud.tech_solution.nuclear_siting"));
+  if (tagSet.has("hydro_site_bound")) parts.push(t("hud.tech_solution.hydro_site_bound"));
+  if (tagSet.has("mixed_dispatch")) parts.push(t("hud.tech_solution.mixed_dispatch"));
+  if (tagSet.has("supply_gap")) parts.push(t("hud.tech_solution.supply_gap"));
+  if (tagSet.has("fossil_transition")) parts.push(t("hud.tech_solution.fossil_transition"));
+  return parts.length > 0 ? t("hud.line.tech_solution", { items: parts.join("/") }) : null;
+}
+
 function formatRegionDesignRole(role: string | null): string {
   if (!role) return t("region.role.unknown");
   const key = `region.role.${role}`;
@@ -347,6 +360,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       totalBuildSlots: s.totalBuildSlots,
       operatingPressureTags: s.operatingPressureTags
     }),
+    formatOperatingPressureTechSolutions(s.operatingPressureTags),
     t("hud.line.region_plan", { plan: formatOperatingPlanHints(s.operatingPlanHints) }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
@@ -453,6 +467,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           operatingPressureTags: focusRegion.operatingPressureTags
         })
       : null,
+    focusRegion ? formatOperatingPressureTechSolutions(focusRegion.operatingPressureTags) : null,
     formatWorldSuperHydroStatus(boot),
     formatWorldSuperHydroGridPressure(boot),
     formatSelectedWorldSuperHydroSlot(boot),
