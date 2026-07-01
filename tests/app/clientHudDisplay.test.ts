@@ -345,6 +345,18 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[3]).toContain("分叉超水电");
   });
 
+  it("shows trunk tech as level-V pressure candidate after super hydro is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.play.openScreen("screen_tech_tree");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines[3]).toContain("候选：主干电网");
+    expect(display.detailLines[3]).toContain("分叉主干网");
+  });
+
   it("exposes locked hud capabilities before company level 2", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({

@@ -52,6 +52,17 @@ describe("techHudController", () => {
     expect(selection.selectedTechId).toBe("super_hydro");
   });
 
+  it("switches to trunk tech when level V strategic pressure is covered", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("grid_backbone");
+  });
+
   it("cancels active research with refund", () => {
     const boot = createGameBootstrapFromRepo();
     techEnsureLevelIIForDev(boot);

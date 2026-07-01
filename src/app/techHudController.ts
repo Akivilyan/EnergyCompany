@@ -2,6 +2,7 @@ import type { GameBootstrap } from "./gameBootstrap.js";
 import { readCityHudViewModel } from "./cityHudController.js";
 import type { ClientNavResult } from "./screenNavController.js";
 import { t } from "../i18n/index.js";
+import type { OperatingPressureTag, WorldMapRegionItem } from "../modules/screenWorldMap.js";
 
 /** FAST-01 开发 HUD 默认开研节点：II 级即能演示科技扩容。 */
 export const DEFAULT_DEV_TECH_ID = "wind_2";
@@ -189,9 +190,63 @@ function findRecommendedTechCandidate(
   if (boot.app.controller.state.companyLevel <= 2) {
     return candidates.find((candidate) => candidate.techId === DEFAULT_DEV_TECH_ID) ?? null;
   }
+  const pressureCandidate = findPressureRecommendedTechCandidate(boot, candidates);
+  if (pressureCandidate) return pressureCandidate;
   for (const branchKind of RECOMMENDED_TECH_BRANCH_ORDER) {
     const candidate = candidates.find((item) => item.branchKind === branchKind);
     if (candidate) return candidate;
+  }
+  return null;
+}
+
+function candidateByBranch(
+  candidates: TechHudCandidate[],
+  ...branchKinds: TechBranchKind[]
+): TechHudCandidate | null {
+  for (const branchKind of branchKinds) {
+    const candidate = candidates.find((item) => item.branchKind === branchKind);
+    if (candidate) return candidate;
+  }
+  return null;
+}
+
+function latePressureRegions(boot: GameBootstrap): WorldMapRegionItem[] {
+  return boot.app.screens.world
+    .getSnapshot()
+    .regions.filter(
+      (region) => region.unlocked && region.unlockCompanyLevel >= 5 && region.supplyGapMw > 0
+    );
+}
+
+function hasLatePressure(regions: WorldMapRegionItem[], tag: OperatingPressureTag): boolean {
+  return regions.some((region) => region.operatingPressureTags.includes(tag));
+}
+
+function findPressureRecommendedTechCandidate(
+  boot: GameBootstrap,
+  candidates: TechHudCandidate[]
+): TechHudCandidate | null {
+  const regions = latePressureRegions(boot);
+  if (regions.length === 0) return null;
+  if (hasLatePressure(regions, "terminal_load")) {
+    const strategic = candidateByBranch(candidates, "super_hydro");
+    if (strategic) return strategic;
+  }
+  if (hasLatePressure(regions, "trunk_first")) {
+    const grid = candidateByBranch(candidates, "uhv", "backbone_grid", "regional_grid");
+    if (grid) return grid;
+  }
+  if (hasLatePressure(regions, "nuclear_siting")) {
+    const nuclear = candidateByBranch(candidates, "nuclear");
+    if (nuclear) return nuclear;
+  }
+  if (hasLatePressure(regions, "supply_gap")) {
+    const supply = candidateByBranch(candidates, "storage_gate", "generation_tier");
+    if (supply) return supply;
+  }
+  if (hasLatePressure(regions, "fossil_transition")) {
+    const transition = candidateByBranch(candidates, "eco", "opex");
+    if (transition) return transition;
   }
   return null;
 }
