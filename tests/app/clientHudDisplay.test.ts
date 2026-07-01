@@ -113,6 +113,32 @@ describe("clientHudDisplay", () => {
     expect(display.detailLine).toContain("小额贷款（30万）");
   });
 
+  it("shows storage tech branches on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push(
+      "storage_system_1",
+      "storage_system_2",
+      "storage_system_3"
+    );
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("储能科技：风光水储能x2/风光水可研·3/4/5");
+  });
+
+  it("keeps storage tech branches visible with active loan", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("storage_system_1", "storage_system_2");
+    clientNavOpenCompany(boot);
+    companyApplyFirstUnlockedLoan(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("储能科技：风光水储能x2/风光水可研·3/4");
+    expect(display.detailLine).toContain("小额贷款（30万）");
+  });
+
   it("shows grid dispatch tech loss reduction on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");

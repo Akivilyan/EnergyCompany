@@ -159,6 +159,34 @@ export function formatCompanyNuclearTechLine(boot: GameBootstrap): string | null
   return tierMax > 0 ? t("hud.status.company_nuclear_tech", { tier: tierMax }) : null;
 }
 
+export function formatCompanyStorageTechLine(boot: GameBootstrap): string | null {
+  let storageMult = 0;
+  const unlockTiers = new Set<number>();
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (!tech || (tech.effect_type !== "storage_buff" && tech.effect_type !== "storage_gate")) continue;
+    const tier = tech.effect_value.unlock_tier;
+    if (typeof tier === "number" && Number.isFinite(tier) && tier > 0) {
+      unlockTiers.add(tier);
+    }
+    const value = tech.effect_value.storage_mult;
+    if (typeof value === "number" && Number.isFinite(value) && value > 1) {
+      storageMult = Math.max(storageMult, value);
+    }
+  }
+  const parts: string[] = [];
+  if (storageMult > 1) {
+    parts.push(t("hud.status.company_storage_tech_mult_item", { mult: storageMult }));
+  }
+  if (unlockTiers.size > 0) {
+    const tiers = Array.from(unlockTiers).sort((a, b) => a - b).join("/");
+    parts.push(t("hud.status.company_storage_tech_gate_item", { tiers }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_storage_tech", { items: parts.join("/") })
+    : null;
+}
+
 export function formatCompanyStrategicTechLine(boot: GameBootstrap): string | null {
   const parts: string[] = [];
   for (const techId of boot.app.controller.state.litTechIds) {

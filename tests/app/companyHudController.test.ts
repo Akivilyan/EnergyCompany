@@ -12,6 +12,7 @@ import {
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearTechLine,
   formatCompanyOpexTechLine,
+  formatCompanyStorageTechLine,
   formatCompanyStrategicTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -90,6 +91,17 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2", "nuclear_3");
 
     expect(formatCompanyNuclearTechLine(boot)).toBe("核电科技：可建核电·3");
+  });
+
+  it("formats storage tech branches", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push(
+      "storage_system_1",
+      "storage_system_2",
+      "storage_system_3"
+    );
+
+    expect(formatCompanyStorageTechLine(boot)).toBe("储能科技：风光水储能x2/风光水可研·3/4/5");
   });
 
   it("formats grid dispatch loss reduction", () => {
