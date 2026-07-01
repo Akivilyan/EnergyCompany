@@ -140,6 +140,34 @@ function formatOperatingPlanHints(hints: OperatingPlanHint[]): string {
     : t("plan.none");
 }
 
+function formatOperatingPressureBreakdown(input: {
+  supplyGapMw: number;
+  totalDemandMw: number;
+  totalBuildSlots: number;
+  operatingPressureTags: OperatingPressureTag[];
+}): string | null {
+  const tags = new Set(input.operatingPressureTags);
+  const parts: string[] = [];
+  if (input.supplyGapMw > 0) {
+    parts.push(t("hud.operating_pressure.gap", { gap: input.supplyGapMw }));
+  }
+  if (tags.has("trunk_first")) parts.push(t("hud.operating_pressure.trunk_first"));
+  if (tags.has("low_slot_density")) {
+    parts.push(t("hud.operating_pressure.slots", { slots: input.totalBuildSlots }));
+  }
+  if (tags.has("no_hydro")) parts.push(t("hud.operating_pressure.no_hydro"));
+  if (tags.has("fossil_transition")) parts.push(t("hud.operating_pressure.fossil_transition"));
+  if (tags.has("nuclear_siting")) parts.push(t("hud.operating_pressure.nuclear_siting"));
+  if (tags.has("hydro_site_bound")) parts.push(t("hud.operating_pressure.hydro_site_bound"));
+  if (tags.has("mixed_dispatch")) parts.push(t("hud.operating_pressure.mixed_dispatch"));
+  if (tags.has("terminal_load")) {
+    parts.push(t("hud.operating_pressure.terminal_load", { demand: input.totalDemandMw }));
+  }
+  return parts.length > 0
+    ? t("hud.line.operating_pressure_breakdown", { items: parts.join(" · ") })
+    : null;
+}
+
 function formatRegionDesignRole(role: string | null): string {
   if (!role) return t("region.role.unknown");
   const key = `region.role.${role}`;
@@ -286,6 +314,12 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
       builds: formatRecommendedBuilds(s.recommendedBuilds),
       pressure: formatOperatingPressureTags(s.operatingPressureTags)
     }),
+    formatOperatingPressureBreakdown({
+      supplyGapMw: s.supplyGapMw,
+      totalDemandMw: s.totalDemandMw,
+      totalBuildSlots: s.totalBuildSlots,
+      operatingPressureTags: s.operatingPressureTags
+    }),
     t("hud.line.region_plan", { plan: formatOperatingPlanHints(s.operatingPlanHints) }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
@@ -381,6 +415,14 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
           pressure: formatOperatingPressureTags(focusRegion.operatingPressureTags),
           plan: formatOperatingPlanHints(focusRegion.operatingPlanHints),
           trunk: formatWorldConnectionStatus(focusRegion)
+        })
+      : null,
+    focusRegion
+      ? formatOperatingPressureBreakdown({
+          supplyGapMw: focusRegion.supplyGapMw,
+          totalDemandMw: focusRegion.totalDemandMw,
+          totalBuildSlots: focusRegion.totalBuildSlots,
+          operatingPressureTags: focusRegion.operatingPressureTags
         })
       : null,
     formatWorldSuperHydroStatus(boot),
