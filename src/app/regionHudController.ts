@@ -38,6 +38,8 @@ export interface RegionHudSelectionSnapshot {
   }>;
 }
 
+type RegionHudLinkCandidate = RegionHudSelectionSnapshot["candidates"][number];
+
 const selectedCandidateByBoot = new WeakMap<GameBootstrap, string>();
 const selectedCancelableLinkByBoot = new WeakMap<GameBootstrap, string>();
 
@@ -151,9 +153,37 @@ function ensureSelectedCandidate(boot: GameBootstrap) {
         candidate.toCityId === DEFAULT_REGION_LINK.toCityId &&
         candidate.linkType === DEFAULT_REGION_LINK.linkType
     ) ??
+    findRecommendedRegionCandidate(candidates) ??
     candidates[0];
   selectedCandidateByBoot.set(boot, selected.candidateId);
   return selected;
+}
+
+function isCapitalTrunkCandidate(candidate: RegionHudLinkCandidate): boolean {
+  return (
+    candidate.linkType === "trunk" &&
+    (candidate.fromCityId === "CITY-START" || candidate.toCityId === "CITY-START")
+  );
+}
+
+function isSuperHydroTrunkCandidate(candidate: RegionHudLinkCandidate): boolean {
+  return (
+    candidate.linkType === "trunk" &&
+    (candidate.fromCityId.startsWith("SUPER-HYDRO") || candidate.toCityId.startsWith("SUPER-HYDRO"))
+  );
+}
+
+function findRecommendedRegionCandidate(
+  candidates: RegionHudLinkCandidate[]
+): RegionHudLinkCandidate | null {
+  const available = candidates.filter((candidate) => candidate.available);
+  return (
+    available.find(isCapitalTrunkCandidate) ??
+    available.find(isSuperHydroTrunkCandidate) ??
+    available.find((candidate) => candidate.linkType === "region") ??
+    available.find((candidate) => candidate.linkType === "trunk") ??
+    null
+  );
 }
 
 export function getRegionHudSelectionSnapshot(boot: GameBootstrap): RegionHudSelectionSnapshot {

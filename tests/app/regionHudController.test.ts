@@ -89,7 +89,47 @@ describe("regionHudController", () => {
     boot.app.controller.state.companyLevel = 5;
     clientNavOpenRegionById(boot, "MAP-06");
 
+    const selection = getRegionHudSelectionSnapshot(boot);
+    const active = selection.candidates.find(
+      (candidate) => candidate.candidateId === selection.selectedCandidateId
+    );
+    expect(active?.fromCityId).toBe("CITY-MAP06-01");
+    expect(active?.toCityId).toBe("CITY-START");
+    expect(active?.linkType).toBe("trunk");
     expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：先建主干，打开区域内铺线");
+  });
+
+  it("defaults to super hydro trunk after the capital trunk already exists", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.gridLinks["CITY-MAP06-01::CITY-START"] = {
+      linkId: "CITY-MAP06-01::CITY-START",
+      fromCityId: "CITY-MAP06-01",
+      toCityId: "CITY-START",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 500
+    };
+    boot.app.controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "Jinsha River UHV Hydro Base",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 1800
+    };
+    clientNavOpenRegionById(boot, "MAP-06");
+
+    const selection = getRegionHudSelectionSnapshot(boot);
+    const active = selection.candidates.find(
+      (candidate) => candidate.candidateId === selection.selectedCandidateId
+    );
+    expect(active?.fromCityId).toBe("CITY-MAP06-01");
+    expect(active?.toCityId).toBe("SUPER-HYDRO-1");
+    expect(active?.linkType).toBe("trunk");
+    expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：接入超级水电，释放外部出力");
   });
 
   it("cycles to finished super hydro trunk candidate and queues it", () => {
