@@ -33,6 +33,16 @@ export interface WorldHudTrunkCandidate {
 
 const selectedCandidateByBoot = new WeakMap<GameBootstrap, string>();
 
+const WORLD_PRESSURE_PRIORITY: OperatingPressureTag[] = [
+  "terminal_load",
+  "trunk_first",
+  "nuclear_siting",
+  "hydro_site_bound",
+  "mixed_dispatch",
+  "supply_gap",
+  "fossil_transition"
+];
+
 function toActionResult(
   boot: GameBootstrap,
   ok: boolean,
@@ -71,13 +81,13 @@ function findRecommendedWorldCandidate(candidates: WorldHudCandidate[]): WorldHu
     (candidate) =>
       candidate.unlocked && candidate.unlockCompanyLevel >= 5 && candidate.supplyGapMw > 0
   );
-  return (
-    latePressureCandidates.find((candidate) =>
-      candidate.operatingPressureTags.includes("high_demand")
-    ) ??
-    latePressureCandidates[0] ??
-    null
-  );
+  for (const pressure of WORLD_PRESSURE_PRIORITY) {
+    const candidate = latePressureCandidates.find((item) =>
+      item.operatingPressureTags.includes(pressure)
+    );
+    if (candidate) return candidate;
+  }
+  return latePressureCandidates[0] ?? null;
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null {
