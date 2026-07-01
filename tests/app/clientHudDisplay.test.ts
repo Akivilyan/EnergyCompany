@@ -655,6 +655,34 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("科技解法：核电选址->核电(已点亮)/混合调配->调度(已点亮)/供给缺口->储能/发电升档(已点亮)");
   });
 
+  it("keeps fossil-transition tech solution pending until thermal eco or general opex is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    const city = boot.app.controller.config.getCity("CITY-MAP06-01");
+    expect(city).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("eco_nuclear", "nuclear_ops");
+    boot.app.controller.state.cities["CITY-MAP06-01"] = {
+      cityId: "CITY-MAP06-01",
+      demandMw: city?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: city?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-MAP06-01", "MAP-06");
+
+    const nuclearOnly = buildClientHudDisplay(boot);
+    expect(nuclearOnly.detailLines).toContain("科技解法：核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)/化石转型->ECO/运维(待研发)");
+
+    boot.app.controller.state.litTechIds.push("eco_thermal");
+
+    const thermalEco = buildClientHudDisplay(boot);
+    expect(thermalEco.detailLines).toContain("科技解法：核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)/化石转型->ECO/运维(已点亮)");
+  });
+
   it("shows selected region link candidate and candidate count on region screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

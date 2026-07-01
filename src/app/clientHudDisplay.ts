@@ -207,9 +207,7 @@ function hasOperatingPressureTechSolution(boot: GameBootstrap, tag: OperatingPre
         "hydro_5"
       ].some((techId) => lit.has(techId));
     case "fossil_transition":
-      return ["eco_thermal", "eco_nuclear", "eng_ops_contract", "nuclear_ops"].some((techId) =>
-        lit.has(techId)
-      );
+      return ["eco_thermal", "eng_ops_contract"].some((techId) => lit.has(techId));
     default:
       return false;
   }
