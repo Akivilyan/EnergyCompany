@@ -151,6 +151,14 @@ export function formatSelectedWorldTrunkCandidate(boot: GameBootstrap): string |
   });
 }
 
+export function formatSelectedWorldTrunkAction(boot: GameBootstrap): string | null {
+  const candidate = getSelectedWorldTrunkCandidate(boot);
+  if (!candidate) return null;
+  return candidate.available
+    ? t("hud.status.world_trunk_action")
+    : t("hud.status.world_trunk_action_wait");
+}
+
 export function formatWorldSuperHydroStatus(boot: GameBootstrap): string | null {
   const s = boot.app.screens.world.getSnapshot().superHydro;
   if (s.totalSlots <= 0) return null;

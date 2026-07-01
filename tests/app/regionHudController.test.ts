@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { clientNavOpenRegion, clientNavOpenRegionById } from "../../src/app/screenNavController.js";
 import {
+  formatSelectedRegionLinkAction,
   getRegionHudSelectionSnapshot,
   regionCancelSelectedLink,
   regionCycleLinkCandidate,
@@ -83,6 +84,14 @@ describe("regionHudController", () => {
     expect(out.messageKey).toBe("region.success.trunk_queued");
   });
 
+  it("formats level-V trunk action priority for late-map regions", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenRegionById(boot, "MAP-06");
+
+    expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：先建主干，打开区域内铺线");
+  });
+
   it("cycles to finished super hydro trunk candidate and queues it", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;
@@ -117,6 +126,7 @@ describe("regionHudController", () => {
     expect(active?.fromCityId).toBe("CITY-MAP06-01");
     expect(active?.toCityId).toBe("SUPER-HYDRO-1");
     expect(active?.linkType).toBe("trunk");
+    expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：接入超级水电，释放外部出力");
 
     const out = regionQueueDefaultLink(boot);
     expect(out.ok).toBe(true);

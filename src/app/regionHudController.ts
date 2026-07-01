@@ -180,6 +180,21 @@ export function formatSelectedRegionLink(boot: GameBootstrap): string | null {
   });
 }
 
+export function formatSelectedRegionLinkAction(boot: GameBootstrap): string | null {
+  const selected = ensureSelectedCandidate(boot);
+  if (!selected) return null;
+  if (!selected.available) return t("hud.status.region_link_action_wait");
+  if (
+    selected.linkType === "trunk" &&
+    (selected.fromCityId.startsWith("SUPER-HYDRO") || selected.toCityId.startsWith("SUPER-HYDRO"))
+  ) {
+    return t("hud.status.region_link_action_super_hydro");
+  }
+  return selected.linkType === "trunk"
+    ? t("hud.status.region_link_action_trunk")
+    : t("hud.status.region_link_action_region");
+}
+
 export function regionQueueDefaultLink(boot: GameBootstrap): RegionHudActionResult {
   const selected = ensureSelectedCandidate(boot);
   const { fromCityId, toCityId, linkType } = selected ?? DEFAULT_REGION_LINK;

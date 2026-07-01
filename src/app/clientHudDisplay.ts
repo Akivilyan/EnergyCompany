@@ -16,7 +16,7 @@ import {
   formatTechProgressionSummary,
   getTechHudSelectionSnapshot
 } from "./techHudController.js";
-import { formatSelectedRegionLink } from "./regionHudController.js";
+import { formatSelectedRegionLink, formatSelectedRegionLinkAction } from "./regionHudController.js";
 import {
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
@@ -33,6 +33,7 @@ import {
 import {
   formatSelectedWorldCandidate,
   formatSelectedWorldSuperHydroSlot,
+  formatSelectedWorldTrunkAction,
   formatSelectedWorldTrunkCandidate,
   formatWorldSuperHydroGridPressure,
   formatWorldSuperHydroStatus,
@@ -284,6 +285,7 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
   const unlockedCities = s.cities.filter((c) => c.unlocked).length;
   const availableCandidates = s.linkCandidates.filter((candidate) => candidate.available).length;
   const selectedLink = formatSelectedRegionLink(boot);
+  const selectedLinkAction = formatSelectedRegionLinkAction(boot);
   const statusLine = t("hud.status.region", {
     level: s.companyLevel,
     funds: s.funds,
@@ -323,7 +325,8 @@ function formatRegionStatus(boot: GameBootstrap): ClientHudDisplay {
     t("hud.line.region_plan", { plan: formatOperatingPlanHints(s.operatingPlanHints) }),
     t("hud.line.region_role", { role: formatRegionDesignRole(s.designRole) }),
     t("hud.line.region_links", { building, finished }),
-    selectedLink
+    selectedLink,
+    selectedLinkAction
   );
   return { statusLine, detailLine, statusLines, detailLines };
 }
@@ -430,6 +433,7 @@ function formatWorldStatus(boot: GameBootstrap): ClientHudDisplay {
     formatSelectedWorldSuperHydroSlot(boot),
     selectedTarget,
     formatSelectedWorldTrunkCandidate(boot),
+    formatSelectedWorldTrunkAction(boot),
     selection.candidates.length > 1 ? t("hud.status.world_candidate_count", { count: selection.candidates.length }) : null
   );
   return {

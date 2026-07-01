@@ -554,6 +554,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("Pressure breakdown: gap 1920MW · trunk first · no hydro · fossil transition · nuclear siting");
     expect(display.detailLines).toContain("Operating plan: secure trunk/close supply gap/local renewables/thermal bridge/nuclear anchor");
     expect(display.detailLines).toContain("Operating role: coastal industrial export");
+    expect(display.detailLines).toContain("Action: build trunk first to unlock local links");
   });
 
   it("shows MET-B terminal operating route in region hud", () => {
@@ -684,6 +685,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[1]).toContain("压力高负荷/供给缺口/主干优先/无水电/化石转型/核电选址");
     expect(display.detailLines[1]).toContain("路线先接主干/补足缺口/本地风光/火电兜底/核电锚点");
     expect(display.detailLines).toContain("压力拆解：缺口1920MW · 主干优先 · 无水电 · 化石转型 · 核电选址");
+    expect(display.detailLines).toContain("行动建议：先建主干，进入区域补供给");
   });
 
   it("shows MET-B terminal operating route on world map hud", () => {
