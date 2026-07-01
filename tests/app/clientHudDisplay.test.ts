@@ -359,6 +359,31 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[4]).toContain("分叉主干网");
   });
 
+  it("shows MAP-07 and MAP-08 pressure reasons in tech hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "super_hydro",
+      "grid_regional",
+      "grid_backbone",
+      "uhv_transmission",
+      "nuclear_1",
+      "nuclear_2",
+      "nuclear_3"
+    );
+    boot.play.openScreen("screen_tech_tree");
+
+    const hydro = buildClientHudDisplay(boot);
+    expect(hydro.detailLines[3]).toBe("压力推荐：省七（高原水风走廊） · 水点绑定 -> 发电升档");
+    expect(hydro.detailLines[4]).toContain("候选：水电·II");
+
+    boot.app.controller.state.litTechIds.push("hydro_2", "hydro_3", "hydro_4", "hydro_5");
+
+    const dispatch = buildClientHudDisplay(boot);
+    expect(dispatch.detailLines[3]).toBe("压力推荐：省八（边疆综合平衡带） · 混合调配 -> 调度");
+    expect(dispatch.detailLines[4]).toContain("候选：智能调度");
+  });
+
   it("exposes locked hud capabilities before company level 2", () => {
     const boot = createGameBootstrapFromRepo();
     expect(getClientHudCapabilities(boot)).toEqual({

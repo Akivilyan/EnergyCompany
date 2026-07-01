@@ -70,6 +70,54 @@ describe("techHudController", () => {
     );
   });
 
+  it("switches to hydro tier tech when trunk and nuclear pressure are covered", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "super_hydro",
+      "grid_regional",
+      "grid_backbone",
+      "uhv_transmission",
+      "nuclear_1",
+      "nuclear_2",
+      "nuclear_3"
+    );
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("hydro_2");
+    expect(formatSelectedResearchPressureReason(boot)).toBe(
+      "压力推荐：省七（高原水风走廊） · 水点绑定 -> 发电升档"
+    );
+  });
+
+  it("switches to dispatch tech when mixed late-map pressure is next", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "super_hydro",
+      "grid_regional",
+      "grid_backbone",
+      "uhv_transmission",
+      "nuclear_1",
+      "nuclear_2",
+      "nuclear_3",
+      "hydro_2",
+      "hydro_3",
+      "hydro_4",
+      "hydro_5"
+    );
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("eng_grid_dispatch");
+    expect(formatSelectedResearchPressureReason(boot)).toBe(
+      "压力推荐：省八（边疆综合平衡带） · 混合调配 -> 调度"
+    );
+  });
+
   it("cancels active research with refund", () => {
     const boot = createGameBootstrapFromRepo();
     techEnsureLevelIIForDev(boot);

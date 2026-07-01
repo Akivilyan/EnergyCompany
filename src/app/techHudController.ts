@@ -216,6 +216,13 @@ function candidateByBranch(
   return null;
 }
 
+function candidateByTechId(
+  candidates: TechHudCandidate[],
+  predicate: (techId: string) => boolean
+): TechHudCandidate | null {
+  return candidates.find((candidate) => predicate(candidate.techId)) ?? null;
+}
+
 function latePressureRegions(boot: GameBootstrap): WorldMapRegionItem[] {
   return boot.app.screens.world
     .getSnapshot()
@@ -246,6 +253,14 @@ function findPressureRecommendedTechCandidate(
     const nuclear = candidateByBranch(candidates, "nuclear");
     if (nuclear) return nuclear;
   }
+  if (hasLatePressure(regions, "hydro_site_bound")) {
+    const hydro = candidateByTechId(candidates, (techId) => /^hydro_[2-5]$/.test(techId));
+    if (hydro) return hydro;
+  }
+  if (hasLatePressure(regions, "mixed_dispatch")) {
+    const dispatch = candidateByBranch(candidates, "dispatch");
+    if (dispatch) return dispatch;
+  }
   if (hasLatePressure(regions, "supply_gap")) {
     const supply = candidateByBranch(candidates, "storage_gate", "generation_tier");
     if (supply) return supply;
@@ -257,8 +272,10 @@ function findPressureRecommendedTechCandidate(
   return null;
 }
 
-function pressureTagForBranchKind(branchKind: TechBranchKind | null): OperatingPressureTag | null {
-  switch (branchKind) {
+function pressureTagForCandidate(candidate: TechHudCandidate | null): OperatingPressureTag | null {
+  if (!candidate) return null;
+  if (/^hydro_[2-5]$/.test(candidate.techId)) return "hydro_site_bound";
+  switch (candidate.branchKind) {
     case "super_hydro":
       return "terminal_load";
     case "uhv":
@@ -267,8 +284,9 @@ function pressureTagForBranchKind(branchKind: TechBranchKind | null): OperatingP
       return "trunk_first";
     case "nuclear":
       return "nuclear_siting";
+    case "dispatch":
+      return "mixed_dispatch";
     case "storage_gate":
-    case "generation_tier":
       return "supply_gap";
     case "eco":
     case "opex":
@@ -388,7 +406,7 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
 
 export function formatSelectedResearchPressureReason(boot: GameBootstrap): string | null {
   const selected = ensureSelectedCandidate(boot);
-  const pressureTag = pressureTagForBranchKind(selected?.branchKind ?? null);
+  const pressureTag = pressureTagForCandidate(selected);
   if (!selected?.branchKind || !pressureTag) return null;
   const region = latePressureRegions(boot).find((item) =>
     item.operatingPressureTags.includes(pressureTag)
