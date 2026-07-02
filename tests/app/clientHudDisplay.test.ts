@@ -362,6 +362,38 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("战略机会：研发后超级水电槽+2");
   });
 
+  it("keeps late tech opportunity mix visible on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "wind_2",
+      "solar_2",
+      "thermal_2",
+      "hydro_2",
+      "storage_system_1",
+      "storage_system_2",
+      "grid_backbone",
+      "nuclear_1",
+      "nuclear_2"
+    );
+    boot.app.controller.state.cities["CITY-START"].cityFullyEcoSupply = true;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至7/9");
+    expect(display.detailLines).toContain("现金流机会：研发后贷款等级+1 · 有效6级");
+    expect(display.detailLines).toContain("运维机会：研发后核电运维-18%/通用运维-10%");
+    expect(display.detailLines).toContain("发电机会：研发后风·3/光·3/火·3/水·3");
+    expect(display.detailLines).toContain("核电机会：研发后可建核电·3");
+    expect(display.detailLines).toContain("储能机会：研发后风光水可研·5");
+    expect(display.detailLines).toContain("电网机会：研发后区域线造价-25%/主干线损特高压档");
+    expect(display.detailLines).toContain("调度机会：研发后区域线损-10%");
+    expect(display.detailLines).toContain("生态机会：研发后火电ECO/核电ECO");
+    expect(display.detailLines).toContain("绿色品牌机会：全环保城1座 · 研发后SV+5%");
+    expect(display.detailLines).toContain("战略机会：研发后超级水电槽+2");
+  });
+
   it("keeps strategic tech branches visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("super_hydro");

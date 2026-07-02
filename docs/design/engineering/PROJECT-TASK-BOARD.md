@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.120.0
+version: 1.121.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-02 | `FAST-01` 固化 III～V 公司 HUD 经营机会组合回归：覆盖现金流、运维、发电、核电、储能、电网、调度、生态、绿色品牌与战略机会 |
 | 2026-07-02 | `FAST-01` 补齐 IV 级生态改造经营机会：公司 HUD 在研发前提示火电/核电 ECO 收益 |
 | 2026-07-02 | `FAST-01` 补齐建设分叉经营提示：公司 HUD 在集中采购点亮后提示建设费收益 |
 | 2026-07-02 | `FAST-01` 补齐 III～V 发电升档经营机会：公司 HUD 在研发前提示风光火水下一档收益 |
@@ -163,3 +164,4 @@ open_questions: []
 | 1.118.0 | 2026-07-02 | 记录 III～V 发电升档经营机会补齐 |
 | 1.119.0 | 2026-07-02 | 记录建设分叉经营提示补齐 |
 | 1.120.0 | 2026-07-02 | 记录 IV 级生态改造经营机会补齐 |
+| 1.121.0 | 2026-07-02 | 记录 III～V 公司 HUD 经营机会组合回归固化 |
