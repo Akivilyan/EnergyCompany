@@ -214,6 +214,14 @@ function hasOperatingPressureTechSolution(boot: GameBootstrap, tag: OperatingPre
 }
 
 function formatTechSolutionStatus(boot: GameBootstrap, tag: OperatingPressureTag): string {
+  if (tag === "terminal_load") {
+    const superHydro = boot.app.screens.world.getSnapshot().superHydro;
+    if (!superHydro.unlocked) return t("hud.tech_solution.status.pending");
+    if (superHydro.connectedOutputMw > 0) return t("hud.tech_solution.status.connected");
+    if (superHydro.totalOutputMw > 0) return t("hud.tech_solution.status.needs_grid");
+    if (superHydro.buildingSlots > 0) return t("hud.tech_solution.status.building");
+    return t("hud.tech_solution.status.ready");
+  }
   return hasOperatingPressureTechSolution(boot, tag)
     ? t("hud.tech_solution.status.lit")
     : t("hud.tech_solution.status.pending");

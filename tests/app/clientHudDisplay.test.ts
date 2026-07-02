@@ -631,6 +631,57 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽");
   });
 
+  it("tracks terminal load super hydro solution from tech unlock to grid connection", () => {
+    const boot = createGameBootstrapFromRepo();
+    const metB = boot.app.controller.config.getCity("CITY-METB-01");
+    expect(metB).toBeTruthy();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.cities["CITY-METB-01"] = {
+      cityId: "CITY-METB-01",
+      demandMw: metB?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: metB?.city_base_social_value ?? 0
+    };
+    boot.play.openScreen("screen_city_detail", "CITY-METB-01", "MET-B");
+
+    const ready = buildClientHudDisplay(boot);
+    expect(ready.detailLines).toContain("科技解法：终局负荷->超水电(可建设)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
+
+    boot.app.controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "building",
+      monthsRemaining: 2,
+      outputMw: 4200
+    };
+    const building = buildClientHudDisplay(boot);
+    expect(building.detailLines).toContain("科技解法：终局负荷->超水电(建设中)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
+
+    boot.app.controller.state.superHydros["super_hydro_1"].status = "finished";
+    boot.app.controller.state.superHydros["super_hydro_1"].monthsRemaining = 0;
+    const isolated = buildClientHudDisplay(boot);
+    expect(isolated.detailLines).toContain("科技解法：终局负荷->超水电(待接网)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
+
+    boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"] = {
+      linkId: "CITY-METB-01::SUPER-HYDRO-1",
+      fromCityId: "CITY-METB-01",
+      toCityId: "SUPER-HYDRO-1",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 0
+    };
+    const connected = buildClientHudDisplay(boot);
+    expect(connected.detailLines).toContain("科技解法：终局负荷->超水电(已接网)/主干优先->主干网(待研发)/核电选址->核电(待研发)/供给缺口->储能/发电升档(待研发)");
+  });
+
   it("marks city pressure tech solutions as lit after matching research", () => {
     const boot = createGameBootstrapFromRepo();
     const map08 = boot.app.controller.config.getCity("CITY-MAP08-01");

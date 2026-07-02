@@ -187,10 +187,15 @@ function isCityRegionTrunkConnected(boot: GameBootstrap, cityId: string): boolea
       .map((item) => item.city_id)
   );
   return Object.values(boot.app.controller.state.gridLinks).some(
-    (link) =>
-      link.status === "finished" &&
-      link.linkType === "trunk" &&
-      (regionCityIds.has(link.fromCityId) || regionCityIds.has(link.toCityId))
+    (link) => {
+      if (link.status !== "finished" || link.linkType !== "trunk") return false;
+      const fromInRegion = regionCityIds.has(link.fromCityId);
+      const toInRegion = regionCityIds.has(link.toCityId);
+      return (
+        (fromInRegion && !!boot.app.controller.state.cities[link.toCityId]) ||
+        (toInRegion && !!boot.app.controller.state.cities[link.fromCityId])
+      );
+    }
   );
 }
 
