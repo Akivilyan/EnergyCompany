@@ -89,6 +89,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("运维科技：通用运维-10%/核电运维-18%");
   });
 
+  it("shows opex opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("运维机会：研发后通用运维-10%");
+  });
+
   it("keeps opex tech reductions visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_ops_contract");

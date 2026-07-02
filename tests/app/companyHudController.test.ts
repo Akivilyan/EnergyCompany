@@ -14,6 +14,7 @@ import {
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearTechLine,
+  formatCompanyOpexOpportunityLine,
   formatCompanyOpexTechLine,
   formatCompanyStorageTechLine,
   formatCompanyStrategicTechLine,
@@ -99,6 +100,28 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");
 
     expect(formatCompanyOpexTechLine(boot)).toBe("运维科技：通用运维-10%/核电运维-18%");
+  });
+
+  it("formats opex opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+
+    expect(formatCompanyOpexOpportunityLine(boot)).toBe(
+      "运维机会：研发后通用运维-10%"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_ops_contract");
+    expect(formatCompanyOpexOpportunityLine(boot)).toBeNull();
+  });
+
+  it("formats nuclear opex opportunity when its prerequisite is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_2");
+
+    expect(formatCompanyOpexOpportunityLine(boot)).toBe(
+      "运维机会：研发后核电运维-18%"
+    );
   });
 
   it("formats generation tier tech branches", () => {

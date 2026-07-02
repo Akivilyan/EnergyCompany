@@ -123,6 +123,28 @@ export function formatCompanyOpexTechLine(boot: GameBootstrap): string | null {
     : null;
 }
 
+export function formatCompanyOpexOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const parts = boot.app.controller.config.bundle.technologies
+    .filter((tech) => {
+      if (lit.has(tech.tech_id)) return false;
+      if (tech.effect_type !== "modifier") return false;
+      const value = tech.effect_value.opex_pct;
+      if (typeof value !== "number" || !Number.isFinite(value) || value >= 0) return false;
+      if (boot.app.controller.state.companyLevel < tech.company_level_min) return false;
+      return (tech.requires_lit ?? []).every((techId) => lit.has(techId));
+    })
+    .map((tech) =>
+      t("hud.status.company_opex_tech_item", {
+        target: formatOpexTarget(tech.effect_target),
+        pct: Math.abs(tech.effect_value.opex_pct as number)
+      })
+    );
+  return parts.length > 0
+    ? t("hud.status.company_opex_opportunity", { items: parts.join("/") })
+    : null;
+}
+
 export function formatCompanyGridDispatchTechLine(boot: GameBootstrap): string | null {
   const parts: string[] = [];
   for (const techId of boot.app.controller.state.litTechIds) {
