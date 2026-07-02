@@ -12,6 +12,7 @@ import {
 } from "./eventsHudController.js";
 import {
   formatActiveResearchCandidate,
+  formatActiveResearchPressureReason,
   formatResearchableTechPressureSummary,
   formatResearchableTechBranchSummary,
   formatSelectedResearchPressureReason,
@@ -600,6 +601,7 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     const branchSummary = formatTechProgressionSummary(boot);
     const researchableBranchSummary = formatResearchableTechBranchSummary(boot);
     const pressureSummary = formatResearchableTechPressureSummary(boot);
+    const pressureReason = formatActiveResearchPressureReason(boot);
     const detailLines = hudLines(
       activeLine,
       activeLine ? null : t("hud.line.research_active", {
@@ -608,7 +610,8 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
       }),
       branchSummary,
       researchableBranchSummary,
-      pressureSummary
+      pressureSummary,
+      pressureReason
     );
     return { statusLine, detailLine, statusLines, detailLines };
   }

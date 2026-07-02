@@ -475,6 +475,35 @@ export function formatActiveResearchCandidate(boot: GameBootstrap): string | nul
   });
 }
 
+export function formatActiveResearchPressureReason(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.tech.getSnapshot();
+  const active = snapshot.activeResearch;
+  if (!active) return null;
+  const tech = snapshot.technologies.find((item) => item.techId === active.techId);
+  if (!tech) return null;
+  const branchKind = getTechBranchKind(tech.techId);
+  if (!branchKind) return null;
+  const candidate: TechHudCandidate = {
+    techId: tech.techId,
+    displayName: tech.displayName,
+    researchCost: tech.researchCost,
+    researchMonths: tech.researchMonths,
+    effectSummary: tech.effectSummary,
+    branchKind
+  };
+  const pressureTag = pressureTagForCandidate(candidate);
+  if (!pressureTag) return null;
+  const region = latePressureRegions(boot).find((item) =>
+    item.operatingPressureTags.includes(pressureTag)
+  );
+  if (!region) return null;
+  return t("hud.status.tech_pressure_reason", {
+    region: region.displayName,
+    pressure: formatOperatingPressureTag(pressureTag),
+    branch: formatTechBranchKind(branchKind)
+  });
+}
+
 export function formatResearchableTechPressureSummary(boot: GameBootstrap): string | null {
   const candidates = getResearchCandidates(boot);
   if (candidates.length === 0) return null;

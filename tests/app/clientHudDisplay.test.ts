@@ -368,6 +368,9 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines.some((line) =>
       line.includes("特大城B（终局都会）·终局负荷->超水电")
     )).toBe(true);
+    expect(display.detailLines.some((line) =>
+      line.includes("压力推荐：特大城B（终局都会） · 槽位紧 -> 发电升档")
+    )).toBe(true);
   });
 
   it("shows trunk tech as level-V pressure candidate after super hydro is lit", () => {
