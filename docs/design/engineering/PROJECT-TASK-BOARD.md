@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.106.0
+version: 1.107.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-02 | `FAST-01` 补齐科技在研项目分叉摘要：在研态显示科技名称、分叉类型与效果摘要 |
 | 2026-07-02 | `FAST-01` 补齐科技在研态分叉可见性：有在研项目时仍显示 III～V 后续分叉、当前可研分叉与 late-map 压力队列 |
 | 2026-07-02 | `FAST-01` 补齐城市页经营压力拆解：MAP-06 / MAP-08 / MET-B 单城 HUD 显示缺口、高负荷、槽位与角色压力原因 |
 | 2026-07-02 | `FAST-01` 补齐高负荷经营压力拆解：MAP-06 / MAP-08 / MET-B 区域与大地图 HUD 显示高负荷 MW 原因 |
@@ -135,3 +136,4 @@ open_questions: []
 | 1.104.0 | 2026-07-02 | 记录高负荷压力拆解补齐 |
 | 1.105.0 | 2026-07-02 | 记录城市页经营压力拆解补齐 |
 | 1.106.0 | 2026-07-02 | 记录科技在研态分叉可见性补齐 |
+| 1.107.0 | 2026-07-02 | 记录科技在研项目分叉摘要补齐 |

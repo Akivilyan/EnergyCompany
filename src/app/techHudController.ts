@@ -460,6 +460,21 @@ export function formatSelectedResearchCandidate(boot: GameBootstrap): string | n
   });
 }
 
+export function formatActiveResearchCandidate(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.tech.getSnapshot();
+  const active = snapshot.activeResearch;
+  if (!active) return null;
+  const tech = snapshot.technologies.find((item) => item.techId === active.techId);
+  if (!tech) return null;
+  const branchKind = getTechBranchKind(tech.techId);
+  return t("hud.status.tech_active_branch_hint", {
+    tech: tech.displayName,
+    branch: branchKind ? formatTechBranchKind(branchKind) : t("tech.branch.none"),
+    months: active.monthsRemaining,
+    effect: tech.effectSummary
+  });
+}
+
 export function formatResearchableTechPressureSummary(boot: GameBootstrap): string | null {
   const candidates = getResearchCandidates(boot);
   if (candidates.length === 0) return null;

@@ -359,7 +359,9 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines[0]).toContain("在研 wind_2");
+    expect(display.detailLines[0]).toContain("在研：风电·II");
+    expect(display.detailLines[0]).toContain("分叉发电升档");
+    expect(display.detailLines[0]).toContain("wind tier <= 2");
     expect(display.detailLines.some((line) => line.includes("后续分叉："))).toBe(true);
     expect(display.detailLines.some((line) => line.includes("当前可研分叉："))).toBe(true);
     expect(display.detailLines.some((line) => line.includes("压力队列："))).toBe(true);

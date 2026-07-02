@@ -11,6 +11,7 @@ import {
   formatUpcomingEventRiskLine
 } from "./eventsHudController.js";
 import {
+  formatActiveResearchCandidate,
   formatResearchableTechPressureSummary,
   formatResearchableTechBranchSummary,
   formatSelectedResearchPressureReason,
@@ -591,7 +592,8 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     t("hud.line.tech_researchable", { count: s.researchableTechIds.length })
   );
   if (s.activeResearch) {
-    const detailLine = t("hud.status.tech_active_hint", {
+    const activeLine = formatActiveResearchCandidate(boot);
+    const detailLine = activeLine ?? t("hud.status.tech_active_hint", {
       techId: s.activeResearch.techId,
       months: s.activeResearch.monthsRemaining
     });
@@ -599,7 +601,8 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
     const researchableBranchSummary = formatResearchableTechBranchSummary(boot);
     const pressureSummary = formatResearchableTechPressureSummary(boot);
     const detailLines = hudLines(
-      t("hud.line.research_active", {
+      activeLine,
+      activeLine ? null : t("hud.line.research_active", {
         techId: s.activeResearch.techId,
         months: s.activeResearch.monthsRemaining
       }),

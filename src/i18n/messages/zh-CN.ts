@@ -144,6 +144,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.tech_idle_hint": "当前无在研项目",
   "hud.status.tech_no_candidate_hint": "当前无可研发节点",
   "hud.status.tech_selected_hint": "候选：{tech} · 分叉{branch} · {cost}资金 · {months}月 · {effect}",
+  "hud.status.tech_active_branch_hint": "在研：{tech} · 分叉{branch} · 剩{months}月 · {effect}",
   "hud.status.tech_pressure_reason": "压力推荐：{region} · {pressure} -> {branch}",
   "hud.status.tech_pressure_queue": "压力队列：{items}",
   "hud.status.tech_pressure_queue_item": "{region}·{pressure}->{branch}",
