@@ -345,6 +345,23 @@ export function formatCompanyStrategicTechLine(boot: GameBootstrap): string | nu
     : null;
 }
 
+export function formatCompanyStrategicOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const parts: string[] = [];
+  for (const tech of boot.app.controller.config.bundle.technologies) {
+    if (lit.has(tech.tech_id)) continue;
+    if (tech.effect_type !== "strategic_project" || tech.effect_target !== "super_hydro") continue;
+    if (boot.app.controller.state.companyLevel < tech.company_level_min) continue;
+    if (!(tech.requires_lit ?? []).every((techId) => lit.has(techId))) continue;
+    const value = tech.effect_value.slot_count;
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) continue;
+    parts.push(t("hud.status.company_strategic_tech_super_hydro_item", { count: value }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_strategic_opportunity", { items: parts.join("/") })
+    : null;
+}
+
 function formatEcoSyncTarget(target: string): string {
   const key = `hud.company.eco_target.${target}`;
   const label = t(key);

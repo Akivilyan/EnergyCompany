@@ -124,6 +124,7 @@ export const en: Record<string, string> = {
   "hud.status.company_eco_tech_sv_item": "full-eco city SV +{pct}%",
   "hud.status.company_green_brand_opportunity": "Green brand opportunity: {count} full-eco cities · SV +{pct}% after research",
   "hud.status.company_strategic_tech": "Strategic tech: {items}",
+  "hud.status.company_strategic_opportunity": "Strategic opportunity: {items} after research",
   "hud.status.company_strategic_tech_super_hydro_item": "super hydro slots +{count}",
   "hud.company.opex_target.operations": "general opex",
   "hud.company.opex_target.nuclear": "nuclear opex",

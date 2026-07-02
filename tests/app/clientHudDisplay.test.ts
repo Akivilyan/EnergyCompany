@@ -315,6 +315,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("战略科技：超级水电槽+2");
   });
 
+  it("shows strategic opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("战略机会：研发后超级水电槽+2");
+  });
+
   it("keeps strategic tech branches visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("super_hydro");

@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.116.0
+version: 1.117.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-02 | `FAST-01` 补齐 V 级战略经营机会：公司 HUD 在研发前提示超级水电槽位收益 |
 | 2026-07-02 | `FAST-01` 补齐 III～V 储能经营机会：公司 HUD 在研发前提示储能倍增与风光水可研闸门收益 |
 | 2026-07-02 | `FAST-01` 补齐 III～V 核电经营机会：公司 HUD 在研发前提示可建核电档位分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐 III～V 电网经营机会：公司 HUD 在研发前提示区域网/主干网/特高压分叉收益 |
@@ -155,3 +156,4 @@ open_questions: []
 | 1.114.0 | 2026-07-02 | 记录 III～V 电网经营机会补齐 |
 | 1.115.0 | 2026-07-02 | 记录 III～V 核电经营机会补齐 |
 | 1.116.0 | 2026-07-02 | 记录 III～V 储能经营机会补齐 |
+| 1.117.0 | 2026-07-02 | 记录 V 级战略经营机会补齐 |

@@ -21,6 +21,7 @@ import {
   formatCompanyOpexTechLine,
   formatCompanyStorageOpportunityLine,
   formatCompanyStorageTechLine,
+  formatCompanyStrategicOpportunityLine,
   formatCompanyStrategicTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -271,5 +272,17 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("super_hydro");
 
     expect(formatCompanyStrategicTechLine(boot)).toBe("战略科技：超级水电槽+2");
+  });
+
+  it("formats strategic opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+
+    expect(formatCompanyStrategicOpportunityLine(boot)).toBe(
+      "战略机会：研发后超级水电槽+2"
+    );
+
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    expect(formatCompanyStrategicOpportunityLine(boot)).toBeNull();
   });
 });

@@ -38,6 +38,7 @@ import {
   formatCompanyOpexTechLine,
   formatCompanyStorageOpportunityLine,
   formatCompanyStorageTechLine,
+  formatCompanyStrategicOpportunityLine,
   formatCompanyStrategicTechLine,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -398,6 +399,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyEcoTechLine(boot),
         formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
+        formatCompanyStrategicOpportunityLine(boot),
         loanPart
       )
     : hudLines(
@@ -422,6 +424,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyEcoTechLine(boot),
         formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
+        formatCompanyStrategicOpportunityLine(boot),
         selectedLoan,
         selection.candidates.length > 1
           ? t("hud.status.company_loan_candidate_count", { count: selection.candidates.length })
