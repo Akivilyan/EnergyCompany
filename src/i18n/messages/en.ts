@@ -124,6 +124,7 @@ export const en: Record<string, string> = {
   "hud.status.company_grid_tech_trunk_item": "trunk link cost -{pct}%",
   "hud.status.company_grid_tech_uhv_item": "trunk loss UHV profile",
   "hud.status.company_eco_tech": "Eco tech: {items}",
+  "hud.status.company_eco_opportunity": "Eco opportunity: {items} after research",
   "hud.status.company_eco_tech_sync_item": "{target} ECO",
   "hud.status.company_eco_tech_sv_item": "full-eco city SV +{pct}%",
   "hud.status.company_green_brand_opportunity": "Green brand opportunity: {count} full-eco cities · SV +{pct}% after research",

@@ -9,6 +9,7 @@ import {
   formatCompanyCashflowOpportunityLine,
   formatCompanyConstructionOpportunityLine,
   formatCompanyConstructionTechLine,
+  formatCompanyEcoOpportunityLine,
   formatCompanyEcoTechLine,
   formatCompanyGenerationOpportunityLine,
   formatCompanyGenerationTechLine,
@@ -287,6 +288,25 @@ describe("companyHudController", () => {
 
     expect(formatCompanyEcoTechLine(boot)).toBe(
       "生态科技：火电ECO/核电ECO/全环保城SV+5%"
+    );
+  });
+
+  it("formats eco opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+
+    expect(formatCompanyEcoOpportunityLine(boot)).toBe(
+      "生态机会：研发后火电ECO/核电ECO"
+    );
+  });
+
+  it("formats remaining eco opportunity after one sync is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.litTechIds.push("eco_thermal");
+
+    expect(formatCompanyEcoOpportunityLine(boot)).toBe(
+      "生态机会：研发后核电ECO"
     );
   });
 

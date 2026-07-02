@@ -454,6 +454,25 @@ export function formatCompanyEcoTechLine(boot: GameBootstrap): string | null {
     : null;
 }
 
+export function formatCompanyEcoOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const parts: string[] = [];
+  for (const tech of boot.app.controller.config.bundle.technologies) {
+    if (lit.has(tech.tech_id)) continue;
+    if (tech.effect_type !== "eco_sync") continue;
+    if (boot.app.controller.state.companyLevel < tech.company_level_min) continue;
+    if (!(tech.requires_lit ?? []).every((techId) => lit.has(techId))) continue;
+    parts.push(
+      t("hud.status.company_eco_tech_sync_item", {
+        target: formatEcoSyncTarget(tech.effect_target)
+      })
+    );
+  }
+  return parts.length > 0
+    ? t("hud.status.company_eco_opportunity", { items: parts.join("/") })
+    : null;
+}
+
 export function formatCompanyGreenBrandOpportunityLine(boot: GameBootstrap): string | null {
   if (boot.app.controller.state.litTechIds.includes("eng_green_pr")) return null;
   const tech = boot.app.controller.config.getTechnology("eng_green_pr");

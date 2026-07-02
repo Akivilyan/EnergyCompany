@@ -25,6 +25,7 @@ import { formatSelectedRegionLink, formatSelectedRegionLinkAction } from "./regi
 import {
   formatCompanyCashflowOpportunityLine,
   formatCompanyConstructionTechLine,
+  formatCompanyEcoOpportunityLine,
   formatCompanyEcoTechLine,
   formatCompanyGenerationOpportunityLine,
   formatCompanyGenerationTechLine,
@@ -401,6 +402,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyGridDispatchOpportunityLine(boot),
         formatCompanyEcoTechLine(boot),
+        formatCompanyEcoOpportunityLine(boot),
         formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
         formatCompanyStrategicOpportunityLine(boot),
@@ -428,6 +430,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyGridDispatchOpportunityLine(boot),
         formatCompanyEcoTechLine(boot),
+        formatCompanyEcoOpportunityLine(boot),
         formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
         formatCompanyStrategicOpportunityLine(boot),

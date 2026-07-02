@@ -309,6 +309,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("生态科技：火电ECO/核电ECO/全环保城SV+5%");
   });
 
+  it("shows eco opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("生态机会：研发后火电ECO/核电ECO");
+  });
+
   it("shows green brand opportunity on company hud before level-V research", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

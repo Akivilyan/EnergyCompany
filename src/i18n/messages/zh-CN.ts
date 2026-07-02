@@ -124,6 +124,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_grid_tech_trunk_item": "主干造价-{pct}%",
   "hud.status.company_grid_tech_uhv_item": "主干线损特高压档",
   "hud.status.company_eco_tech": "生态科技：{items}",
+  "hud.status.company_eco_opportunity": "生态机会：研发后{items}",
   "hud.status.company_eco_tech_sync_item": "{target}ECO",
   "hud.status.company_eco_tech_sv_item": "全环保城SV+{pct}%",
   "hud.status.company_green_brand_opportunity": "绿色品牌机会：全环保城{count}座 · 研发后SV+{pct}%",
