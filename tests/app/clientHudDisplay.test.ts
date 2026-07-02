@@ -126,6 +126,23 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("发电科技：风·3/光·4/火·5/水·5");
   });
 
+  it("shows generation tier opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    boot.app.controller.state.litTechIds.push(
+      "wind_2",
+      "solar_2",
+      "thermal_2",
+      "hydro_2",
+      "storage_system_1"
+    );
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("发电机会：研发后风·3/光·3/火·3/水·3");
+  });
+
   it("keeps generation tier tech branches visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("wind_3", "hydro_4");

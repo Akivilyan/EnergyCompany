@@ -104,6 +104,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_opex_opportunity": "运维机会：研发后{items}",
   "hud.status.company_opex_tech_item": "{target}-{pct}%",
   "hud.status.company_generation_tech": "发电科技：{items}",
+  "hud.status.company_generation_opportunity": "发电机会：研发后{items}",
   "hud.status.company_generation_tech_item": "{target}·{tier}",
   "hud.status.company_nuclear_tech": "核电科技：可建核电·{tier}",
   "hud.status.company_nuclear_opportunity": "核电机会：研发后可建核电·{tier}",

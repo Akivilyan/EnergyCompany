@@ -8,6 +8,7 @@ import {
   companyClaimCashByAd,
   formatCompanyCashflowOpportunityLine,
   formatCompanyEcoTechLine,
+  formatCompanyGenerationOpportunityLine,
   formatCompanyGenerationTechLine,
   formatCompanyGreenBrandOpportunityLine,
   formatCompanyGridDispatchOpportunityLine,
@@ -140,6 +141,39 @@ describe("companyHudController", () => {
     );
 
     expect(formatCompanyGenerationTechLine(boot)).toBe("发电科技：风·3/光·4/火·5/水·5");
+  });
+
+  it("formats generation tier opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    boot.app.controller.state.litTechIds.push(
+      "wind_2",
+      "solar_2",
+      "thermal_2",
+      "hydro_2",
+      "storage_system_1"
+    );
+
+    expect(formatCompanyGenerationOpportunityLine(boot)).toBe(
+      "发电机会：研发后风·3/光·3/火·3/水·3"
+    );
+  });
+
+  it("formats next generation tier opportunity when prerequisites are lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "wind_2",
+      "wind_3",
+      "wind_4",
+      "storage_system_1",
+      "storage_system_2",
+      "storage_system_3"
+    );
+
+    expect(formatCompanyGenerationOpportunityLine(boot)).toBe(
+      "发电机会：研发后风·5"
+    );
   });
 
   it("formats nuclear build tier tech", () => {

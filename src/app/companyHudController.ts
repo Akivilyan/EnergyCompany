@@ -252,11 +252,16 @@ function compareGenerationTechTarget(a: string, b: string): number {
   return generationTechTargetOrder.indexOf(a) - generationTechTargetOrder.indexOf(b);
 }
 
-export function formatCompanyGenerationTechLine(boot: GameBootstrap): string | null {
+interface CompanyGenerationTechLike {
+  effect_type: string;
+  effect_target: string;
+  effect_value: Record<string, unknown>;
+}
+
+function formatGenerationTechItems(technologies: CompanyGenerationTechLike[]): string[] {
   const tierByTarget = new Map<string, number>();
-  for (const techId of boot.app.controller.state.litTechIds) {
-    const tech = boot.app.controller.config.getTechnology(techId);
-    if (tech?.effect_type !== "facility_tier" || tech.effect_target === "nuclear") continue;
+  for (const tech of technologies) {
+    if (tech.effect_type !== "facility_tier" || tech.effect_target === "nuclear") continue;
     const value = tech.effect_value.tier_max;
     if (typeof value !== "number" || !Number.isFinite(value) || value <= 1) continue;
     tierByTarget.set(
@@ -272,8 +277,31 @@ export function formatCompanyGenerationTechLine(boot: GameBootstrap): string | n
         tier
       })
     );
+  return parts;
+}
+
+export function formatCompanyGenerationTechLine(boot: GameBootstrap): string | null {
+  const technologies = boot.app.controller.state.litTechIds
+    .map((techId) => boot.app.controller.config.getTechnology(techId))
+    .filter((tech): tech is NonNullable<typeof tech> => !!tech);
+  const parts = formatGenerationTechItems(technologies);
   return parts.length > 0
     ? t("hud.status.company_generation_tech", { items: parts.join("/") })
+    : null;
+}
+
+export function formatCompanyGenerationOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const technologies = boot.app.controller.config.bundle.technologies.filter((tech) => {
+    if (lit.has(tech.tech_id)) return false;
+    if (tech.effect_type !== "facility_tier" || tech.effect_target === "nuclear") return false;
+    if (tech.company_level_min < 3) return false;
+    if (boot.app.controller.state.companyLevel < tech.company_level_min) return false;
+    return (tech.requires_lit ?? []).every((techId) => lit.has(techId));
+  });
+  const parts = formatGenerationTechItems(technologies);
+  return parts.length > 0
+    ? t("hud.status.company_generation_opportunity", { items: parts.join("/") })
     : null;
 }
 
