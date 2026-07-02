@@ -10,6 +10,7 @@ import {
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
   formatCompanyGreenBrandOpportunityLine,
+  formatCompanyGridDispatchOpportunityLine,
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
@@ -160,6 +161,18 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
 
     expect(formatCompanyGridDispatchTechLine(boot)).toBe("调度科技：区域线损-10%");
+  });
+
+  it("formats grid dispatch opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+
+    expect(formatCompanyGridDispatchOpportunityLine(boot)).toBe(
+      "调度机会：研发后区域线损-10%"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
+    expect(formatCompanyGridDispatchOpportunityLine(boot)).toBeNull();
   });
 
   it("formats grid tech branches", () => {

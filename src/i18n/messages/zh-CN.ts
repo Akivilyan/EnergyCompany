@@ -111,6 +111,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_storage_tech_gate_item": "风光水可研·{tiers}",
   "hud.status.company_dispatch_tech": "调度科技：{items}",
   "hud.status.company_dispatch_tech_item": "区域线损-{pct}%",
+  "hud.status.company_dispatch_opportunity": "调度机会：研发后区域线损-{pct}%",
   "hud.status.company_grid_tech": "电网科技：{items}",
   "hud.status.company_grid_tech_region_item": "区域线造价-{pct}%",
   "hud.status.company_grid_tech_trunk_item": "主干造价-{pct}%",

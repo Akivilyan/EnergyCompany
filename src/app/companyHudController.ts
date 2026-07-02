@@ -159,6 +159,17 @@ export function formatCompanyGridDispatchTechLine(boot: GameBootstrap): string |
     : null;
 }
 
+export function formatCompanyGridDispatchOpportunityLine(boot: GameBootstrap): string | null {
+  if (boot.app.controller.state.litTechIds.includes("eng_grid_dispatch")) return null;
+  const tech = boot.app.controller.config.getTechnology("eng_grid_dispatch");
+  if (!tech || boot.app.controller.state.companyLevel < tech.company_level_min) return null;
+  const value = tech.effect_value.regional_loss_pct;
+  if (typeof value !== "number" || !Number.isFinite(value) || value >= 0) return null;
+  return t("hud.status.company_dispatch_opportunity", {
+    pct: Math.abs(value)
+  });
+}
+
 export function formatCompanyGridTechLine(boot: GameBootstrap): string | null {
   const parts: string[] = [];
   for (const techId of boot.app.controller.state.litTechIds) {

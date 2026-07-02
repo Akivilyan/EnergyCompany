@@ -196,6 +196,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("调度科技：区域线损-10%");
   });
 
+  it("shows grid dispatch opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("调度机会：研发后区域线损-10%");
+  });
+
   it("keeps grid dispatch tech visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_grid_dispatch");
