@@ -682,6 +682,14 @@ export function buildClientHudDisplay(
       buildSelection.candidates.length > 1
         ? t("hud.status.city_build_candidate_count", { count: buildSelection.candidates.length })
         : null,
+      profile
+        ? formatOperatingPressureBreakdown({
+            supplyGapMw: profile.supplyGapMw,
+            totalDemandMw: profile.demandMw,
+            totalBuildSlots: profile.buildSlots,
+            operatingPressureTags: profile.operatingPressureTags
+          })
+        : null,
       profile ? formatOperatingPressureTechSolutions(boot, profile.operatingPressureTags) : null,
       profile ? formatCityBuildAction(profile) : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),

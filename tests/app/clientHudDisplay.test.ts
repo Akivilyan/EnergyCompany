@@ -539,6 +539,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("本地0/受入0/缺口1280MW");
     expect(display.detailLines[0]).toContain("定位沿海工业枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/无水电/化石转型/核电选址");
+    expect(display.detailLines).toContain("压力拆解：缺口1280MW · 高负荷1280MW · 主干优先 · 槽位6 · 无水电 · 化石转型 · 核电选址");
     expect(display.detailLines).toContain("科技解法：主干优先->主干网(待研发)/核电选址->核电(待研发)/槽位紧->高阶发电(待研发)/供给缺口->储能/发电升档(待研发)/化石转型->ECO/运维(待研发)");
     expect(display.detailLines).toContain("建造建议：本地风光/火电过渡/核电锚点/高效占槽");
   });
@@ -601,6 +602,7 @@ describe("clientHudDisplay", () => {
     const map08Display = buildClientHudDisplay(boot);
     expect(map08Display.detailLines[0]).toContain("定位边疆综合平衡");
     expect(map08Display.detailLines[0]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/混合调配");
+    expect(map08Display.detailLines).toContain("压力拆解：缺口1380MW · 高负荷1380MW · 主干优先 · 槽位6 · 核电选址 · 混合调配");
     expect(map08Display.detailLines).toContain("科技解法：主干优先->主干网(待研发)/核电选址->核电(待研发)/混合调配->调度(待研发)/槽位紧->高阶发电(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(map08Display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽/混合调配");
   });
@@ -627,6 +629,7 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[0]).toContain("负荷2100MW");
     expect(display.detailLines[0]).toContain("定位终局都会枢纽");
     expect(display.detailLines[0]).toContain("压力高负荷/供给缺口/主干优先/槽位紧/核电选址/终局负荷");
+    expect(display.detailLines).toContain("压力拆解：缺口2100MW · 高负荷2100MW · 主干优先 · 槽位7 · 核电选址 · 终局负荷2100MW");
     expect(display.detailLines).toContain("科技解法：终局负荷->超水电(待研发)/主干优先->主干网(待研发)/核电选址->核电(待研发)/槽位紧->高阶发电(待研发)/供给缺口->储能/发电升档(待研发)");
     expect(display.detailLines).toContain("建造建议：本地风光/水电锚点/核电锚点/高效占槽");
   });
