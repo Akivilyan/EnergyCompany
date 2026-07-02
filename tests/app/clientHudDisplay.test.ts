@@ -79,6 +79,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("现金流机会：研发后贷款等级+1 · 有效5级");
   });
 
+  it("shows construction tech build cost reduction on company hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_bulk_procure");
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("建设科技：建设费-8%");
+  });
+
   it("shows opex tech reductions on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");

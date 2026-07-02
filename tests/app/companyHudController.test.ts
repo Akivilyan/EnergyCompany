@@ -7,6 +7,8 @@ import {
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
   formatCompanyCashflowOpportunityLine,
+  formatCompanyConstructionOpportunityLine,
+  formatCompanyConstructionTechLine,
   formatCompanyEcoTechLine,
   formatCompanyGenerationOpportunityLine,
   formatCompanyGenerationTechLine,
@@ -99,6 +101,25 @@ describe("companyHudController", () => {
 
     boot.app.controller.state.litTechIds.push("eng_cashflow");
     expect(formatCompanyCashflowOpportunityLine(boot)).toBeNull();
+  });
+
+  it("formats construction tech build cost reduction", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.litTechIds.push("eng_bulk_procure");
+
+    expect(formatCompanyConstructionTechLine(boot)).toBe("建设科技：建设费-8%");
+  });
+
+  it("formats construction opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 2;
+
+    expect(formatCompanyConstructionOpportunityLine(boot)).toBe(
+      "建设机会：研发后建设费-8%"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_bulk_procure");
+    expect(formatCompanyConstructionOpportunityLine(boot)).toBeNull();
   });
 
   it("formats opex tech reductions", () => {

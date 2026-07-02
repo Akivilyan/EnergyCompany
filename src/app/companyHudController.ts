@@ -98,6 +98,41 @@ export function formatCompanyCashflowOpportunityLine(boot: GameBootstrap): strin
   });
 }
 
+export function formatCompanyConstructionTechLine(boot: GameBootstrap): string | null {
+  const parts: string[] = [];
+  for (const techId of boot.app.controller.state.litTechIds) {
+    const tech = boot.app.controller.config.getTechnology(techId);
+    if (tech?.effect_type !== "modifier" || tech.effect_target !== "construction") continue;
+    const value = tech.effect_value.build_cost_pct;
+    if (typeof value !== "number" || !Number.isFinite(value) || value === 0) continue;
+    parts.push(t("hud.status.company_construction_tech_item", { pct: Math.abs(value) }));
+  }
+  return parts.length > 0
+    ? t("hud.status.company_construction_tech", { items: parts.join("/") })
+    : null;
+}
+
+export function formatCompanyConstructionOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const parts = boot.app.controller.config.bundle.technologies
+    .filter((tech) => {
+      if (lit.has(tech.tech_id)) return false;
+      if (tech.effect_type !== "modifier" || tech.effect_target !== "construction") return false;
+      const value = tech.effect_value.build_cost_pct;
+      if (typeof value !== "number" || !Number.isFinite(value) || value >= 0) return false;
+      if (boot.app.controller.state.companyLevel < tech.company_level_min) return false;
+      return (tech.requires_lit ?? []).every((techId) => lit.has(techId));
+    })
+    .map((tech) =>
+      t("hud.status.company_construction_tech_item", {
+        pct: Math.abs(tech.effect_value.build_cost_pct as number)
+      })
+    );
+  return parts.length > 0
+    ? t("hud.status.company_construction_opportunity", { items: parts.join("/") })
+    : null;
+}
+
 function formatOpexTarget(target: string): string {
   const key = `hud.company.opex_target.${target}`;
   const label = t(key);
