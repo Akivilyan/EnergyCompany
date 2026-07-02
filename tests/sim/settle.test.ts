@@ -270,6 +270,57 @@ describe("settleNextMonth", () => {
     expect(result.error).toBe("not_unlocked");
   });
 
+  it("dispatch enforces storage II and III prerequisites for late renewable tiers", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.funds = 1000;
+    state.litTechIds.push("wind_2", "wind_3", "storage_system_1");
+
+    const blockedByStorage2 = dispatch(
+      state,
+      { type: "start_research", techId: "wind_4" },
+      config,
+      defaultPorts
+    );
+    expect(blockedByStorage2.ok).toBe(false);
+    if (blockedByStorage2.ok) return;
+    expect(blockedByStorage2.error).toBe("not_unlocked");
+    expect(blockedByStorage2.context?.requires_lit).toBe("storage_system_2");
+
+    state.litTechIds.push("storage_system_2");
+    const wind4 = dispatch(
+      state,
+      { type: "start_research", techId: "wind_4" },
+      config,
+      defaultPorts
+    );
+    expect(wind4.ok).toBe(true);
+    if (!wind4.ok) return;
+    delete wind4.value.state.researches.wind_4;
+    wind4.value.state.litTechIds.push("wind_4");
+
+    const blockedByStorage3 = dispatch(
+      wind4.value.state,
+      { type: "start_research", techId: "wind_5" },
+      config,
+      defaultPorts
+    );
+    expect(blockedByStorage3.ok).toBe(false);
+    if (blockedByStorage3.ok) return;
+    expect(blockedByStorage3.error).toBe("not_unlocked");
+    expect(blockedByStorage3.context?.requires_lit).toBe("storage_system_3");
+
+    wind4.value.state.litTechIds.push("storage_system_3");
+    const wind5 = dispatch(
+      wind4.value.state,
+      { type: "start_research", techId: "wind_5" },
+      config,
+      defaultPorts
+    );
+    expect(wind5.ok).toBe(true);
+  });
+
   it("applies eng_bulk_procure build discount to construction dispatch", () => {
     const config = loadTestConfig();
     const state = createInitialState(config);
@@ -1101,6 +1152,37 @@ describe("settleNextMonth", () => {
     expect(month.ok).toBe(true);
     if (!month.ok) return;
     expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(51);
+  });
+
+  it("M6 stacks general and nuclear-specific opex discounts with floor rounding", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    state.litTechIds.push("eng_ops_contract", "nuclear_ops");
+    state.facilities["fac-nuclear"] = {
+      id: "fac-nuclear",
+      cityId: "CITY-START",
+      facilityId: "nuclear",
+      tier: 1,
+      outputMw: 0,
+      monthlyOpex: 50,
+      monthlyFuel: 0
+    };
+    state.facilities["fac-wind"] = {
+      id: "fac-wind",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 0,
+      monthlyOpex: 10,
+      monthlyFuel: 0
+    };
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex).toBe(45);
   });
 
   it("M9 applies eng_green_pr bonus only to fully eco-supplied cities", () => {
