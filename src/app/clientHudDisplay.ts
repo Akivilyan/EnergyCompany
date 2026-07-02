@@ -184,6 +184,25 @@ function hasOperatingPressureTechSolution(boot: GameBootstrap, tag: OperatingPre
       return ["hydro_2", "hydro_3", "hydro_4", "hydro_5"].some((techId) => lit.has(techId));
     case "mixed_dispatch":
       return lit.has("eng_grid_dispatch");
+    case "low_slot_density":
+      return [
+        "wind_2",
+        "wind_3",
+        "wind_4",
+        "wind_5",
+        "solar_2",
+        "solar_3",
+        "solar_4",
+        "solar_5",
+        "thermal_2",
+        "thermal_3",
+        "thermal_4",
+        "thermal_5",
+        "hydro_2",
+        "hydro_3",
+        "hydro_4",
+        "hydro_5"
+      ].some((techId) => lit.has(techId));
     case "supply_gap":
       return [
         "storage_system_1",
@@ -245,6 +264,7 @@ function formatOperatingPressureTechSolutions(
   pushSolution("nuclear_siting", "hud.tech_solution.nuclear_siting");
   pushSolution("hydro_site_bound", "hud.tech_solution.hydro_site_bound");
   pushSolution("mixed_dispatch", "hud.tech_solution.mixed_dispatch");
+  pushSolution("low_slot_density", "hud.tech_solution.low_slot_density");
   pushSolution("supply_gap", "hud.tech_solution.supply_gap");
   pushSolution("fossil_transition", "hud.tech_solution.fossil_transition");
   return parts.length > 0 ? t("hud.line.tech_solution", { items: parts.join("/") }) : null;

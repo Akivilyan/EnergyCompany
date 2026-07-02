@@ -318,6 +318,7 @@ export const en: Record<string, string> = {
   "hud.tech_solution.nuclear_siting": "nuclear siting->nuclear",
   "hud.tech_solution.hydro_site_bound": "hydro-site bound->hydro tier",
   "hud.tech_solution.mixed_dispatch": "mixed dispatch->dispatch",
+  "hud.tech_solution.low_slot_density": "slot tight->higher tiers",
   "hud.tech_solution.supply_gap": "supply gap->storage/generation tier",
   "hud.tech_solution.fossil_transition": "fossil transition->ECO/opex",
   "plan.secure_trunk": "secure trunk",

@@ -318,6 +318,7 @@ export const zhCN: Record<string, string> = {
   "hud.tech_solution.nuclear_siting": "核电选址->核电",
   "hud.tech_solution.hydro_site_bound": "水点绑定->水电升档",
   "hud.tech_solution.mixed_dispatch": "混合调配->调度",
+  "hud.tech_solution.low_slot_density": "槽位紧->高阶发电",
   "hud.tech_solution.supply_gap": "供给缺口->储能/发电升档",
   "hud.tech_solution.fossil_transition": "化石转型->ECO/运维",
   "plan.secure_trunk": "先接主干",

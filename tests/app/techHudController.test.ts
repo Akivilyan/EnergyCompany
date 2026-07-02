@@ -135,6 +135,36 @@ describe("techHudController", () => {
     );
   });
 
+  it("switches to generation tier tech for terminal slot-density pressure after strategic blockers are covered", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push(
+      "super_hydro",
+      "grid_regional",
+      "grid_backbone",
+      "uhv_transmission",
+      "nuclear_1",
+      "nuclear_2",
+      "nuclear_3",
+      "hydro_2",
+      "hydro_3",
+      "hydro_4",
+      "hydro_5",
+      "eng_grid_dispatch"
+    );
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("solar_2");
+    expect(formatResearchableTechPressureSummary(boot)).toContain(
+      "特大城B（终局都会）·槽位紧->发电升档"
+    );
+    expect(formatSelectedResearchPressureReason(boot)).toBe(
+      "压力推荐：特大城B（终局都会） · 槽位紧 -> 发电升档"
+    );
+  });
+
   it("switches to eco tech when fossil-transition pressure is next", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

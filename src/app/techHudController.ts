@@ -226,6 +226,8 @@ function candidateForPressureTag(
       return candidateByTechId(candidates, (techId) => /^hydro_[2-5]$/.test(techId));
     case "mixed_dispatch":
       return candidateByBranch(candidates, "dispatch");
+    case "low_slot_density":
+      return candidateByBranch(candidates, "generation_tier");
     case "supply_gap":
       return candidateByBranch(candidates, "storage_gate", "generation_tier");
     case "fossil_transition":
@@ -289,6 +291,7 @@ function getPressureRecommendations(
     "nuclear_siting",
     "hydro_site_bound",
     "mixed_dispatch",
+    "low_slot_density",
     "supply_gap",
     "fossil_transition"
   ];
@@ -337,6 +340,8 @@ function pressureTagForCandidate(candidate: TechHudCandidate | null): OperatingP
       return "nuclear_siting";
     case "dispatch":
       return "mixed_dispatch";
+    case "generation_tier":
+      return "low_slot_density";
     case "storage_gate":
       return "supply_gap";
     case "eco":
