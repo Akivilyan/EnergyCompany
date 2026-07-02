@@ -184,6 +184,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("储能科技：风光水储能x2/风光水可研·3/4/5");
   });
 
+  it("shows storage opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("储能机会：研发后风光水储能x2/风光水可研·3");
+  });
+
   it("keeps storage tech branches visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("storage_system_1", "storage_system_2");

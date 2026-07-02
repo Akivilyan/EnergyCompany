@@ -277,12 +277,16 @@ export function formatCompanyGenerationTechLine(boot: GameBootstrap): string | n
     : null;
 }
 
-export function formatCompanyStorageTechLine(boot: GameBootstrap): string | null {
+interface CompanyStorageTechLike {
+  effect_type: string;
+  effect_value: Record<string, unknown>;
+}
+
+function formatStorageTechItems(technologies: CompanyStorageTechLike[]): string[] {
   let storageMult = 0;
   const unlockTiers = new Set<number>();
-  for (const techId of boot.app.controller.state.litTechIds) {
-    const tech = boot.app.controller.config.getTechnology(techId);
-    if (!tech || (tech.effect_type !== "storage_buff" && tech.effect_type !== "storage_gate")) continue;
+  for (const tech of technologies) {
+    if (tech.effect_type !== "storage_buff" && tech.effect_type !== "storage_gate") continue;
     const tier = tech.effect_value.unlock_tier;
     if (typeof tier === "number" && Number.isFinite(tier) && tier > 0) {
       unlockTiers.add(tier);
@@ -300,8 +304,30 @@ export function formatCompanyStorageTechLine(boot: GameBootstrap): string | null
     const tiers = Array.from(unlockTiers).sort((a, b) => a - b).join("/");
     parts.push(t("hud.status.company_storage_tech_gate_item", { tiers }));
   }
+  return parts;
+}
+
+export function formatCompanyStorageTechLine(boot: GameBootstrap): string | null {
+  const technologies = boot.app.controller.state.litTechIds
+    .map((techId) => boot.app.controller.config.getTechnology(techId))
+    .filter((tech): tech is NonNullable<typeof tech> => !!tech);
+  const parts = formatStorageTechItems(technologies);
   return parts.length > 0
     ? t("hud.status.company_storage_tech", { items: parts.join("/") })
+    : null;
+}
+
+export function formatCompanyStorageOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const technologies = boot.app.controller.config.bundle.technologies.filter((tech) => {
+    if (lit.has(tech.tech_id)) return false;
+    if (tech.effect_type !== "storage_buff" && tech.effect_type !== "storage_gate") return false;
+    if (boot.app.controller.state.companyLevel < tech.company_level_min) return false;
+    return (tech.requires_lit ?? []).every((techId) => lit.has(techId));
+  });
+  const parts = formatStorageTechItems(technologies);
+  return parts.length > 0
+    ? t("hud.status.company_storage_opportunity", { items: parts.join("/") })
     : null;
 }
 

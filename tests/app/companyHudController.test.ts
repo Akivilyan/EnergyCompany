@@ -19,6 +19,7 @@ import {
   formatCompanyNuclearTechLine,
   formatCompanyOpexOpportunityLine,
   formatCompanyOpexTechLine,
+  formatCompanyStorageOpportunityLine,
   formatCompanyStorageTechLine,
   formatCompanyStrategicTechLine,
   formatSelectedLoanCandidate,
@@ -175,6 +176,25 @@ describe("companyHudController", () => {
     );
 
     expect(formatCompanyStorageTechLine(boot)).toBe("储能科技：风光水储能x2/风光水可研·3/4/5");
+  });
+
+  it("formats storage opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+
+    expect(formatCompanyStorageOpportunityLine(boot)).toBe(
+      "储能机会：研发后风光水储能x2/风光水可研·3"
+    );
+  });
+
+  it("formats next storage gate opportunity when prerequisite is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("storage_system_1", "storage_system_2");
+
+    expect(formatCompanyStorageOpportunityLine(boot)).toBe(
+      "储能机会：研发后风光水可研·5"
+    );
   });
 
   it("formats grid dispatch loss reduction", () => {
