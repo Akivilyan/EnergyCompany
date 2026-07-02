@@ -305,6 +305,7 @@ export const en: Record<string, string> = {
   "pressure.terminal_load": "terminal load",
   "pressure.none": "normal",
   "hud.operating_pressure.gap": "gap {gap}MW",
+  "hud.operating_pressure.high_demand": "high demand {demand}MW",
   "hud.operating_pressure.trunk_first": "trunk first",
   "hud.operating_pressure.slots": "slots {slots}",
   "hud.operating_pressure.no_hydro": "no hydro",

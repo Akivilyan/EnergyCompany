@@ -154,6 +154,9 @@ function formatOperatingPressureBreakdown(input: {
   if (input.supplyGapMw > 0) {
     parts.push(t("hud.operating_pressure.gap", { gap: input.supplyGapMw }));
   }
+  if (tags.has("high_demand")) {
+    parts.push(t("hud.operating_pressure.high_demand", { demand: input.totalDemandMw }));
+  }
   if (tags.has("trunk_first")) parts.push(t("hud.operating_pressure.trunk_first"));
   if (tags.has("low_slot_density")) {
     parts.push(t("hud.operating_pressure.slots", { slots: input.totalBuildSlots }));

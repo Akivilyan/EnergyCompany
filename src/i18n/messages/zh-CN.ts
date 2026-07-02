@@ -305,6 +305,7 @@ export const zhCN: Record<string, string> = {
   "pressure.terminal_load": "终局负荷",
   "pressure.none": "常规",
   "hud.operating_pressure.gap": "缺口{gap}MW",
+  "hud.operating_pressure.high_demand": "高负荷{demand}MW",
   "hud.operating_pressure.trunk_first": "主干优先",
   "hud.operating_pressure.slots": "槽位{slots}",
   "hud.operating_pressure.no_hydro": "无水电",
