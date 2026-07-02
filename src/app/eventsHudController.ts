@@ -92,3 +92,22 @@ export function formatUpcomingEventRiskLine(boot: GameBootstrap): string | null 
     base: next.immediateCashPenalty
   });
 }
+
+export function formatUpcomingEventRiskOpportunityLine(boot: GameBootstrap): string | null {
+  const next = boot.app.screens.events.getSnapshot().upcoming[0];
+  if (!next || next.cashPenaltyReduced) return null;
+  if (boot.app.controller.state.litTechIds.includes("eng_risk_reserve")) return null;
+  const tech = boot.app.controller.config.getTechnology("eng_risk_reserve");
+  if (!tech || boot.app.controller.state.companyLevel < tech.company_level_min) return null;
+  const percentDelta = tech.effect_value.disaster_cash_pct;
+  if (typeof percentDelta !== "number" || !Number.isFinite(percentDelta) || percentDelta >= 0) {
+    return null;
+  }
+  const adjusted = Math.max(0, Math.floor((next.immediateCashPenalty * (100 + percentDelta)) / 100));
+  if (adjusted >= next.immediateCashPenalty) return null;
+  return t("hud.events.upcoming_risk_opportunity", {
+    month: next.triggerMonth,
+    adjusted,
+    base: next.immediateCashPenalty
+  });
+}

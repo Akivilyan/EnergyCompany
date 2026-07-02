@@ -6,6 +6,7 @@ import {
   formatActiveEventPressureLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
+  formatUpcomingEventRiskOpportunityLine,
   formatUpcomingEventRiskLine
 } from "../../src/app/eventsHudController.js";
 import { cityHudAdvanceMonth } from "../../src/app/cityHudController.js";
@@ -52,5 +53,18 @@ describe("eventsHudController", () => {
     expect(formatActiveEventPressureLine(boot)).toBe(
       "灾害压力：剩8月 · 收入92% · 建设108% · 科研108%"
     );
+  });
+
+  it("formats risk-reserve opportunity before research", () => {
+    setLocale("zh-CN");
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+
+    expect(formatUpcomingEventRiskOpportunityLine(boot)).toBe(
+      "风险储备机会：M22现金冲击可降至7/9"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_risk_reserve");
+    expect(formatUpcomingEventRiskOpportunityLine(boot)).toBeNull();
   });
 });

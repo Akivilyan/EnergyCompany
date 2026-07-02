@@ -299,6 +299,16 @@ describe("clientHudDisplay", () => {
     expect(active.detailLines).toContain("灾害压力：剩8月 · 收入92% · 建设108% · 科研108%");
   });
 
+  it("shows risk-reserve opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至7/9");
+  });
+
   it("shows selected research candidate and researchable count on tech screen", () => {
     const boot = createGameBootstrapFromRepo();
     boot.play.buildInCurrentCity("wind", 1);
