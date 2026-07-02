@@ -106,6 +106,7 @@ export const en: Record<string, string> = {
   "hud.status.company_generation_tech": "Generation tech: {items}",
   "hud.status.company_generation_tech_item": "{target} T{tier}",
   "hud.status.company_nuclear_tech": "Nuclear tech: build nuclear T{tier}",
+  "hud.status.company_nuclear_opportunity": "Nuclear opportunity: build nuclear T{tier} after research",
   "hud.status.company_storage_tech": "Storage tech: {items}",
   "hud.status.company_storage_tech_mult_item": "wind/solar/hydro storage x{mult}",
   "hud.status.company_storage_tech_gate_item": "wind/solar/hydro tier {tiers}",

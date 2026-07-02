@@ -106,6 +106,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_generation_tech": "发电科技：{items}",
   "hud.status.company_generation_tech_item": "{target}·{tier}",
   "hud.status.company_nuclear_tech": "核电科技：可建核电·{tier}",
+  "hud.status.company_nuclear_opportunity": "核电机会：研发后可建核电·{tier}",
   "hud.status.company_storage_tech": "储能科技：{items}",
   "hud.status.company_storage_tech_mult_item": "风光水储能x{mult}",
   "hud.status.company_storage_tech_gate_item": "风光水可研·{tiers}",

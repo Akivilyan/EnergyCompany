@@ -15,6 +15,7 @@ import {
   formatCompanyGridOpportunityLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
+  formatCompanyNuclearOpportunityLine,
   formatCompanyNuclearTechLine,
   formatCompanyOpexOpportunityLine,
   formatCompanyOpexTechLine,
@@ -144,6 +145,25 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2", "nuclear_3");
 
     expect(formatCompanyNuclearTechLine(boot)).toBe("核电科技：可建核电·3");
+  });
+
+  it("formats nuclear opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+
+    expect(formatCompanyNuclearOpportunityLine(boot)).toBe(
+      "核电机会：研发后可建核电·1"
+    );
+  });
+
+  it("formats next nuclear tier opportunity when prerequisite is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2");
+
+    expect(formatCompanyNuclearOpportunityLine(boot)).toBe(
+      "核电机会：研发后可建核电·3"
+    );
   });
 
   it("formats storage tech branches", () => {

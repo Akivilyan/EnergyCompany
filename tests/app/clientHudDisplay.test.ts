@@ -148,6 +148,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("核电科技：可建核电·3");
   });
 
+  it("shows nuclear opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("核电机会：研发后可建核电·1");
+  });
+
   it("keeps nuclear build tier tech visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("nuclear_1", "nuclear_2");

@@ -225,6 +225,21 @@ export function formatCompanyNuclearTechLine(boot: GameBootstrap): string | null
   return tierMax > 0 ? t("hud.status.company_nuclear_tech", { tier: tierMax }) : null;
 }
 
+export function formatCompanyNuclearOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  let tierMax = 0;
+  for (const tech of boot.app.controller.config.bundle.technologies) {
+    if (lit.has(tech.tech_id)) continue;
+    if (tech.effect_type !== "facility_tier" || tech.effect_target !== "nuclear") continue;
+    if (boot.app.controller.state.companyLevel < tech.company_level_min) continue;
+    if (!(tech.requires_lit ?? []).every((techId) => lit.has(techId))) continue;
+    const value = tech.effect_value.tier_max;
+    if (typeof value !== "number" || !Number.isFinite(value)) continue;
+    tierMax = Math.max(tierMax, value);
+  }
+  return tierMax > 0 ? t("hud.status.company_nuclear_opportunity", { tier: tierMax }) : null;
+}
+
 function formatGenerationTechTarget(target: string): string {
   const key = `hud.company.generation_target.${target}`;
   const label = t(key);
