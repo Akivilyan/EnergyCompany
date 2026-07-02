@@ -8,6 +8,7 @@ import {
   companyClaimCashByAd,
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
+  formatCompanyGreenBrandOpportunityLine,
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
@@ -141,6 +142,19 @@ describe("companyHudController", () => {
     expect(formatCompanyEcoTechLine(boot)).toBe(
       "生态科技：火电ECO/核电ECO/全环保城SV+5%"
     );
+  });
+
+  it("formats level-V green brand opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-START"].cityFullyEcoSupply = true;
+
+    expect(formatCompanyGreenBrandOpportunityLine(boot)).toBe(
+      "绿色品牌机会：全环保城1座 · 研发后SV+5%"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_green_pr");
+    expect(formatCompanyGreenBrandOpportunityLine(boot)).toBeNull();
   });
 
   it("formats strategic tech branches", () => {

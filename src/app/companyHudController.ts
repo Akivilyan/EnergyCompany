@@ -267,6 +267,22 @@ export function formatCompanyEcoTechLine(boot: GameBootstrap): string | null {
     : null;
 }
 
+export function formatCompanyGreenBrandOpportunityLine(boot: GameBootstrap): string | null {
+  if (boot.app.controller.state.litTechIds.includes("eng_green_pr")) return null;
+  const tech = boot.app.controller.config.getTechnology("eng_green_pr");
+  if (!tech || boot.app.controller.state.companyLevel < tech.company_level_min) return null;
+  const value = tech.effect_value.eco_city_sv_pct;
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return null;
+  const ecoCities = Object.values(boot.app.controller.state.cities).filter(
+    (city) => city.cityFullyEcoSupply
+  ).length;
+  if (ecoCities <= 0) return null;
+  return t("hud.status.company_green_brand_opportunity", {
+    count: ecoCities,
+    pct: value
+  });
+}
+
 export function companyApplySelectedLoan(
   boot: GameBootstrap,
   loanId?: string

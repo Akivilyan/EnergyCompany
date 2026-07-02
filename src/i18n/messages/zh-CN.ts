@@ -115,6 +115,7 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_eco_tech": "生态科技：{items}",
   "hud.status.company_eco_tech_sync_item": "{target}ECO",
   "hud.status.company_eco_tech_sv_item": "全环保城SV+{pct}%",
+  "hud.status.company_green_brand_opportunity": "绿色品牌机会：全环保城{count}座 · 研发后SV+{pct}%",
   "hud.status.company_strategic_tech": "战略科技：{items}",
   "hud.status.company_strategic_tech_super_hydro_item": "超级水电槽+{count}",
   "hud.company.opex_target.operations": "通用运维",

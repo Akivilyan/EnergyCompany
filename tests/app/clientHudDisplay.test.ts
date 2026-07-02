@@ -222,6 +222,17 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("生态科技：火电ECO/核电ECO/全环保城SV+5%");
   });
 
+  it("shows green brand opportunity on company hud before level-V research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-START"].cityFullyEcoSupply = true;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("绿色品牌机会：全环保城1座 · 研发后SV+5%");
+  });
+
   it("keeps eco tech branches visible with active loan", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eco_thermal", "eng_green_pr");

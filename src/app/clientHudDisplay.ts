@@ -24,6 +24,7 @@ import { formatSelectedRegionLink, formatSelectedRegionLinkAction } from "./regi
 import {
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
+  formatCompanyGreenBrandOpportunityLine,
   formatCompanyGridDispatchTechLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
@@ -381,6 +382,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
+        formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
         loanPart
       )
@@ -397,6 +399,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatCompanyGridTechLine(boot),
         formatCompanyGridDispatchTechLine(boot),
         formatCompanyEcoTechLine(boot),
+        formatCompanyGreenBrandOpportunityLine(boot),
         formatCompanyStrategicTechLine(boot),
         selectedLoan,
         selection.candidates.length > 1
