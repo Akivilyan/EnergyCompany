@@ -350,6 +350,24 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines[5]).toContain("分叉超水电");
   });
 
+  it("keeps level-V tech branches visible while research is active", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    const started = boot.app.screens.tech.startResearch("wind_2");
+    expect(started.result.ok).toBe(true);
+    boot.play.openScreen("screen_tech_tree");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines[0]).toContain("在研 wind_2");
+    expect(display.detailLines.some((line) => line.includes("后续分叉："))).toBe(true);
+    expect(display.detailLines.some((line) => line.includes("当前可研分叉："))).toBe(true);
+    expect(display.detailLines.some((line) => line.includes("压力队列："))).toBe(true);
+    expect(display.detailLines.some((line) =>
+      line.includes("特大城B（终局都会）·终局负荷->超水电")
+    )).toBe(true);
+  });
+
   it("shows trunk tech as level-V pressure candidate after super hydro is lit", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

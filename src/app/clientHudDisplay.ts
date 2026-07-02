@@ -595,11 +595,17 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
       techId: s.activeResearch.techId,
       months: s.activeResearch.monthsRemaining
     });
+    const branchSummary = formatTechProgressionSummary(boot);
+    const researchableBranchSummary = formatResearchableTechBranchSummary(boot);
+    const pressureSummary = formatResearchableTechPressureSummary(boot);
     const detailLines = hudLines(
       t("hud.line.research_active", {
         techId: s.activeResearch.techId,
         months: s.activeResearch.monthsRemaining
-      })
+      }),
+      branchSummary,
+      researchableBranchSummary,
+      pressureSummary
     );
     return { statusLine, detailLine, statusLines, detailLines };
   }
