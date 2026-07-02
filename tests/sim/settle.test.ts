@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { ConfigRepo, createInitialState, dispatch, settleNextMonth, defaultPorts } from "../../src/sim/index.js";
 import { syncOperableCities } from "../../src/sim/core/settleNextMonth.js";
+import { getFacilityTierSpec } from "../../src/sim/core/technologyEffects.js";
 import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
 import type { GameState } from "../../src/sim/index.js";
 
@@ -893,6 +894,62 @@ describe("settleNextMonth", () => {
     expect(
       month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex
     ).toBe(41);
+  });
+
+  it("M3 syncs existing late-tier solar hydro and thermal facilities after level-V tech lights", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    state.companyLevel = 5;
+    for (const facilityId of ["solar", "hydro", "thermal"] as const) {
+      state.facilities[`fac-${facilityId}`] = {
+        id: `fac-${facilityId}`,
+        cityId: "CITY-START",
+        facilityId,
+        tier: 1,
+        outputMw: 1,
+        monthlyOpex: 1,
+        monthlyFuel: 0
+      };
+    }
+    state.researches["solar_5"] = {
+      researchId: "rq-1-solar_5",
+      techId: "solar_5",
+      monthsRemaining: 1
+    };
+    state.litTechIds.push("hydro_5", "thermal_5");
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.litTechIds).toContain("solar_5");
+
+    const solarSpec = getFacilityTierSpec(config, "solar", 5);
+    const hydroSpec = getFacilityTierSpec(config, "hydro", 5);
+    const thermalSpec = getFacilityTierSpec(config, "thermal", 5);
+    expect(solarSpec).toBeTruthy();
+    expect(hydroSpec).toBeTruthy();
+    expect(thermalSpec).toBeTruthy();
+    if (!solarSpec || !hydroSpec || !thermalSpec) return;
+
+    expect(month.value.state.facilities["fac-solar"]?.tier).toBe(solarSpec.tier);
+    expect(month.value.state.facilities["fac-solar"]?.outputMw).toBe(solarSpec.outputMw);
+    expect(month.value.state.facilities["fac-solar"]?.monthlyOpex).toBe(solarSpec.monthlyOpex);
+    expect(month.value.state.facilities["fac-solar"]?.monthlyFuel).toBe(solarSpec.monthlyFuel);
+    expect(month.value.state.facilities["fac-hydro"]?.tier).toBe(hydroSpec.tier);
+    expect(month.value.state.facilities["fac-hydro"]?.outputMw).toBe(hydroSpec.outputMw);
+    expect(month.value.state.facilities["fac-hydro"]?.monthlyOpex).toBe(hydroSpec.monthlyOpex);
+    expect(month.value.state.facilities["fac-hydro"]?.monthlyFuel).toBe(hydroSpec.monthlyFuel);
+    expect(month.value.state.facilities["fac-thermal"]?.tier).toBe(thermalSpec.tier);
+    expect(month.value.state.facilities["fac-thermal"]?.outputMw).toBe(thermalSpec.outputMw);
+    expect(month.value.state.facilities["fac-thermal"]?.monthlyOpex).toBe(thermalSpec.monthlyOpex);
+    expect(month.value.state.facilities["fac-thermal"]?.monthlyFuel).toBe(thermalSpec.monthlyFuel);
+    expect(
+      month.value.report.steps.find((step) => step.stepId === "M6_opex_settlement")?.metrics.opex
+    ).toBe(solarSpec.monthlyOpex + hydroSpec.monthlyOpex + thermalSpec.monthlyOpex);
+    expect(
+      month.value.report.steps.find((step) => step.stepId === "M7_fuel_settlement")?.metrics.fuel
+    ).toBe(thermalSpec.monthlyFuel);
   });
 
   it("dispatch rejects region link across different regions", () => {
