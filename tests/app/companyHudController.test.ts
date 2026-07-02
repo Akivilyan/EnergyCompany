@@ -12,6 +12,7 @@ import {
   formatCompanyGreenBrandOpportunityLine,
   formatCompanyGridDispatchOpportunityLine,
   formatCompanyGridDispatchTechLine,
+  formatCompanyGridOpportunityLine,
   formatCompanyGridTechLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearTechLine,
@@ -190,6 +191,25 @@ describe("companyHudController", () => {
 
     expect(formatCompanyEcoTechLine(boot)).toBe(
       "生态科技：火电ECO/核电ECO/全环保城SV+5%"
+    );
+  });
+
+  it("formats grid opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+
+    expect(formatCompanyGridOpportunityLine(boot)).toBe(
+      "电网机会：研发后区域线造价-25%"
+    );
+  });
+
+  it("formats UHV opportunity when backbone prerequisite is lit", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("grid_regional", "grid_backbone");
+
+    expect(formatCompanyGridOpportunityLine(boot)).toBe(
+      "电网机会：研发后主干线损特高压档"
     );
   });
 

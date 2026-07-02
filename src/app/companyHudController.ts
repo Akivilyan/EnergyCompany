@@ -170,25 +170,46 @@ export function formatCompanyGridDispatchOpportunityLine(boot: GameBootstrap): s
   });
 }
 
+function formatGridTechItems(tech: { effect_value: Record<string, unknown> }): string[] {
+  const parts: string[] = [];
+  const regionalCost = tech.effect_value.grid_link_cost_pct;
+  if (typeof regionalCost === "number" && Number.isFinite(regionalCost) && regionalCost !== 0) {
+    parts.push(t("hud.status.company_grid_tech_region_item", { pct: Math.abs(regionalCost) }));
+  }
+  const trunkCost = tech.effect_value.trunk_link_cost_pct;
+  if (typeof trunkCost === "number" && Number.isFinite(trunkCost) && trunkCost !== 0) {
+    parts.push(t("hud.status.company_grid_tech_trunk_item", { pct: Math.abs(trunkCost) }));
+  }
+  if (tech.effect_value.trunk_loss_profile === "uhv") {
+    parts.push(t("hud.status.company_grid_tech_uhv_item"));
+  }
+  return parts;
+}
+
 export function formatCompanyGridTechLine(boot: GameBootstrap): string | null {
   const parts: string[] = [];
   for (const techId of boot.app.controller.state.litTechIds) {
     const tech = boot.app.controller.config.getTechnology(techId);
     if (tech?.effect_type !== "grid") continue;
-    const regionalCost = tech.effect_value.grid_link_cost_pct;
-    if (typeof regionalCost === "number" && Number.isFinite(regionalCost) && regionalCost !== 0) {
-      parts.push(t("hud.status.company_grid_tech_region_item", { pct: Math.abs(regionalCost) }));
-    }
-    const trunkCost = tech.effect_value.trunk_link_cost_pct;
-    if (typeof trunkCost === "number" && Number.isFinite(trunkCost) && trunkCost !== 0) {
-      parts.push(t("hud.status.company_grid_tech_trunk_item", { pct: Math.abs(trunkCost) }));
-    }
-    if (tech.effect_value.trunk_loss_profile === "uhv") {
-      parts.push(t("hud.status.company_grid_tech_uhv_item"));
-    }
+    parts.push(...formatGridTechItems(tech));
   }
   return parts.length > 0
     ? t("hud.status.company_grid_tech", { items: parts.join("/") })
+    : null;
+}
+
+export function formatCompanyGridOpportunityLine(boot: GameBootstrap): string | null {
+  const lit = new Set(boot.app.controller.state.litTechIds);
+  const parts = boot.app.controller.config.bundle.technologies
+    .filter((tech) => {
+      if (lit.has(tech.tech_id)) return false;
+      if (tech.effect_type !== "grid") return false;
+      if (boot.app.controller.state.companyLevel < tech.company_level_min) return false;
+      return (tech.requires_lit ?? []).every((techId) => lit.has(techId));
+    })
+    .flatMap(formatGridTechItems);
+  return parts.length > 0
+    ? t("hud.status.company_grid_opportunity", { items: parts.join("/") })
     : null;
 }
 

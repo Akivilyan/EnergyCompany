@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.113.0
+version: 1.114.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-02 | `FAST-01` 补齐 III～V 电网经营机会：公司 HUD 在研发前提示区域网/主干网/特高压分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐 III 级智能调度经营机会：公司 HUD 在研发前提示区域线损分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐 III～V 运维经营机会：公司 HUD 在研发前提示通用/核电运维分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐 IV 级现金流经营机会：公司 HUD 在研发前提示贷款等级分叉收益 |
@@ -149,3 +150,4 @@ open_questions: []
 | 1.111.0 | 2026-07-02 | 记录 IV 级现金流经营机会补齐 |
 | 1.112.0 | 2026-07-02 | 记录 III～V 运维经营机会补齐 |
 | 1.113.0 | 2026-07-02 | 记录 III 级智能调度经营机会补齐 |
+| 1.114.0 | 2026-07-02 | 记录 III～V 电网经营机会补齐 |

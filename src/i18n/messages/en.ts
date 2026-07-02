@@ -113,6 +113,7 @@ export const en: Record<string, string> = {
   "hud.status.company_dispatch_tech_item": "regional loss -{pct}%",
   "hud.status.company_dispatch_opportunity": "Dispatch opportunity: regional loss -{pct}% after research",
   "hud.status.company_grid_tech": "Grid tech: {items}",
+  "hud.status.company_grid_opportunity": "Grid opportunity: {items} after research",
   "hud.status.company_grid_tech_region_item": "regional link cost -{pct}%",
   "hud.status.company_grid_tech_trunk_item": "trunk link cost -{pct}%",
   "hud.status.company_grid_tech_uhv_item": "trunk loss UHV profile",
