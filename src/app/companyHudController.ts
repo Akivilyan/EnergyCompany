@@ -86,6 +86,18 @@ export function formatCompanyLoanTierBonusLine(boot: GameBootstrap): string | nu
   });
 }
 
+export function formatCompanyCashflowOpportunityLine(boot: GameBootstrap): string | null {
+  if (boot.app.controller.state.litTechIds.includes("eng_cashflow")) return null;
+  const tech = boot.app.controller.config.getTechnology("eng_cashflow");
+  if (!tech || boot.app.controller.state.companyLevel < tech.company_level_min) return null;
+  const bonus = tech.effect_value.loan_tier_bonus;
+  if (typeof bonus !== "number" || !Number.isFinite(bonus) || bonus <= 0) return null;
+  return t("hud.status.company_cashflow_opportunity", {
+    bonus,
+    effective: boot.app.controller.state.companyLevel + bonus
+  });
+}
+
 function formatOpexTarget(target: string): string {
   const key = `hud.company.opex_target.${target}`;
   const label = t(key);

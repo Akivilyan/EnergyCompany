@@ -6,6 +6,7 @@ import {
   companyCycleLoanCandidate,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  formatCompanyCashflowOpportunityLine,
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
   formatCompanyGreenBrandOpportunityLine,
@@ -79,6 +80,18 @@ describe("companyHudController", () => {
     boot.app.controller.state.litTechIds.push("eng_cashflow");
 
     expect(formatCompanyLoanTierBonusLine(boot)).toBe("现金流科技：贷款等级+1 · 有效5级");
+  });
+
+  it("formats cashflow opportunity before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+
+    expect(formatCompanyCashflowOpportunityLine(boot)).toBe(
+      "现金流机会：研发后贷款等级+1 · 有效5级"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_cashflow");
+    expect(formatCompanyCashflowOpportunityLine(boot)).toBeNull();
   });
 
   it("formats opex tech reductions", () => {

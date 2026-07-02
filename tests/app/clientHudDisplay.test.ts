@@ -69,6 +69,16 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("可切换贷款 5 档");
   });
 
+  it("shows cashflow opportunity on company hud before research", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("现金流机会：研发后贷款等级+1 · 有效5级");
+  });
+
   it("shows opex tech reductions on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_ops_contract", "nuclear_ops");

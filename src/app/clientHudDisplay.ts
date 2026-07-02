@@ -23,6 +23,7 @@ import {
 } from "./techHudController.js";
 import { formatSelectedRegionLink, formatSelectedRegionLinkAction } from "./regionHudController.js";
 import {
+  formatCompanyCashflowOpportunityLine,
   formatCompanyEcoTechLine,
   formatCompanyGenerationTechLine,
   formatCompanyGreenBrandOpportunityLine,
@@ -377,6 +378,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatActiveEventPressureLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
+        formatCompanyCashflowOpportunityLine(boot),
         formatCompanyOpexTechLine(boot),
         formatCompanyGenerationTechLine(boot),
         formatCompanyNuclearTechLine(boot),
@@ -395,6 +397,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
         formatCompanyLoanTierBonusLine(boot),
+        formatCompanyCashflowOpportunityLine(boot),
         formatCompanyOpexTechLine(boot),
         formatCompanyGenerationTechLine(boot),
         formatCompanyNuclearTechLine(boot),

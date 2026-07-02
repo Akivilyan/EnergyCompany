@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.110.0
+version: 1.111.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -56,6 +56,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-02 | `FAST-01` 补齐 IV 级现金流经营机会：公司 HUD 在研发前提示贷款等级分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐 IV 级风险储备经营机会：公司 HUD 在研发前提示下一场灾害现金冲击减免 |
 | 2026-07-02 | `FAST-01` 补齐 V 级绿色品牌经营机会：公司 HUD 在研发前提示全环保城 SV 分叉收益 |
 | 2026-07-02 | `FAST-01` 补齐科技在研压力对齐：在研项目显示对应 late-map 经营压力 |
@@ -143,3 +144,4 @@ open_questions: []
 | 1.108.0 | 2026-07-02 | 记录科技在研压力对齐补齐 |
 | 1.109.0 | 2026-07-02 | 记录 V 级绿色品牌经营机会补齐 |
 | 1.110.0 | 2026-07-02 | 记录 IV 级风险储备经营机会补齐 |
+| 1.111.0 | 2026-07-02 | 记录 IV 级现金流经营机会补齐 |
