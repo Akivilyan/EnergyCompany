@@ -44,6 +44,41 @@ describe("techHudController", () => {
     expect(boot.app.screens.tech.getSnapshot().activeResearch?.techId).toBe(after.selectedTechId);
   });
 
+  it("defaults to regional grid research at level III", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 3;
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("grid_regional");
+    expect(selection.candidates.slice(0, 5).map((candidate) => candidate.techId)).toEqual([
+      "grid_regional",
+      "storage_system_1",
+      "nuclear_1",
+      "eng_grid_dispatch",
+      "eng_ops_contract"
+    ]);
+  });
+
+  it("defaults to backbone grid research at level IV", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.litTechIds.push("grid_regional", "storage_system_1", "nuclear_1");
+    clientNavOpenTechTree(boot);
+
+    const selection = getTechHudSelectionSnapshot(boot);
+
+    expect(selection.selectedTechId).toBe("grid_backbone");
+    expect(selection.candidates.slice(0, 5).map((candidate) => candidate.techId)).toEqual([
+      "grid_backbone",
+      "storage_system_2",
+      "nuclear_2",
+      "eng_cashflow",
+      "eng_risk_reserve"
+    ]);
+  });
+
   it("defaults to strategic branch research at level V", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

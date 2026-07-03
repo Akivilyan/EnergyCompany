@@ -132,6 +132,33 @@ const RECOMMENDED_TECH_BRANCH_ORDER: TechBranchKind[] = [
   "construction"
 ];
 
+const MIDGAME_RECOMMENDED_TECH_IDS_BY_LEVEL: Record<number, string[]> = {
+  3: [
+    "grid_regional",
+    "storage_system_1",
+    "nuclear_1",
+    "eng_grid_dispatch",
+    "eng_ops_contract",
+    "wind_3",
+    "solar_3",
+    "hydro_3",
+    "thermal_3"
+  ],
+  4: [
+    "grid_backbone",
+    "storage_system_2",
+    "nuclear_2",
+    "eng_cashflow",
+    "eng_risk_reserve",
+    "eco_thermal",
+    "eco_nuclear",
+    "wind_4",
+    "solar_4",
+    "hydro_4",
+    "thermal_4"
+  ]
+};
+
 function formatTechBranchKind(kind: TechBranchKind): string {
   const key = `tech.branch.${kind}`;
   const label = t(key);
@@ -202,6 +229,8 @@ function findRecommendedTechCandidate(
   if (boot.app.controller.state.companyLevel <= 2) {
     return candidates.find((candidate) => candidate.techId === DEFAULT_DEV_TECH_ID) ?? null;
   }
+  const midgameCandidate = findMidgameRecommendedTechCandidate(boot, candidates);
+  if (midgameCandidate) return midgameCandidate;
   const pressureCandidate = findPressureRecommendedTechCandidate(boot, candidates);
   if (pressureCandidate) return pressureCandidate;
   for (const branchKind of RECOMMENDED_TECH_BRANCH_ORDER) {
@@ -209,6 +238,17 @@ function findRecommendedTechCandidate(
     if (candidate) return candidate;
   }
   return null;
+}
+
+function midgameRecommendedTechIds(boot: GameBootstrap): string[] {
+  return MIDGAME_RECOMMENDED_TECH_IDS_BY_LEVEL[boot.app.controller.state.companyLevel] ?? [];
+}
+
+function findMidgameRecommendedTechCandidate(
+  boot: GameBootstrap,
+  candidates: TechHudCandidate[]
+): TechHudCandidate | null {
+  return candidateByTechIdOrder(candidates, midgameRecommendedTechIds(boot));
 }
 
 function candidateForPressureTag(
@@ -314,6 +354,15 @@ function findPressureRecommendedTechCandidate(
 function getOrderedResearchCandidates(boot: GameBootstrap): TechHudCandidate[] {
   const candidates = getResearchCandidates(boot);
   if (boot.app.controller.state.companyLevel <= 2) return candidates;
+  const midgameOrderedIds = new Set(midgameRecommendedTechIds(boot));
+  if (midgameOrderedIds.size > 0) {
+    return [
+      ...[...midgameOrderedIds]
+        .map((techId) => candidates.find((candidate) => candidate.techId === techId))
+        .filter((candidate): candidate is TechHudCandidate => !!candidate),
+      ...candidates.filter((candidate) => !midgameOrderedIds.has(candidate.techId))
+    ];
+  }
   const orderedIds = new Set(
     getPressureRecommendations(boot, candidates).map((item) => item.candidate.techId)
   );
