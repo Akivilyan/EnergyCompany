@@ -802,7 +802,13 @@ export function buildClientHudDisplay(
       profile ? formatCityBuildAction(profile) : null,
       t("hud.line.nav_screen", { screen: tScreenLabel(view.screen) }),
       t("hud.line.nav_stack", { stack: boot.play.getNavigation().stack.length }),
+      formatDisasterAxisProgressLine(boot),
       eventsHint,
+      formatActiveEventPressureLine(boot),
+      formatActiveEventRecoveryActionLine(boot),
+      formatUpcomingEventPrepActionLine(boot),
+      formatUpcomingEventRiskLine(boot),
+      formatUpcomingEventRiskOpportunityLine(boot),
       pending?.summary
     );
     display = {

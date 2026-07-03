@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.140.0
+version: 1.141.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 城市 HUD 补齐灾害轴与备考/恢复行动：事件压力不再只在公司页可见 |
 | 2026-07-03 | `FAST-01` 公司 HUD 补齐固定灾害轴进度：显示 4 场灾害已过、下一场与预警状态 |
 | 2026-07-03 | `FAST-01` 结果页 smoke 补齐终局路线断言：胜利分支必须包含 MET-B 主干与超水电接网摘要 |
 | 2026-07-03 | `FAST-01` Cocos 静态预检补齐超水电接网入口护栏：缺按钮/导出会阻断快速验证 |
@@ -186,3 +187,4 @@ open_questions: []
 | 1.138.0 | 2026-07-03 | 记录 Cocos 静态预检覆盖超水电接网入口 |
 | 1.139.0 | 2026-07-03 | 记录结果页 smoke 覆盖终局路线摘要 |
 | 1.140.0 | 2026-07-03 | 记录公司 HUD 固定灾害轴进度落地 |
+| 1.141.0 | 2026-07-03 | 记录城市 HUD 灾害轴与备考/恢复行动落地 |

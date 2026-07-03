@@ -101,6 +101,23 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
   });
 
+  it("shows disaster axis and prep action on city hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const initial = buildClientHudDisplay(boot);
+    expect(initial.detailLines).toContain("灾害轴：已过0/4 · 下一场M22 · 还有21月");
+
+    boot.app.controller.state.funds = 1000;
+    while (boot.app.controller.state.currentMonth < 15) {
+      const out = boot.app.controller.runNextMonth();
+      expect(out.ok).toBe(true);
+    }
+    boot.app.controller.state.funds = 10;
+
+    const warning = buildClientHudDisplay(boot);
+    expect(warning.detailLines).toContain("灾害轴：已过0/4 · M22预警中 · 还有7月");
+    expect(warning.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
+  });
+
   it("shows construction tech build cost reduction on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_bulk_procure");
