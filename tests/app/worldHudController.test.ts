@@ -89,6 +89,30 @@ describe("worldHudController", () => {
     expect(selected?.cityId).toBe("CITY-METB-01");
   });
 
+  it("moves to the next available late-map trunk after the selected target is connected", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenWorldMap(boot);
+
+    const first = getWorldHudSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+    );
+    expect(first?.regionId).toBe("MET-B");
+
+    const metBQueued = worldQueueSelectedTrunk(boot);
+    expect(metBQueued.ok).toBe(true);
+    boot.play.advanceMonthInCurrentCity();
+
+    const next = getWorldHudSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.candidateId === getWorldHudSelectionSnapshot(boot).selectedCandidateId
+    );
+
+    expect(next?.regionId).toBe("MAP-06");
+    const map06Queued = worldQueueSelectedTrunk(boot);
+    expect(map06Queued.ok).toBe(true);
+    expect(boot.app.controller.state.gridLinks["CITY-MAP06-01::CITY-START"]?.status).toBe("building");
+  });
+
   it("opens MET-A as a direct city target once unlocked", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 3;

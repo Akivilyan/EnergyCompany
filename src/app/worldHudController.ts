@@ -77,17 +77,29 @@ function getCandidates(boot: GameBootstrap): WorldHudCandidate[] {
 }
 
 function findRecommendedWorldCandidate(candidates: WorldHudCandidate[]): WorldHudCandidate | null {
-  const latePressureCandidates = candidates.filter(
+  const activeLatePressureCandidates = candidates.filter(
     (candidate) =>
-      candidate.unlocked && candidate.unlockCompanyLevel >= 5 && candidate.supplyGapMw > 0
+      candidate.unlocked &&
+      candidate.unlockCompanyLevel >= 5 &&
+      candidate.supplyGapMw > 0 &&
+      (candidate.connectionStatus === "building" || candidate.connectionStatus === "available")
   );
   for (const pressure of WORLD_PRESSURE_PRIORITY) {
-    const candidate = latePressureCandidates.find((item) =>
+    const candidate = activeLatePressureCandidates.find((item) =>
       item.operatingPressureTags.includes(pressure)
     );
     if (candidate) return candidate;
   }
-  return latePressureCandidates[0] ?? null;
+  return (
+    activeLatePressureCandidates[0] ??
+    candidates.find(
+      (candidate) =>
+        candidate.unlocked &&
+        candidate.regionId !== "MAP-01" &&
+        (candidate.connectionStatus === "building" || candidate.connectionStatus === "available")
+    ) ??
+    null
+  );
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null {
@@ -98,7 +110,11 @@ function ensureSelectedCandidate(boot: GameBootstrap): WorldHudCandidate | null 
   }
   const remembered = selectedCandidateByBoot.get(boot);
   const selected =
-    candidates.find((candidate) => candidate.candidateId === remembered) ??
+    candidates.find(
+      (candidate) =>
+        candidate.candidateId === remembered &&
+        candidate.connectionStatus !== "connected"
+    ) ??
     findRecommendedWorldCandidate(candidates) ??
     candidates.find((candidate) => candidate.unlocked && candidate.regionId !== "MAP-01") ??
     candidates.find((candidate) => candidate.unlocked) ??
