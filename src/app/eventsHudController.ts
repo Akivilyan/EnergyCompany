@@ -159,3 +159,28 @@ export function formatUpcomingEventRiskOpportunityLine(boot: GameBootstrap): str
     base: next.immediateCashPenalty
   });
 }
+
+export function formatDisasterAxisProgressLine(boot: GameBootstrap): string | null {
+  const snap = boot.app.screens.events.getSnapshot();
+  const total = snap.upcoming.length + snap.active.length + snap.expired.length;
+  if (total <= 0) return null;
+  const passed = snap.active.length + snap.expired.length;
+  const next = snap.upcoming[0];
+  if (next) {
+    return t(
+      next.inWarningWindow
+        ? "hud.events.axis_progress_warning"
+        : "hud.events.axis_progress_next",
+      {
+        passed,
+        total,
+        month: next.triggerMonth,
+        months: next.monthsUntilTrigger
+      }
+    );
+  }
+  return t("hud.events.axis_progress_done", {
+    passed,
+    total
+  });
+}

@@ -7,6 +7,7 @@ import {
 import {
   formatActiveEventRecoveryActionLine,
   formatActiveEventPressureLine,
+  formatDisasterAxisProgressLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
   formatUpcomingEventPrepActionLine,
@@ -388,6 +389,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         svLine,
         formatCompanyLevelGoalLine(boot),
         latestCashflow,
+        formatDisasterAxisProgressLine(boot),
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),
         formatUpcomingEventPrepActionLine(boot),
@@ -418,6 +420,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         svLine,
         formatCompanyLevelGoalLine(boot),
         latestCashflow,
+        formatDisasterAxisProgressLine(boot),
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),
         formatUpcomingEventPrepActionLine(boot),

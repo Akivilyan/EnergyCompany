@@ -5,6 +5,7 @@ import {
   eventsAcknowledgeNextPending,
   formatActiveEventRecoveryActionLine,
   formatActiveEventPressureLine,
+  formatDisasterAxisProgressLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
   formatUpcomingEventPrepActionLine,
@@ -78,6 +79,26 @@ describe("eventsHudController", () => {
     boot.app.controller.state.funds = 1000;
     expect(formatActiveEventRecoveryActionLine(boot)).toBe(
       "恢复建议：保守推进8月，少开长工期项目"
+    );
+  });
+
+  it("formats fixed disaster axis progress", () => {
+    setLocale("zh-CN");
+    const boot = createGameBootstrapFromRepo();
+
+    expect(formatDisasterAxisProgressLine(boot)).toBe(
+      "灾害轴：已过0/4 · 下一场M22 · 还有21月"
+    );
+
+    settleToMonth(boot, 15);
+    expect(formatDisasterAxisProgressLine(boot)).toBe(
+      "灾害轴：已过0/4 · M22预警中 · 还有7月"
+    );
+
+    boot.app.controller.state.disastersTriggered = [1, 2, 3, 4];
+    boot.app.controller.state.activeDebuffs = [];
+    expect(formatDisasterAxisProgressLine(boot)).toBe(
+      "灾害轴：已过4/4 · 全部灾害已触发"
     );
   });
 

@@ -43,12 +43,13 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toEqual([
       "社会价值 0/1（升级进度）",
       "升级目标：还差1SV到2级 · MAP-01 full province",
+      "灾害轴：已过0/4 · 下一场M22 · 还有21月",
       "候选：小额贷款（30万） · 月供3",
       "无在贷"
     ]);
     expect(lines.filter((line) => line.includes("社会价值"))).toHaveLength(1);
     expect(lines.some((line) => line.includes("返回层"))).toBe(false);
-    expect(lines).toHaveLength(7);
+    expect(lines).toHaveLength(8);
   });
 
   it("shows switched company loan candidate before applying", () => {
@@ -58,8 +59,8 @@ describe("clientHudDisplay", () => {
     companyCycleLoanCandidate(boot);
 
     const display = buildClientHudDisplay(boot);
-    expect(display.detailLines[2]).toContain("中额贷款（80万）");
-    expect(display.detailLines[3]).toBe("可切换贷款 2 档");
+    expect(display.detailLines[3]).toContain("中额贷款（80万）");
+    expect(display.detailLines[4]).toBe("可切换贷款 2 档");
   });
 
   it("shows cashflow tech loan tier bonus on company hud", () => {
@@ -96,6 +97,7 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
+    expect(display.detailLines).toContain("灾害轴：已过0/4 · M22预警中 · 还有7月");
     expect(display.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
   });
 
