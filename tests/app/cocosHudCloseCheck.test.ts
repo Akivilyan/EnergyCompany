@@ -7,6 +7,9 @@ import { runCocosHudCloseStaticChecks } from "../../src/app/cocosHudCloseCheck.j
 import { runCocosHudClose } from "../../src/app/cocosHudCloseRunner.js";
 
 describe("cocosHudCloseCheck", () => {
+  const panelMarkers =
+    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink bindGameBoot";
+
   it("CityHudPanel contains T50 handler markers", () => {
     const checks = runCocosHudCloseStaticChecks(repoRoot);
     expect(checks.every((item) => item.ok)).toBe(true);
@@ -20,7 +23,7 @@ describe("cocosHudCloseCheck", () => {
     fs.mkdirSync(path.join(buildRoot, "src"), { recursive: true });
     fs.writeFileSync(
       path.join(scriptsDir, "CityHudPanel.ts"),
-      "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
+      panelMarkers,
       "utf8"
     );
     fs.writeFileSync(
@@ -54,7 +57,7 @@ describe("cocosHudCloseCheck", () => {
     fs.mkdirSync(logDir, { recursive: true });
     fs.writeFileSync(
       path.join(scriptsDir, "CityHudPanel.ts"),
-      "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
+      panelMarkers,
       "utf8"
     );
     fs.writeFileSync(path.join(buildRoot, "game.js"), "require('./web-adapter');", "utf8");
@@ -89,7 +92,7 @@ describe("cocosHudCloseCheck", () => {
     fs.mkdirSync(logDir, { recursive: true });
     fs.writeFileSync(
       path.join(scriptsDir, "CityHudPanel.ts"),
-      "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink bindGameBoot",
+      panelMarkers,
       "utf8"
     );
     fs.writeFileSync(

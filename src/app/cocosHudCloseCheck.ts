@@ -14,6 +14,8 @@ const CITY_HUD_PANEL_MARKERS = [
   "onOpenTech",
   "onAckEvent",
   "onQueueRegionLink",
+  "onQueueSuperHydroGrid",
+  "worldQueueSuperHydroGridLink",
   "bindGameBoot"
 ] as const;
 
