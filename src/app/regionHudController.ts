@@ -145,8 +145,11 @@ function ensureSelectedCandidate(boot: GameBootstrap) {
     return null;
   }
   const remembered = selectedCandidateByBoot.get(boot);
+  const rememberedCandidate = candidates.find((candidate) => candidate.candidateId === remembered);
   const selected =
-    candidates.find((candidate) => candidate.candidateId === remembered) ??
+    (rememberedCandidate && shouldKeepRememberedCandidate(boot, rememberedCandidate)
+      ? rememberedCandidate
+      : null) ??
     candidates.find(
       (candidate) =>
         candidate.fromCityId === DEFAULT_REGION_LINK.fromCityId &&
@@ -157,6 +160,15 @@ function ensureSelectedCandidate(boot: GameBootstrap) {
     candidates[0];
   selectedCandidateByBoot.set(boot, selected.candidateId);
   return selected;
+}
+
+function shouldKeepRememberedCandidate(
+  boot: GameBootstrap,
+  candidate: RegionHudLinkCandidate
+): boolean {
+  if (candidate.available) return true;
+  const linkId = [candidate.fromCityId, candidate.toCityId].sort().join("::");
+  return boot.app.controller.state.gridLinks[linkId]?.status === "building";
 }
 
 function isCapitalTrunkCandidate(candidate: RegionHudLinkCandidate): boolean {

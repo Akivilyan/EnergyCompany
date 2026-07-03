@@ -99,6 +99,27 @@ describe("regionHudController", () => {
     expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：先建主干，打开区域内铺线");
   });
 
+  it("moves from finished late-map trunk to the first available in-region link", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    clientNavOpenRegionById(boot, "MAP-06");
+
+    const queued = regionQueueDefaultLink(boot);
+    expect(queued.ok).toBe(true);
+    expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：等待当前线路完工");
+
+    boot.play.advanceMonthInCurrentCity();
+
+    const selection = getRegionHudSelectionSnapshot(boot);
+    const active = selection.candidates.find(
+      (candidate) => candidate.candidateId === selection.selectedCandidateId
+    );
+    expect(active?.fromCityId).toBe("CITY-MAP06-01");
+    expect(active?.toCityId).toBe("CITY-MAP06-02");
+    expect(active?.linkType).toBe("region");
+    expect(formatSelectedRegionLinkAction(boot)).toBe("行动建议：补区域线，消化本地缺口");
+  });
+
   it("defaults to super hydro trunk after the capital trunk already exists", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;
