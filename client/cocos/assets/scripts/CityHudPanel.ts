@@ -245,6 +245,7 @@ export class CityHudPanel extends Component {
         this.openWorldTargetBtn,
         this.queueWorldTrunkBtn,
         this.queueSuperHydroBtn,
+        this.queueSuperHydroGridBtn,
         this.cycleLoanBtn,
         this.applyLoanBtn,
         this.adCashBtn,

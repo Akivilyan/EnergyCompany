@@ -19,6 +19,10 @@ const CITY_HUD_PANEL_MARKERS = [
   "bindGameBoot"
 ] as const;
 
+const CITY_HUD_LAYOUT_BUTTON_MARKERS = [
+  "queueSuperHydroGridBtn"
+] as const;
+
 export interface CocosHudCloseStaticCheckOptions {
   withWechatBuildFreshness?: boolean;
 }
@@ -192,6 +196,20 @@ export function runCocosHudCloseStaticChecks(
       id: `hud:${marker}`,
       ok: source.includes(marker),
       detail: marker
+    });
+  }
+  const layoutCalls: string[] = [];
+  const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;
+  let layoutCallMatch: RegExpExecArray | null = layoutCallPattern.exec(source);
+  while (layoutCallMatch) {
+    layoutCalls.push(layoutCallMatch[0]);
+    layoutCallMatch = layoutCallPattern.exec(source);
+  }
+  for (const marker of CITY_HUD_LAYOUT_BUTTON_MARKERS) {
+    checks.push({
+      id: `hud:${marker}-layout`,
+      ok: layoutCalls.some((call) => call.includes(`this.${marker}`)),
+      detail: `${marker} in placeRowButtons`
     });
   }
   if (options.withWechatBuildFreshness) {
