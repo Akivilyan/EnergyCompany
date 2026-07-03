@@ -111,6 +111,36 @@ export function formatUpcomingEventRiskLine(boot: GameBootstrap): string | null 
   });
 }
 
+export function formatUpcomingEventPrepActionLine(boot: GameBootstrap): string | null {
+  const next = boot.app.screens.events.getSnapshot().upcoming[0];
+  if (!next || !next.inWarningWindow) return null;
+  const company = boot.app.screens.company.getSnapshot();
+  const cashTarget = next.adjustedCashPenalty + Math.ceil(next.examTier * 10);
+  const gap = Math.max(0, cashTarget - company.funds);
+  if (gap > 0) {
+    return t("hud.events.upcoming_prep_cash", {
+      month: next.triggerMonth,
+      months: next.monthsUntilTrigger,
+      target: cashTarget,
+      gap
+    });
+  }
+  if (!next.cashPenaltyReduced && !boot.app.controller.state.litTechIds.includes("eng_risk_reserve")) {
+    const tech = boot.app.controller.config.getTechnology("eng_risk_reserve");
+    if (tech && boot.app.controller.state.companyLevel >= tech.company_level_min) {
+      return t("hud.events.upcoming_prep_risk", {
+        month: next.triggerMonth,
+        months: next.monthsUntilTrigger
+      });
+    }
+  }
+  return t("hud.events.upcoming_prep_hold", {
+    month: next.triggerMonth,
+    months: next.monthsUntilTrigger,
+    target: cashTarget
+  });
+}
+
 export function formatUpcomingEventRiskOpportunityLine(boot: GameBootstrap): string | null {
   const next = boot.app.screens.events.getSnapshot().upcoming[0];
   if (!next || next.cashPenaltyReduced) return null;

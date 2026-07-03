@@ -84,6 +84,21 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("现金流机会：研发后贷款等级+1 · 有效5级");
   });
 
+  it("shows upcoming disaster prep action on company hud inside warning window", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.funds = 1000;
+    while (boot.app.controller.state.currentMonth < 15) {
+      const out = boot.app.controller.runNextMonth();
+      expect(out.ok).toBe(true);
+    }
+    boot.app.controller.state.funds = 10;
+    clientNavOpenCompany(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
+  });
+
   it("shows construction tech build cost reduction on company hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_bulk_procure");

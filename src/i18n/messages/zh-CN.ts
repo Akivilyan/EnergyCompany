@@ -32,6 +32,9 @@ export const zhCN: Record<string, string> = {
   "hud.events.recovery_ad": "恢复建议：先广告补现金，扛过剩余{months}月",
   "hud.events.recovery_loan": "恢复建议：先申请{loan}，覆盖剩余{months}月",
   "hud.events.recovery_hold": "恢复建议：保守推进{months}月，少开长工期项目",
+  "hud.events.upcoming_prep_cash": "备考建议：M{month}前留{target}现金，还差{gap} · 剩{months}月",
+  "hud.events.upcoming_prep_risk": "备考建议：剩{months}月到M{month}，优先研发风险储备",
+  "hud.events.upcoming_prep_hold": "备考建议：M{month}前现金已达{target}，避免长工期堆叠 · 剩{months}月",
   "hud.events.upcoming_risk": "灾害备考：M{month}现金冲击{adjusted}/{base} · 风险储备生效",
   "hud.events.upcoming_risk_opportunity": "风险储备机会：M{month}现金冲击可降至{adjusted}/{base}",
 

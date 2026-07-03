@@ -8,6 +8,8 @@ export interface UpcomingDisasterEntry {
   eventId: string;
   triggerMonth: number;
   monthsUntilTrigger: number;
+  warnLeadMonths: number;
+  inWarningWindow: boolean;
   examTier: number;
   isFinal: boolean;
   immediateCashPenalty: number;
@@ -177,6 +179,10 @@ export class ScreenEventsPanel {
           eventId: disaster.event_id ?? `disaster_${disaster.seq}`,
           triggerMonth: disaster.trigger_month,
           monthsUntilTrigger: disaster.trigger_month - month,
+          warnLeadMonths: disaster.warn_lead_months ?? 0,
+          inWarningWindow: disaster.warn_lead_months !== undefined
+            ? disaster.trigger_month - month <= disaster.warn_lead_months
+            : true,
           examTier: disaster.exam_tier,
           isFinal: disaster.is_final ?? false,
           immediateCashPenalty: baseCashPenalty,

@@ -19,6 +19,7 @@ export interface DisasterConfig {
   seq: number;
   event_id?: string;
   trigger_month: number;
+  warn_lead_months?: number;
   immediate_cash_penalty: number;
   /** 设计锁定：调参不得修改，见 v0-disaster-balance-policy.md */
   debuff_duration_months: number;

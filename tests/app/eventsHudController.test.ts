@@ -7,6 +7,7 @@ import {
   formatActiveEventPressureLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
+  formatUpcomingEventPrepActionLine,
   formatUpcomingEventRiskOpportunityLine,
   formatUpcomingEventRiskLine
 } from "../../src/app/eventsHudController.js";
@@ -78,6 +79,35 @@ describe("eventsHudController", () => {
     expect(formatActiveEventRecoveryActionLine(boot)).toBe(
       "恢复建议：保守推进8月，少开长工期项目"
     );
+  });
+
+  it("formats upcoming disaster prep actions inside warning window", () => {
+    setLocale("zh-CN");
+    const boot = createGameBootstrapFromRepo();
+    settleToMonth(boot, 15);
+
+    boot.app.controller.state.funds = 10;
+    expect(formatUpcomingEventPrepActionLine(boot)).toBe(
+      "备考建议：M22前留19现金，还差9 · 剩7月"
+    );
+
+    boot.app.controller.state.companyLevel = 4;
+    boot.app.controller.state.funds = 100;
+    expect(formatUpcomingEventPrepActionLine(boot)).toBe(
+      "备考建议：剩7月到M22，优先研发风险储备"
+    );
+
+    boot.app.controller.state.litTechIds.push("eng_risk_reserve");
+    expect(formatUpcomingEventPrepActionLine(boot)).toBe(
+      "备考建议：M22前现金已达17，避免长工期堆叠 · 剩7月"
+    );
+  });
+
+  it("hides upcoming disaster prep action before warning window", () => {
+    setLocale("zh-CN");
+    const boot = createGameBootstrapFromRepo();
+
+    expect(formatUpcomingEventPrepActionLine(boot)).toBeNull();
   });
 
   it("formats risk-reserve opportunity before research", () => {

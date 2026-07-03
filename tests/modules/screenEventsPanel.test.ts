@@ -23,6 +23,8 @@ describe("ScreenEventsPanel", () => {
     expect(snapshot.month).toBe(1);
     expect(snapshot.upcoming.map((e) => e.triggerMonth)).toEqual([22, 41, 63, 86]);
     expect(snapshot.upcoming[0].monthsUntilTrigger).toBe(21);
+    expect(snapshot.upcoming[0].warnLeadMonths).toBe(8);
+    expect(snapshot.upcoming[0].inWarningWindow).toBe(false);
     expect(snapshot.upcoming[0].immediateCashPenalty).toBe(9);
     expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(9);
     expect(snapshot.upcoming[0].cashPenaltyReduced).toBe(false);
@@ -35,6 +37,18 @@ describe("ScreenEventsPanel", () => {
     expect(snapshot.pendingFullscreenQueue).toHaveLength(0);
     expect(snapshot.pendingFullscreen).toBeNull();
     expect(snapshot.activeSlotLimit).toBe(3);
+  });
+
+  it("marks upcoming disaster warning window by configured lead months", () => {
+    const controller = createTestController(repoRoot);
+    settleTo(controller, 15);
+
+    const snapshot = createScreenEventsPanel(controller).getSnapshot();
+
+    expect(snapshot.upcoming[0].seq).toBe(1);
+    expect(snapshot.upcoming[0].monthsUntilTrigger).toBe(7);
+    expect(snapshot.upcoming[0].warnLeadMonths).toBe(8);
+    expect(snapshot.upcoming[0].inWarningWindow).toBe(true);
   });
 
   it("surfaces first disaster as active with pending fullscreen after month 22", () => {

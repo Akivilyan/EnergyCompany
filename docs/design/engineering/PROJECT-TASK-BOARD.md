@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.132.0
+version: 1.133.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 灾害预警期备考建议落地：按预警窗口提示现金目标、风险储备与保守推进 |
 | 2026-07-03 | `FAST-01` 公司 HUD 等级目标补齐：显示下一等级 SV 差距与解锁路线说明 |
 | 2026-07-03 | `FAST-01` 终局结果 HUD 补齐 demo 路线摘要：MET-B、超级水电接网、最终灾害状态可见 |
 | 2026-07-03 | `FAST-01` 灾害 HUD 恢复期行动建议落地：按现金、广告与贷款状态提示补现金/借贷/保守推进 |
@@ -170,3 +171,4 @@ open_questions: []
 | 1.130.0 | 2026-07-03 | 记录灾害 HUD 恢复期行动建议落地 |
 | 1.131.0 | 2026-07-03 | 记录终局结果 HUD 路线摘要落地 |
 | 1.132.0 | 2026-07-03 | 记录公司 HUD 等级目标路线落地 |
+| 1.133.0 | 2026-07-03 | 记录灾害预警期备考建议落地 |

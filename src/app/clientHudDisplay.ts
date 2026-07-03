@@ -9,6 +9,7 @@ import {
   formatActiveEventPressureLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
+  formatUpcomingEventPrepActionLine,
   formatUpcomingEventRiskOpportunityLine,
   formatUpcomingEventRiskLine
 } from "./eventsHudController.js";
@@ -389,6 +390,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         latestCashflow,
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),
+        formatUpcomingEventPrepActionLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
         formatCompanyCashflowOpportunityLine(boot),
@@ -418,6 +420,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         latestCashflow,
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),
+        formatUpcomingEventPrepActionLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
         formatCompanyLoanTierBonusLine(boot),
