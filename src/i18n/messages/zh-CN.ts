@@ -383,6 +383,7 @@ export const zhCN: Record<string, string> = {
   "hud.btn.world_cycle_target": "切换地图",
   "hud.btn.world_queue_trunk": "建主干",
   "hud.btn.super_hydro": "超水电",
+  "hud.btn.super_hydro_grid": "超水电接网",
   "world.error.not_unlocked": "目标未解锁",
   "world.error.no_trunk_candidate": "当前没有可建主干",
   "world.error.trunk_funds": "主干资金不足",

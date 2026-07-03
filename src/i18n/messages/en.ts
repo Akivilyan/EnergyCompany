@@ -383,6 +383,7 @@ export const en: Record<string, string> = {
   "hud.btn.world_cycle_target": "Cycle Target",
   "hud.btn.world_queue_trunk": "Queue Trunk",
   "hud.btn.super_hydro": "Super Hydro",
+  "hud.btn.super_hydro_grid": "Grid Hydro",
   "world.error.not_unlocked": "Target not unlocked",
   "world.error.no_trunk_candidate": "No trunk candidate available",
   "world.error.trunk_funds": "Not enough funds for trunk",
