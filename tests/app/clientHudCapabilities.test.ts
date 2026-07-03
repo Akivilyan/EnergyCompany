@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
 import { getCityHudBuildSelectionSnapshot } from "../../src/app/cityHudController.js";
+import { companyApplyFirstUnlockedLoan } from "../../src/app/companyHudController.js";
 import { clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
+import {
+  getTechHudSelectionSnapshot,
+  techStartDefaultResearch
+} from "../../src/app/techHudController.js";
 import { worldCycleTargetCandidate } from "../../src/app/worldHudController.js";
 
 describe("getClientHudCapabilities", () => {
@@ -19,7 +24,14 @@ describe("getClientHudCapabilities", () => {
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canQueueSuperHydroGridLink: false,
-      canOperateTech: false
+      canOperateTech: false,
+      canApplyLoan: true,
+      canCycleLoanCandidate: true,
+      canClaimCashAd: true,
+      canStartResearch: false,
+      canCancelResearch: false,
+      canSpeedupResearchByAd: false,
+      canCycleResearchCandidate: false
     });
   });
 
@@ -80,8 +92,70 @@ describe("getClientHudCapabilities", () => {
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canQueueSuperHydroGridLink: false,
-      canOperateTech: true
+      canOperateTech: true,
+      canApplyLoan: true,
+      canCycleLoanCandidate: true,
+      canClaimCashAd: true,
+      canStartResearch: true,
+      canCancelResearch: false,
+      canSpeedupResearchByAd: false,
+      canCycleResearchCandidate: true
     });
+  });
+
+  it("hides loan actions while a loan is active", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+
+    expect(getClientHudCapabilities(boot).canApplyLoan).toBe(true);
+    expect(getClientHudCapabilities(boot).canCycleLoanCandidate).toBe(true);
+
+    const loan = companyApplyFirstUnlockedLoan(boot);
+    expect(loan.ok).toBe(true);
+    expect(getClientHudCapabilities(boot).canApplyLoan).toBe(false);
+    expect(getClientHudCapabilities(boot).canCycleLoanCandidate).toBe(false);
+  });
+
+  it("hides ad cash capability when no rewarded ads remain", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+
+    expect(getClientHudCapabilities(boot).canClaimCashAd).toBe(true);
+
+    boot.app.controller.state.adsRemaining = 0;
+    expect(getClientHudCapabilities(boot).canClaimCashAd).toBe(false);
+  });
+
+  it("exposes start research capability only when the selected tech is affordable", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 2;
+    const selected = getTechHudSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.techId === getTechHudSelectionSnapshot(boot).selectedTechId
+    );
+    expect(selected).toBeTruthy();
+    const selectedCost = selected?.researchCost ?? 0;
+
+    boot.app.controller.state.funds = selectedCost;
+    expect(getClientHudCapabilities(boot).canStartResearch).toBe(true);
+    expect(getClientHudCapabilities(boot).canCycleResearchCandidate).toBe(true);
+
+    boot.app.controller.state.funds = selectedCost - 1;
+    expect(getClientHudCapabilities(boot).canStartResearch).toBe(false);
+    expect(getClientHudCapabilities(boot).canCycleResearchCandidate).toBe(true);
+  });
+
+  it("gates active research actions by active project and remaining ads", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 2;
+    boot.app.controller.state.funds = 100;
+
+    const started = techStartDefaultResearch(boot);
+    expect(started.ok).toBe(true);
+    expect(getClientHudCapabilities(boot).canStartResearch).toBe(false);
+    expect(getClientHudCapabilities(boot).canCancelResearch).toBe(true);
+    expect(getClientHudCapabilities(boot).canCycleResearchCandidate).toBe(false);
+    expect(getClientHudCapabilities(boot).canSpeedupResearchByAd).toBe(true);
+
+    boot.app.controller.state.adsRemaining = 0;
+    expect(getClientHudCapabilities(boot).canSpeedupResearchByAd).toBe(false);
   });
 
   it("exposes region-link queue capability only when the selected link is affordable", () => {

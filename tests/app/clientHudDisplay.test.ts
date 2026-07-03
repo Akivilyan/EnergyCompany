@@ -668,7 +668,14 @@ describe("clientHudDisplay", () => {
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
       canQueueSuperHydroGridLink: false,
-      canOperateTech: false
+      canOperateTech: false,
+      canApplyLoan: true,
+      canCycleLoanCandidate: true,
+      canClaimCashAd: true,
+      canStartResearch: false,
+      canCancelResearch: false,
+      canSpeedupResearchByAd: false,
+      canCycleResearchCandidate: false
     });
   });
 

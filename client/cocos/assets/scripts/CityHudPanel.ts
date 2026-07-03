@@ -41,7 +41,6 @@ import {
   techSpeedupResearchByAd,
   techStartDefaultResearch,
   eventsAcknowledgeNextPending,
-  getTechHudSelectionSnapshot,
   t,
   techCycleResearchCandidate,
   type GameBootstrap
@@ -425,10 +424,7 @@ export class CityHudPanel extends Component {
     const onCity = !onCompany && !onRegion && !onWorld && !onTech;
     const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
     const techSnapshot = this.boot.app.screens.tech.getSnapshot();
-    const techSelection = getTechHudSelectionSnapshot(this.boot);
     const hasActiveResearch = !!techSnapshot.activeResearch;
-    const companySnapshot = this.boot.app.screens.company.getSnapshot();
-    const canSwitchLoanCandidate = onCompany && !companySnapshot.activeLoan;
 
     this.buildWindBtn!.node.active = onCity && caps.canBuildInCity;
     this.cycleBuildBtn!.node.active = onCity && caps.canCycleBuildCandidate;
@@ -442,15 +438,14 @@ export class CityHudPanel extends Component {
     this.queueSuperHydroBtn!.node.active = onWorld && caps.canQueueSuperHydro;
     this.queueSuperHydroGridBtn!.node.active = onWorld && caps.canQueueSuperHydroGridLink;
     this.ackEventBtn!.node.active = onCity && pendingEvent;
-    this.applyLoanBtn!.node.active = canSwitchLoanCandidate;
-    this.cycleLoanBtn!.node.active = canSwitchLoanCandidate;
-    this.adCashBtn!.node.active = onCompany;
-    this.startResearchBtn!.node.active = onTech && caps.canOperateTech && !hasActiveResearch;
-    this.cancelResearchBtn!.node.active = onTech && caps.canOperateTech && hasActiveResearch;
+    this.applyLoanBtn!.node.active = onCompany && caps.canApplyLoan;
+    this.cycleLoanBtn!.node.active = onCompany && caps.canCycleLoanCandidate;
+    this.adCashBtn!.node.active = onCompany && caps.canClaimCashAd;
+    this.startResearchBtn!.node.active = onTech && caps.canStartResearch;
+    this.cancelResearchBtn!.node.active = onTech && caps.canCancelResearch;
     this.adSpeedupBtn!.node.active =
       onTech &&
-      caps.canOperateTech &&
-      (hasActiveResearch || techSelection.candidates.length > 0);
+      (hasActiveResearch ? caps.canSpeedupResearchByAd : caps.canCycleResearchCandidate);
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
     this.openWorldBtn!.node.active = true;
