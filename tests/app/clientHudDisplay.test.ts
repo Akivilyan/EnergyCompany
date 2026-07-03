@@ -648,6 +648,7 @@ describe("clientHudDisplay", () => {
       canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
+      canQueueSuperHydroGridLink: false,
       canOperateTech: false
     });
   });

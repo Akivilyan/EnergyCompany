@@ -17,6 +17,7 @@ describe("getClientHudCapabilities", () => {
       canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
+      canQueueSuperHydroGridLink: false,
       canOperateTech: false
     });
   });
@@ -39,6 +40,7 @@ describe("getClientHudCapabilities", () => {
       canCancelRegionLink: false,
       canQueueWorldTrunk: false,
       canQueueSuperHydro: false,
+      canQueueSuperHydroGridLink: false,
       canOperateTech: true
     });
   });
@@ -53,5 +55,25 @@ describe("getClientHudCapabilities", () => {
 
     boot.app.controller.state.funds = 7;
     expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(false);
+  });
+
+  it("exposes super hydro grid link capability for finished isolated output", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 200;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.superHydros.super_hydro_1 = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+
+    expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(true);
+
+    boot.app.controller.state.funds = 7;
+    expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(false);
   });
 });

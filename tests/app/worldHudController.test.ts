@@ -4,6 +4,7 @@ import {
   getWorldHudSelectionSnapshot,
   worldCycleTargetCandidate,
   worldOpenSelectedTarget,
+  worldQueueSuperHydroGridLink,
   worldQueueSelectedTrunk,
   worldQueueSuperHydro
 } from "../../src/app/worldHudController.js";
@@ -186,5 +187,40 @@ describe("worldHudController", () => {
     expect(out.messageKey).toBe("world.success.super_hydro_queued");
     expect(boot.app.controller.state.superHydros.super_hydro_1?.status).toBe("building");
     expect(boot.app.controller.state.funds).toBe(40);
+  });
+
+  it("queues finished super hydro grid link to MET-B from the world hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 200;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    boot.app.controller.state.superHydros.super_hydro_1 = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    clientNavOpenWorldMap(boot);
+
+    const out = worldQueueSuperHydroGridLink(boot);
+
+    expect(out.ok).toBe(true);
+    expect(out.messageKey).toBe("world.success.super_hydro_grid_queued");
+    expect(boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"]?.status).toBe("building");
+  });
+
+  it("blocks super hydro grid link when no finished isolated slot exists", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.litTechIds.push("super_hydro");
+    clientNavOpenWorldMap(boot);
+
+    const out = worldQueueSuperHydroGridLink(boot);
+
+    expect(out.ok).toBe(false);
+    expect(out.errorCode).toBe("conflict_in_progress");
+    expect(out.messageKey).toBe("world.error.no_super_hydro_grid");
   });
 });

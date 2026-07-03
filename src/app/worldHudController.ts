@@ -129,6 +129,16 @@ function getFirstAvailableSuperHydroSlot(boot: GameBootstrap): string | null {
   return snapshot.slots.find((slot) => slot.status === "available")?.slotId ?? null;
 }
 
+function getFirstIsolatedSuperHydroNode(boot: GameBootstrap): string | null {
+  const snapshot = boot.app.screens.world.getSnapshot().superHydro;
+  if (!snapshot.unlocked) return null;
+  return (
+    snapshot.slots.find(
+      (slot) => slot.status === "finished" && slot.gridConnectionStatus === "isolated"
+    )?.nodeId ?? null
+  );
+}
+
 export function getSelectedWorldTrunkCandidate(boot: GameBootstrap): WorldHudTrunkCandidate | null {
   const selected = ensureSelectedCandidate(boot);
   if (!selected || !selected.unlocked || selected.regionId === "MAP-01") return null;
@@ -306,4 +316,27 @@ export function worldQueueSuperHydro(boot: GameBootstrap): CityHudActionResult {
     return toActionResult(boot, false, out.error, key);
   }
   return toActionResult(boot, true, null, "world.success.super_hydro_queued");
+}
+
+export function worldQueueSuperHydroGridLink(boot: GameBootstrap): CityHudActionResult {
+  const nodeId = getFirstIsolatedSuperHydroNode(boot);
+  if (!nodeId) {
+    return toActionResult(boot, false, "conflict_in_progress", "world.error.no_super_hydro_grid");
+  }
+  const out = boot.app.controller.runCommand({
+    type: "queue_grid_link",
+    fromCityId: "CITY-METB-01",
+    toCityId: nodeId,
+    linkType: "trunk"
+  });
+  if (!out.ok) {
+    const key =
+      out.error === "not_unlocked"
+        ? "world.error.not_unlocked"
+        : out.error === "insufficient_funds"
+          ? "world.error.super_hydro_grid_funds"
+          : "world.error.super_hydro_grid_failed";
+    return toActionResult(boot, false, out.error, key);
+  }
+  return toActionResult(boot, true, null, "world.success.super_hydro_grid_queued");
 }

@@ -7,6 +7,7 @@ export interface ClientHudCapabilities {
   canCancelRegionLink: boolean;
   canQueueWorldTrunk: boolean;
   canQueueSuperHydro: boolean;
+  canQueueSuperHydroGridLink: boolean;
   canOperateTech: boolean;
   canBuildInCity: boolean;
   canCycleBuildCandidate: boolean;
@@ -36,6 +37,12 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
       superHydro.slots.some(
         (slot) => slot.status === "available" && boot.app.controller.state.funds >= slot.buildCost
       ),
+    canQueueSuperHydroGridLink:
+      superHydro.unlocked &&
+      superHydro.slots.some(
+        (slot) => slot.status === "finished" && slot.gridConnectionStatus === "isolated"
+      ) &&
+      boot.app.controller.state.funds >= 30,
     canOperateTech: tech.canOpen,
     canBuildInCity: city !== null && boot.app.controller.state.constructionQueue.length < 3,
     canCycleBuildCandidate: city !== null

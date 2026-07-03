@@ -61,6 +61,7 @@ export {
   getWorldHudSelectionSnapshot,
   worldQueueSelectedTrunk,
   worldQueueSuperHydro,
+  worldQueueSuperHydroGridLink,
   worldCycleTargetCandidate,
   worldOpenSelectedTarget
 } from "./worldHudController.js";
