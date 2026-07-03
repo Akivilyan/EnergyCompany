@@ -13,6 +13,8 @@ import { createScreenRunResult } from "../modules/screenRunResult.js";
 import { createScreenWorldMap } from "../modules/screenWorldMap.js";
 import type { RunController } from "../modules/runController.js";
 import type { Command } from "../sim/index.js";
+import type { GameBootstrap } from "./gameBootstrap.js";
+import { worldQueueSuperHydroGridLink } from "./worldHudController.js";
 
 interface Milestone {
   id: string;
@@ -167,6 +169,31 @@ function connectRegion(controller: RunController, fromCityId: string, toCityId: 
   advanceOneMonth(controller);
 }
 
+function queueSuperHydroGridViaWorldHud(controller: RunController): void {
+  ensureFunds(controller, 40);
+  const boot = {
+    app: {
+      controller,
+      screens: {
+        world: createScreenWorldMap(controller)
+      }
+    },
+    play: {
+      getNavigation: () => ({
+        currentScreen: "screen_world_map",
+        cityId: "CITY-METB-01",
+        regionId: "MET-B",
+        returnStackDepth: 0
+      })
+    }
+  } as unknown as GameBootstrap;
+  const out = worldQueueSuperHydroGridLink(boot);
+  if (!out.ok) {
+    fail(`worldQueueSuperHydroGridLink failed: ${out.errorCode} - ${out.messageKey}`);
+  }
+  advanceOneMonth(controller);
+}
+
 function ensureLevel(controller: RunController, level: number, maxMonths: number): void {
   try {
     advanceUntil(controller, `reach level ${level}`, () => controller.state.companyLevel >= level, maxMonths);
@@ -313,7 +340,7 @@ function runFastDemoRoute(): void {
     () => controller.state.superHydros.super_hydro_1?.status === "finished",
     8
   );
-  connect(controller, "CITY-METB-01", "SUPER-HYDRO-1");
+  queueSuperHydroGridViaWorldHud(controller);
 
   const metB = createScreenRegionForRegion(controller, "MET-B").getSnapshot();
   ensure(metB.linkCandidates.some((item) => item.toCityId === "SUPER-HYDRO-1" || item.fromCityId === "SUPER-HYDRO-1"), "MET-B should expose super hydro route");
