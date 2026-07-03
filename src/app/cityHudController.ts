@@ -320,7 +320,7 @@ function findRecommendedBuildCandidate(
   boot: GameBootstrap,
   candidates: CityBuildCandidate[]
 ): CityBuildCandidate | null {
-  if (boot.app.controller.state.companyLevel < 5) return null;
+  if (boot.app.controller.state.companyLevel < 3) return null;
   const profile = getCityHudProfileSnapshot(boot);
   if (!profile || profile.supplyGapMw <= 0) return null;
   const tags = new Set(profile.operatingPressureTags);

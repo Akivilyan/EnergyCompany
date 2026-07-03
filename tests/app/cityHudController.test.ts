@@ -191,6 +191,55 @@ describe("cityHudController", () => {
     expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("thermal");
   });
 
+  it("prefers hydro for a mid-game river city with hydro pressure", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map03 = config.getCity("CITY-MAP03-01");
+    expect(map03).toBeTruthy();
+    boot.app.controller.state.companyLevel = 3;
+    boot.app.controller.state.cities["CITY-MAP03-01"] = {
+      cityId: "CITY-MAP03-01",
+      demandMw: map03?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map03?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP03-01", "MAP-03");
+
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("hydro");
+  });
+
+  it("exposes nuclear as a mid-game candidate after nuclear tech is lit", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map02 = config.getCity("CITY-MAP02-01");
+    expect(map02).toBeTruthy();
+    boot.app.controller.state.companyLevel = 3;
+    boot.app.controller.state.litTechIds.push("nuclear_1");
+    boot.app.controller.state.cities["CITY-MAP02-01"] = {
+      cityId: "CITY-MAP02-01",
+      demandMw: map02?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map02?.city_base_social_value ?? 0
+    };
+    clientNavOpenCity(boot, "CITY-MAP02-01", "MAP-02");
+
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("hydro");
+
+    const cycle = cityHudCycleBuildCandidate(boot);
+    expect(cycle.ok).toBe(true);
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("nuclear");
+  });
+
   it("exposes city eco and green brand status for city HUD", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

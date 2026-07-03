@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.127.0
+version: 1.128.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 城市 HUD 建设推荐下沉到 III 级，中期水电/核电候选可进入试玩节奏 |
 | 2026-07-03 | `FAST-01` 区域 HUD 主干完工后自动转向区内可铺线，跨区接通后可继续区域建设 |
 | 2026-07-03 | `FAST-01` 世界地图目标选择支持已接通后自动转向下一条 late-map 可铺主干，连续跨区扩张不再卡在已完成目标 |
 | 2026-07-03 | `FAST-01` 新增固定 demo 验收路线脚本：开局到 V 级、`MET-B`、超级水电、最终灾害与胜利结算可串通 |
@@ -160,3 +161,4 @@ open_questions: []
 | 1.125.0 | 2026-07-03 | 新增 FAST-01 固定 demo 验收路线脚本 |
 | 1.126.0 | 2026-07-03 | 记录世界地图连续跨区目标选择推进 |
 | 1.127.0 | 2026-07-03 | 记录区域 HUD 主干完工后转向区内铺线 |
+| 1.128.0 | 2026-07-03 | 记录城市 HUD 中期建设推荐推进 |
