@@ -70,6 +70,7 @@ export interface CityConfig {
 export interface CompanyLevelConfig {
   level: number;
   sv_threshold: number;
+  unlock_notes?: string;
 }
 
 export interface RegionConfig {

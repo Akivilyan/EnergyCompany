@@ -98,6 +98,26 @@ export function formatCompanyCashflowOpportunityLine(boot: GameBootstrap): strin
   });
 }
 
+export function formatCompanyLevelGoalLine(boot: GameBootstrap): string | null {
+  const state = boot.app.controller.state;
+  const nextLevel = boot.app.controller.config.bundle.companyLevels.find(
+    (item) => item.level === state.companyLevel + 1
+  );
+  if (!nextLevel) return null;
+  const gap = Math.max(0, nextLevel.sv_threshold - state.socialValueCurrent);
+  const notes = nextLevel.unlock_notes ?? "";
+  return gap > 0
+    ? t("hud.status.company_level_goal", {
+        level: nextLevel.level,
+        gap,
+        notes
+      })
+    : t("hud.status.company_level_ready", {
+        level: nextLevel.level,
+        notes
+      });
+}
+
 export function formatCompanyConstructionTechLine(boot: GameBootstrap): string | null {
   const parts: string[] = [];
   for (const techId of boot.app.controller.state.litTechIds) {

@@ -101,6 +101,8 @@ export const zhCN: Record<string, string> = {
   "hud.status.company_no_loan": "无在贷",
   "hud.status.company_cashflow": "上月M{month}净现金流 {net} · 收入{income}/运维{opex}/燃料{fuel}/贷款{loan}",
   "hud.status.company_selected_loan": "候选：{loanName} · 月供{monthlyPayment}",
+  "hud.status.company_level_goal": "升级目标：还差{gap}SV到{level}级 · {notes}",
+  "hud.status.company_level_ready": "升级目标：可升至{level}级 · {notes}",
   "hud.status.company_loan_tier_bonus": "现金流科技：贷款等级+{bonus} · 有效{effective}级",
   "hud.status.company_cashflow_opportunity": "现金流机会：研发后贷款等级+{bonus} · 有效{effective}级",
   "hud.status.company_construction_tech": "建设科技：{items}",

@@ -35,6 +35,7 @@ import {
   formatCompanyGridDispatchTechLine,
   formatCompanyGridOpportunityLine,
   formatCompanyGridTechLine,
+  formatCompanyLevelGoalLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearOpportunityLine,
   formatCompanyNuclearTechLine,
@@ -384,6 +385,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
   const detailLines = s.activeLoan
     ? hudLines(
         svLine,
+        formatCompanyLevelGoalLine(boot),
         latestCashflow,
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),
@@ -412,6 +414,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
       )
     : hudLines(
         svLine,
+        formatCompanyLevelGoalLine(boot),
         latestCashflow,
         formatActiveEventPressureLine(boot),
         formatActiveEventRecoveryActionLine(boot),

@@ -101,6 +101,8 @@ export const en: Record<string, string> = {
   "hud.status.company_no_loan": "No active loan",
   "hud.status.company_cashflow": "Last M{month} cashflow {net} · income {income}/opex {opex}/fuel {fuel}/loan {loan}",
   "hud.status.company_selected_loan": "Candidate: {loanName} · pay {monthlyPayment}/m",
+  "hud.status.company_level_goal": "Level goal: {gap} SV to Lv{level} · {notes}",
+  "hud.status.company_level_ready": "Level goal: ready for Lv{level} · {notes}",
   "hud.status.company_loan_tier_bonus": "Cashflow tech: loan level +{bonus} · effective Lv{effective}",
   "hud.status.company_cashflow_opportunity": "Cashflow opportunity: loan level +{bonus} after research · effective Lv{effective}",
   "hud.status.company_construction_tech": "Construction tech: {items}",

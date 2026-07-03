@@ -18,6 +18,7 @@ import {
   formatCompanyGridDispatchTechLine,
   formatCompanyGridOpportunityLine,
   formatCompanyGridTechLine,
+  formatCompanyLevelGoalLine,
   formatCompanyLoanTierBonusLine,
   formatCompanyNuclearOpportunityLine,
   formatCompanyNuclearTechLine,
@@ -82,6 +83,23 @@ describe("companyHudController", () => {
     const out = companyClaimCashByAd(boot);
     expect(out.ok).toBe(true);
     expect(boot.app.controller.state.funds).toBeGreaterThan(before);
+  });
+
+  it("formats next company level goal from level config", () => {
+    const boot = createGameBootstrapFromRepo();
+
+    expect(formatCompanyLevelGoalLine(boot)).toBe(
+      "升级目标：还差1SV到2级 · MAP-01 full province"
+    );
+
+    boot.app.controller.state.companyLevel = 3;
+    boot.app.controller.state.socialValueCurrent = 84;
+    expect(formatCompanyLevelGoalLine(boot)).toBe(
+      "升级目标：可升至4级 · 把 MAP-01、MAP-02、MET-A 串成后半程试玩主链后，解锁 MAP-03~05"
+    );
+
+    boot.app.controller.state.companyLevel = 5;
+    expect(formatCompanyLevelGoalLine(boot)).toBeNull();
   });
 
   it("formats cashflow tech loan tier bonus", () => {
