@@ -29,6 +29,9 @@ export const zhCN: Record<string, string> = {
   "hud.events.active": "进行中灾害 {count} 个",
   "hud.events.upcoming": "下一场 {id} 还有 {months} 月",
   "hud.events.active_pressure": "灾害压力：剩{months}月 · 收入{income}% · 建设{build}% · 科研{research}%",
+  "hud.events.recovery_ad": "恢复建议：先广告补现金，扛过剩余{months}月",
+  "hud.events.recovery_loan": "恢复建议：先申请{loan}，覆盖剩余{months}月",
+  "hud.events.recovery_hold": "恢复建议：保守推进{months}月，少开长工期项目",
   "hud.events.upcoming_risk": "灾害备考：M{month}现金冲击{adjusted}/{base} · 风险储备生效",
   "hud.events.upcoming_risk_opportunity": "风险储备机会：M{month}现金冲击可降至{adjusted}/{base}",
 

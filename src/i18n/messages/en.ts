@@ -29,6 +29,9 @@ export const en: Record<string, string> = {
   "hud.events.active": "Active disasters: {count}",
   "hud.events.upcoming": "Next {id} in {months} mo",
   "hud.events.active_pressure": "Disaster pressure: {months}m left · income {income}% · build {build}% · research {research}%",
+  "hud.events.recovery_ad": "Recovery action: claim ad cash first for the remaining {months}m",
+  "hud.events.recovery_loan": "Recovery action: take {loan} first to cover the remaining {months}m",
+  "hud.events.recovery_hold": "Recovery action: advance conservatively for {months}m and avoid long builds",
   "hud.events.upcoming_risk": "Disaster prep: M{month} cash hit {adjusted}/{base} · risk reserve active",
   "hud.events.upcoming_risk_opportunity": "Risk reserve opportunity: M{month} cash hit can drop to {adjusted}/{base}",
 

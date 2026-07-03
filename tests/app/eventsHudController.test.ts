@@ -3,6 +3,7 @@ import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js
 import type { GameBootstrap } from "../../src/app/gameBootstrap.js";
 import {
   eventsAcknowledgeNextPending,
+  formatActiveEventRecoveryActionLine,
   formatActiveEventPressureLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
@@ -52,6 +53,30 @@ describe("eventsHudController", () => {
 
     expect(formatActiveEventPressureLine(boot)).toBe(
       "灾害压力：剩8月 · 收入92% · 建设108% · 科研108%"
+    );
+  });
+
+  it("formats disaster recovery actions by cash buffer state", () => {
+    setLocale("zh-CN");
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.funds = 10000;
+    settleToMonth(boot, 23);
+
+    boot.app.controller.state.funds = 20;
+    boot.app.controller.state.adsRemaining = 1;
+    expect(formatActiveEventRecoveryActionLine(boot)).toBe(
+      "恢复建议：先广告补现金，扛过剩余8月"
+    );
+
+    boot.app.controller.state.funds = 100;
+    boot.app.controller.state.adsRemaining = 0;
+    expect(formatActiveEventRecoveryActionLine(boot)).toBe(
+      "恢复建议：先申请小额贷款（30万），覆盖剩余8月"
+    );
+
+    boot.app.controller.state.funds = 1000;
+    expect(formatActiveEventRecoveryActionLine(boot)).toBe(
+      "恢复建议：保守推进8月，少开长工期项目"
     );
   });
 

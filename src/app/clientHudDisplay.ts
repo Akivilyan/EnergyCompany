@@ -5,6 +5,7 @@ import {
   getCityHudBuildSelectionSnapshot
 } from "./cityHudController.js";
 import {
+  formatActiveEventRecoveryActionLine,
   formatActiveEventPressureLine,
   formatEventsHudHint,
   formatPendingEventModalLines,
@@ -385,6 +386,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         svLine,
         latestCashflow,
         formatActiveEventPressureLine(boot),
+        formatActiveEventRecoveryActionLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
         formatCompanyCashflowOpportunityLine(boot),
@@ -412,6 +414,7 @@ function formatCompanyStatus(boot: GameBootstrap): ClientHudDisplay {
         svLine,
         latestCashflow,
         formatActiveEventPressureLine(boot),
+        formatActiveEventRecoveryActionLine(boot),
         formatUpcomingEventRiskLine(boot),
         formatUpcomingEventRiskOpportunityLine(boot),
         formatCompanyLoanTierBonusLine(boot),

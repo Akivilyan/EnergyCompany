@@ -83,6 +83,24 @@ export function formatActiveEventPressureLine(boot: GameBootstrap): string | nul
   });
 }
 
+export function formatActiveEventRecoveryActionLine(boot: GameBootstrap): string | null {
+  const active = boot.app.screens.events.getSnapshot().active[0];
+  if (!active) return null;
+  const company = boot.app.screens.company.getSnapshot();
+  const cashBufferTarget = active.monthsRemaining * 10;
+  if (company.funds < cashBufferTarget && company.adsRemaining > 0) {
+    return t("hud.events.recovery_ad", { months: active.monthsRemaining });
+  }
+  const loan = company.loanTierOptions.filter((item) => item.unlocked).at(-1);
+  if (company.funds < cashBufferTarget * 2 && !company.activeLoan && loan) {
+    return t("hud.events.recovery_loan", {
+      loan: t(`loan.tier.${loan.loanId}`),
+      months: active.monthsRemaining
+    });
+  }
+  return t("hud.events.recovery_hold", { months: active.monthsRemaining });
+}
+
 export function formatUpcomingEventRiskLine(boot: GameBootstrap): string | null {
   const next = boot.app.screens.events.getSnapshot().upcoming[0];
   if (!next || !next.cashPenaltyReduced) return null;

@@ -436,6 +436,7 @@ describe("clientHudDisplay", () => {
 
     const active = buildClientHudDisplay(boot);
     expect(active.detailLines).toContain("灾害压力：剩8月 · 收入92% · 建设108% · 科研108%");
+    expect(active.detailLines).toContain("恢复建议：保守推进8月，少开长工期项目");
   });
 
   it("shows risk-reserve opportunity on company hud before research", () => {
