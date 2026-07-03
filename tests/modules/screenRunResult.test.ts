@@ -21,7 +21,34 @@ describe("ScreenRunResult", () => {
     controller.state.currentMonth = controller.config.bundle.runConfig.campaign_run_target_months;
     controller.state.disastersTriggered.push(finalDisaster.seq);
     controller.state.funds = 10;
+    controller.state.companyLevel = 5;
     controller.state.cities["CITY-START"].demandMw = 0;
+    controller.state.gridLinks["CITY-METB-01::CITY-START"] = {
+      linkId: "CITY-METB-01::CITY-START",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-METB-01",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 250
+    };
+    controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"] = {
+      linkId: "CITY-METB-01::SUPER-HYDRO-1",
+      fromCityId: "CITY-METB-01",
+      toCityId: "SUPER-HYDRO-1",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 250
+    };
+    controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "Jinsha River UHV Hydro Base",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 1800
+    };
     const month = controller.runNextMonth();
     expect(month.ok).toBe(true);
     const screen = createScreenRunResult(controller);
@@ -30,6 +57,13 @@ describe("ScreenRunResult", () => {
     if (!snapshot) return;
     expect(snapshot.runResult).toBe("victory");
     expect(snapshot.finalDisasterTriggered).toBe(true);
+    expect(snapshot.terminalRoute).toMatchObject({
+      metBUnlocked: true,
+      metBConnected: true,
+      superHydroFinishedSlots: 1,
+      superHydroConnectedOutputMw: 1800,
+      superHydroTotalOutputMw: 1800
+    });
     expect(snapshot.canRunPlayableCommands).toBe(false);
   });
 
@@ -46,6 +80,8 @@ describe("ScreenRunResult", () => {
     expect(snapshot).not.toBeNull();
     if (!snapshot) return;
     expect(snapshot.runResult).toBe("bankrupt");
+    expect(snapshot.terminalRoute.metBUnlocked).toBe(false);
+    expect(snapshot.terminalRoute.superHydroConnectedOutputMw).toBe(0);
     expect(snapshot.canRunPlayableCommands).toBe(false);
   });
 });

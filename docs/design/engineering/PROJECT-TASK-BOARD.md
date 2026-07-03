@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.130.0
+version: 1.131.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 终局结果 HUD 补齐 demo 路线摘要：MET-B、超级水电接网、最终灾害状态可见 |
 | 2026-07-03 | `FAST-01` 灾害 HUD 恢复期行动建议落地：按现金、广告与贷款状态提示补现金/借贷/保守推进 |
 | 2026-07-03 | `FAST-01` 科技 HUD 中期默认候选对齐 III/IV 级推进：区域网、储能、核电与主干网进入试玩节奏 |
 | 2026-07-03 | `FAST-01` 城市 HUD 建设推荐下沉到 III 级，中期水电/核电候选可进入试玩节奏 |
@@ -166,3 +167,4 @@ open_questions: []
 | 1.128.0 | 2026-07-03 | 记录城市 HUD 中期建设推荐推进 |
 | 1.129.0 | 2026-07-03 | 记录科技 HUD 中期推荐顺序推进 |
 | 1.130.0 | 2026-07-03 | 记录灾害 HUD 恢复期行动建议落地 |
+| 1.131.0 | 2026-07-03 | 记录终局结果 HUD 路线摘要落地 |

@@ -676,6 +676,52 @@ function formatTechStatus(boot: GameBootstrap): ClientHudDisplay {
   };
 }
 
+function formatRunResultStatus(boot: GameBootstrap): ClientHudDisplay {
+  const snapshot = boot.app.screens.runResult.getSnapshot();
+  if (!snapshot) {
+    const fallback = formatNavHint(boot);
+    return {
+      statusLine: fallback,
+      detailLine: fallback,
+      statusLines: hudLines(fallback),
+      detailLines: hudLines(fallback)
+    };
+  }
+  const statusLine = t("hud.status.run_result", {
+    result: t(`run_result.${snapshot.runResult}`),
+    month: snapshot.month
+  });
+  const detailLines = hudLines(
+    t("hud.status.run_result_core", {
+      level: snapshot.companyLevel,
+      funds: snapshot.funds,
+      sv: snapshot.socialValue,
+      disasters: snapshot.disastersTriggeredCount
+    }),
+    t("hud.status.run_result_terminal", {
+      metb: snapshot.terminalRoute.metBConnected
+        ? t("hud.result.state.connected")
+        : snapshot.terminalRoute.metBUnlocked
+          ? t("hud.result.state.unconnected")
+          : t("hud.result.state.locked"),
+      hydro: snapshot.terminalRoute.superHydroConnectedOutputMw,
+      total: snapshot.terminalRoute.superHydroTotalOutputMw,
+      gap: snapshot.terminalRoute.metBSupplyGapMw ?? 0
+    }),
+    t("hud.status.run_result_final_disaster", {
+      state: snapshot.finalDisasterTriggered
+        ? t("hud.result.state.triggered")
+        : t("hud.result.state.pending")
+    })
+  );
+  return {
+    statusLine,
+    detailLine: detailLines.join(" · "),
+    statusLines: hudLines(statusLine),
+    detailLines
+  };
+}
+
 export function formatNavHint(boot: GameBootstrap): string {
   const view = readCityHudViewModel(boot);
   const stack = boot.play.getNavigation().stack.length;
@@ -697,6 +743,8 @@ export function buildClientHudDisplay(
     display = formatWorldStatus(boot);
   } else if (screen === "screen_tech_tree") {
     display = formatTechStatus(boot);
+  } else if (screen === "screen_run_result") {
+    display = formatRunResultStatus(boot);
   } else {
     const view = readCityHudViewModel(boot);
     const city = view.cityId === "CITY-START" ? t("hud.city.start") : view.cityId;
@@ -760,7 +808,8 @@ export function buildClientHudDisplay(
     screen === "screen_company" ||
     screen === "screen_region" ||
     screen === "screen_world_map" ||
-    screen === "screen_tech_tree"
+    screen === "screen_tech_tree" ||
+    screen === "screen_run_result"
   ) {
     display.detailLines = hudLines(...display.detailLines, actionMessage);
     display.detailLine = display.detailLines.join(" · ");
