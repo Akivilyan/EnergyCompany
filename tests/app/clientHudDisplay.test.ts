@@ -1191,4 +1191,17 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
     expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(false);
   });
+
+  it("shows discounted super hydro slot cost on world map hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 147;
+    boot.app.controller.state.litTechIds.push("super_hydro", "eng_bulk_procure");
+    clientNavOpenWorldMap(boot);
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 147资金 · 6月 · 4200MW");
+    expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(true);
+  });
 });

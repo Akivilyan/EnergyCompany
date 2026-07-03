@@ -273,6 +273,16 @@ describe("screenWorldMap", () => {
     );
   });
 
+  it("applies construction tech discount to super hydro slot cost", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 5;
+    controller.state.litTechIds.push("super_hydro", "eng_bulk_procure");
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+
+    expect(snapshot.superHydro.slots.find((slot) => slot.slotId === "super_hydro_1")?.buildCost).toBe(147);
+  });
+
   it("counts only grid-connected super hydro output as connected output", () => {
     const controller = createTestController();
     controller.state.companyLevel = 5;

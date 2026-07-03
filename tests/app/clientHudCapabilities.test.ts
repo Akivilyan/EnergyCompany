@@ -76,4 +76,16 @@ describe("getClientHudCapabilities", () => {
     boot.app.controller.state.funds = 7;
     expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(false);
   });
+
+  it("uses discounted super hydro build cost for queue capability", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 147;
+    boot.app.controller.state.litTechIds.push("super_hydro", "eng_bulk_procure");
+
+    expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(true);
+
+    boot.app.controller.state.funds = 146;
+    expect(getClientHudCapabilities(boot).canQueueSuperHydro).toBe(false);
+  });
 });

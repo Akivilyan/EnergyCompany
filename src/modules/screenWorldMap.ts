@@ -1,4 +1,5 @@
 import type { RunController } from "./runController.js";
+import { getConstructionBuildCost } from "../sim/index.js";
 
 export type ResourceKind = "wind" | "solar" | "hydro" | "fossil";
 export type RecommendedBuildKind = "wind" | "solar" | "hydro" | "thermal" | "nuclear";
@@ -415,7 +416,7 @@ export class ScreenWorldMap {
         gridConnectionStatus,
         monthsRemaining: runtime?.monthsRemaining ?? slot.build_duration_months,
         outputMw: runtime?.outputMw ?? slot.output_capacity_mw,
-        buildCost: slot.build_cost_total
+        buildCost: getConstructionBuildCost(state, config, slot.build_cost_total)
       };
     });
 

@@ -189,6 +189,20 @@ describe("worldHudController", () => {
     expect(boot.app.controller.state.funds).toBe(40);
   });
 
+  it("queues super hydro from the world hud with discounted construction cost", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 147;
+    boot.app.controller.state.litTechIds.push("super_hydro", "eng_bulk_procure");
+    clientNavOpenWorldMap(boot);
+
+    const out = worldQueueSuperHydro(boot);
+
+    expect(out.ok).toBe(true);
+    expect(boot.app.controller.state.superHydros.super_hydro_1?.status).toBe("building");
+    expect(boot.app.controller.state.funds).toBe(0);
+  });
+
   it("queues finished super hydro grid link to MET-B from the world hud", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

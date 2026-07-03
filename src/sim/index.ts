@@ -9,6 +9,7 @@ export type { ConfigBundleInput } from "./config/configBundle.js";
 export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
 export {
+  getConstructionBuildCost,
   getGridLinkBuildCost,
   getGridLinkLossMw,
   getLoanTierLevelBonus,
