@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Cocos 场景占位接入预研冒烟（T48-05）：
- * GameShell 导航 -> SceneHost 场景名映�?-> 轨迹输出
+ * Cocos scene spike smoke (T48-05):
+ * GameShell navigation -> SceneHost scene mapping -> registry output.
  *
- * 用法�? *   npm run sim:cocos-scene-spike
+ * Usage:
+ *   npm run sim:cocos-scene-spike
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 import { createGameBootstrapFromRepo } from "./gameBootstrap.node.js";
 import { buildSceneRegistry } from "../ui/sceneMap.js";
@@ -13,6 +14,20 @@ import { LoggingSceneHost } from "../ui/sceneHost.js";
 
 const repoRoot = process.cwd();
 const registryPath = path.join(repoRoot, "client", "cocos", "scene-registry.json");
+
+function readBuiltSceneNames(): string[] {
+  if (!fs.existsSync(registryPath)) return [];
+  try {
+    const registry = JSON.parse(fs.readFileSync(registryPath, "utf8")) as {
+      builtSceneNames?: unknown;
+    };
+    return Array.isArray(registry.builtSceneNames)
+      ? registry.builtSceneNames.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 const host = new LoggingSceneHost();
 const { play } = createGameBootstrapFromRepo({ repoRoot, sceneHost: host });
@@ -31,6 +46,14 @@ const history = host.history.map((item) => `${item.screenId}->${item.sceneName}`
 console.log(`transitions: ${history}`);
 console.log(`final: scene=${host.getCurrentScene()}, stack=${play.getNavigation().stack.length}`);
 
-mkdirSync(path.dirname(registryPath), { recursive: true });
-writeFileSync(registryPath, `${JSON.stringify({ version: 1, scenes: buildSceneRegistry() }, null, 2)}\n`, "utf8");
+fs.mkdirSync(path.dirname(registryPath), { recursive: true });
+fs.writeFileSync(
+  registryPath,
+  `${JSON.stringify(
+    { version: 1, builtSceneNames: readBuiltSceneNames(), scenes: buildSceneRegistry() },
+    null,
+    2
+  )}\n`,
+  "utf8"
+);
 console.log(`registry: wrote ${path.relative(repoRoot, registryPath)}`);

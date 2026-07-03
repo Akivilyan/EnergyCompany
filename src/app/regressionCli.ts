@@ -135,7 +135,7 @@ function runE3(): ScenarioResult {
   const controller = promoteToLevel2();
   const company = createScreenCompany(controller);
   const tech = createScreenTechTree(controller);
-  const targetTechId = "storage_system_1";
+  const targetTechId = "wind_2";
 
   const start = tech.startResearch(targetTechId);
   ensure(start.result.ok, "start research failed");

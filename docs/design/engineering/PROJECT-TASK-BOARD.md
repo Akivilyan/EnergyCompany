@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.148.0
+version: 1.150.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` playtest-bundle 纳入固定 demo 路线并修复聚合自污染：综合回归覆盖开局到 MET-B、超水电、最终灾害与胜利 |
 | 2026-07-03 | `FAST-01` 世界地图目标按钮能力对齐解锁状态：锁定目标不再显示打开入口但保留切换入口 |
 | 2026-07-03 | `FAST-01` 公司/科技按钮能力对齐真实动作条件：广告、贷款、资金与在研状态不再误显入口 |
 | 2026-07-03 | `FAST-01` 城市建设按钮能力对齐选中候选成本：无候选或资金不足时不再显示可建入口 |
@@ -202,3 +203,5 @@ open_questions: []
 | 1.146.0 | 2026-07-03 | 记录城市建设按钮能力对齐选中候选成本 |
 | 1.147.0 | 2026-07-03 | 记录公司/科技按钮能力对齐广告、贷款、资金与在研状态 |
 | 1.148.0 | 2026-07-03 | 记录世界地图目标打开入口对齐解锁状态 |
+| 1.149.0 | 2026-07-03 | 记录 playtest-bundle 纳入 FAST-01 固定 demo 路线 |
+| 1.150.0 | 2026-07-03 | 记录 playtest-bundle 修复场景 registry 自污染与 E3 过期科技目标 |
