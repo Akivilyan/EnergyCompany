@@ -8,7 +8,10 @@ import {
   getTechHudSelectionSnapshot,
   techStartDefaultResearch
 } from "../../src/app/techHudController.js";
-import { worldCycleTargetCandidate } from "../../src/app/worldHudController.js";
+import {
+  getWorldHudSelectionSnapshot,
+  worldCycleTargetCandidate
+} from "../../src/app/worldHudController.js";
 
 describe("getClientHudCapabilities", () => {
   it("hides locked region-link and tech actions at level 1", () => {
@@ -22,6 +25,8 @@ describe("getClientHudCapabilities", () => {
       canCycleRegionLink: false,
       canCancelRegionLink: false,
       canQueueWorldTrunk: false,
+      canOpenWorldTarget: true,
+      canCycleWorldTarget: true,
       canQueueSuperHydro: false,
       canQueueSuperHydroGridLink: false,
       canOperateTech: false,
@@ -90,6 +95,8 @@ describe("getClientHudCapabilities", () => {
       canCycleRegionLink: true,
       canCancelRegionLink: false,
       canQueueWorldTrunk: false,
+      canOpenWorldTarget: true,
+      canCycleWorldTarget: true,
       canQueueSuperHydro: false,
       canQueueSuperHydroGridLink: false,
       canOperateTech: true,
@@ -179,6 +186,27 @@ describe("getClientHudCapabilities", () => {
 
     boot.app.controller.state.funds = 7;
     expect(getClientHudCapabilities(boot).canQueueWorldTrunk).toBe(false);
+  });
+
+  it("hides world target open capability when the selected target is locked", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    clientNavOpenWorldMap(boot);
+
+    expect(getClientHudCapabilities(boot).canOpenWorldTarget).toBe(true);
+
+    let guard = 0;
+    while (guard < 12) {
+      const selection = getWorldHudSelectionSnapshot(boot);
+      const selected = selection.candidates.find(
+        (candidate) => candidate.candidateId === selection.selectedCandidateId
+      );
+      if (selected?.unlocked === false) break;
+      worldCycleTargetCandidate(boot);
+      guard += 1;
+    }
+
+    expect(getClientHudCapabilities(boot).canOpenWorldTarget).toBe(false);
+    expect(getClientHudCapabilities(boot).canCycleWorldTarget).toBe(true);
   });
 
   it("exposes super hydro grid link capability for finished isolated output", () => {

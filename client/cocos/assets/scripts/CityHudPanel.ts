@@ -432,8 +432,8 @@ export class CityHudPanel extends Component {
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.cancelRegionLinkBtn!.node.active = onRegion && caps.canCancelRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
-    this.openWorldTargetBtn!.node.active = onWorld;
-    this.cycleWorldTargetBtn!.node.active = onWorld;
+    this.openWorldTargetBtn!.node.active = onWorld && caps.canOpenWorldTarget;
+    this.cycleWorldTargetBtn!.node.active = onWorld && caps.canCycleWorldTarget;
     this.queueWorldTrunkBtn!.node.active = onWorld && caps.canQueueWorldTrunk;
     this.queueSuperHydroBtn!.node.active = onWorld && caps.canQueueSuperHydro;
     this.queueSuperHydroGridBtn!.node.active = onWorld && caps.canQueueSuperHydroGridLink;

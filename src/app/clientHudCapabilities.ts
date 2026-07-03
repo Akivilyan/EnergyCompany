@@ -3,7 +3,10 @@ import { getCompanyHudSelectionSnapshot } from "./companyHudController.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { getRegionHudSelectionSnapshot } from "./regionHudController.js";
 import { getTechHudSelectionSnapshot } from "./techHudController.js";
-import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
+import {
+  getSelectedWorldTrunkCandidate,
+  getWorldHudSelectionSnapshot
+} from "./worldHudController.js";
 import { getGridLinkBuildCost } from "../sim/index.js";
 
 export interface ClientHudCapabilities {
@@ -11,6 +14,8 @@ export interface ClientHudCapabilities {
   canCycleRegionLink: boolean;
   canCancelRegionLink: boolean;
   canQueueWorldTrunk: boolean;
+  canOpenWorldTarget: boolean;
+  canCycleWorldTarget: boolean;
   canQueueSuperHydro: boolean;
   canQueueSuperHydroGridLink: boolean;
   canOperateTech: boolean;
@@ -59,6 +64,11 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
       (candidate) => candidate.techId === techSelection.selectedTechId
     ) ?? null;
   const hasActiveResearch = tech.activeResearch !== null;
+  const worldSelection = getWorldHudSelectionSnapshot(boot);
+  const selectedWorldCandidate =
+    worldSelection.candidates.find(
+      (candidate) => candidate.candidateId === worldSelection.selectedCandidateId
+    ) ?? null;
   const superHydro = boot.app.screens.world.getSnapshot().superHydro;
   const worldTrunk = getSelectedWorldTrunkCandidate(boot);
   const superHydroGridCost = getGridLinkBuildCost(
@@ -76,6 +86,8 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
     canCancelRegionLink: region.gridLinks.some((link) => link.status === "building"),
     canQueueWorldTrunk:
       worldTrunk !== null && worldTrunk.available && state.funds >= worldTrunk.cost,
+    canOpenWorldTarget: selectedWorldCandidate !== null && selectedWorldCandidate.unlocked,
+    canCycleWorldTarget: worldSelection.candidates.length > 0,
     canQueueSuperHydro:
       superHydro.unlocked &&
       superHydro.slots.some(
