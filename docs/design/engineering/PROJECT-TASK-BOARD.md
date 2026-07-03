@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.124.0
+version: 1.125.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 新增固定 demo 验收路线脚本：开局到 V 级、`MET-B`、超级水电、最终灾害与胜利结算可串通 |
 | 2026-07-03 | `FAST-01` 固化完整 demo 7 条验收路线，并开始地图/区域扩张可玩化 |
 | 2026-07-03 | `FAST-01` 明确 playable skeleton 含义：粗糙但真正可玩的完整 demo，主要玩法完整、分支玩法健全 |
 | 2026-07-02 | `FAST-01` 固化 III～V 公司 HUD 经营机会组合回归：覆盖现金流、运维、发电、核电、储能、电网、调度、生态、绿色品牌与战略机会 |
@@ -154,3 +155,4 @@ open_questions: []
 | 1.122.0 | 2026-07-03 | 调整 FAST-01 节奏：playable skeleton 优先，细节精磨后置 |
 | 1.123.0 | 2026-07-03 | 明确 playable skeleton 是完整可玩 demo，不是最小主线壳层 |
 | 1.124.0 | 2026-07-03 | 固化 FAST-01 完整 demo 7 条验收路线 |
+| 1.125.0 | 2026-07-03 | 新增 FAST-01 固定 demo 验收路线脚本 |
