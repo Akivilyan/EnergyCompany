@@ -160,6 +160,67 @@ describe("screenWorldMap", () => {
     ]);
   });
 
+  it("keeps level-IV expansion targets differentiated for route selection", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 4;
+
+    const snapshot = createScreenWorldMap(controller).getSnapshot();
+    const map03 = snapshot.regions.find((region) => region.regionId === "MAP-03");
+    const map04 = snapshot.regions.find((region) => region.regionId === "MAP-04");
+    const map05 = snapshot.regions.find((region) => region.regionId === "MAP-05");
+
+    expect(snapshot.unlockedRegions).toBe(6);
+    expect(snapshot.nextUnlockRegion?.regionId).toBe("MAP-06");
+    expect(map03?.designRole).toBe("mountain_hydro_export_province");
+    expect(map03?.recommendedBuilds).toEqual(["wind", "solar", "hydro", "nuclear"]);
+    expect(map03?.operatingPressureTags).toEqual([
+      "supply_gap",
+      "trunk_first",
+      "nuclear_siting",
+      "hydro_site_bound"
+    ]);
+    expect(map03?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "hydro_wind_export",
+      "local_renewables",
+      "hydro_anchor",
+      "nuclear_anchor"
+    ]);
+    expect(map04?.designRole).toBe("solar_wind_buildout_province");
+    expect(map04?.recommendedBuilds).toEqual(["wind", "solar", "nuclear"]);
+    expect(map04?.operatingPressureTags).toEqual([
+      "supply_gap",
+      "trunk_first",
+      "no_hydro",
+      "nuclear_siting",
+      "mixed_dispatch"
+    ]);
+    expect(map04?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "nuclear_anchor",
+      "hybrid_balancing"
+    ]);
+    expect(map05?.designRole).toBe("river_valley_hybrid_province");
+    expect(map05?.recommendedBuilds).toEqual(["wind", "solar", "hydro"]);
+    expect(map05?.operatingPressureTags).toEqual([
+      "supply_gap",
+      "trunk_first",
+      "hydro_site_bound",
+      "mixed_dispatch"
+    ]);
+    expect(map05?.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "hydro_wind_export",
+      "local_renewables",
+      "hydro_anchor",
+      "hybrid_balancing"
+    ]);
+  });
+
   it("summarizes regional effective supply from runtime city state", () => {
     const controller = createTestController();
     controller.state.companyLevel = 5;

@@ -181,8 +181,20 @@ export function getOperatingPressureTags(input: {
   if (input.riverCityCount === 0) tags.push("no_hydro");
   if (input.fossilEnergy) tags.push("fossil_transition");
   if (input.nuclearEligibleCityCount > 0) tags.push("nuclear_siting");
-  if (input.designRole === "plateau_hydro_wind_province") tags.push("hydro_site_bound");
-  if (input.designRole === "frontier_hybrid_balancing_province") tags.push("mixed_dispatch");
+  if (
+    input.designRole === "mountain_hydro_export_province" ||
+    input.designRole === "river_valley_hybrid_province" ||
+    input.designRole === "plateau_hydro_wind_province"
+  ) {
+    tags.push("hydro_site_bound");
+  }
+  if (
+    input.designRole === "solar_wind_buildout_province" ||
+    input.designRole === "river_valley_hybrid_province" ||
+    input.designRole === "frontier_hybrid_balancing_province"
+  ) {
+    tags.push("mixed_dispatch");
+  }
   if (input.designRole === "terminal_metropolis_load_hub") tags.push("terminal_load");
   return tags;
 }
@@ -211,7 +223,11 @@ export function getOperatingPlanHints(input: {
   if (input.supplyGapMw > 0 || hasPressure("supply_gap")) {
     hints.push("close_supply_gap");
   }
-  if (input.designRole === "plateau_hydro_wind_province") {
+  if (
+    input.designRole === "mountain_hydro_export_province" ||
+    input.designRole === "river_valley_hybrid_province" ||
+    input.designRole === "plateau_hydro_wind_province"
+  ) {
     hints.push("hydro_wind_export");
   }
   if (hasBuild("wind") || hasBuild("solar")) {
@@ -229,7 +245,11 @@ export function getOperatingPlanHints(input: {
   if (hasPressure("low_slot_density") || input.totalBuildSlots * 180 < input.totalDemandMw) {
     hints.push("slot_efficiency");
   }
-  if (input.designRole === "frontier_hybrid_balancing_province") {
+  if (
+    input.designRole === "solar_wind_buildout_province" ||
+    input.designRole === "river_valley_hybrid_province" ||
+    input.designRole === "frontier_hybrid_balancing_province"
+  ) {
     hints.push("hybrid_balancing");
   }
 

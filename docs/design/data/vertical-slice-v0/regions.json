@@ -20,9 +20,36 @@
     "design_role": "generation_export_province",
     "display_name": "省二（资源外送，占位）"
   },
-  { "region_id": "MAP-03", "region_type": "province", "unlock_company_level": 4, "display_name": "省三（占位）" },
-  { "region_id": "MAP-04", "region_type": "province", "unlock_company_level": 4, "display_name": "省四（占位）" },
-  { "region_id": "MAP-05", "region_type": "province", "unlock_company_level": 4, "display_name": "省五（占位）" },
+  {
+    "region_id": "MAP-03",
+    "region_type": "province",
+    "unlock_company_level": 4,
+    "wind_resource_bias": "normal",
+    "solar_resource_bias": "normal",
+    "hydro_resource_bias": "rich",
+    "design_role": "mountain_hydro_export_province",
+    "display_name": "省三（山地水电外送）"
+  },
+  {
+    "region_id": "MAP-04",
+    "region_type": "province",
+    "unlock_company_level": 4,
+    "wind_resource_bias": "normal",
+    "solar_resource_bias": "rich",
+    "hydro_resource_bias": "normal",
+    "design_role": "solar_wind_buildout_province",
+    "display_name": "省四（风光建设走廊）"
+  },
+  {
+    "region_id": "MAP-05",
+    "region_type": "province",
+    "unlock_company_level": 4,
+    "wind_resource_bias": "rich",
+    "solar_resource_bias": "rich",
+    "hydro_resource_bias": "rich",
+    "design_role": "river_valley_hybrid_province",
+    "display_name": "省五（河谷混合调峰）"
+  },
   {
     "region_id": "MAP-06",
     "region_type": "province",

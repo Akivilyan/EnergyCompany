@@ -280,6 +280,52 @@ describe("ScreenRegion", () => {
     ]);
   });
 
+  it("exposes all level-IV expansion targets as selectable trunk routes", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+    const screen = createScreenRegionForRegion(controller, "MAP-01");
+
+    const snapshot = screen.getSnapshot();
+
+    expect(
+      snapshot.linkCandidates
+        .filter((candidate) => candidate.linkType === "trunk")
+        .map((candidate) => candidate.toCityId)
+    ).toEqual([
+      "CITY-MAP02-01",
+      "CITY-MAP03-01",
+      "CITY-MAP04-01",
+      "CITY-MAP05-01",
+      "CITY-META-01"
+    ]);
+  });
+
+  it("exposes level-IV expansion routes with differentiated operating plans", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 4;
+
+    const map04 = createScreenRegionForRegion(controller, "MAP-04").getSnapshot();
+    const map05 = createScreenRegionForRegion(controller, "MAP-05").getSnapshot();
+
+    expect(map04.designRole).toBe("solar_wind_buildout_province");
+    expect(map04.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "local_renewables",
+      "nuclear_anchor",
+      "hybrid_balancing"
+    ]);
+    expect(map05.designRole).toBe("river_valley_hybrid_province");
+    expect(map05.operatingPlanHints).toEqual([
+      "secure_trunk",
+      "close_supply_gap",
+      "hydro_wind_export",
+      "local_renewables",
+      "hydro_anchor",
+      "hybrid_balancing"
+    ]);
+  });
+
   it("exposes MAP-07 hydro-wind operating pressure and route", () => {
     const controller = createTestController(repoRoot);
     controller.state.companyLevel = 5;
