@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.135.0
+version: 1.136.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-03 | `FAST-01` 客户端快速验收补齐终局超水电接网 smoke：`verify:client:fast` 覆盖世界 HUD 接网入口 |
 | 2026-07-03 | `FAST-01` 固定 demo 路线对齐世界 HUD 超水电接网动作：终局验收不再绕过玩家入口 |
 | 2026-07-03 | `FAST-01` 世界 HUD 补齐超级水电接网操作入口：完工孤立槽可直接排队接入 MET-B |
 | 2026-07-03 | `FAST-01` 灾害预警期备考建议落地：按预警窗口提示现金目标、风险储备与保守推进 |
@@ -176,3 +177,4 @@ open_questions: []
 | 1.133.0 | 2026-07-03 | 记录灾害预警期备考建议落地 |
 | 1.134.0 | 2026-07-03 | 记录世界 HUD 超级水电接网入口落地 |
 | 1.135.0 | 2026-07-03 | 记录固定 demo 路线对齐世界 HUD 超水电接网动作 |
+| 1.136.0 | 2026-07-03 | 记录客户端快速验收覆盖终局超水电接网 |

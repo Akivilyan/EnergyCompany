@@ -1,4 +1,5 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
+import { getClientHudCapabilities } from "./clientHudCapabilities.js";
 import {
   cityHudAdvanceMonth,
   cityHudBuildSelected,
@@ -18,10 +19,12 @@ import {
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenRegion,
+  clientNavOpenWorldMap,
   clientNavOpenTechTree,
   formatClientNavHint
 } from "./screenNavController.js";
 import { regionQueueDefaultLink } from "./regionHudController.js";
+import { worldQueueSuperHydroGridLink } from "./worldHudController.js";
 
 export interface ClientHudSmokeStep {
   id: string;
@@ -177,6 +180,33 @@ export function runClientHudSmoke(boot: GameBootstrap): ClientHudSmokeStep[] {
       ack.ok
         ? `active=${boot.app.screens.events.getSnapshot().active.length}`
         : (ack.uiErrorCode ?? "unknown")
+    )
+  );
+
+  boot.app.controller.state.companyLevel = 5;
+  boot.app.controller.state.funds = 200;
+  if (!boot.app.controller.state.litTechIds.includes("super_hydro")) {
+    boot.app.controller.state.litTechIds.push("super_hydro");
+  }
+  boot.app.controller.state.superHydros.super_hydro_1 = {
+    slotId: "super_hydro_1",
+    nodeId: "SUPER-HYDRO-1",
+    displayName: "超级水电一号槽",
+    status: "finished",
+    monthsRemaining: 0,
+    outputMw: 4200
+  };
+  clientNavOpenWorldMap(boot);
+  const canGridSuperHydro = getClientHudCapabilities(boot).canQueueSuperHydroGridLink;
+  const hydroGrid = canGridSuperHydro
+    ? worldQueueSuperHydroGridLink(boot)
+    : { ok: false, errorCode: "capability_blocked", messageKey: null };
+  const superHydroLink = boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"];
+  steps.push(
+    step(
+      "fast-01-super-hydro-grid",
+      hydroGrid.ok && superHydroLink?.status === "building",
+      hydroGrid.ok ? `status=${superHydroLink?.status ?? "missing"}` : (hydroGrid.errorCode ?? "unknown")
     )
   );
 
