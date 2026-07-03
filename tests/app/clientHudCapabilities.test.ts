@@ -45,6 +45,17 @@ describe("getClientHudCapabilities", () => {
     });
   });
 
+  it("exposes region-link queue capability only when the selected link is affordable", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 2;
+    boot.app.controller.state.funds = 8;
+
+    expect(getClientHudCapabilities(boot).canQueueRegionLink).toBe(true);
+
+    boot.app.controller.state.funds = 7;
+    expect(getClientHudCapabilities(boot).canQueueRegionLink).toBe(false);
+  });
+
   it("exposes selected world trunk queue capability only for an affordable map target", () => {
     const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
     boot.app.controller.state.companyLevel = 3;

@@ -1,4 +1,5 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
+import { getRegionHudSelectionSnapshot } from "./regionHudController.js";
 import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
 import { getGridLinkBuildCost } from "../sim/index.js";
 
@@ -24,7 +25,12 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
   const tech = boot.app.screens.tech.getSnapshot();
   const cityId = boot.play.getNavigation().cityId ?? "CITY-START";
   const city = boot.app.screens.city(cityId).getSnapshot();
-  const availableRegionCandidates = region.linkCandidates.filter((candidate) => candidate.unlocked);
+  const regionSelection = getRegionHudSelectionSnapshot(boot);
+  const selectedRegionCandidate =
+    regionSelection.candidates.find(
+      (candidate) => candidate.candidateId === regionSelection.selectedCandidateId
+    ) ?? null;
+  const availableRegionCandidates = regionSelection.candidates;
   const superHydro = boot.app.screens.world.getSnapshot().superHydro;
   const worldTrunk = getSelectedWorldTrunkCandidate(boot);
   const superHydroGridCost = getGridLinkBuildCost(
@@ -34,7 +40,10 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
     "trunk"
   );
   return {
-    canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
+    canQueueRegionLink:
+      selectedRegionCandidate !== null &&
+      selectedRegionCandidate.available &&
+      boot.app.controller.state.funds >= selectedRegionCandidate.cost,
     canCycleRegionLink: availableRegionCandidates.length > 0,
     canCancelRegionLink: region.gridLinks.some((link) => link.status === "building"),
     canQueueWorldTrunk:
