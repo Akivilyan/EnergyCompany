@@ -1,3 +1,4 @@
+import { getCityHudBuildSelectionSnapshot } from "./cityHudController.js";
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { getRegionHudSelectionSnapshot } from "./regionHudController.js";
 import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
@@ -25,6 +26,11 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
   const tech = boot.app.screens.tech.getSnapshot();
   const cityId = boot.play.getNavigation().cityId ?? "CITY-START";
   const city = boot.app.screens.city(cityId).getSnapshot();
+  const buildSelection = getCityHudBuildSelectionSnapshot(boot);
+  const selectedBuildCandidate =
+    buildSelection.candidates.find(
+      (candidate) => candidate.facilityId === buildSelection.selectedFacilityId
+    ) ?? null;
   const regionSelection = getRegionHudSelectionSnapshot(boot);
   const selectedRegionCandidate =
     regionSelection.candidates.find(
@@ -60,7 +66,11 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
       ) &&
       boot.app.controller.state.funds >= superHydroGridCost,
     canOperateTech: tech.canOpen,
-    canBuildInCity: city !== null && boot.app.controller.state.constructionQueue.length < 3,
-    canCycleBuildCandidate: city !== null
+    canBuildInCity:
+      city !== null &&
+      selectedBuildCandidate !== null &&
+      boot.app.controller.state.constructionQueue.length < 3 &&
+      boot.app.controller.state.funds >= selectedBuildCandidate.buildCost,
+    canCycleBuildCandidate: city !== null && buildSelection.candidates.length > 0
   };
 }

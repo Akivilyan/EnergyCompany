@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { getClientHudCapabilities } from "../../src/app/clientHudCapabilities.js";
+import { getCityHudBuildSelectionSnapshot } from "../../src/app/cityHudController.js";
 import { clientNavOpenWorldMap } from "../../src/app/screenNavController.js";
 import { worldCycleTargetCandidate } from "../../src/app/worldHudController.js";
 
@@ -20,6 +21,44 @@ describe("getClientHudCapabilities", () => {
       canQueueSuperHydroGridLink: false,
       canOperateTech: false
     });
+  });
+
+  it("exposes city build capability only when the selected build is affordable", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    const selected = getCityHudBuildSelectionSnapshot(boot).candidates.find(
+      (candidate) => candidate.facilityId === getCityHudBuildSelectionSnapshot(boot).selectedFacilityId
+    );
+    expect(selected).toBeTruthy();
+    const selectedCost = selected?.buildCost ?? 0;
+    boot.app.controller.state.funds = selectedCost;
+
+    expect(getClientHudCapabilities(boot).canBuildInCity).toBe(true);
+    expect(getClientHudCapabilities(boot).canCycleBuildCandidate).toBe(true);
+
+    boot.app.controller.state.funds = selectedCost - 1;
+    expect(getClientHudCapabilities(boot).canBuildInCity).toBe(false);
+    expect(getClientHudCapabilities(boot).canCycleBuildCandidate).toBe(true);
+  });
+
+  it("hides city build actions when the current city has no build candidates", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    for (const facility of boot.app.controller.config.bundle.facilities) {
+      if (facility.facility_id === "nuclear") continue;
+      const max = facility.max_per_city ?? 0;
+      for (let i = 0; i < max; i += 1) {
+        boot.app.controller.state.constructionQueue.push({
+          id: `cq-${facility.facility_id}-${i}`,
+          cityId: "CITY-START",
+          facilityId: facility.facility_id,
+          tier: 1,
+          monthsRemaining: 1,
+          installmentRemaining: 0
+        });
+      }
+    }
+
+    expect(getClientHudCapabilities(boot).canBuildInCity).toBe(false);
+    expect(getClientHudCapabilities(boot).canCycleBuildCandidate).toBe(false);
   });
 
   it("unlocks region-link and tech actions after company level 2", () => {
