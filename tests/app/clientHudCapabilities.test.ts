@@ -60,7 +60,7 @@ describe("getClientHudCapabilities", () => {
   it("exposes super hydro grid link capability for finished isolated output", () => {
     const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
     boot.app.controller.state.companyLevel = 5;
-    boot.app.controller.state.funds = 200;
+    boot.app.controller.state.funds = 8;
     boot.app.controller.state.litTechIds.push("super_hydro");
     boot.app.controller.state.superHydros.super_hydro_1 = {
       slotId: "super_hydro_1",
@@ -74,6 +74,26 @@ describe("getClientHudCapabilities", () => {
     expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(true);
 
     boot.app.controller.state.funds = 7;
+    expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(false);
+  });
+
+  it("uses discounted trunk cost for super hydro grid link capability", () => {
+    const boot = createGameBootstrapFromRepo({ repoRoot: process.cwd() });
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 6;
+    boot.app.controller.state.litTechIds.push("super_hydro", "grid_backbone");
+    boot.app.controller.state.superHydros.super_hydro_1 = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+
+    expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(true);
+
+    boot.app.controller.state.funds = 5;
     expect(getClientHudCapabilities(boot).canQueueSuperHydroGridLink).toBe(false);
   });
 

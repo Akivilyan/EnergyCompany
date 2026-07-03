@@ -225,6 +225,28 @@ describe("worldHudController", () => {
     expect(boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"]?.status).toBe("building");
   });
 
+  it("queues super hydro grid link with discounted trunk cost", () => {
+    const boot = createGameBootstrapFromRepo();
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.funds = 6;
+    boot.app.controller.state.litTechIds.push("super_hydro", "grid_backbone");
+    boot.app.controller.state.superHydros.super_hydro_1 = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    clientNavOpenWorldMap(boot);
+
+    const out = worldQueueSuperHydroGridLink(boot);
+
+    expect(out.ok).toBe(true);
+    expect(boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"]?.buildCost).toBe(6);
+    expect(boot.app.controller.state.funds).toBe(0);
+  });
+
   it("blocks super hydro grid link when no finished isolated slot exists", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;

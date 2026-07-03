@@ -1,5 +1,6 @@
 import type { GameBootstrap } from "./gameBootstrap.js";
 import { getSelectedWorldTrunkCandidate } from "./worldHudController.js";
+import { getGridLinkBuildCost } from "../sim/index.js";
 
 export interface ClientHudCapabilities {
   canQueueRegionLink: boolean;
@@ -26,6 +27,12 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
   const availableRegionCandidates = region.linkCandidates.filter((candidate) => candidate.unlocked);
   const superHydro = boot.app.screens.world.getSnapshot().superHydro;
   const worldTrunk = getSelectedWorldTrunkCandidate(boot);
+  const superHydroGridCost = getGridLinkBuildCost(
+    boot.app.controller.state,
+    boot.app.controller.config,
+    8,
+    "trunk"
+  );
   return {
     canQueueRegionLink: availableRegionCandidates.some((candidate) => candidate.available),
     canCycleRegionLink: availableRegionCandidates.length > 0,
@@ -42,7 +49,7 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
       superHydro.slots.some(
         (slot) => slot.status === "finished" && slot.gridConnectionStatus === "isolated"
       ) &&
-      boot.app.controller.state.funds >= 30,
+      boot.app.controller.state.funds >= superHydroGridCost,
     canOperateTech: tech.canOpen,
     canBuildInCity: city !== null && boot.app.controller.state.constructionQueue.length < 3,
     canCycleBuildCandidate: city !== null
