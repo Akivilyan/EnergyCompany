@@ -60,6 +60,10 @@ import {
   CITY_HUD_STAGE_ACTION_SLOTS,
   CITY_HUD_STAGE_ASSET_SLOTS,
   CITY_HUD_STAGE_ASSET_TOKENS,
+  CITY_HUD_STAGE_EFFECT_SLOTS,
+  CITY_HUD_STAGE_EFFECT_TOKENS,
+  CITY_HUD_STAGE_GRID_SLOTS,
+  CITY_HUD_STAGE_GRID_TOKENS,
   CITY_HUD_STAGE_ICON_SLOTS,
   CITY_HUD_STAGE_ICON_TOKENS,
   CITY_HUD_STAGE_INTERACTION_TOKENS,
@@ -72,6 +76,8 @@ import {
   CITY_HUD_STAGE_VISUAL_ORDER,
   type CityHudStageActionSlot,
   type CityHudStageAssetSlot,
+  type CityHudStageEffectSlot,
+  type CityHudStageGridSlot,
   type CityHudStageIconSlot
 } from "./cityHudStageSpec";
 
@@ -96,6 +102,7 @@ export class CityHudPanel extends Component {
   private cityBackgroundLayer: Node | null = null;
   private cityFacilityLayer: Node | null = null;
   private cityGridLayer: Node | null = null;
+  private cityEffectLayer: Node | null = null;
   private cityStateLayer: Node | null = null;
   private cityUiLayer: Node | null = null;
   private cityIconLayer: Node | null = null;
@@ -106,6 +113,10 @@ export class CityHudPanel extends Component {
   private windAssetSlot: Node | null = null;
   private solarAssetSlot: Node | null = null;
   private hydroAssetSlot: Node | null = null;
+  private windSolarGridSlot: Node | null = null;
+  private solarHydroGridSlot: Node | null = null;
+  private buildGlowSlot: Node | null = null;
+  private gridGlowSlot: Node | null = null;
   private cleanBadgeSlot: Node | null = null;
   private warningBadgeSlot: Node | null = null;
   private cashIcon: Node | null = null;
@@ -204,6 +215,7 @@ export class CityHudPanel extends Component {
     this.cityBackgroundLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.background);
     this.cityFacilityLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.facility);
     this.cityGridLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.grid);
+    this.cityEffectLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.effect);
     this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.state);
     this.cityUiLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.ui);
     this.cityIconLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.icon);
@@ -215,6 +227,10 @@ export class CityHudPanel extends Component {
     this.windAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.windTurbine);
     this.solarAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.solarField);
     this.hydroAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant);
+    this.windSolarGridSlot = this.createStageGridSlot(this.cityGridLayer, CITY_HUD_STAGE_GRID_SLOTS.windSolar);
+    this.solarHydroGridSlot = this.createStageGridSlot(this.cityGridLayer, CITY_HUD_STAGE_GRID_SLOTS.solarHydro);
+    this.buildGlowSlot = this.createStageEffectSlot(this.cityEffectLayer, CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow);
+    this.gridGlowSlot = this.createStageEffectSlot(this.cityEffectLayer, CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow);
     this.cleanBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge);
     this.warningBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge);
     this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash);
@@ -482,6 +498,7 @@ export class CityHudPanel extends Component {
       !this.cityBackgroundLayer ||
       !this.cityFacilityLayer ||
       !this.cityGridLayer ||
+      !this.cityEffectLayer ||
       !this.cityStateLayer ||
       !this.cityBackgroundGraphics ||
       !this.cityFacilityGraphics ||
@@ -492,6 +509,7 @@ export class CityHudPanel extends Component {
     placeCenteredRect(this.cityBackgroundLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.cityFacilityLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.cityGridLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.cityEffectLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.cityStateLayer, 0, 0, container.width, container.height);
 
     const background = this.cityBackgroundGraphics;
@@ -524,6 +542,10 @@ export class CityHudPanel extends Component {
     const wind = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.windTurbine, left, bottom, w, h);
     const solar = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.solarField, left, bottom, w, h);
     const hydro = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant, left, bottom, w, h);
+    this.placeStageGridSlot(this.windSolarGridSlot, CITY_HUD_STAGE_GRID_SLOTS.windSolar, wind, solar, true);
+    this.placeStageGridSlot(this.solarHydroGridSlot, CITY_HUD_STAGE_GRID_SLOTS.solarHydro, solar, hydro, false);
+    this.placeStageEffectSlot(this.buildGlowSlot, CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow, wind, w, h, lowCleanliness);
+    this.placeStageEffectSlot(this.gridGlowSlot, CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow, solar, w, h, lowCleanliness);
     this.drawCityFacilities(facilities, wind, solar, hydro, w, h);
     this.drawCityGrid(grid, wind, solar, hydro);
     this.drawCityState(state, left, bottom, w, h, lowCleanliness);
@@ -547,6 +569,20 @@ export class CityHudPanel extends Component {
   }
 
   private createStageAssetSlot(parent: Node, slot: CityHudStageAssetSlot): Node {
+    const node = new Node(slot.nodeName);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    return node;
+  }
+
+  private createStageGridSlot(parent: Node, slot: CityHudStageGridSlot): Node {
+    const node = new Node(slot.nodeName);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    return node;
+  }
+
+  private createStageEffectSlot(parent: Node, slot: CityHudStageEffectSlot): Node {
     const node = new Node(slot.nodeName);
     node.setParent(parent);
     node.addComponent(UITransform);
@@ -613,6 +649,46 @@ export class CityHudPanel extends Component {
     node.name = `${slot.nodeName}:${visibilityToken}:${placeholderToken}`;
   }
 
+  private placeStageGridSlot(
+    node: Node | null,
+    slot: CityHudStageGridSlot,
+    from: Vec2,
+    to: Vec2,
+    connected: boolean
+  ): void {
+    if (!node) return;
+    const centerX = (from.x + to.x) / 2;
+    const centerY = (from.y + to.y) / 2 + 12;
+    const width = Math.max(24, Math.abs(to.x - from.x));
+    const height = Math.max(18, Math.abs(to.y - from.y) + 18);
+    placeCenteredRect(node, centerX, centerY, width, height);
+    const connectionToken = connected
+      ? CITY_HUD_STAGE_GRID_TOKENS.connected
+      : CITY_HUD_STAGE_GRID_TOKENS.disconnected;
+    const stabilityToken = connected ? CITY_HUD_STAGE_GRID_TOKENS.stable : CITY_HUD_STAGE_GRID_TOKENS.weak;
+    node.name = `${slot.nodeName}:${connectionToken}:${stabilityToken}`;
+  }
+
+  private placeStageEffectSlot(
+    node: Node | null,
+    slot: CityHudStageEffectSlot,
+    anchor: Vec2,
+    w: number,
+    h: number,
+    lowCleanliness: boolean
+  ): void {
+    if (!node) return;
+    placeCenteredRect(node, anchor.x, anchor.y + h * 0.02, w * slot.widthRatio, h * slot.heightRatio);
+    const roleToken =
+      slot.nodeName === CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow.nodeName
+        ? CITY_HUD_STAGE_EFFECT_TOKENS.construction
+        : CITY_HUD_STAGE_EFFECT_TOKENS.grid;
+    const stateToken = lowCleanliness
+      ? CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness
+      : CITY_HUD_STAGE_EFFECT_TOKENS.normal;
+    node.name = `${slot.nodeName}:${CITY_HUD_STAGE_EFFECT_TOKENS.active}:${roleToken}:${stateToken}`;
+  }
+
   private createIconSlot(parent: Node, slot: CityHudStageIconSlot): Node {
     const node = new Node(slot.nodeName);
     node.setParent(parent);
@@ -627,7 +703,13 @@ export class CityHudPanel extends Component {
       const layer = shellLayers.find((item) => item?.name === layerName);
       layer?.setSiblingIndex(CITY_HUD_STAGE_SHELL_ORDER.indexOf(layerName));
     }
-    const visualLayers = [this.cityBackgroundLayer, this.cityFacilityLayer, this.cityGridLayer, this.cityStateLayer];
+    const visualLayers = [
+      this.cityBackgroundLayer,
+      this.cityFacilityLayer,
+      this.cityGridLayer,
+      this.cityEffectLayer,
+      this.cityStateLayer
+    ];
     for (const layerName of CITY_HUD_STAGE_VISUAL_ORDER) {
       const layer = visualLayers.find((item) => item?.name === layerName);
       layer?.setSiblingIndex(CITY_HUD_STAGE_VISUAL_ORDER.indexOf(layerName));

@@ -3,6 +3,7 @@ export const CITY_HUD_STAGE_LAYER_NAMES = {
   background: "CityBackgroundLayer",
   facility: "CityFacilityLayer",
   grid: "CityGridLayer",
+  effect: "CityEffectLayer",
   state: "CityStateLayer",
   ui: "CityUiLayer",
   icon: "CityIconLayer"
@@ -18,6 +19,7 @@ export const CITY_HUD_STAGE_VISUAL_ORDER = [
   CITY_HUD_STAGE_LAYER_NAMES.background,
   CITY_HUD_STAGE_LAYER_NAMES.facility,
   CITY_HUD_STAGE_LAYER_NAMES.grid,
+  CITY_HUD_STAGE_LAYER_NAMES.effect,
   CITY_HUD_STAGE_LAYER_NAMES.state
 ] as const;
 
@@ -81,6 +83,55 @@ export const CITY_HUD_STAGE_ASSET_TOKENS = {
   resourceRich: "city-stage:asset-resource-rich",
   resourceNormal: "city-stage:asset-resource-normal",
   placeholder: "city-stage:asset-placeholder"
+} as const;
+
+export const CITY_HUD_STAGE_GRID_SLOTS = {
+  windSolar: {
+    nodeName: "StageGridWindSolar",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.grid,
+    fromAsset: "windTurbine",
+    toAsset: "solarField",
+    defaultState: "connected"
+  },
+  solarHydro: {
+    nodeName: "StageGridSolarHydro",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.grid,
+    fromAsset: "solarField",
+    toAsset: "hydroPlant",
+    defaultState: "disconnected"
+  }
+} as const;
+
+export const CITY_HUD_STAGE_GRID_TOKENS = {
+  connected: "city-stage:grid-connected",
+  disconnected: "city-stage:grid-disconnected",
+  stable: "city-stage:grid-stable",
+  weak: "city-stage:grid-weak"
+} as const;
+
+export const CITY_HUD_STAGE_EFFECT_SLOTS = {
+  buildGlow: {
+    nodeName: "StageEffectBuildGlow",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.effect,
+    anchorAsset: "windTurbine",
+    widthRatio: 0.13,
+    heightRatio: 0.16
+  },
+  gridGlow: {
+    nodeName: "StageEffectGridGlow",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.effect,
+    anchorAsset: "solarField",
+    widthRatio: 0.44,
+    heightRatio: 0.08
+  }
+} as const;
+
+export const CITY_HUD_STAGE_EFFECT_TOKENS = {
+  active: "city-stage:effect-active",
+  construction: "city-stage:effect-construction",
+  grid: "city-stage:effect-grid",
+  lowCleanliness: "city-stage:effect-low-cleanliness",
+  normal: "city-stage:effect-normal"
 } as const;
 
 export const CITY_HUD_STAGE_STATE_TOKENS = {
@@ -280,3 +331,9 @@ export type CityHudStageActionSlot =
 
 export type CityHudStageIconSlot =
   (typeof CITY_HUD_STAGE_ICON_SLOTS)[keyof typeof CITY_HUD_STAGE_ICON_SLOTS];
+
+export type CityHudStageGridSlot =
+  (typeof CITY_HUD_STAGE_GRID_SLOTS)[keyof typeof CITY_HUD_STAGE_GRID_SLOTS];
+
+export type CityHudStageEffectSlot =
+  (typeof CITY_HUD_STAGE_EFFECT_SLOTS)[keyof typeof CITY_HUD_STAGE_EFFECT_SLOTS];

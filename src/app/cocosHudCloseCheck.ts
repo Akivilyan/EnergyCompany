@@ -21,6 +21,10 @@ const CITY_HUD_PANEL_MARKERS = [
   "drawCityGrid",
   "drawCityState",
   "drawGridLine",
+  "createStageGridSlot",
+  "placeStageGridSlot",
+  "createStageEffectSlot",
+  "placeStageEffectSlot",
   "createStageAssetSlot",
   "placeStageAssetSlot",
   "syncPanelStateTokens",
@@ -29,6 +33,8 @@ const CITY_HUD_PANEL_MARKERS = [
   "resolveIconRoleToken",
   "CITY_HUD_STAGE_SCREEN_TOKENS.city",
   "CITY_HUD_STAGE_ASSET_TOKENS.resourceRich",
+  "CITY_HUD_STAGE_GRID_TOKENS.connected",
+  "CITY_HUD_STAGE_EFFECT_TOKENS.construction",
   "CITY_HUD_STAGE_UI_TOKENS.primaryAction",
   "CITY_HUD_STAGE_ICON_TOKENS.active",
   "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
@@ -46,17 +52,26 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_ASSET_SLOTS",
   "CITY_HUD_STAGE_SCREEN_TOKENS",
   "CITY_HUD_STAGE_ASSET_TOKENS",
+  "CITY_HUD_STAGE_GRID_SLOTS",
+  "CITY_HUD_STAGE_GRID_TOKENS",
+  "CITY_HUD_STAGE_EFFECT_SLOTS",
+  "CITY_HUD_STAGE_EFFECT_TOKENS",
   "CITY_HUD_STAGE_STATE_TOKENS",
   "CityVisualLayer",
   "CityBackgroundLayer",
   "CityFacilityLayer",
   "CityGridLayer",
+  "CityEffectLayer",
   "CityStateLayer",
   "CityUiLayer",
   "CityIconLayer",
   "StageAssetWindTurbine",
   "StageAssetSolarField",
   "StageAssetHydroPlant",
+  "StageGridWindSolar",
+  "StageGridSolarHydro",
+  "StageEffectBuildGlow",
+  "StageEffectGridGlow",
   "city-stage:screen-city",
   "city-stage:screen-company",
   "city-stage:screen-region",
@@ -67,6 +82,15 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "city-stage:asset-resource-rich",
   "city-stage:asset-resource-normal",
   "city-stage:asset-placeholder",
+  "city-stage:grid-connected",
+  "city-stage:grid-disconnected",
+  "city-stage:grid-stable",
+  "city-stage:grid-weak",
+  "city-stage:effect-active",
+  "city-stage:effect-construction",
+  "city-stage:effect-grid",
+  "city-stage:effect-low-cleanliness",
+  "city-stage:effect-normal",
   "CITY_HUD_STAGE_UI_SLOTS",
   "CITY_HUD_STAGE_UI_TOKENS",
   "CITY_HUD_STAGE_ACTION_SLOTS",
@@ -303,6 +327,10 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
       source.includes("CITY_HUD_STAGE_SCREEN_TOKENS") &&
       source.includes("CITY_HUD_STAGE_ASSET_TOKENS") &&
+      source.includes("CITY_HUD_STAGE_GRID_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_GRID_TOKENS") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_TOKENS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_TOKENS") &&
       source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
@@ -356,6 +384,23 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_ASSET_TOKENS.resourceRich") &&
       source.includes("CITY_HUD_STAGE_ASSET_TOKENS.placeholder"),
     detail: "CityHudPanel applies screen and facility asset runtime tokens"
+  });
+  checks.push({
+    id: "hud:city-stage-grid-effect-tokens",
+    ok:
+      source.includes("createStageGridSlot") &&
+      source.includes("placeStageGridSlot") &&
+      source.includes("createStageEffectSlot") &&
+      source.includes("placeStageEffectSlot") &&
+      source.includes("CITY_HUD_STAGE_GRID_SLOTS.windSolar") &&
+      source.includes("CITY_HUD_STAGE_GRID_SLOTS.solarHydro") &&
+      source.includes("CITY_HUD_STAGE_GRID_TOKENS.connected") &&
+      source.includes("CITY_HUD_STAGE_GRID_TOKENS.disconnected") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_TOKENS.construction") &&
+      source.includes("CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness"),
+    detail: "CityHudPanel applies grid and effect runtime tokens"
   });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;

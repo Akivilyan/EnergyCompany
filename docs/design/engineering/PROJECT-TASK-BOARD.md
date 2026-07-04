@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.173.0
+version: 1.174.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -58,6 +58,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 电网段与建设/电网光效槽位接入运行时状态 token，并纳入静态预检 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 屏幕态与设施资源/占位状态 token 接入运行时节点，并纳入静态预检 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 资源栏、状态卡与图标槽位接入运行时状态 token，并纳入静态预检 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 风/光/水设施与状态徽章落成运行时资产槽位节点，并纳入静态预检 |
@@ -250,3 +251,4 @@ open_questions: []
 | 1.171.0 | 2026-07-04 | 记录城市 HUD 设施与状态徽章运行时资产槽位节点落地 |
 | 1.172.0 | 2026-07-04 | 记录城市 HUD 面板与图标运行时状态 token 落地 |
 | 1.173.0 | 2026-07-04 | 记录城市 HUD 屏幕态与设施资源状态 token 落地 |
+| 1.174.0 | 2026-07-04 | 记录城市 HUD 电网与光效运行时槽位 token 落地 |
