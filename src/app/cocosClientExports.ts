@@ -17,6 +17,7 @@ export {
   formatSelectedBuildCandidate,
   formatCityHudStatus,
   getCityHudBuildSelectionSnapshot,
+  getCityHudProfileSnapshot,
   readCityHudViewModel
 } from "./cityHudController.js";
 export { formatClientHudStatus } from "./clientHudController.js";

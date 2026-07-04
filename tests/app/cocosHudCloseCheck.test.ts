@@ -8,7 +8,7 @@ import { runCocosHudClose } from "../../src/app/cocosHudCloseRunner.js";
 
 describe("cocosHudCloseCheck", () => {
   const panelMarkers =
-    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink bindGameBoot";
+    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink CityVisualLayer drawGridLine bindGameBoot";
 
   it("CityHudPanel contains T50 handler markers", () => {
     const checks = runCocosHudCloseStaticChecks(repoRoot);

@@ -11,7 +11,8 @@ import {
   HorizontalTextAlignment,
   VerticalTextAlignment,
   Overflow,
-  view
+  view,
+  type Vec2
 } from "cc";
 import {
   buildClientHudDisplay,
@@ -36,6 +37,7 @@ import {
   worldQueueSuperHydroGridLink,
   worldOpenSelectedTarget,
   getClientHudCapabilities,
+  getCityHudProfileSnapshot,
   readCityHudViewModel,
   techCancelActiveResearch,
   techSpeedupResearchByAdAsync,
@@ -68,8 +70,12 @@ interface HudButton {
 export class CityHudPanel extends Component {
   private boot: GameBootstrap | null = null;
   private shell: Node | null = null;
+  private cityVisualLayer: Node | null = null;
+  private cityVisualGraphics: Graphics | null = null;
   private statusBand: Node | null = null;
   private detailBand: Node | null = null;
+  private statusBandBg: Graphics | null = null;
+  private detailBandBg: Graphics | null = null;
   private statusLabel: Label | null = null;
   private hintLabel: Label | null = null;
   private buildWindBtn: HudButton | null = null;
@@ -154,12 +160,18 @@ export class CityHudPanel extends Component {
     shell.setParent(this.node);
     this.shell = shell;
 
+    this.cityVisualLayer = new Node("CityVisualLayer");
+    this.cityVisualLayer.setParent(shell);
+    this.cityVisualGraphics = this.cityVisualLayer.addComponent(Graphics);
+
     this.statusBand = new Node("StatusBand");
     this.statusBand.setParent(shell);
+    this.statusBandBg = this.statusBand.addComponent(Graphics);
     this.statusLabel = this.createBandLabel(this.statusBand);
 
     this.detailBand = new Node("DetailBand");
     this.detailBand.setParent(shell);
+    this.detailBandBg = this.detailBand.addComponent(Graphics);
     this.hintLabel = this.createBandLabel(this.detailBand);
 
     this.buildWindBtn = this.createTapButton(shell, "BuildWind", "hud.btn.build_wind", () => this.onBuildWind());
@@ -227,14 +239,18 @@ export class CityHudPanel extends Component {
     this.shell.setPosition(0, 0, 0);
 
     const layout = buildHudBandLayout(container);
+    this.redrawCityVisual(container);
     placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
+    this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
+    this.redrawInfoPanel(this.detailBandBg, layout.detail, new Color(247, 252, 255, 224));
     this.fitLabelToBand(this.statusLabel, layout.status);
     this.fitLabelToBand(this.hintLabel, layout.detail);
     this.statusLabel.fontSize = layout.statusFont;
     this.statusLabel.lineHeight = Math.round(layout.statusFont * 1.2);
     this.hintLabel.fontSize = layout.detailFont;
     this.hintLabel.lineHeight = Math.round(layout.detailFont * 1.2);
+    this.hintLabel.color = new Color(31, 66, 82, 255);
 
     this.placeRowButtons(layout.rows[0], [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
     this.placeRowButtons(
@@ -286,6 +302,165 @@ export class CityHudPanel extends Component {
     const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
     transform.setContentSize(band.width * 0.94, band.height * 0.9);
     node.setPosition(0, 0, 0);
+  }
+
+  private redrawInfoPanel(graphics: Graphics | null, band: HudBandLayout, color: Color): void {
+    if (!graphics) return;
+    graphics.clear();
+    graphics.fillColor = color;
+    graphics.roundRect(-band.width / 2, -band.height / 2, band.width, band.height, Math.min(20, band.height * 0.18));
+    graphics.fill();
+  }
+
+  private redrawCityVisual(container: { width: number; height: number }): void {
+    if (!this.cityVisualLayer || !this.cityVisualGraphics) return;
+    placeCenteredRect(this.cityVisualLayer, 0, 0, container.width, container.height);
+    const g = this.cityVisualGraphics;
+    g.clear();
+
+    const w = container.width;
+    const h = container.height;
+    const left = -w / 2;
+    const bottom = -h / 2;
+    const lowCleanliness = this.isLowCleanlinessPreview();
+    const nightPhase = this.boot ? readCityHudViewModel(this.boot).month % 12 >= 8 : false;
+
+    this.fillRounded(g, left, bottom, w, h, 0, nightPhase ? new Color(38, 93, 142, 255) : new Color(116, 207, 238, 255));
+    this.fillRounded(g, left, bottom, w, h * 0.48, 0, new Color(71, 181, 215, 255));
+    this.drawSoftSun(g, left + w * 0.82, bottom + h * 0.8, Math.min(w, h) * 0.08, nightPhase);
+    this.drawCloud(g, left + w * 0.18, bottom + h * 0.76, w * 0.08);
+    this.drawCloud(g, left + w * 0.64, bottom + h * 0.69, w * 0.065);
+
+    this.drawIsland(g, left + w * 0.16, bottom + h * 0.32, w * 0.25, h * 0.12, new Color(126, 209, 124, 255));
+    this.drawIsland(g, left + w * 0.54, bottom + h * 0.28, w * 0.36, h * 0.15, new Color(151, 221, 138, 255));
+    this.drawIsland(g, left + w * 0.79, bottom + h * 0.42, w * 0.22, h * 0.1, new Color(117, 199, 132, 255));
+
+    const wind: Vec2 = { x: left + w * 0.2, y: bottom + h * 0.4 } as Vec2;
+    const solar: Vec2 = { x: left + w * 0.48, y: bottom + h * 0.4 } as Vec2;
+    const hydro: Vec2 = { x: left + w * 0.76, y: bottom + h * 0.5 } as Vec2;
+    this.drawWindTurbine(g, wind.x, wind.y, h * 0.12);
+    this.drawSolarField(g, solar.x, solar.y, w * 0.11, h * 0.07);
+    this.drawHydroPlant(g, hydro.x, hydro.y, w * 0.1, h * 0.08);
+    this.drawGridLine(g, wind, solar, true);
+    this.drawGridLine(g, solar, hydro, false);
+
+    if (lowCleanliness) {
+      this.fillRounded(g, left, bottom, w, h, 0, new Color(113, 126, 132, 68));
+      this.drawWarningBadge(g, left + w * 0.78, bottom + h * 0.59, w * 0.18, h * 0.07);
+    } else {
+      this.drawCompletionBadge(g, left + w * 0.72, bottom + h * 0.58, w * 0.2, h * 0.07);
+    }
+  }
+
+  private isLowCleanlinessPreview(): boolean {
+    if (!this.boot) return false;
+    const viewModel = readCityHudViewModel(this.boot);
+    if (viewModel.screen !== "screen_city_detail") return false;
+    const profile = getCityHudProfileSnapshot(this.boot);
+    return !!profile && (!profile.cityFullyEcoSupply || profile.supplyGapMw > 0);
+  }
+
+  private fillRounded(g: Graphics, x: number, y: number, w: number, h: number, radius: number, color: Color): void {
+    g.fillColor = color;
+    if (radius > 0) {
+      g.roundRect(x, y, w, h, radius);
+    } else {
+      g.rect(x, y, w, h);
+    }
+    g.fill();
+  }
+
+  private drawSoftSun(g: Graphics, x: number, y: number, radius: number, nightPhase: boolean): void {
+    g.fillColor = nightPhase ? new Color(185, 226, 255, 230) : new Color(255, 224, 104, 240);
+    g.circle(x, y, radius);
+    g.fill();
+    g.fillColor = nightPhase ? new Color(120, 189, 255, 50) : new Color(255, 238, 154, 68);
+    g.circle(x, y, radius * 1.8);
+    g.fill();
+  }
+
+  private drawCloud(g: Graphics, x: number, y: number, size: number): void {
+    g.fillColor = new Color(246, 253, 255, 190);
+    g.circle(x, y, size * 0.42);
+    g.circle(x + size * 0.35, y + size * 0.12, size * 0.34);
+    g.circle(x + size * 0.68, y, size * 0.4);
+    g.roundRect(x - size * 0.24, y - size * 0.24, size * 1.05, size * 0.35, size * 0.16);
+    g.fill();
+  }
+
+  private drawIsland(g: Graphics, x: number, y: number, w: number, h: number, color: Color): void {
+    g.fillColor = new Color(231, 216, 150, 255);
+    g.ellipse(x - w * 0.03, y - h * 0.08, w * 0.56, h * 0.54);
+    g.fill();
+    g.fillColor = color;
+    g.ellipse(x, y, w * 0.5, h * 0.42);
+    g.fill();
+  }
+
+  private drawWindTurbine(g: Graphics, x: number, y: number, size: number): void {
+    g.strokeColor = new Color(239, 250, 255, 255);
+    g.lineWidth = Math.max(3, size * 0.04);
+    g.moveTo(x, y - size * 0.45);
+    g.lineTo(x, y + size * 0.22);
+    g.stroke();
+    g.strokeColor = new Color(219, 244, 255, 255);
+    g.moveTo(x, y + size * 0.24);
+    g.lineTo(x - size * 0.32, y + size * 0.36);
+    g.moveTo(x, y + size * 0.24);
+    g.lineTo(x + size * 0.3, y + size * 0.42);
+    g.moveTo(x, y + size * 0.24);
+    g.lineTo(x + size * 0.02, y - size * 0.12);
+    g.stroke();
+    g.fillColor = new Color(255, 255, 255, 255);
+    g.circle(x, y + size * 0.24, size * 0.045);
+    g.fill();
+  }
+
+  private drawSolarField(g: Graphics, x: number, y: number, w: number, h: number): void {
+    g.fillColor = new Color(34, 109, 176, 255);
+    g.roundRect(x - w / 2, y - h / 2, w, h, h * 0.12);
+    g.fill();
+    g.strokeColor = new Color(123, 215, 255, 255);
+    g.lineWidth = Math.max(2, h * 0.06);
+    for (let i = -1; i <= 1; i += 1) {
+      g.moveTo(x - w * 0.42, y + i * h * 0.16);
+      g.lineTo(x + w * 0.42, y + i * h * 0.16);
+      g.stroke();
+    }
+  }
+
+  private drawHydroPlant(g: Graphics, x: number, y: number, w: number, h: number): void {
+    g.fillColor = new Color(237, 249, 255, 255);
+    g.roundRect(x - w / 2, y - h / 2, w, h, h * 0.16);
+    g.fill();
+    g.fillColor = new Color(71, 174, 219, 255);
+    g.roundRect(x - w * 0.36, y - h * 0.1, w * 0.72, h * 0.23, h * 0.08);
+    g.fill();
+    g.strokeColor = new Color(121, 221, 246, 210);
+    g.lineWidth = Math.max(3, h * 0.08);
+    g.moveTo(x - w * 0.36, y - h * 0.42);
+    g.lineTo(x + w * 0.36, y - h * 0.42);
+    g.stroke();
+  }
+
+  private drawGridLine(g: Graphics, from: Vec2, to: Vec2, connected: boolean): void {
+    g.strokeColor = connected ? new Color(73, 236, 236, 230) : new Color(242, 248, 255, 115);
+    g.lineWidth = connected ? 5 : 3;
+    g.moveTo(from.x, from.y + 12);
+    g.lineTo(to.x, to.y + 12);
+    g.stroke();
+    g.fillColor = connected ? new Color(178, 255, 250, 235) : new Color(229, 238, 245, 150);
+    g.circle(from.x, from.y + 12, 6);
+    g.circle(to.x, to.y + 12, 6);
+    g.fill();
+  }
+
+  private drawWarningBadge(g: Graphics, x: number, y: number, w: number, h: number): void {
+    this.fillRounded(g, x - w / 2, y - h / 2, w, h, h * 0.32, new Color(255, 143, 91, 230));
+  }
+
+  private drawCompletionBadge(g: Graphics, x: number, y: number, w: number, h: number): void {
+    this.fillRounded(g, x - w / 2, y - h / 2, w, h, h * 0.32, new Color(81, 218, 161, 210));
   }
 
   private allButtons(): HudButton[] {

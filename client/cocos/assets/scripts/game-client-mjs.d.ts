@@ -55,6 +55,7 @@ declare module "*.mjs" {
   export function worldQueueSuperHydroGridLink(...args: any[]): any;
   export function worldOpenSelectedTarget(...args: any[]): any;
   export function getClientHudCapabilities(...args: any[]): any;
+  export function getCityHudProfileSnapshot(...args: any[]): any;
   export function readCityHudViewModel(...args: any[]): any;
   export function techCancelActiveResearch(...args: any[]): any;
   export function techSpeedupResearchByAd(...args: any[]): any;
