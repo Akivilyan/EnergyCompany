@@ -47,6 +47,7 @@ declare module "*.mjs" {
   export function regionQueueDefaultLink(...args: any[]): any;
   export function companyApplySelectedLoan(...args: any[]): any;
   export function companyClaimCashByAd(...args: any[]): any;
+  export function companyClaimCashByAdAsync(...args: any[]): Promise<any>;
   export function companyCycleLoanCandidate(...args: any[]): any;
   export function worldCycleTargetCandidate(...args: any[]): any;
   export function worldQueueSelectedTrunk(...args: any[]): any;
@@ -57,6 +58,7 @@ declare module "*.mjs" {
   export function readCityHudViewModel(...args: any[]): any;
   export function techCancelActiveResearch(...args: any[]): any;
   export function techSpeedupResearchByAd(...args: any[]): any;
+  export function techSpeedupResearchByAdAsync(...args: any[]): Promise<any>;
   export function techStartDefaultResearch(...args: any[]): any;
   export function eventsAcknowledgeNextPending(...args: any[]): any;
   export function t(messageKey: string, args?: Record<string, unknown>): string;

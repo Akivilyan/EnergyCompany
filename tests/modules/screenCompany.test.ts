@@ -2,10 +2,28 @@ import { createTestController, loadTestConfig, repoRoot } from "../helpers/testR
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdProvider.js";
+import {
+  StubRewardedAdProvider,
+  type RewardedAdOutcome,
+  type RewardedAdProvider,
+  type RewardedAdRequest
+} from "../../src/infra/monetization/rewardedAdProvider.js";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenCompany } from "../../src/modules/screenCompany.js";
 
+class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
+  showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
+    return {
+      completed: false,
+      providerCode: "sync_not_supported",
+      message: "sync path should not be used"
+    };
+  }
+
+  showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return Promise.resolve({ completed: true, providerCode: "async_only" });
+  }
+}
 
 describe("ScreenCompany", () => {
   it("returns company snapshot with unlocked loan options", () => {
@@ -92,6 +110,16 @@ describe("ScreenCompany", () => {
     const controller = createTestController(repoRoot);
     const screen = createScreenCompany(controller);
     const out = screen.claimCashByAd();
+    expect(out.result.ok).toBe(true);
+    expect(out.uiErrorCode).toBeNull();
+    expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);
+    expect(out.after.funds).toBeGreaterThan(out.before.funds);
+  });
+
+  it("claims cash reward through async ad provider", async () => {
+    const controller = createTestController(repoRoot);
+    const screen = createScreenCompany(controller, new AsyncOnlyRewardedAdProvider());
+    const out = await screen.claimCashByAdAsync();
     expect(out.result.ok).toBe(true);
     expect(out.uiErrorCode).toBeNull();
     expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);

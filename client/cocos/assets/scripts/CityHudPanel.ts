@@ -28,7 +28,7 @@ import {
   regionCancelSelectedLink,
   regionQueueDefaultLink,
   companyApplySelectedLoan,
-  companyClaimCashByAd,
+  companyClaimCashByAdAsync,
   companyCycleLoanCandidate,
   worldCycleTargetCandidate,
   worldQueueSelectedTrunk,
@@ -38,7 +38,7 @@ import {
   getClientHudCapabilities,
   readCityHudViewModel,
   techCancelActiveResearch,
-  techSpeedupResearchByAd,
+  techSpeedupResearchByAdAsync,
   techStartDefaultResearch,
   eventsAcknowledgeNextPending,
   t,
@@ -168,7 +168,9 @@ export class CityHudPanel extends Component {
     this.ackEventBtn = this.createTapButton(shell, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
     this.applyLoanBtn = this.createTapButton(shell, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
     this.cycleLoanBtn = this.createTapButton(shell, "CycleLoan", "hud.btn.cycle_loan", () => this.onCycleLoan());
-    this.adCashBtn = this.createTapButton(shell, "AdCash", "hud.btn.ad_cash", () => this.onAdCash());
+    this.adCashBtn = this.createTapButton(shell, "AdCash", "hud.btn.ad_cash", () => {
+      void this.onAdCash();
+    });
     this.startResearchBtn = this.createTapButton(shell, "StartResearch", "hud.btn.start_research", () =>
       this.onStartResearch()
     );
@@ -199,7 +201,9 @@ export class CityHudPanel extends Component {
     this.queueSuperHydroGridBtn = this.createTapButton(shell, "QueueSuperHydroGrid", "hud.btn.super_hydro_grid", () =>
       this.onQueueSuperHydroGrid()
     );
-    this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => this.onAdSpeedup());
+    this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => {
+      void this.onAdSpeedup();
+    });
     this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
     this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
     this.openWorldBtn = this.createTapButton(shell, "OpenWorld", "hud.btn.world", () => this.onOpenWorld());
@@ -538,9 +542,9 @@ export class CityHudPanel extends Component {
     if (!out.ok) console.warn(`[CityHudPanel] loan candidate failed: ${out.uiErrorCode ?? "unknown"}`);
   }
 
-  private onAdCash(): void {
+  private async onAdCash(): Promise<void> {
     if (!this.boot) return;
-    const out = companyClaimCashByAd(this.boot);
+    const out = await companyClaimCashByAdAsync(this.boot);
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
@@ -562,11 +566,11 @@ export class CityHudPanel extends Component {
     if (!out.ok) console.warn(`[CityHudPanel] cancel research failed: ${out.uiErrorCode ?? "unknown"}`);
   }
 
-  private onAdSpeedup(): void {
+  private async onAdSpeedup(): Promise<void> {
     if (!this.boot) return;
     const hasActiveResearch = !!this.boot.app.screens.tech.getSnapshot().activeResearch;
     const out = hasActiveResearch
-      ? techSpeedupResearchByAd(this.boot)
+      ? await techSpeedupResearchByAdAsync(this.boot)
       : techCycleResearchCandidate(this.boot);
     this.lastActionKey = out.messageKey;
     this.refresh();

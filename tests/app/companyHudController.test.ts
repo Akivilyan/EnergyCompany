@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { clientNavOpenCompany } from "../../src/app/screenNavController.js";
+import type {
+  RewardedAdOutcome,
+  RewardedAdProvider,
+  RewardedAdRequest
+} from "../../src/infra/monetization/rewardedAdProvider.js";
 import {
   companyApplySelectedLoan,
   companyCycleLoanCandidate,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  companyClaimCashByAdAsync,
   formatCompanyCashflowOpportunityLine,
   formatCompanyConstructionOpportunityLine,
   formatCompanyConstructionTechLine,
@@ -31,6 +37,20 @@ import {
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
 } from "../../src/app/companyHudController.js";
+
+class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
+  showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
+    return {
+      completed: false,
+      providerCode: "sync_not_supported",
+      message: "sync path should not be used"
+    };
+  }
+
+  showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return Promise.resolve({ completed: true, providerCode: "async_only" });
+  }
+}
 
 describe("companyHudController", () => {
   it("applies first unlocked loan on company screen", () => {
@@ -83,6 +103,16 @@ describe("companyHudController", () => {
     const out = companyClaimCashByAd(boot);
     expect(out.ok).toBe(true);
     expect(boot.app.controller.state.funds).toBeGreaterThan(before);
+  });
+
+  it("claims cash via async ad provider", async () => {
+    const boot = createGameBootstrapFromRepo({ adProvider: new AsyncOnlyRewardedAdProvider() });
+    clientNavOpenCompany(boot);
+    const before = boot.app.controller.state.funds;
+    const out = await companyClaimCashByAdAsync(boot);
+    expect(out.ok).toBe(true);
+    expect(boot.app.controller.state.funds).toBeGreaterThan(before);
+    expect(boot.app.controller.state.adsRemaining).toBe(9);
   });
 
   it("formats next company level goal from level config", () => {

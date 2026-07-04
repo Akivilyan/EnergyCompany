@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.160.0
+version: 1.161.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -57,6 +57,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 广告 SDK 收敛批次推进：Cocos 公司现金广告与科技加速按钮改走异步激励广告链路，微信 provider 完成后再刷新 HUD |
 | 2026-07-04 | 客户端验证门补强：Cocos tsconfig 补 `baseUrl` 并新增 `check:cocos-ts`，后续脚本改动可单独跑 Cocos TypeScript 检查 |
 | 2026-07-04 | 广告 SDK 收敛批次推进：客户端挂载入口可注入微信激励广告 SDK，Cocos GameRoot 默认传入 wx，Node/无 wx 环境继续回退 stub |
 | 2026-07-04 | 广告 SDK 收敛批次起步：激励广告 provider/service 补异步微信回调路径，覆盖完成、取消、SDK 错误且保留现有同步 stub |
@@ -223,3 +224,4 @@ open_questions: []
 | 1.158.0 | 2026-07-04 | 记录激励广告 provider/service 补异步微信回调路径 |
 | 1.159.0 | 2026-07-04 | 记录客户端挂载入口接入微信激励广告 SDK 注入 |
 | 1.160.0 | 2026-07-04 | 记录 Cocos TypeScript 检查门补强 |
+| 1.161.0 | 2026-07-04 | 记录 Cocos HUD 广告按钮接入异步激励广告链路 |

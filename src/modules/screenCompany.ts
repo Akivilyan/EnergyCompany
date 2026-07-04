@@ -257,9 +257,10 @@ export class ScreenCompany {
     };
   }
 
-  claimCashByAd(): CompanyAdActionOutput {
-    const before = this.getSnapshot();
-    const adAction = this.adRewardService.claimRewardByAd("cash", "screen_company.cash");
+  private toCashAdActionOutput(
+    before: CompanySnapshot,
+    adAction: ReturnType<AdRewardService["claimRewardByAd"]>
+  ): CompanyAdActionOutput {
     const after = this.getSnapshot();
     if (!adAction.rewarded) {
       const uiErrorCode = mapAdUiError(adAction.uiErrorCode, adAction.claimResult);
@@ -282,6 +283,18 @@ export class ScreenCompany {
       uiErrorCode: null,
       uiCopy: null
     };
+  }
+
+  claimCashByAd(): CompanyAdActionOutput {
+    const before = this.getSnapshot();
+    const adAction = this.adRewardService.claimRewardByAd("cash", "screen_company.cash");
+    return this.toCashAdActionOutput(before, adAction);
+  }
+
+  async claimCashByAdAsync(): Promise<CompanyAdActionOutput> {
+    const before = this.getSnapshot();
+    const adAction = await this.adRewardService.claimRewardByAdAsync("cash", "screen_company.cash");
+    return this.toCashAdActionOutput(before, adAction);
   }
 }
 

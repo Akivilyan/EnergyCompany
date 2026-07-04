@@ -26,6 +26,7 @@ export {
   companyApplySelectedLoan,
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
+  companyClaimCashByAdAsync,
   companyCycleLoanCandidate,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot
@@ -38,6 +39,7 @@ export {
   techEnsureLevelIIForDev,
   formatSelectedResearchCandidate,
   techSpeedupResearchByAd,
+  techSpeedupResearchByAdAsync,
   techStartDefaultResearch
 } from "./techHudController.js";
 export {

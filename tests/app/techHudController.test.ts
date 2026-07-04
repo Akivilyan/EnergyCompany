@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { createGameBootstrapFromRepo } from "../../src/app/gameBootstrap.node.js";
 import { clientNavOpenTechTree } from "../../src/app/screenNavController.js";
+import type {
+  RewardedAdOutcome,
+  RewardedAdProvider,
+  RewardedAdRequest
+} from "../../src/infra/monetization/rewardedAdProvider.js";
 import {
   DEFAULT_DEV_TECH_ID,
   formatResearchableTechPressureSummary,
@@ -10,8 +15,23 @@ import {
   techCancelActiveResearch,
   techEnsureLevelIIForDev,
   techSpeedupResearchByAd,
+  techSpeedupResearchByAdAsync,
   techStartDefaultResearch
 } from "../../src/app/techHudController.js";
+
+class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
+  showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
+    return {
+      completed: false,
+      providerCode: "sync_not_supported",
+      message: "sync path should not be used"
+    };
+  }
+
+  showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return Promise.resolve({ completed: true, providerCode: "async_only" });
+  }
+}
 
 describe("techHudController", () => {
   it("starts default research at level II", () => {
@@ -265,5 +285,16 @@ describe("techHudController", () => {
     const out = techSpeedupResearchByAd(boot);
     expect(out.ok).toBe(true);
     expect(boot.app.screens.tech.getSnapshot().litTechIds).toContain(DEFAULT_DEV_TECH_ID);
+  });
+
+  it("speeds up active research via async ad provider", async () => {
+    const boot = createGameBootstrapFromRepo({ adProvider: new AsyncOnlyRewardedAdProvider() });
+    techEnsureLevelIIForDev(boot);
+    clientNavOpenTechTree(boot);
+    techStartDefaultResearch(boot);
+    const out = await techSpeedupResearchByAdAsync(boot);
+    expect(out.ok).toBe(true);
+    expect(boot.app.screens.tech.getSnapshot().litTechIds).toContain(DEFAULT_DEV_TECH_ID);
+    expect(boot.app.controller.state.adsRemaining).toBe(9);
   });
 });

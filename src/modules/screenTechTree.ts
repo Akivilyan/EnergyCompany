@@ -294,9 +294,10 @@ export class ScreenTechTree {
     return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
   }
 
-  speedupResearchByAd(): TechTreeActionOutput {
-    const before = this.getSnapshot();
-    const adAction = this.adRewardService.claimRewardByAd("speedup", "screen_tech_tree.speedup");
+  private toSpeedupAdActionOutput(
+    before: TechTreeSnapshot,
+    adAction: ReturnType<AdRewardService["claimRewardByAd"]>
+  ): TechTreeActionOutput {
     const after = this.getSnapshot();
     if (!adAction.rewarded) {
       const result =
@@ -314,6 +315,21 @@ export class ScreenTechTree {
     const result = adAction.claimResult!;
     const uiErrorCode = mapUiError(result);
     return { before, after, result, uiErrorCode, uiCopy: resolveTechTreeUiCopy(uiErrorCode) };
+  }
+
+  speedupResearchByAd(): TechTreeActionOutput {
+    const before = this.getSnapshot();
+    const adAction = this.adRewardService.claimRewardByAd("speedup", "screen_tech_tree.speedup");
+    return this.toSpeedupAdActionOutput(before, adAction);
+  }
+
+  async speedupResearchByAdAsync(): Promise<TechTreeActionOutput> {
+    const before = this.getSnapshot();
+    const adAction = await this.adRewardService.claimRewardByAdAsync(
+      "speedup",
+      "screen_tech_tree.speedup"
+    );
+    return this.toSpeedupAdActionOutput(before, adAction);
   }
 }
 

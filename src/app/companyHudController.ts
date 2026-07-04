@@ -556,3 +556,15 @@ export function companyClaimCashByAd(boot: GameBootstrap): CompanyHudActionResul
     out.uiCopy?.messageKey ?? null
   );
 }
+
+export async function companyClaimCashByAdAsync(
+  boot: GameBootstrap
+): Promise<CompanyHudActionResult> {
+  const out = await boot.app.screens.company.claimCashByAdAsync();
+  return toActionResult(
+    boot,
+    out.result.ok,
+    out.uiErrorCode,
+    out.uiCopy?.messageKey ?? null
+  );
+}

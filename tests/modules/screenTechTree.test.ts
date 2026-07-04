@@ -2,10 +2,28 @@ import { createTestController, loadTestConfig, repoRoot } from "../helpers/testR
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { StubRewardedAdProvider } from "../../src/infra/monetization/rewardedAdProvider.js";
+import {
+  StubRewardedAdProvider,
+  type RewardedAdOutcome,
+  type RewardedAdProvider,
+  type RewardedAdRequest
+} from "../../src/infra/monetization/rewardedAdProvider.js";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenTechTree } from "../../src/modules/screenTechTree.js";
 
+class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
+  showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
+    return {
+      completed: false,
+      providerCode: "sync_not_supported",
+      message: "sync path should not be used"
+    };
+  }
+
+  showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return Promise.resolve({ completed: true, providerCode: "async_only" });
+  }
+}
 
 describe("ScreenTechTree", () => {
   it("blocks research entry below level II", () => {
@@ -97,6 +115,21 @@ describe("ScreenTechTree", () => {
     expect(speedup.after.activeResearch).not.toBeNull();
     expect(speedup.after.litTechIds).not.toContain("wind_2");
     expect(controller.state.adsRemaining).toBe(10);
+  });
+
+  it("speeds up active research through async ad provider", async () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 2;
+    const screen = createScreenTechTree(controller, new AsyncOnlyRewardedAdProvider());
+    const start = screen.startResearch("wind_2");
+    expect(start.result.ok).toBe(true);
+
+    const speedup = await screen.speedupResearchByAdAsync();
+    expect(speedup.result.ok).toBe(true);
+    expect(speedup.uiErrorCode).toBeNull();
+    expect(speedup.after.activeResearch).toBeNull();
+    expect(speedup.after.litTechIds).toContain("wind_2");
+    expect(controller.state.adsRemaining).toBe(9);
   });
 
   it("exposes technology list snapshot with current unlock states", () => {

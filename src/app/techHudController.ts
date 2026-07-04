@@ -471,6 +471,13 @@ export function techSpeedupResearchByAd(boot: GameBootstrap): TechHudActionResul
   return toActionResult(boot, out.result.ok, out.uiErrorCode, out.uiCopy?.messageKey ?? null);
 }
 
+export async function techSpeedupResearchByAdAsync(
+  boot: GameBootstrap
+): Promise<TechHudActionResult> {
+  const out = await boot.app.screens.tech.speedupResearchByAdAsync();
+  return toActionResult(boot, out.result.ok, out.uiErrorCode, out.uiCopy?.messageKey ?? null);
+}
+
 export function techCycleResearchCandidate(boot: GameBootstrap): TechHudActionResult {
   const candidates = getOrderedResearchCandidates(boot);
   if (candidates.length === 0) {
