@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.168.0
+version: 1.169.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -58,6 +58,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 样张补齐交互槽位、层级顺序与按钮状态 token，并纳入静态预检 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 样张补齐 UI 面板与图标层命名，并纳入静态预检 |
 | 2026-07-04 | 执行环境规则补记：`verify:client:fast` 在普通沙箱下会触发 `tsx -> esbuild spawn EPERM`，后续直接提权运行 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 样张抽出资产层级、槽位与状态 token 规格，并纳入静态预检 |
@@ -240,3 +241,4 @@ open_questions: []
 | 1.166.0 | 2026-07-04 | 记录城市 HUD 资产层级规格抽出并纳入静态预检 |
 | 1.167.0 | 2026-07-04 | 记录 `verify:client:fast` 沙箱 EPERM 后续直接提权执行 |
 | 1.168.0 | 2026-07-04 | 记录城市 HUD UI 面板与图标层规格纳入静态预检 |
+| 1.169.0 | 2026-07-04 | 记录城市 HUD 交互槽位、层级顺序与按钮状态 token 纳入静态预检 |

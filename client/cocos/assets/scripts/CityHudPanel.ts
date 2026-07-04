@@ -57,11 +57,14 @@ import {
   unparentWatch
 } from "./hudLayout";
 import {
+  CITY_HUD_STAGE_ACTION_SLOTS,
   CITY_HUD_STAGE_ASSET_SLOTS,
   CITY_HUD_STAGE_ICON_SLOTS,
+  CITY_HUD_STAGE_SHELL_ORDER,
   CITY_HUD_STAGE_LAYER_NAMES,
   CITY_HUD_STAGE_STATE_TOKENS,
   CITY_HUD_STAGE_UI_SLOTS,
+  CITY_HUD_STAGE_VISUAL_ORDER,
   type CityHudStageAssetSlot
 } from "./cityHudStageSpec";
 
@@ -188,6 +191,7 @@ export class CityHudPanel extends Component {
     this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.state);
     this.cityUiLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.ui);
     this.cityIconLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.icon);
+    this.applyStageLayerOrder();
     this.cityBackgroundGraphics = this.cityBackgroundLayer.addComponent(Graphics);
     this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
     this.cityGridGraphics = this.cityGridLayer.addComponent(Graphics);
@@ -212,80 +216,142 @@ export class CityHudPanel extends Component {
       "hud.btn.build_wind",
       () => this.onBuildWind()
     );
-    this.cycleBuildBtn = this.createTapButton(this.cityUiLayer, "CycleBuild", "hud.btn.cycle_build", () =>
-      this.onCycleBuild()
+    this.cycleBuildBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.cycleBuild.nodeName,
+      "hud.btn.cycle_build",
+      () => this.onCycleBuild()
     );
-    this.advanceMonthBtn = this.createTapButton(this.cityUiLayer, "AdvanceMonth", "hud.btn.next_month", () =>
-      this.onAdvanceMonth()
+    this.advanceMonthBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.advanceMonth.nodeName,
+      "hud.btn.next_month",
+      () => this.onAdvanceMonth()
     );
-    this.ackEventBtn = this.createTapButton(this.cityUiLayer, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
-    this.applyLoanBtn = this.createTapButton(this.cityUiLayer, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
-    this.cycleLoanBtn = this.createTapButton(this.cityUiLayer, "CycleLoan", "hud.btn.cycle_loan", () =>
-      this.onCycleLoan()
+    this.ackEventBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.ackEvent.nodeName,
+      "hud.btn.ack_event",
+      () => this.onAckEvent()
     );
-    this.adCashBtn = this.createTapButton(this.cityUiLayer, "AdCash", "hud.btn.ad_cash", () => {
-      void this.onAdCash();
-    });
-    this.startResearchBtn = this.createTapButton(this.cityUiLayer, "StartResearch", "hud.btn.start_research", () =>
-      this.onStartResearch()
+    this.applyLoanBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.applyLoan.nodeName,
+      "hud.btn.loan",
+      () => this.onApplyLoan()
     );
-    this.cancelResearchBtn = this.createTapButton(this.cityUiLayer, "CancelResearch", "hud.btn.cancel_research", () =>
-      this.onCancelResearch()
+    this.cycleLoanBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.cycleLoan.nodeName,
+      "hud.btn.cycle_loan",
+      () => this.onCycleLoan()
     );
-    this.queueRegionLinkBtn = this.createTapButton(this.cityUiLayer, "QueueRegionLink", "hud.btn.queue_link", () =>
-      this.onQueueRegionLink()
+    this.adCashBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.adCash.nodeName,
+      "hud.btn.ad_cash",
+      () => {
+        void this.onAdCash();
+      }
     );
-    this.cancelRegionLinkBtn = this.createTapButton(this.cityUiLayer, "CancelRegionLink", "hud.btn.cancel_link", () =>
-      this.onCancelRegionLink()
+    this.startResearchBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.startResearch.nodeName,
+      "hud.btn.start_research",
+      () => this.onStartResearch()
+    );
+    this.cancelResearchBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.cancelResearch.nodeName,
+      "hud.btn.cancel_research",
+      () => this.onCancelResearch()
+    );
+    this.queueRegionLinkBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.queueRegionLink.nodeName,
+      "hud.btn.queue_link",
+      () => this.onQueueRegionLink()
+    );
+    this.cancelRegionLinkBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.cancelRegionLink.nodeName,
+      "hud.btn.cancel_link",
+      () => this.onCancelRegionLink()
     );
     this.cycleRegionLinkBtn = this.createTapButton(
       this.cityUiLayer,
-      "CycleRegionLink",
+      CITY_HUD_STAGE_ACTION_SLOTS.cycleRegionLink.nodeName,
       "hud.btn.cycle_region_link",
       () => this.onCycleRegionLink()
     );
     this.openWorldTargetBtn = this.createTapButton(
       this.cityUiLayer,
-      "OpenWorldTarget",
+      CITY_HUD_STAGE_ACTION_SLOTS.openWorldTarget.nodeName,
       "hud.btn.world_open_target",
       () => this.onOpenWorldTarget()
     );
     this.cycleWorldTargetBtn = this.createTapButton(
       this.cityUiLayer,
-      "CycleWorldTarget",
+      CITY_HUD_STAGE_ACTION_SLOTS.cycleWorldTarget.nodeName,
       "hud.btn.world_cycle_target",
       () => this.onCycleWorldTarget()
     );
     this.queueWorldTrunkBtn = this.createTapButton(
       this.cityUiLayer,
-      "QueueWorldTrunk",
+      CITY_HUD_STAGE_ACTION_SLOTS.queueWorldTrunk.nodeName,
       "hud.btn.world_queue_trunk",
       () => this.onQueueWorldTrunk()
     );
     this.queueSuperHydroBtn = this.createTapButton(
       this.cityUiLayer,
-      "QueueSuperHydro",
+      CITY_HUD_STAGE_ACTION_SLOTS.queueSuperHydro.nodeName,
       "hud.btn.super_hydro",
       () => this.onQueueSuperHydro()
     );
     this.queueSuperHydroGridBtn = this.createTapButton(
       this.cityUiLayer,
-      "QueueSuperHydroGrid",
+      CITY_HUD_STAGE_ACTION_SLOTS.queueSuperHydroGrid.nodeName,
       "hud.btn.super_hydro_grid",
       () => this.onQueueSuperHydroGrid()
     );
-    this.adSpeedupBtn = this.createTapButton(this.cityUiLayer, "AdSpeedup", "hud.btn.ad_speedup", () => {
-      void this.onAdSpeedup();
-    });
-    this.openCompanyBtn = this.createTapButton(this.cityUiLayer, "OpenCompany", "hud.btn.company", () =>
-      this.onOpenCompany()
+    this.adSpeedupBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.adSpeedup.nodeName,
+      "hud.btn.ad_speedup",
+      () => {
+        void this.onAdSpeedup();
+      }
     );
-    this.openRegionBtn = this.createTapButton(this.cityUiLayer, "OpenRegion", "hud.btn.region", () =>
-      this.onOpenRegion()
+    this.openCompanyBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.openCompany.nodeName,
+      "hud.btn.company",
+      () => this.onOpenCompany()
     );
-    this.openWorldBtn = this.createTapButton(this.cityUiLayer, "OpenWorld", "hud.btn.world", () => this.onOpenWorld());
-    this.openTechBtn = this.createTapButton(this.cityUiLayer, "OpenTech", "hud.btn.tech", () => this.onOpenTech());
-    this.navBackBtn = this.createTapButton(this.cityUiLayer, "NavBack", "hud.btn.back", () => this.onNavBack());
+    this.openRegionBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.openRegion.nodeName,
+      "hud.btn.region",
+      () => this.onOpenRegion()
+    );
+    this.openWorldBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.openWorld.nodeName,
+      "hud.btn.world",
+      () => this.onOpenWorld()
+    );
+    this.openTechBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.openTech.nodeName,
+      "hud.btn.tech",
+      () => this.onOpenTech()
+    );
+    this.navBackBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_ACTION_SLOTS.navBack.nodeName,
+      "hud.btn.back",
+      () => this.onNavBack()
+    );
 
     this.applyLayout();
   }
@@ -455,6 +521,19 @@ export class CityHudPanel extends Component {
     node.addComponent(UITransform);
     node.addComponent(Graphics);
     return node;
+  }
+
+  private applyStageLayerOrder(): void {
+    const shellLayers = [this.cityVisualLayer, this.cityUiLayer, this.cityIconLayer];
+    for (const layerName of CITY_HUD_STAGE_SHELL_ORDER) {
+      const layer = shellLayers.find((item) => item?.name === layerName);
+      layer?.setSiblingIndex(CITY_HUD_STAGE_SHELL_ORDER.indexOf(layerName));
+    }
+    const visualLayers = [this.cityBackgroundLayer, this.cityFacilityLayer, this.cityGridLayer, this.cityStateLayer];
+    for (const layerName of CITY_HUD_STAGE_VISUAL_ORDER) {
+      const layer = visualLayers.find((item) => item?.name === layerName);
+      layer?.setSiblingIndex(CITY_HUD_STAGE_VISUAL_ORDER.indexOf(layerName));
+    }
   }
 
   private placeStatusIcons(status: HudBandLayout, detail: HudBandLayout): void {

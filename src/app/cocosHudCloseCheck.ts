@@ -26,6 +26,8 @@ const CITY_HUD_PANEL_MARKERS = [
 
 const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_LAYER_NAMES",
+  "CITY_HUD_STAGE_SHELL_ORDER",
+  "CITY_HUD_STAGE_VISUAL_ORDER",
   "CITY_HUD_STAGE_ASSET_SLOTS",
   "CITY_HUD_STAGE_STATE_TOKENS",
   "CityVisualLayer",
@@ -39,10 +41,20 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "StageAssetSolarField",
   "StageAssetHydroPlant",
   "CITY_HUD_STAGE_UI_SLOTS",
+  "CITY_HUD_STAGE_ACTION_SLOTS",
+  "CITY_HUD_STAGE_INTERACTION_TOKENS",
   "CITY_HUD_STAGE_ICON_SLOTS",
   "StageUiResourceBar",
   "StageUiCityStateCard",
   "StageUiPrimaryBuildButton",
+  "StageActionCycleBuild",
+  "StageActionAdvanceMonth",
+  "StageActionQueueRegionLink",
+  "StageActionQueueSuperHydroGrid",
+  "StageNavCompany",
+  "StageNavBack",
+  "city-stage:action-primary",
+  "city-stage:action-reward",
   "StageIconCash",
   "StageIconSocialValue",
   "StageIconCleanliness",
@@ -255,8 +267,18 @@ export function runCocosHudCloseStaticChecks(
       source.includes("./cityHudStageSpec") &&
       source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
       source.includes("CITY_HUD_STAGE_ICON_SLOTS"),
     detail: "CityHudPanel imports city stage spec"
+  });
+  checks.push({
+    id: "hud:city-stage-layer-order",
+    ok:
+      source.includes("applyStageLayerOrder") &&
+      source.includes("CITY_HUD_STAGE_SHELL_ORDER") &&
+      source.includes("CITY_HUD_STAGE_VISUAL_ORDER") &&
+      source.includes("setSiblingIndex"),
+    detail: "CityHudPanel applies city stage layer order"
   });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;
