@@ -42,6 +42,7 @@
 - 典型失败：`npm test` 或 `npm run build:client` 在普通沙箱下报 `node_modules/esbuild/lib/main.js` 或 `node_modules/vite/node_modules/esbuild/lib/main.js` 的 `spawn EPERM`
 - 这不是项目测试失败，也不是 Windows 普遍不能跑 esbuild；提权后同一命令可正常通过
 - 遇到 `npm test`、`npm run build:client`、`npm run build:client:watch`、`npm run verify:client:fast`、`npm run verify:client`、`tsx ...`、`vitest ...`、`vite ...`、`esbuild ...`，需要时直接用 `require_escalated` 重跑，不要把 EPERM 当作业务问题先排查
+- 已确认 `npm run verify:client:fast` 在普通沙箱下会因 `tsx -> esbuild` 报 `spawn EPERM`；后续需要跑该命令时直接用 `require_escalated`
 - `npm run build` 当前走 `tsc`，通常不需要提权；若未来也出现类似子进程/权限错误，再按实际错误提权确认
 
 ### 3. 架构禁区

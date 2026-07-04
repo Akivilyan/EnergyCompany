@@ -16,17 +16,27 @@ const CITY_HUD_PANEL_MARKERS = [
   "onQueueRegionLink",
   "onQueueSuperHydroGrid",
   "worldQueueSuperHydroGridLink",
-  "CityVisualLayer",
-  "CityBackgroundLayer",
-  "CityFacilityLayer",
-  "CityGridLayer",
-  "CityStateLayer",
   "drawCityBackground",
   "drawCityFacilities",
   "drawCityGrid",
   "drawCityState",
   "drawGridLine",
   "bindGameBoot"
+] as const;
+
+const CITY_HUD_STAGE_SPEC_MARKERS = [
+  "CITY_HUD_STAGE_LAYER_NAMES",
+  "CITY_HUD_STAGE_ASSET_SLOTS",
+  "CITY_HUD_STAGE_STATE_TOKENS",
+  "CityVisualLayer",
+  "CityBackgroundLayer",
+  "CityFacilityLayer",
+  "CityGridLayer",
+  "CityStateLayer",
+  "StageAssetWindTurbine",
+  "StageAssetSolarField",
+  "StageAssetHydroPlant",
+  "city-stage:low-cleanliness"
 ] as const;
 
 const CITY_HUD_LAYOUT_BUTTON_MARKERS = [
@@ -188,6 +198,12 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "CityHudPanel.ts"
   );
+  const stageSpecPath = path.join(
+    resolveClientCocosRoot(repoRoot),
+    "assets",
+    "scripts",
+    "cityHudStageSpec.ts"
+  );
   const checks: CocosHudCloseCheckItem[] = [];
 
   if (!fs.existsSync(panelPath)) {
@@ -208,6 +224,26 @@ export function runCocosHudCloseStaticChecks(
       detail: marker
     });
   }
+  checks.push({
+    id: "hud:city-stage-spec-file",
+    ok: fs.existsSync(stageSpecPath),
+    detail: path.relative(repoRoot, stageSpecPath)
+  });
+  const stageSpecSource = fs.existsSync(stageSpecPath)
+    ? fs.readFileSync(stageSpecPath, "utf8")
+    : "";
+  for (const marker of CITY_HUD_STAGE_SPEC_MARKERS) {
+    checks.push({
+      id: `hud:stage-spec:${marker}`,
+      ok: stageSpecSource.includes(marker),
+      detail: marker
+    });
+  }
+  checks.push({
+    id: "hud:city-stage-spec-import",
+    ok: source.includes("./cityHudStageSpec") && source.includes("CITY_HUD_STAGE_ASSET_SLOTS"),
+    detail: "CityHudPanel imports city stage spec"
+  });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;
   let layoutCallMatch: RegExpExecArray | null = layoutCallPattern.exec(source);

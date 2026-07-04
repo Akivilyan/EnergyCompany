@@ -56,6 +56,12 @@ import {
   type HudBandLayout,
   unparentWatch
 } from "./hudLayout";
+import {
+  CITY_HUD_STAGE_ASSET_SLOTS,
+  CITY_HUD_STAGE_LAYER_NAMES,
+  CITY_HUD_STAGE_STATE_TOKENS,
+  type CityHudStageAssetSlot
+} from "./cityHudStageSpec";
 
 const { ccclass } = _decorator;
 
@@ -167,12 +173,12 @@ export class CityHudPanel extends Component {
     shell.setParent(this.node);
     this.shell = shell;
 
-    this.cityVisualLayer = new Node("CityVisualLayer");
+    this.cityVisualLayer = new Node(CITY_HUD_STAGE_LAYER_NAMES.root);
     this.cityVisualLayer.setParent(shell);
-    this.cityBackgroundLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityBackgroundLayer");
-    this.cityFacilityLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityFacilityLayer");
-    this.cityGridLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityGridLayer");
-    this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityStateLayer");
+    this.cityBackgroundLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.background);
+    this.cityFacilityLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.facility);
+    this.cityGridLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.grid);
+    this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.state);
     this.cityBackgroundGraphics = this.cityBackgroundLayer.addComponent(Graphics);
     this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
     this.cityGridGraphics = this.cityGridLayer.addComponent(Graphics);
@@ -362,12 +368,22 @@ export class CityHudPanel extends Component {
 
     this.drawCityBackground(background, left, bottom, w, h, nightPhase);
 
-    const wind: Vec2 = { x: left + w * 0.2, y: bottom + h * 0.4 } as Vec2;
-    const solar: Vec2 = { x: left + w * 0.48, y: bottom + h * 0.4 } as Vec2;
-    const hydro: Vec2 = { x: left + w * 0.76, y: bottom + h * 0.5 } as Vec2;
+    const wind = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.windTurbine, left, bottom, w, h);
+    const solar = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.solarField, left, bottom, w, h);
+    const hydro = this.resolveStagePoint(CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant, left, bottom, w, h);
     this.drawCityFacilities(facilities, wind, solar, hydro, w, h);
     this.drawCityGrid(grid, wind, solar, hydro);
     this.drawCityState(state, left, bottom, w, h, lowCleanliness);
+  }
+
+  private resolveStagePoint(
+    slot: CityHudStageAssetSlot,
+    left: number,
+    bottom: number,
+    w: number,
+    h: number
+  ): Vec2 {
+    return { x: left + w * slot.xRatio, y: bottom + h * slot.yRatio } as Vec2;
   }
 
   private createVisualSubLayer(parent: Node, name: string): Node {
@@ -396,9 +412,12 @@ export class CityHudPanel extends Component {
   }
 
   private drawCityFacilities(g: Graphics, wind: Vec2, solar: Vec2, hydro: Vec2, w: number, h: number): void {
-    this.drawWindTurbine(g, wind.x, wind.y, h * 0.12);
-    this.drawSolarField(g, solar.x, solar.y, w * 0.11, h * 0.07);
-    this.drawHydroPlant(g, hydro.x, hydro.y, w * 0.1, h * 0.08);
+    const windSlot = CITY_HUD_STAGE_ASSET_SLOTS.windTurbine;
+    const solarSlot = CITY_HUD_STAGE_ASSET_SLOTS.solarField;
+    const hydroSlot = CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant;
+    this.drawWindTurbine(g, wind.x, wind.y, h * windSlot.heightRatio);
+    this.drawSolarField(g, solar.x, solar.y, w * solarSlot.widthRatio, h * solarSlot.heightRatio);
+    this.drawHydroPlant(g, hydro.x, hydro.y, w * hydroSlot.widthRatio, h * hydroSlot.heightRatio);
   }
 
   private drawCityGrid(g: Graphics, wind: Vec2, solar: Vec2, hydro: Vec2): void {
@@ -408,10 +427,26 @@ export class CityHudPanel extends Component {
 
   private drawCityState(g: Graphics, left: number, bottom: number, w: number, h: number, lowCleanliness: boolean): void {
     if (lowCleanliness) {
+      this.cityStateLayer!.name = `${CITY_HUD_STAGE_LAYER_NAMES.state}:${CITY_HUD_STAGE_STATE_TOKENS.lowCleanliness}`;
+      const warning = CITY_HUD_STAGE_ASSET_SLOTS.warningBadge;
       this.fillRounded(g, left, bottom, w, h, 0, new Color(113, 126, 132, 68));
-      this.drawWarningBadge(g, left + w * 0.78, bottom + h * 0.59, w * 0.18, h * 0.07);
+      this.drawWarningBadge(
+        g,
+        left + w * warning.xRatio,
+        bottom + h * warning.yRatio,
+        w * warning.widthRatio,
+        h * warning.heightRatio
+      );
     } else {
-      this.drawCompletionBadge(g, left + w * 0.72, bottom + h * 0.58, w * 0.2, h * 0.07);
+      this.cityStateLayer!.name = `${CITY_HUD_STAGE_LAYER_NAMES.state}:${CITY_HUD_STAGE_STATE_TOKENS.clean}`;
+      const clean = CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge;
+      this.drawCompletionBadge(
+        g,
+        left + w * clean.xRatio,
+        bottom + h * clean.yRatio,
+        w * clean.widthRatio,
+        h * clean.heightRatio
+      );
     }
   }
 

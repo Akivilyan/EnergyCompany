@@ -8,7 +8,18 @@ import { runCocosHudClose } from "../../src/app/cocosHudCloseRunner.js";
 
 describe("cocosHudCloseCheck", () => {
   const panelMarkers =
-    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink CityVisualLayer CityBackgroundLayer CityFacilityLayer CityGridLayer CityStateLayer drawCityBackground drawCityFacilities drawCityGrid drawCityState drawGridLine bindGameBoot";
+    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink drawCityBackground drawCityFacilities drawCityGrid drawCityState drawGridLine bindGameBoot";
+  const stageSpecMarkers =
+    "CITY_HUD_STAGE_LAYER_NAMES CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_STATE_TOKENS CityVisualLayer CityBackgroundLayer CityFacilityLayer CityGridLayer CityStateLayer StageAssetWindTurbine StageAssetSolarField StageAssetHydroPlant city-stage:low-cleanliness";
+
+  function writeStaticHudFixtures(scriptsDir: string): void {
+    fs.writeFileSync(
+      path.join(scriptsDir, "CityHudPanel.ts"),
+      `${panelMarkers} ./cityHudStageSpec CITY_HUD_STAGE_ASSET_SLOTS`,
+      "utf8"
+    );
+    fs.writeFileSync(path.join(scriptsDir, "cityHudStageSpec.ts"), stageSpecMarkers, "utf8");
+  }
 
   it("CityHudPanel contains T50 handler markers", () => {
     const checks = runCocosHudCloseStaticChecks(repoRoot);
@@ -21,11 +32,7 @@ describe("cocosHudCloseCheck", () => {
     const buildRoot = path.join(tempRoot, "client", "cocos", "build", "wechatgame");
     fs.mkdirSync(scriptsDir, { recursive: true });
     fs.mkdirSync(path.join(buildRoot, "src"), { recursive: true });
-    fs.writeFileSync(
-      path.join(scriptsDir, "CityHudPanel.ts"),
-      panelMarkers,
-      "utf8"
-    );
+    writeStaticHudFixtures(scriptsDir);
     fs.writeFileSync(
       path.join(buildRoot, "game.js"),
       "require('./web-adapter'); require('src/polyfills.bundle.js'); require(\"src/import-map.js\");",
@@ -55,11 +62,7 @@ describe("cocosHudCloseCheck", () => {
     fs.mkdirSync(scriptsDir, { recursive: true });
     fs.mkdirSync(buildRoot, { recursive: true });
     fs.mkdirSync(logDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(scriptsDir, "CityHudPanel.ts"),
-      panelMarkers,
-      "utf8"
-    );
+    writeStaticHudFixtures(scriptsDir);
     fs.writeFileSync(path.join(buildRoot, "game.js"), "require('./web-adapter');", "utf8");
 
     const failedLog = path.join(logDir, "wechatgame2026-6-18 13-11.log");
@@ -90,11 +93,7 @@ describe("cocosHudCloseCheck", () => {
     const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
     fs.mkdirSync(scriptsDir, { recursive: true });
     fs.mkdirSync(logDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(scriptsDir, "CityHudPanel.ts"),
-      panelMarkers,
-      "utf8"
-    );
+    writeStaticHudFixtures(scriptsDir);
     fs.writeFileSync(
       path.join(logDir, "wechatgame2026-6-18 13-11.log"),
       "Error: Exit process with code:null, signal:SIGTERM in task build-script",

@@ -2,7 +2,7 @@
 id: engineering/codex-project-rules
 title: Codex 项目规则
 status: draft
-version: 0.8.0
+version: 0.9.0
 sources:
   - AGENTS.md
   - docs/design/engineering/architecture.md
@@ -123,6 +123,7 @@ infra 通过端口注入
 - Cocos / HUD 日常改动，默认先跑 `npm run verify:client:fast`
 - `npm run verify:client` 保留为 full：含存档恢复、事件恢复与微信包新鲜度检查
 - 需要探测编辑器预览是否起来，再跑 `npm run check:cocos-preview`
+- Windows / Codex 普通沙箱下，`npm run verify:client:fast` 已确认会在 `tsx -> esbuild` 链路报 `spawn EPERM`；需要跑时直接 `require_escalated`
 
 ### 客户端同步守则
 
@@ -182,3 +183,4 @@ infra 通过端口注入
 | 0.6.0 | 2026-07-03 | 新增 FAST-01 开发节奏守则：骨架优先，细节精磨后置 |
 | 0.7.0 | 2026-07-03 | 明确 playable skeleton 是完整可玩 demo，不是最小主线壳层 |
 | 0.8.0 | 2026-07-04 | 调整为快线批次节奏：开发中减少重复验证，节点收口再集中测试并按批次提交 |
+| 0.9.0 | 2026-07-04 | 记录 `verify:client:fast` 在 Codex 沙箱下需直接提权执行 |
