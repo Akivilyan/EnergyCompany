@@ -17,6 +17,14 @@ const CITY_HUD_PANEL_MARKERS = [
   "onQueueSuperHydroGrid",
   "worldQueueSuperHydroGridLink",
   "CityVisualLayer",
+  "CityBackgroundLayer",
+  "CityFacilityLayer",
+  "CityGridLayer",
+  "CityStateLayer",
+  "drawCityBackground",
+  "drawCityFacilities",
+  "drawCityGrid",
+  "drawCityState",
   "drawGridLine",
   "bindGameBoot"
 ] as const;

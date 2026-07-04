@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.163.0
+version: 1.164.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -58,6 +58,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 正式 UI 资产拆分推进：Cocos 城市 HUD 样张拆出背景、设施、电网与状态绘制层，并纳入客户端静态预检 |
 | 2026-07-04 | 正式 UI 样张推进：Cocos 城市 HUD 增加新能源群岛背景、设施、电网接通/未接通与清洁度状态绘制层 |
 | 2026-07-04 | 正式 UI 批次起步：固化明亮卡通新能源群岛、昼夜四季、污染/灾害临时状态和音频主基调，广告 SDK 调整为后置收口 |
 | 2026-07-04 | 广告 SDK 收敛批次推进：Cocos 公司现金广告与科技加速按钮改走异步激励广告链路，微信 provider 完成后再刷新 HUD |
@@ -230,3 +231,4 @@ open_questions: []
 | 1.161.0 | 2026-07-04 | 记录 Cocos HUD 广告按钮接入异步激励广告链路 |
 | 1.162.0 | 2026-07-04 | 固化 UI 美术与音频方向，广告 SDK 后置 |
 | 1.163.0 | 2026-07-04 | 记录 Cocos 城市 HUD 正式 UI 样张绘制层推进 |
+| 1.164.0 | 2026-07-04 | 记录 Cocos 城市 HUD 样张拆出背景、设施、电网与状态绘制层 |

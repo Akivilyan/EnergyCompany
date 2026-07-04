@@ -71,7 +71,14 @@ export class CityHudPanel extends Component {
   private boot: GameBootstrap | null = null;
   private shell: Node | null = null;
   private cityVisualLayer: Node | null = null;
-  private cityVisualGraphics: Graphics | null = null;
+  private cityBackgroundLayer: Node | null = null;
+  private cityFacilityLayer: Node | null = null;
+  private cityGridLayer: Node | null = null;
+  private cityStateLayer: Node | null = null;
+  private cityBackgroundGraphics: Graphics | null = null;
+  private cityFacilityGraphics: Graphics | null = null;
+  private cityGridGraphics: Graphics | null = null;
+  private cityStateGraphics: Graphics | null = null;
   private statusBand: Node | null = null;
   private detailBand: Node | null = null;
   private statusBandBg: Graphics | null = null;
@@ -162,7 +169,14 @@ export class CityHudPanel extends Component {
 
     this.cityVisualLayer = new Node("CityVisualLayer");
     this.cityVisualLayer.setParent(shell);
-    this.cityVisualGraphics = this.cityVisualLayer.addComponent(Graphics);
+    this.cityBackgroundLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityBackgroundLayer");
+    this.cityFacilityLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityFacilityLayer");
+    this.cityGridLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityGridLayer");
+    this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, "CityStateLayer");
+    this.cityBackgroundGraphics = this.cityBackgroundLayer.addComponent(Graphics);
+    this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
+    this.cityGridGraphics = this.cityGridLayer.addComponent(Graphics);
+    this.cityStateGraphics = this.cityStateLayer.addComponent(Graphics);
 
     this.statusBand = new Node("StatusBand");
     this.statusBand.setParent(shell);
@@ -313,10 +327,31 @@ export class CityHudPanel extends Component {
   }
 
   private redrawCityVisual(container: { width: number; height: number }): void {
-    if (!this.cityVisualLayer || !this.cityVisualGraphics) return;
+    if (
+      !this.cityVisualLayer ||
+      !this.cityBackgroundLayer ||
+      !this.cityFacilityLayer ||
+      !this.cityGridLayer ||
+      !this.cityStateLayer ||
+      !this.cityBackgroundGraphics ||
+      !this.cityFacilityGraphics ||
+      !this.cityGridGraphics ||
+      !this.cityStateGraphics
+    ) return;
     placeCenteredRect(this.cityVisualLayer, 0, 0, container.width, container.height);
-    const g = this.cityVisualGraphics;
-    g.clear();
+    placeCenteredRect(this.cityBackgroundLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.cityFacilityLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.cityGridLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.cityStateLayer, 0, 0, container.width, container.height);
+
+    const background = this.cityBackgroundGraphics;
+    const facilities = this.cityFacilityGraphics;
+    const grid = this.cityGridGraphics;
+    const state = this.cityStateGraphics;
+    background.clear();
+    facilities.clear();
+    grid.clear();
+    state.clear();
 
     const w = container.width;
     const h = container.height;
@@ -325,25 +360,53 @@ export class CityHudPanel extends Component {
     const lowCleanliness = this.isLowCleanlinessPreview();
     const nightPhase = this.boot ? readCityHudViewModel(this.boot).month % 12 >= 8 : false;
 
+    this.drawCityBackground(background, left, bottom, w, h, nightPhase);
+
+    const wind: Vec2 = { x: left + w * 0.2, y: bottom + h * 0.4 } as Vec2;
+    const solar: Vec2 = { x: left + w * 0.48, y: bottom + h * 0.4 } as Vec2;
+    const hydro: Vec2 = { x: left + w * 0.76, y: bottom + h * 0.5 } as Vec2;
+    this.drawCityFacilities(facilities, wind, solar, hydro, w, h);
+    this.drawCityGrid(grid, wind, solar, hydro);
+    this.drawCityState(state, left, bottom, w, h, lowCleanliness);
+  }
+
+  private createVisualSubLayer(parent: Node, name: string): Node {
+    const node = new Node(name);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    return node;
+  }
+
+  private drawCityBackground(
+    g: Graphics,
+    left: number,
+    bottom: number,
+    w: number,
+    h: number,
+    nightPhase: boolean
+  ): void {
     this.fillRounded(g, left, bottom, w, h, 0, nightPhase ? new Color(38, 93, 142, 255) : new Color(116, 207, 238, 255));
     this.fillRounded(g, left, bottom, w, h * 0.48, 0, new Color(71, 181, 215, 255));
     this.drawSoftSun(g, left + w * 0.82, bottom + h * 0.8, Math.min(w, h) * 0.08, nightPhase);
     this.drawCloud(g, left + w * 0.18, bottom + h * 0.76, w * 0.08);
     this.drawCloud(g, left + w * 0.64, bottom + h * 0.69, w * 0.065);
-
     this.drawIsland(g, left + w * 0.16, bottom + h * 0.32, w * 0.25, h * 0.12, new Color(126, 209, 124, 255));
     this.drawIsland(g, left + w * 0.54, bottom + h * 0.28, w * 0.36, h * 0.15, new Color(151, 221, 138, 255));
     this.drawIsland(g, left + w * 0.79, bottom + h * 0.42, w * 0.22, h * 0.1, new Color(117, 199, 132, 255));
+  }
 
-    const wind: Vec2 = { x: left + w * 0.2, y: bottom + h * 0.4 } as Vec2;
-    const solar: Vec2 = { x: left + w * 0.48, y: bottom + h * 0.4 } as Vec2;
-    const hydro: Vec2 = { x: left + w * 0.76, y: bottom + h * 0.5 } as Vec2;
+  private drawCityFacilities(g: Graphics, wind: Vec2, solar: Vec2, hydro: Vec2, w: number, h: number): void {
     this.drawWindTurbine(g, wind.x, wind.y, h * 0.12);
     this.drawSolarField(g, solar.x, solar.y, w * 0.11, h * 0.07);
     this.drawHydroPlant(g, hydro.x, hydro.y, w * 0.1, h * 0.08);
+  }
+
+  private drawCityGrid(g: Graphics, wind: Vec2, solar: Vec2, hydro: Vec2): void {
     this.drawGridLine(g, wind, solar, true);
     this.drawGridLine(g, solar, hydro, false);
+  }
 
+  private drawCityState(g: Graphics, left: number, bottom: number, w: number, h: number, lowCleanliness: boolean): void {
     if (lowCleanliness) {
       this.fillRounded(g, left, bottom, w, h, 0, new Color(113, 126, 132, 68));
       this.drawWarningBadge(g, left + w * 0.78, bottom + h * 0.59, w * 0.18, h * 0.07);
