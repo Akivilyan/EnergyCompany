@@ -8,7 +8,7 @@ import { runCocosHudClose } from "../../src/app/cocosHudCloseRunner.js";
 
 describe("cocosHudCloseCheck", () => {
   const panelMarkers =
-    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink drawCityBackground drawCityFacilities drawCityGrid drawCityState drawGridLine bindGameBoot";
+    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink drawCityBackground drawCityFacilities drawCityGrid drawCityState drawGridLine createStageAssetSlot placeStageAssetSlot CITY_HUD_STAGE_ASSET_SLOTS.windTurbine CITY_HUD_STAGE_ASSET_SLOTS.solarField CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge CITY_HUD_STAGE_ASSET_SLOTS.warningBadge bindGameBoot";
   const stageSpecMarkers =
     "CITY_HUD_STAGE_LAYER_NAMES CITY_HUD_STAGE_SHELL_ORDER CITY_HUD_STAGE_VISUAL_ORDER CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_STATE_TOKENS CityVisualLayer CityBackgroundLayer CityFacilityLayer CityGridLayer CityStateLayer CityUiLayer CityIconLayer StageAssetWindTurbine StageAssetSolarField StageAssetHydroPlant CITY_HUD_STAGE_UI_SLOTS CITY_HUD_STAGE_ACTION_SLOTS CITY_HUD_STAGE_INTERACTION_TOKENS CITY_HUD_STAGE_ICON_SLOTS StageUiResourceBar StageUiCityStateCard StageUiPrimaryBuildButton StageActionCycleBuild StageActionAdvanceMonth StageActionQueueRegionLink StageActionQueueSuperHydroGrid StageNavCompany StageNavBack city-stage:action-primary city-stage:action-reward StageIconCash StageIconSocialValue StageIconCleanliness city-stage:low-cleanliness";
 

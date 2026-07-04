@@ -21,6 +21,13 @@ const CITY_HUD_PANEL_MARKERS = [
   "drawCityGrid",
   "drawCityState",
   "drawGridLine",
+  "createStageAssetSlot",
+  "placeStageAssetSlot",
+  "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
+  "CITY_HUD_STAGE_ASSET_SLOTS.solarField",
+  "CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant",
+  "CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge",
+  "CITY_HUD_STAGE_ASSET_SLOTS.warningBadge",
   "bindGameBoot"
 ] as const;
 

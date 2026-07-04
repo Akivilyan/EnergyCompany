@@ -98,6 +98,11 @@ export class CityHudPanel extends Component {
   private cityFacilityGraphics: Graphics | null = null;
   private cityGridGraphics: Graphics | null = null;
   private cityStateGraphics: Graphics | null = null;
+  private windAssetSlot: Node | null = null;
+  private solarAssetSlot: Node | null = null;
+  private hydroAssetSlot: Node | null = null;
+  private cleanBadgeSlot: Node | null = null;
+  private warningBadgeSlot: Node | null = null;
   private cashIcon: Node | null = null;
   private socialValueIcon: Node | null = null;
   private cleanlinessIcon: Node | null = null;
@@ -202,6 +207,11 @@ export class CityHudPanel extends Component {
     this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
     this.cityGridGraphics = this.cityGridLayer.addComponent(Graphics);
     this.cityStateGraphics = this.cityStateLayer.addComponent(Graphics);
+    this.windAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.windTurbine);
+    this.solarAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.solarField);
+    this.hydroAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant);
+    this.cleanBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge);
+    this.warningBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge);
     this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash.nodeName);
     this.socialValueIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.socialValue.nodeName);
     this.cleanlinessIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cleanliness.nodeName);
@@ -493,6 +503,13 @@ export class CityHudPanel extends Component {
     const bottom = -h / 2;
     const lowCleanliness = this.isLowCleanlinessPreview();
     const nightPhase = this.boot ? readCityHudViewModel(this.boot).month % 12 >= 8 : false;
+    this.placeStageAssetSlot(this.windAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.windTurbine, left, bottom, w, h);
+    this.placeStageAssetSlot(this.solarAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.solarField, left, bottom, w, h);
+    this.placeStageAssetSlot(this.hydroAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant, left, bottom, w, h);
+    this.placeStageAssetSlot(this.cleanBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge, left, bottom, w, h);
+    this.placeStageAssetSlot(this.warningBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge, left, bottom, w, h);
+    if (this.cleanBadgeSlot) this.cleanBadgeSlot.active = !lowCleanliness;
+    if (this.warningBadgeSlot) this.warningBadgeSlot.active = lowCleanliness;
 
     this.drawCityBackground(background, left, bottom, w, h, nightPhase);
 
@@ -519,6 +536,31 @@ export class CityHudPanel extends Component {
     node.setParent(parent);
     node.addComponent(UITransform);
     return node;
+  }
+
+  private createStageAssetSlot(parent: Node, slot: CityHudStageAssetSlot): Node {
+    const node = new Node(slot.nodeName);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    return node;
+  }
+
+  private placeStageAssetSlot(
+    node: Node | null,
+    slot: CityHudStageAssetSlot,
+    left: number,
+    bottom: number,
+    w: number,
+    h: number
+  ): void {
+    if (!node) return;
+    placeCenteredRect(
+      node,
+      left + w * slot.xRatio,
+      bottom + h * slot.yRatio,
+      w * slot.widthRatio,
+      h * slot.heightRatio
+    );
   }
 
   private createIconSlot(parent: Node, name: string): Node {
