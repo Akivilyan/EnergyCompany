@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * v0 周五回归聚合 CLI：
- * 串行执行 boundaries + app 装配冒烟 + cocos 场景占位 + FAST-01 完整路线/地图扩张/公司推进/城市建设/科技效果/灾害压力 + E1-E6 regression + unit tests，输出通过率摘要。
+ * 串行执行 boundaries + app 装配冒烟 + cocos 场景占位 + FAST-01 完整路线/地图扩张/公司推进/城市建设/科技效果/灾害压力/终局路线 + E1-E6 regression + unit tests，输出通过率摘要。
  *
  * 用法：
  *   npm run sim:playtest-bundle
@@ -33,6 +33,7 @@ const steps: BundleStep[] = [
   { id: "city-branches-route", title: "FAST-01 城市建设分支路线", command: "npm run sim:city-branches-route" },
   { id: "tech-effects-route", title: "FAST-01 科技分支效果路线", command: "npm run sim:tech-effects-route" },
   { id: "disaster-pressure-route", title: "FAST-01 灾害压力反制路线", command: "npm run sim:disaster-pressure-route" },
+  { id: "terminal-route", title: "FAST-01 终局路线", command: "npm run sim:terminal-route" },
   { id: "regression", title: "E1-E6 体验回归", command: "npm run sim:regression" },
   { id: "unit", title: "单元/模块测试", command: "npm test" }
 ];
