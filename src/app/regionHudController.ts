@@ -154,7 +154,8 @@ function ensureSelectedCandidate(boot: GameBootstrap) {
       (candidate) =>
         candidate.fromCityId === DEFAULT_REGION_LINK.fromCityId &&
         candidate.toCityId === DEFAULT_REGION_LINK.toCityId &&
-        candidate.linkType === DEFAULT_REGION_LINK.linkType
+        candidate.linkType === DEFAULT_REGION_LINK.linkType &&
+        shouldKeepRememberedCandidate(boot, candidate)
     ) ??
     findRecommendedRegionCandidate(candidates) ??
     candidates[0];

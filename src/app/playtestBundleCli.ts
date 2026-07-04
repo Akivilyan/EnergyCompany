@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * v0 周五回归聚合 CLI：
- * 串行执行 boundaries + app 装配冒烟 + cocos 场景占位 + FAST-01 完整路线/公司推进/城市建设/科技效果/灾害压力 + E1-E6 regression + unit tests，输出通过率摘要。
+ * 串行执行 boundaries + app 装配冒烟 + cocos 场景占位 + FAST-01 完整路线/地图扩张/公司推进/城市建设/科技效果/灾害压力 + E1-E6 regression + unit tests，输出通过率摘要。
  *
  * 用法：
  *   npm run sim:playtest-bundle
@@ -28,6 +28,7 @@ const steps: BundleStep[] = [
   { id: "cocos-scene", title: "Cocos 场景占位接入", command: "npm run sim:cocos-scene-spike" },
   { id: "verify-client", title: "Cocos 客户端验收 (T50+T49)", command: "npm run verify:client" },
   { id: "fast-demo-route", title: "FAST-01 开局到终局固定路线", command: "npm run sim:fast-demo-route" },
+  { id: "map-expansion-route", title: "FAST-01 地图/区域扩张路线", command: "npm run sim:map-expansion-route" },
   { id: "company-progression-route", title: "FAST-01 公司 I-V 推进路线", command: "npm run sim:company-progression-route" },
   { id: "city-branches-route", title: "FAST-01 城市建设分支路线", command: "npm run sim:city-branches-route" },
   { id: "tech-effects-route", title: "FAST-01 科技分支效果路线", command: "npm run sim:tech-effects-route" },

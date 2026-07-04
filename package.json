@@ -25,6 +25,7 @@
     "sim:save-loop": "tsx src/app/saveLoopCli.ts",
     "sim:regression": "tsx src/app/regressionCli.ts",
     "sim:fast-demo-route": "tsx src/app/fastDemoRouteCli.ts",
+    "sim:map-expansion-route": "tsx src/app/mapExpansionRouteCli.ts",
     "sim:company-progression-route": "tsx src/app/companyProgressionRouteCli.ts",
     "sim:city-branches-route": "tsx src/app/cityBranchesRouteCli.ts",
     "sim:tech-effects-route": "tsx src/app/techEffectsRouteCli.ts",

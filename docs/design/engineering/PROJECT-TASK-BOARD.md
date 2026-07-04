@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.154.0
+version: 1.155.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | `FAST-01` playtest-bundle 纳入地图/区域扩张路线：早期区内铺线、中期跨区打开、late-map 滚动目标与 MAP-07/08 压力目标均有验收 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入公司 I-V 推进路线：各等级贷款、科技、区域解锁、终局压力与广告/贷款补资均有验收 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入灾害压力反制路线：预警备考、风险储备、冲击确认、广告/贷款/保守恢复与 4 场固定灾害均有验收 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入城市建设分支路线：风/光/火/水/核候选、压力推荐、资源/储能倍率与实际队列档位均有验收 |
@@ -213,3 +214,4 @@ open_questions: []
 | 1.152.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 城市建设分支路线 |
 | 1.153.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 灾害压力反制路线 |
 | 1.154.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 公司 I-V 推进路线 |
+| 1.155.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 地图/区域扩张路线 |
