@@ -15,7 +15,7 @@ describe("cocosHudCloseCheck", () => {
   function writeStaticHudFixtures(scriptsDir: string): void {
     fs.writeFileSync(
       path.join(scriptsDir, "CityHudPanel.ts"),
-      `${panelMarkers} ./cityHudStageSpec CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_UI_SLOTS CITY_HUD_STAGE_ACTION_SLOTS CITY_HUD_STAGE_ICON_SLOTS applyStageLayerOrder CITY_HUD_STAGE_SHELL_ORDER CITY_HUD_STAGE_VISUAL_ORDER setSiblingIndex`,
+      `${panelMarkers} ./cityHudStageSpec CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_UI_SLOTS CITY_HUD_STAGE_ACTION_SLOTS CITY_HUD_STAGE_ICON_SLOTS CITY_HUD_STAGE_INTERACTION_TOKENS syncButtonStateTokens resolveButtonRoleToken resolveButtonFill CITY_HUD_STAGE_INTERACTION_TOKENS.active CITY_HUD_STAGE_INTERACTION_TOKENS.hidden applyStageLayerOrder CITY_HUD_STAGE_SHELL_ORDER CITY_HUD_STAGE_VISUAL_ORDER setSiblingIndex`,
       "utf8"
     );
     fs.writeFileSync(path.join(scriptsDir, "cityHudStageSpec.ts"), stageSpecMarkers, "utf8");

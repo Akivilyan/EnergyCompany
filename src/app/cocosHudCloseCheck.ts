@@ -268,8 +268,19 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
       source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
-      source.includes("CITY_HUD_STAGE_ICON_SLOTS"),
+      source.includes("CITY_HUD_STAGE_ICON_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_INTERACTION_TOKENS"),
     detail: "CityHudPanel imports city stage spec"
+  });
+  checks.push({
+    id: "hud:city-stage-interaction-tokens",
+    ok:
+      source.includes("syncButtonStateTokens") &&
+      source.includes("resolveButtonRoleToken") &&
+      source.includes("resolveButtonFill") &&
+      source.includes("CITY_HUD_STAGE_INTERACTION_TOKENS.active") &&
+      source.includes("CITY_HUD_STAGE_INTERACTION_TOKENS.hidden"),
+    detail: "CityHudPanel applies interaction state and role tokens"
   });
   checks.push({
     id: "hud:city-stage-layer-order",

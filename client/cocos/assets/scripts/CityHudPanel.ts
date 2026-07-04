@@ -60,21 +60,27 @@ import {
   CITY_HUD_STAGE_ACTION_SLOTS,
   CITY_HUD_STAGE_ASSET_SLOTS,
   CITY_HUD_STAGE_ICON_SLOTS,
+  CITY_HUD_STAGE_INTERACTION_TOKENS,
   CITY_HUD_STAGE_SHELL_ORDER,
   CITY_HUD_STAGE_LAYER_NAMES,
   CITY_HUD_STAGE_STATE_TOKENS,
   CITY_HUD_STAGE_UI_SLOTS,
   CITY_HUD_STAGE_VISUAL_ORDER,
+  type CityHudStageActionSlot,
   type CityHudStageAssetSlot
 } from "./cityHudStageSpec";
 
 const { ccclass } = _decorator;
 
+type CityHudStageButtonRole = CityHudStageActionSlot["role"] | "primary";
+
 interface HudButton {
   node: Node;
   label: Label;
   bg: Graphics;
+  baseName: string;
   messageKey: string;
+  role: CityHudStageButtonRole;
 }
 
 @ccclass("CityHudPanel")
@@ -806,7 +812,7 @@ export class CityHudPanel extends Component {
     label.enableWrapText = false;
     label.string = t(messageKey);
     node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler(), this);
-    const hudButton: HudButton = { node, label, bg, messageKey };
+    const hudButton: HudButton = { node, label, bg, baseName: name, messageKey, role: this.resolveButtonRole(name) };
     return hudButton;
   }
 
@@ -817,9 +823,56 @@ export class CityHudPanel extends Component {
     const h = transform.height;
     if (w <= 0 || h <= 0) return;
     btn.bg.clear();
-    btn.bg.fillColor = new Color(36, 96, 188, 245);
+    btn.bg.fillColor = this.resolveButtonFill(btn.role);
     btn.bg.roundRect(-w / 2, -h / 2, w, h, Math.min(18, h * 0.16));
     btn.bg.fill();
+  }
+
+  private resolveButtonRole(name: string): CityHudStageButtonRole {
+    if (name === CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName) return "primary";
+    const action = Object.values(CITY_HUD_STAGE_ACTION_SLOTS).find((slot) => slot.nodeName === name);
+    return action?.role ?? "secondary";
+  }
+
+  private resolveButtonFill(role: CityHudStageButtonRole): Color {
+    switch (role) {
+      case "primary":
+        return new Color(30, 134, 203, 245);
+      case "reward":
+        return new Color(35, 151, 108, 245);
+      case "warning":
+        return new Color(212, 91, 69, 245);
+      case "nav":
+        return new Color(43, 94, 136, 235);
+      case "secondary":
+      default:
+        return new Color(58, 113, 171, 235);
+    }
+  }
+
+  private resolveButtonRoleToken(role: CityHudStageButtonRole): string {
+    switch (role) {
+      case "primary":
+        return CITY_HUD_STAGE_INTERACTION_TOKENS.primary;
+      case "reward":
+        return CITY_HUD_STAGE_INTERACTION_TOKENS.reward;
+      case "warning":
+        return CITY_HUD_STAGE_INTERACTION_TOKENS.warning;
+      case "nav":
+        return CITY_HUD_STAGE_INTERACTION_TOKENS.nav;
+      case "secondary":
+      default:
+        return CITY_HUD_STAGE_INTERACTION_TOKENS.secondary;
+    }
+  }
+
+  private syncButtonStateTokens(): void {
+    for (const btn of this.allButtons()) {
+      const visibilityToken = btn.node.active
+        ? CITY_HUD_STAGE_INTERACTION_TOKENS.active
+        : CITY_HUD_STAGE_INTERACTION_TOKENS.hidden;
+      btn.node.name = `${btn.baseName}:${visibilityToken}:${this.resolveButtonRoleToken(btn.role)}`;
+    }
   }
 
   private setButtonCaption(btn: HudButton | null, messageKey: string): void {
@@ -901,6 +954,7 @@ export class CityHudPanel extends Component {
     this.openWorldBtn!.node.active = true;
     this.openTechBtn!.node.active = true;
     this.navBackBtn!.node.active = true;
+    this.syncButtonStateTokens();
     this.syncButtonCaptions();
     if (onCity) {
       this.setButtonCaption(this.buildWindBtn, "hud.btn.build_selected");
