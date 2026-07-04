@@ -46,6 +46,9 @@ client/cocos/profiles/
 client/cocos/assets/shared/
 client/cocos/sync-manifest.json
 
+# Cocos 会为脚本侧的本地类型声明生成 .meta；该声明只服务 TS 编译，不作为场景资源引用
+client/cocos/assets/scripts/game-client-mjs.d.ts.meta
+
 # --- 微信小游戏构建产物（Cocos 发布输出，路径随模板可能略有差异）---
 **/wechatgame/
 **/wechat-minigame/
