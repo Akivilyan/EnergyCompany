@@ -2,7 +2,7 @@
 id: design/current-product-truth
 title: 当前产品真相与阶段完成定义
 status: draft
-version: 0.8.0
+version: 0.9.0
 sources:
   - docs/design/gdd/00-vision.md
   - docs/design/gdd/01-core-loop.md
@@ -126,7 +126,7 @@ open_questions: []
 ### 执行重点
 
 1. 保持 FAST-01 七条核心路线常绿，`sim:playtest-bundle` 作为完整 demo 回归入口
-2. 正式 UI / Prefab、广告 SDK、数值收敛、提示精修按批次推进
+2. 正式 UI / Prefab 与资产规范先行，广告 SDK 放到后置阶段收口
 3. 数据先粗粒度可调，允许占位，禁止为模糊数据长期停工
 4. 每个批次以“玩家能更顺畅完成完整 demo”为完成口径
 5. 保持 `src/sim/` 规则边界不破，UI / Cocos 只编排，不直接改状态
@@ -150,3 +150,4 @@ open_questions: []
 | 0.6.0 | 2026-07-03 | 钉死 playable skeleton 优先：数据、提示和细节精磨后置 |
 | 0.7.0 | 2026-07-03 | 明确 playable skeleton 含义：粗糙但真正可玩的完整 demo |
 | 0.8.0 | 2026-07-04 | 记录 FAST-01 七条核心路线进入聚合验证，下一重点切到 UI/广告/数值/提示收敛 |
+| 0.9.0 | 2026-07-04 | 记录正式 UI 与资产规范先行，广告 SDK 后置 |

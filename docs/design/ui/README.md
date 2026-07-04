@@ -2,7 +2,7 @@
 id: ui/README
 title: UI Spec 索引
 status: draft
-version: 0.2.0
+version: 0.3.0
 sources:
   - docs/design/META.md
 supersedes: []
@@ -19,6 +19,7 @@ open_questions: []
 
 | 文档 | 对应内容 |
 |------|----------|
+| `art-direction.md` | UI 美术、场景状态、资产拆分与音频方向 |
 | `00-screen-map.md` | 全屏地图与导航关系 |
 | `region-main.md` | 区域主界面 |
 | `world-map.md` | 全国大地图 |
@@ -35,3 +36,10 @@ open_questions: []
 - 默认微信小游戏安全区
 - 线框以文字和 ASCII 为主
 - 组件命名、屏幕 ID 与 Feature 对齐
+- 正式 UI / Prefab 批次的视觉与音频基调以 `art-direction.md` 为准
+
+## 变更记录
+
+| 版本 | 日期 | 说明 |
+|------|------|------|
+| 0.3.0 | 2026-07-04 | 新增 UI 美术与音频方向文档入口 |

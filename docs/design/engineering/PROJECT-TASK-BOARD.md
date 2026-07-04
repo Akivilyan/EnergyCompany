@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.161.0
+version: 1.162.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -20,7 +20,7 @@ open_questions: []
 
 - 当前阶段：`FAST-01` Playable Demo 快线
 - 当前策略：冻结非阻塞小问题、模糊数据精磨和 HUD 细节闭环，把开发重心钉死在真正可玩的完整 demo
-- 当前重点：FAST-01 七条核心路线已进聚合验证；继续转入正式 UI、广告 SDK、数值收敛和提示精修批次
+- 当前重点：FAST-01 七条核心路线已进聚合验证；广告 SDK 后置，优先进入正式 UI / Prefab 样张与资产规范批次
 
 ## 2. 当前任务
 
@@ -48,15 +48,17 @@ open_questions: []
 ## 4. 下一步
 
 1. 保持 FAST-01 路线矩阵常绿：`sim:playtest-bundle` 作为完整 demo 回归入口
-2. 正式 UI / Prefab 批次：把开发 HUD 的核心路线入口迁向正式界面结构
-3. 广告 SDK 批次：把现有激励广告 stub 替换为微信激励广告适配与失败/取消回退
+2. 正式 UI / Prefab 批次：先固化 UI 美术与音频方向，再做城市页可玩 UI 样张
+3. 资产拆分批次：围绕城市页拆背景、建筑、电网、光效、UI 面板与图标层
 4. 数值收敛批次：围绕公司 I-V、灾害、终局和路线耗时做粗调，不做无边界精磨
 5. 提示精修批次：收敛经营压力、科技解法、灾害备考/恢复和终局反馈文案
+6. 广告 SDK 批次：广告放在后置阶段，最后再收口微信激励广告真机链路
 
 ## 5. 最近进展摘要
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 正式 UI 批次起步：固化明亮卡通新能源群岛、昼夜四季、污染/灾害临时状态和音频主基调，广告 SDK 调整为后置收口 |
 | 2026-07-04 | 广告 SDK 收敛批次推进：Cocos 公司现金广告与科技加速按钮改走异步激励广告链路，微信 provider 完成后再刷新 HUD |
 | 2026-07-04 | 客户端验证门补强：Cocos tsconfig 补 `baseUrl` 并新增 `check:cocos-ts`，后续脚本改动可单独跑 Cocos TypeScript 检查 |
 | 2026-07-04 | 广告 SDK 收敛批次推进：客户端挂载入口可注入微信激励广告 SDK，Cocos GameRoot 默认传入 wx，Node/无 wx 环境继续回退 stub |
@@ -225,3 +227,4 @@ open_questions: []
 | 1.159.0 | 2026-07-04 | 记录客户端挂载入口接入微信激励广告 SDK 注入 |
 | 1.160.0 | 2026-07-04 | 记录 Cocos TypeScript 检查门补强 |
 | 1.161.0 | 2026-07-04 | 记录 Cocos HUD 广告按钮接入异步激励广告链路 |
+| 1.162.0 | 2026-07-04 | 固化 UI 美术与音频方向，广告 SDK 后置 |
