@@ -25,6 +25,7 @@
     "sim:save-loop": "tsx src/app/saveLoopCli.ts",
     "sim:regression": "tsx src/app/regressionCli.ts",
     "sim:fast-demo-route": "tsx src/app/fastDemoRouteCli.ts",
+    "sim:tech-effects-route": "tsx src/app/techEffectsRouteCli.ts",
     "sim:telemetry-export": "tsx src/app/telemetryExportCli.ts",
     "sim:ad-sdk-spike": "tsx src/app/adSdkSpikeCli.ts",
     "sim:playtest-bundle": "tsx src/app/playtestBundleCli.ts",
