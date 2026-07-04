@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.152.0
+version: 1.153.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -59,6 +59,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | `FAST-01` playtest-bundle 纳入灾害压力反制路线：预警备考、风险储备、冲击确认、广告/贷款/保守恢复与 4 场固定灾害均有验收 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入城市建设分支路线：风/光/火/水/核候选、压力推荐、资源/储能倍率与实际队列档位均有验收 |
 | 2026-07-03 | `FAST-01` playtest-bundle 纳入科技分支效果路线：建设折扣、储能、电网、贷款、灾害、生态与绿色品牌均有规则级验收 |
 | 2026-07-03 | `FAST-01` playtest-bundle 纳入固定 demo 路线并修复聚合自污染：综合回归覆盖开局到 MET-B、超水电、最终灾害与胜利 |
@@ -209,3 +210,4 @@ open_questions: []
 | 1.150.0 | 2026-07-03 | 记录 playtest-bundle 修复场景 registry 自污染与 E3 过期科技目标 |
 | 1.151.0 | 2026-07-03 | 记录 playtest-bundle 纳入 FAST-01 科技分支效果路线 |
 | 1.152.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 城市建设分支路线 |
+| 1.153.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 灾害压力反制路线 |

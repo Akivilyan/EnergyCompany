@@ -27,6 +27,7 @@
     "sim:fast-demo-route": "tsx src/app/fastDemoRouteCli.ts",
     "sim:city-branches-route": "tsx src/app/cityBranchesRouteCli.ts",
     "sim:tech-effects-route": "tsx src/app/techEffectsRouteCli.ts",
+    "sim:disaster-pressure-route": "tsx src/app/disasterPressureRouteCli.ts",
     "sim:telemetry-export": "tsx src/app/telemetryExportCli.ts",
     "sim:ad-sdk-spike": "tsx src/app/adSdkSpikeCli.ts",
     "sim:playtest-bundle": "tsx src/app/playtestBundleCli.ts",
