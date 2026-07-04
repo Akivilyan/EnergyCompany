@@ -213,6 +213,32 @@ describe("cityHudController", () => {
     expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("hydro");
   });
 
+  it("keeps remembered build candidate scoped per city", () => {
+    const config = loadTestConfig();
+    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
+    const map07 = config.getCity("CITY-MAP07-01");
+    expect(map07).toBeTruthy();
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("wind");
+    expect(cityHudCycleBuildCandidate(boot).ok).toBe(true);
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("solar");
+
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.cities["CITY-MAP07-01"] = {
+      cityId: "CITY-MAP07-01",
+      demandMw: map07?.base_demand_mw ?? 0,
+      localSupplyMw: 0,
+      effectiveSupplyMw: 0,
+      netImportMw: 0,
+      supplyRatio: 0,
+      cityFullyEcoSupply: true,
+      ecoCapFactor: 1,
+      cityBaseSocialValue: map07?.city_base_social_value ?? 0
+    };
+
+    clientNavOpenCity(boot, "CITY-MAP07-01", "MAP-07");
+    expect(getCityHudBuildSelectionSnapshot(boot).selectedFacilityId).toBe("hydro");
+  });
+
   it("exposes nuclear as a mid-game candidate after nuclear tech is lit", () => {
     const config = loadTestConfig();
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });

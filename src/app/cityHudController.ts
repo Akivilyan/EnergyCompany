@@ -62,7 +62,7 @@ export interface CityHudProfileSnapshot {
 }
 
 const DEFAULT_BUILD_FACILITY_ID = "wind";
-const selectedFacilityByBoot = new WeakMap<GameBootstrap, string>();
+const selectedFacilityByBoot = new WeakMap<GameBootstrap, Map<string, string>>();
 const BUILD_CANDIDATE_ORDER = ["wind", "solar", "thermal", "hydro", "nuclear"] as const;
 const FACILITY_LABELS = {
   "zh-CN": {
@@ -124,6 +124,23 @@ function countCityFacility(boot: GameBootstrap, cityId: string, facilityId: stri
 
 function getCurrentCityId(boot: GameBootstrap): string {
   return boot.play.getNavigation().cityId ?? "CITY-START";
+}
+
+function getSelectedFacilityForCity(boot: GameBootstrap, cityId: string): string | undefined {
+  return selectedFacilityByBoot.get(boot)?.get(cityId);
+}
+
+function setSelectedFacilityForCity(boot: GameBootstrap, cityId: string, facilityId: string): void {
+  let selectedByCity = selectedFacilityByBoot.get(boot);
+  if (!selectedByCity) {
+    selectedByCity = new Map<string, string>();
+    selectedFacilityByBoot.set(boot, selectedByCity);
+  }
+  selectedByCity.set(cityId, facilityId);
+}
+
+function clearSelectedFacilityForCity(boot: GameBootstrap, cityId: string): void {
+  selectedFacilityByBoot.get(boot)?.delete(cityId);
 }
 
 function formatFacilityTierDisplayName(facilityId: string, tier: number): string {
@@ -301,18 +318,19 @@ function getBuildCandidates(boot: GameBootstrap): CityBuildCandidate[] {
 }
 
 function ensureSelectedCandidate(boot: GameBootstrap): CityBuildCandidate | null {
+  const cityId = getCurrentCityId(boot);
   const candidates = getBuildCandidates(boot);
   if (candidates.length === 0) {
-    selectedFacilityByBoot.delete(boot);
+    clearSelectedFacilityForCity(boot, cityId);
     return null;
   }
-  const remembered = selectedFacilityByBoot.get(boot);
+  const remembered = getSelectedFacilityForCity(boot, cityId);
   const selected =
     candidates.find((candidate) => candidate.facilityId === remembered) ??
     findRecommendedBuildCandidate(boot, candidates) ??
     candidates.find((candidate) => candidate.facilityId === DEFAULT_BUILD_FACILITY_ID) ??
     candidates[0];
-  selectedFacilityByBoot.set(boot, selected.facilityId);
+  setSelectedFacilityForCity(boot, cityId, selected.facilityId);
   return selected;
 }
 
@@ -384,7 +402,7 @@ export function cityHudCycleBuildCandidate(boot: GameBootstrap): CityHudActionRe
     ? candidates.findIndex((candidate) => candidate.facilityId === current.facilityId)
     : -1;
   const next = candidates[(currentIndex + 1 + candidates.length) % candidates.length];
-  selectedFacilityByBoot.set(boot, next.facilityId);
+  setSelectedFacilityForCity(boot, getCurrentCityId(boot), next.facilityId);
   return toActionResult(
     boot,
     true,
