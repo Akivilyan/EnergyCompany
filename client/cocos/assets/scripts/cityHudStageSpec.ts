@@ -73,16 +73,27 @@ export const CITY_HUD_STAGE_STATE_TOKENS = {
 export const CITY_HUD_STAGE_UI_SLOTS = {
   resourceBar: {
     nodeName: "StageUiResourceBar",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui,
+    role: "resource"
   },
   cityStateCard: {
     nodeName: "StageUiCityStateCard",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui,
+    role: "detail"
   },
   primaryBuildButton: {
     nodeName: "StageUiPrimaryBuildButton",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui,
+    role: "primary-action"
   }
+} as const;
+
+export const CITY_HUD_STAGE_UI_TOKENS = {
+  readable: "city-stage:ui-readable",
+  compact: "city-stage:ui-compact",
+  resource: "city-stage:ui-resource",
+  detail: "city-stage:ui-detail",
+  primaryAction: "city-stage:ui-primary-action"
 } as const;
 
 export const CITY_HUD_STAGE_ACTION_SLOTS = {
@@ -211,16 +222,35 @@ export const CITY_HUD_STAGE_INTERACTION_TOKENS = {
 export const CITY_HUD_STAGE_ICON_SLOTS = {
   cash: {
     nodeName: "StageIconCash",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon,
+    role: "cash",
+    sourcePanel: "resourceBar",
+    xRatio: 0.05,
+    yRatio: 0.5
   },
   socialValue: {
     nodeName: "StageIconSocialValue",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon,
+    role: "social-value",
+    sourcePanel: "resourceBar",
+    xRatio: 0.11,
+    yRatio: 0.5
   },
   cleanliness: {
     nodeName: "StageIconCleanliness",
-    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon,
+    role: "cleanliness",
+    sourcePanel: "cityStateCard",
+    xRatio: 0.04,
+    yRatio: 0.5
   }
+} as const;
+
+export const CITY_HUD_STAGE_ICON_TOKENS = {
+  active: "city-stage:icon-active",
+  cash: "city-stage:icon-cash",
+  socialValue: "city-stage:icon-social-value",
+  cleanliness: "city-stage:icon-cleanliness"
 } as const;
 
 export type CityHudStageAssetSlot =
@@ -228,3 +258,6 @@ export type CityHudStageAssetSlot =
 
 export type CityHudStageActionSlot =
   (typeof CITY_HUD_STAGE_ACTION_SLOTS)[keyof typeof CITY_HUD_STAGE_ACTION_SLOTS];
+
+export type CityHudStageIconSlot =
+  (typeof CITY_HUD_STAGE_ICON_SLOTS)[keyof typeof CITY_HUD_STAGE_ICON_SLOTS];

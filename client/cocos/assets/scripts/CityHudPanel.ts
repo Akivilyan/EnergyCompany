@@ -60,14 +60,17 @@ import {
   CITY_HUD_STAGE_ACTION_SLOTS,
   CITY_HUD_STAGE_ASSET_SLOTS,
   CITY_HUD_STAGE_ICON_SLOTS,
+  CITY_HUD_STAGE_ICON_TOKENS,
   CITY_HUD_STAGE_INTERACTION_TOKENS,
   CITY_HUD_STAGE_SHELL_ORDER,
   CITY_HUD_STAGE_LAYER_NAMES,
   CITY_HUD_STAGE_STATE_TOKENS,
   CITY_HUD_STAGE_UI_SLOTS,
+  CITY_HUD_STAGE_UI_TOKENS,
   CITY_HUD_STAGE_VISUAL_ORDER,
   type CityHudStageActionSlot,
-  type CityHudStageAssetSlot
+  type CityHudStageAssetSlot,
+  type CityHudStageIconSlot
 } from "./cityHudStageSpec";
 
 const { ccclass } = _decorator;
@@ -212,9 +215,9 @@ export class CityHudPanel extends Component {
     this.hydroAssetSlot = this.createStageAssetSlot(this.cityFacilityLayer, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant);
     this.cleanBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge);
     this.warningBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge);
-    this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash.nodeName);
-    this.socialValueIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.socialValue.nodeName);
-    this.cleanlinessIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cleanliness.nodeName);
+    this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash);
+    this.socialValueIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.socialValue);
+    this.cleanlinessIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cleanliness);
 
     this.statusBand = new Node(CITY_HUD_STAGE_UI_SLOTS.resourceBar.nodeName);
     this.statusBand.setParent(this.cityUiLayer);
@@ -401,6 +404,7 @@ export class CityHudPanel extends Component {
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
     this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
     this.redrawInfoPanel(this.detailBandBg, layout.detail, new Color(247, 252, 255, 224));
+    this.syncPanelStateTokens(container);
     this.fitLabelToBand(this.statusLabel, layout.status);
     this.fitLabelToBand(this.hintLabel, layout.detail);
     this.placeStatusIcons(layout.status, layout.detail);
@@ -563,8 +567,8 @@ export class CityHudPanel extends Component {
     );
   }
 
-  private createIconSlot(parent: Node, name: string): Node {
-    const node = new Node(name);
+  private createIconSlot(parent: Node, slot: CityHudStageIconSlot): Node {
+    const node = new Node(slot.nodeName);
     node.setParent(parent);
     node.addComponent(UITransform);
     node.addComponent(Graphics);
@@ -587,31 +591,69 @@ export class CityHudPanel extends Component {
   private placeStatusIcons(status: HudBandLayout, detail: HudBandLayout): void {
     if (!this.cashIcon || !this.socialValueIcon || !this.cleanlinessIcon) return;
     const size = Math.max(12, Math.min(status.height, detail.height) * 0.3);
-    this.placeIcon(this.cashIcon, status.x - status.width * 0.45, status.y, size, new Color(255, 221, 99, 235));
+    this.placeIcon(
+      this.cashIcon,
+      CITY_HUD_STAGE_ICON_SLOTS.cash,
+      status,
+      size,
+      new Color(255, 221, 99, 235)
+    );
     this.placeIcon(
       this.socialValueIcon,
-      status.x - status.width * 0.39,
-      status.y,
+      CITY_HUD_STAGE_ICON_SLOTS.socialValue,
+      status,
       size,
       new Color(104, 224, 177, 235)
     );
     this.placeIcon(
       this.cleanlinessIcon,
-      detail.x - detail.width * 0.46,
-      detail.y,
+      CITY_HUD_STAGE_ICON_SLOTS.cleanliness,
+      detail,
       size,
       new Color(91, 199, 236, 220)
     );
   }
 
-  private placeIcon(node: Node, x: number, y: number, size: number, color: Color): void {
+  private placeIcon(node: Node, slot: CityHudStageIconSlot, panel: HudBandLayout, size: number, color: Color): void {
+    const x = panel.x - panel.width / 2 + panel.width * slot.xRatio;
+    const y = panel.y - panel.height / 2 + panel.height * slot.yRatio;
     placeCenteredRect(node, x, y, size, size);
+    node.name = `${slot.nodeName}:${CITY_HUD_STAGE_ICON_TOKENS.active}:${this.resolveIconRoleToken(slot)}`;
     const graphics = node.getComponent(Graphics);
     if (!graphics) return;
     graphics.clear();
     graphics.fillColor = color;
     graphics.circle(0, 0, size / 2);
     graphics.fill();
+  }
+
+  private resolveIconRoleToken(slot: CityHudStageIconSlot): string {
+    switch (slot.role) {
+      case "cash":
+        return CITY_HUD_STAGE_ICON_TOKENS.cash;
+      case "social-value":
+        return CITY_HUD_STAGE_ICON_TOKENS.socialValue;
+      case "cleanliness":
+      default:
+        return CITY_HUD_STAGE_ICON_TOKENS.cleanliness;
+    }
+  }
+
+  private syncPanelStateTokens(container: { width: number; height: number }): void {
+    const densityToken =
+      container.width < 760 || container.height < 430
+        ? CITY_HUD_STAGE_UI_TOKENS.compact
+        : CITY_HUD_STAGE_UI_TOKENS.readable;
+    if (this.statusBand) {
+      this.statusBand.name = `${CITY_HUD_STAGE_UI_SLOTS.resourceBar.nodeName}:${CITY_HUD_STAGE_UI_TOKENS.resource}:${densityToken}`;
+    }
+    if (this.detailBand) {
+      this.detailBand.name = `${CITY_HUD_STAGE_UI_SLOTS.cityStateCard.nodeName}:${CITY_HUD_STAGE_UI_TOKENS.detail}:${densityToken}`;
+    }
+    if (this.buildWindBtn) {
+      this.buildWindBtn.baseName = `${CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName}:${CITY_HUD_STAGE_UI_TOKENS.primaryAction}`;
+    }
+    this.syncButtonStateTokens();
   }
 
   private drawCityBackground(

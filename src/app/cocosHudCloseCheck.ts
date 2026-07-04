@@ -23,6 +23,10 @@ const CITY_HUD_PANEL_MARKERS = [
   "drawGridLine",
   "createStageAssetSlot",
   "placeStageAssetSlot",
+  "syncPanelStateTokens",
+  "resolveIconRoleToken",
+  "CITY_HUD_STAGE_UI_TOKENS.primaryAction",
+  "CITY_HUD_STAGE_ICON_TOKENS.active",
   "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
   "CITY_HUD_STAGE_ASSET_SLOTS.solarField",
   "CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant",
@@ -48,12 +52,17 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "StageAssetSolarField",
   "StageAssetHydroPlant",
   "CITY_HUD_STAGE_UI_SLOTS",
+  "CITY_HUD_STAGE_UI_TOKENS",
   "CITY_HUD_STAGE_ACTION_SLOTS",
   "CITY_HUD_STAGE_INTERACTION_TOKENS",
   "CITY_HUD_STAGE_ICON_SLOTS",
+  "CITY_HUD_STAGE_ICON_TOKENS",
   "StageUiResourceBar",
   "StageUiCityStateCard",
   "StageUiPrimaryBuildButton",
+  "city-stage:ui-resource",
+  "city-stage:ui-detail",
+  "city-stage:ui-primary-action",
   "StageActionCycleBuild",
   "StageActionAdvanceMonth",
   "StageActionQueueRegionLink",
@@ -65,6 +74,9 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "StageIconCash",
   "StageIconSocialValue",
   "StageIconCleanliness",
+  "city-stage:icon-cash",
+  "city-stage:icon-social-value",
+  "city-stage:icon-cleanliness",
   "city-stage:low-cleanliness"
 ] as const;
 
@@ -274,8 +286,10 @@ export function runCocosHudCloseStaticChecks(
       source.includes("./cityHudStageSpec") &&
       source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_UI_TOKENS") &&
       source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
       source.includes("CITY_HUD_STAGE_ICON_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_ICON_TOKENS") &&
       source.includes("CITY_HUD_STAGE_INTERACTION_TOKENS"),
     detail: "CityHudPanel imports city stage spec"
   });
@@ -297,6 +311,17 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_VISUAL_ORDER") &&
       source.includes("setSiblingIndex"),
     detail: "CityHudPanel applies city stage layer order"
+  });
+  checks.push({
+    id: "hud:city-stage-panel-icon-tokens",
+    ok:
+      source.includes("syncPanelStateTokens") &&
+      source.includes("resolveIconRoleToken") &&
+      source.includes("CITY_HUD_STAGE_UI_TOKENS.resource") &&
+      source.includes("CITY_HUD_STAGE_UI_TOKENS.detail") &&
+      source.includes("CITY_HUD_STAGE_UI_TOKENS.primaryAction") &&
+      source.includes("CITY_HUD_STAGE_ICON_TOKENS.active"),
+    detail: "CityHudPanel applies panel and icon runtime tokens"
   });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;
