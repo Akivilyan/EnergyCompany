@@ -14,6 +14,20 @@ export interface RewardedAdOutcome {
 
 export interface RewardedAdProvider {
   showRewardedAd(request: RewardedAdRequest): RewardedAdOutcome;
+  showRewardedAdAsync?(request: RewardedAdRequest): Promise<RewardedAdOutcome>;
+}
+
+interface WechatRewardedVideoAd {
+  load?: () => Promise<unknown>;
+  show: () => Promise<unknown>;
+  onClose: (listener: (res?: { isEnded?: boolean }) => void) => void;
+  offClose?: (listener: (res?: { isEnded?: boolean }) => void) => void;
+  onError: (listener: (error?: { errCode?: number; errMsg?: string }) => void) => void;
+  offError?: (listener: (error?: { errCode?: number; errMsg?: string }) => void) => void;
+}
+
+export interface WechatRewardedAdSdk {
+  createRewardedVideoAd?: (options: { adUnitId: string }) => WechatRewardedVideoAd;
 }
 
 export class StubRewardedAdProvider implements RewardedAdProvider {
@@ -48,19 +62,98 @@ export class StubRewardedAdProvider implements RewardedAdProvider {
       message: "stub rewarded ad completed"
     };
   }
+
+  showRewardedAdAsync(request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return Promise.resolve(this.showRewardedAd(request));
+  }
 }
 
-/**
- * 真实微信 SDK 对接占位：
- * 当前返回 failed，后续在独立对接分支替换为真实平台调用。
- */
+function getGlobalWechatSdk(): WechatRewardedAdSdk | undefined {
+  const value = (globalThis as { wx?: WechatRewardedAdSdk }).wx;
+  return value && typeof value === "object" ? value : undefined;
+}
+
 export class WechatRewardedAdProvider implements RewardedAdProvider {
+  constructor(
+    private readonly options: {
+      wx?: WechatRewardedAdSdk;
+      adUnitIds?: Partial<Record<RewardedAdType, string>>;
+      defaultAdUnitId?: string;
+    } = {}
+  ) {}
+
   showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
     return {
       status: "failed",
       provider: "wechat",
       providerCode: "not_implemented",
-      message: "wechat rewarded ad sdk not wired yet"
+      message: "wechat rewarded ad requires async playback"
     };
+  }
+
+  async showRewardedAdAsync(request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    const wx = this.options.wx ?? getGlobalWechatSdk();
+    if (!wx?.createRewardedVideoAd) {
+      return {
+        status: "failed",
+        provider: "wechat",
+        providerCode: "wx_unavailable",
+        message: "wechat rewarded ad sdk unavailable"
+      };
+    }
+    const adUnitId =
+      this.options.adUnitIds?.[request.adType] ??
+      this.options.defaultAdUnitId ??
+      request.placementId;
+    let ad: WechatRewardedVideoAd;
+    try {
+      ad = wx.createRewardedVideoAd({ adUnitId });
+    } catch (error) {
+      return {
+        status: "failed",
+        provider: "wechat",
+        providerCode: "create_failed",
+        message: error instanceof Error ? error.message : String(error)
+      };
+    }
+
+    return new Promise<RewardedAdOutcome>((resolve) => {
+      let settled = false;
+      const finish = (outcome: RewardedAdOutcome): void => {
+        if (settled) return;
+        settled = true;
+        ad.offClose?.(onClose);
+        ad.offError?.(onError);
+        resolve(outcome);
+      };
+      const onClose = (res?: { isEnded?: boolean }): void => {
+        finish({
+          status: res?.isEnded ? "completed" : "cancelled",
+          provider: "wechat",
+          providerCode: res?.isEnded ? "wechat_completed" : "wechat_cancelled",
+          message: res?.isEnded ? "wechat rewarded ad completed" : "wechat rewarded ad closed early"
+        });
+      };
+      const onError = (error?: { errCode?: number; errMsg?: string }): void => {
+        finish({
+          status: "failed",
+          provider: "wechat",
+          providerCode: error?.errCode === undefined ? "wechat_error" : `wechat_${error.errCode}`,
+          message: error?.errMsg ?? "wechat rewarded ad failed"
+        });
+      };
+      ad.onClose(onClose);
+      ad.onError(onError);
+      Promise.resolve(ad.load?.())
+        .then(() => ad.show())
+        .catch((error) => {
+          finish({
+            status: "failed",
+            provider: "wechat",
+            providerCode: "show_failed",
+            message: error instanceof Error ? error.message : String(error)
+          });
+        });
+    });
   }
 }

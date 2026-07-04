@@ -92,6 +92,59 @@ export class AdRewardService {
       }
     };
   }
+
+  async claimRewardByAdAsync(
+    adType: RewardedAdType,
+    placementId: string,
+    targetId?: string
+  ): Promise<AdRewardActionOutput> {
+    const before = {
+      adsRemaining: this.controller.state.adsRemaining,
+      funds: this.controller.state.funds
+    };
+    const adOutcome = this.adProvider.showRewardedAdAsync
+      ? await this.adProvider.showRewardedAdAsync({ adType, placementId })
+      : this.adProvider.showRewardedAd({ adType, placementId });
+    if (adOutcome.status === "cancelled") {
+      return {
+        adOutcome,
+        rewarded: false,
+        claimResult: null,
+        uiErrorCode: "ad_not_completed",
+        before,
+        after: {
+          adsRemaining: this.controller.state.adsRemaining,
+          funds: this.controller.state.funds
+        }
+      };
+    }
+    if (adOutcome.status === "failed") {
+      return {
+        adOutcome,
+        rewarded: false,
+        claimResult: null,
+        uiErrorCode: "ad_provider_failed",
+        before,
+        after: {
+          adsRemaining: this.controller.state.adsRemaining,
+          funds: this.controller.state.funds
+        }
+      };
+    }
+
+    const claimResult = this.controller.runCommand(toClaimCommand(adType, targetId));
+    return {
+      adOutcome,
+      rewarded: claimResult.ok,
+      claimResult,
+      uiErrorCode: claimResult.ok ? null : "reward_rejected",
+      before,
+      after: {
+        adsRemaining: this.controller.state.adsRemaining,
+        funds: this.controller.state.funds
+      }
+    };
+  }
 }
 
 export function createAdRewardService(

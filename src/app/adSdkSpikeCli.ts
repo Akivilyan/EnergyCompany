@@ -1,17 +1,59 @@
 #!/usr/bin/env node
 /**
- * 真实广告 SDK 对接预研冒烟（T45-P1-04）：
- * - stub completed: 触发真实 claim_ad_reward
- * - stub cancel: 不扣次数不发�? * - wechat placeholder: 预留失败路径
+ * Rewarded ad SDK spike smoke.
  *
- * 用法�? *   npm run sim:ad-sdk-spike
+ * Verifies the current monetization adapter surface:
+ * - stub completed: runs the real claim_ad_reward command
+ * - stub cancelled: does not consume ads
+ * - wechat sync placeholder: keeps old sync callers on a safe failure path
+ * - wechat async fake: exercises completed/cancelled/error SDK callbacks
+ *
+ * Usage:
+ *   npm run sim:ad-sdk-spike
  */
 import {
   StubRewardedAdProvider,
-  WechatRewardedAdProvider
+  WechatRewardedAdProvider,
+  type WechatRewardedAdSdk
 } from "../infra/monetization/rewardedAdProvider.js";
 import { createAdRewardService } from "../modules/adRewardService.js";
 import { createControllerFromRepoRoot } from "../modules/runController.node.js";
+
+function createFakeWechatSdk(
+  mode: "completed" | "cancelled" | "error"
+): WechatRewardedAdSdk {
+  return {
+    createRewardedVideoAd: () => {
+      let closeListener: ((res?: { isEnded?: boolean }) => void) | null = null;
+      let errorListener: ((error?: { errCode?: number; errMsg?: string }) => void) | null = null;
+      return {
+        load: () => Promise.resolve(),
+        show: () => {
+          queueMicrotask(() => {
+            if (mode === "error") {
+              errorListener?.({ errCode: 1002, errMsg: "network unavailable" });
+            } else {
+              closeListener?.({ isEnded: mode === "completed" });
+            }
+          });
+          return Promise.resolve();
+        },
+        onClose: (listener) => {
+          closeListener = listener;
+        },
+        offClose: (listener) => {
+          if (closeListener === listener) closeListener = null;
+        },
+        onError: (listener) => {
+          errorListener = listener;
+        },
+        offError: (listener) => {
+          if (errorListener === listener) errorListener = null;
+        }
+      };
+    }
+  };
+}
 
 function runStubCompleted(): void {
   const controller = createControllerFromRepoRoot();
@@ -37,16 +79,31 @@ function runStubCancel(): void {
   );
 }
 
-function runWechatPlaceholder(): void {
+function runWechatSyncPlaceholder(): void {
   const controller = createControllerFromRepoRoot();
   const service = createAdRewardService(controller, new WechatRewardedAdProvider());
   const out = service.claimRewardByAd("speedup", "screen_tech.speedup");
   console.log(
-    `wechat-placeholder: rewarded=${out.rewarded}, ui=${out.uiErrorCode}, provider=${out.adOutcome.providerCode}`
+    `wechat-sync-placeholder: rewarded=${out.rewarded}, ui=${out.uiErrorCode}, provider=${out.adOutcome.providerCode}`
   );
+}
+
+async function runWechatAsyncFake(): Promise<void> {
+  for (const mode of ["completed", "cancelled", "error"] as const) {
+    const controller = createControllerFromRepoRoot();
+    const service = createAdRewardService(
+      controller,
+      new WechatRewardedAdProvider({ wx: createFakeWechatSdk(mode) })
+    );
+    const out = await service.claimRewardByAdAsync("cash", `screen_company.${mode}`);
+    console.log(
+      `wechat-${mode}: rewarded=${out.rewarded}, ui=${out.uiErrorCode}, provider=${out.adOutcome.providerCode}, ads ${out.before.adsRemaining}->${out.after.adsRemaining}`
+    );
+  }
 }
 
 console.log("=== Energy Company ad-sdk spike ===");
 runStubCompleted();
 runStubCancel();
-runWechatPlaceholder();
+runWechatSyncPlaceholder();
+await runWechatAsyncFake();

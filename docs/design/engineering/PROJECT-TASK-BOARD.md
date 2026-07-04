@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.157.0
+version: 1.158.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -57,6 +57,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 广告 SDK 收敛批次起步：激励广告 provider/service 补异步微信回调路径，覆盖完成、取消、SDK 错误且保留现有同步 stub |
 | 2026-07-04 | `FAST-01` 七条核心试玩路线已全部进入 playtest-bundle，当前 demo 验收重心从“补主玩法结构”切到 UI/广告/数值/提示收敛 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入终局路线：MET-B 打开/接主干、超级水电建设/接网、最终灾害、胜利结算与结算后禁操作均有验收 |
 | 2026-07-04 | `FAST-01` playtest-bundle 纳入地图/区域扩张路线：早期区内铺线、中期跨区打开、late-map 滚动目标与 MAP-07/08 压力目标均有验收 |
@@ -217,3 +218,4 @@ open_questions: []
 | 1.155.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 地图/区域扩张路线 |
 | 1.156.0 | 2026-07-04 | 记录 playtest-bundle 纳入 FAST-01 终局路线 |
 | 1.157.0 | 2026-07-04 | 收口 FAST-01 路线矩阵状态并切到 UI/广告/数值/提示收敛批次 |
+| 1.158.0 | 2026-07-04 | 记录激励广告 provider/service 补异步微信回调路径 |
