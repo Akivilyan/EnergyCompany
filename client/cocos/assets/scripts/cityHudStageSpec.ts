@@ -3,7 +3,9 @@ export const CITY_HUD_STAGE_LAYER_NAMES = {
   background: "CityBackgroundLayer",
   facility: "CityFacilityLayer",
   grid: "CityGridLayer",
-  state: "CityStateLayer"
+  state: "CityStateLayer",
+  ui: "CityUiLayer",
+  icon: "CityIconLayer"
 } as const;
 
 export const CITY_HUD_STAGE_ASSET_SLOTS = {
@@ -53,6 +55,36 @@ export const CITY_HUD_STAGE_STATE_TOKENS = {
   clean: "city-stage:clean",
   lowCleanliness: "city-stage:low-cleanliness",
   night: "city-stage:night"
+} as const;
+
+export const CITY_HUD_STAGE_UI_SLOTS = {
+  resourceBar: {
+    nodeName: "StageUiResourceBar",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+  },
+  cityStateCard: {
+    nodeName: "StageUiCityStateCard",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+  },
+  primaryBuildButton: {
+    nodeName: "StageUiPrimaryBuildButton",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.ui
+  }
+} as const;
+
+export const CITY_HUD_STAGE_ICON_SLOTS = {
+  cash: {
+    nodeName: "StageIconCash",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+  },
+  socialValue: {
+    nodeName: "StageIconSocialValue",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+  },
+  cleanliness: {
+    nodeName: "StageIconCleanliness",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.icon
+  }
 } as const;
 
 export type CityHudStageAssetSlot =

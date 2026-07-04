@@ -33,9 +33,19 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CityFacilityLayer",
   "CityGridLayer",
   "CityStateLayer",
+  "CityUiLayer",
+  "CityIconLayer",
   "StageAssetWindTurbine",
   "StageAssetSolarField",
   "StageAssetHydroPlant",
+  "CITY_HUD_STAGE_UI_SLOTS",
+  "CITY_HUD_STAGE_ICON_SLOTS",
+  "StageUiResourceBar",
+  "StageUiCityStateCard",
+  "StageUiPrimaryBuildButton",
+  "StageIconCash",
+  "StageIconSocialValue",
+  "StageIconCleanliness",
   "city-stage:low-cleanliness"
 ] as const;
 
@@ -241,7 +251,11 @@ export function runCocosHudCloseStaticChecks(
   }
   checks.push({
     id: "hud:city-stage-spec-import",
-    ok: source.includes("./cityHudStageSpec") && source.includes("CITY_HUD_STAGE_ASSET_SLOTS"),
+    ok:
+      source.includes("./cityHudStageSpec") &&
+      source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_ICON_SLOTS"),
     detail: "CityHudPanel imports city stage spec"
   });
   const layoutCalls: string[] = [];

@@ -58,8 +58,10 @@ import {
 } from "./hudLayout";
 import {
   CITY_HUD_STAGE_ASSET_SLOTS,
+  CITY_HUD_STAGE_ICON_SLOTS,
   CITY_HUD_STAGE_LAYER_NAMES,
   CITY_HUD_STAGE_STATE_TOKENS,
+  CITY_HUD_STAGE_UI_SLOTS,
   type CityHudStageAssetSlot
 } from "./cityHudStageSpec";
 
@@ -81,10 +83,15 @@ export class CityHudPanel extends Component {
   private cityFacilityLayer: Node | null = null;
   private cityGridLayer: Node | null = null;
   private cityStateLayer: Node | null = null;
+  private cityUiLayer: Node | null = null;
+  private cityIconLayer: Node | null = null;
   private cityBackgroundGraphics: Graphics | null = null;
   private cityFacilityGraphics: Graphics | null = null;
   private cityGridGraphics: Graphics | null = null;
   private cityStateGraphics: Graphics | null = null;
+  private cashIcon: Node | null = null;
+  private socialValueIcon: Node | null = null;
+  private cleanlinessIcon: Node | null = null;
   private statusBand: Node | null = null;
   private detailBand: Node | null = null;
   private statusBandBg: Graphics | null = null;
@@ -179,74 +186,120 @@ export class CityHudPanel extends Component {
     this.cityFacilityLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.facility);
     this.cityGridLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.grid);
     this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.state);
+    this.cityUiLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.ui);
+    this.cityIconLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.icon);
     this.cityBackgroundGraphics = this.cityBackgroundLayer.addComponent(Graphics);
     this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
     this.cityGridGraphics = this.cityGridLayer.addComponent(Graphics);
     this.cityStateGraphics = this.cityStateLayer.addComponent(Graphics);
+    this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash.nodeName);
+    this.socialValueIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.socialValue.nodeName);
+    this.cleanlinessIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cleanliness.nodeName);
 
-    this.statusBand = new Node("StatusBand");
-    this.statusBand.setParent(shell);
+    this.statusBand = new Node(CITY_HUD_STAGE_UI_SLOTS.resourceBar.nodeName);
+    this.statusBand.setParent(this.cityUiLayer);
     this.statusBandBg = this.statusBand.addComponent(Graphics);
     this.statusLabel = this.createBandLabel(this.statusBand);
 
-    this.detailBand = new Node("DetailBand");
-    this.detailBand.setParent(shell);
+    this.detailBand = new Node(CITY_HUD_STAGE_UI_SLOTS.cityStateCard.nodeName);
+    this.detailBand.setParent(this.cityUiLayer);
     this.detailBandBg = this.detailBand.addComponent(Graphics);
     this.hintLabel = this.createBandLabel(this.detailBand);
 
-    this.buildWindBtn = this.createTapButton(shell, "BuildWind", "hud.btn.build_wind", () => this.onBuildWind());
-    this.cycleBuildBtn = this.createTapButton(shell, "CycleBuild", "hud.btn.cycle_build", () => this.onCycleBuild());
-    this.advanceMonthBtn = this.createTapButton(shell, "AdvanceMonth", "hud.btn.next_month", () => this.onAdvanceMonth());
-    this.ackEventBtn = this.createTapButton(shell, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
-    this.applyLoanBtn = this.createTapButton(shell, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
-    this.cycleLoanBtn = this.createTapButton(shell, "CycleLoan", "hud.btn.cycle_loan", () => this.onCycleLoan());
-    this.adCashBtn = this.createTapButton(shell, "AdCash", "hud.btn.ad_cash", () => {
+    this.buildWindBtn = this.createTapButton(
+      this.cityUiLayer,
+      CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName,
+      "hud.btn.build_wind",
+      () => this.onBuildWind()
+    );
+    this.cycleBuildBtn = this.createTapButton(this.cityUiLayer, "CycleBuild", "hud.btn.cycle_build", () =>
+      this.onCycleBuild()
+    );
+    this.advanceMonthBtn = this.createTapButton(this.cityUiLayer, "AdvanceMonth", "hud.btn.next_month", () =>
+      this.onAdvanceMonth()
+    );
+    this.ackEventBtn = this.createTapButton(this.cityUiLayer, "AckEvent", "hud.btn.ack_event", () => this.onAckEvent());
+    this.applyLoanBtn = this.createTapButton(this.cityUiLayer, "ApplyLoan", "hud.btn.loan", () => this.onApplyLoan());
+    this.cycleLoanBtn = this.createTapButton(this.cityUiLayer, "CycleLoan", "hud.btn.cycle_loan", () =>
+      this.onCycleLoan()
+    );
+    this.adCashBtn = this.createTapButton(this.cityUiLayer, "AdCash", "hud.btn.ad_cash", () => {
       void this.onAdCash();
     });
-    this.startResearchBtn = this.createTapButton(shell, "StartResearch", "hud.btn.start_research", () =>
+    this.startResearchBtn = this.createTapButton(this.cityUiLayer, "StartResearch", "hud.btn.start_research", () =>
       this.onStartResearch()
     );
-    this.cancelResearchBtn = this.createTapButton(shell, "CancelResearch", "hud.btn.cancel_research", () =>
+    this.cancelResearchBtn = this.createTapButton(this.cityUiLayer, "CancelResearch", "hud.btn.cancel_research", () =>
       this.onCancelResearch()
     );
-    this.queueRegionLinkBtn = this.createTapButton(shell, "QueueRegionLink", "hud.btn.queue_link", () =>
+    this.queueRegionLinkBtn = this.createTapButton(this.cityUiLayer, "QueueRegionLink", "hud.btn.queue_link", () =>
       this.onQueueRegionLink()
     );
-    this.cancelRegionLinkBtn = this.createTapButton(shell, "CancelRegionLink", "hud.btn.cancel_link", () =>
+    this.cancelRegionLinkBtn = this.createTapButton(this.cityUiLayer, "CancelRegionLink", "hud.btn.cancel_link", () =>
       this.onCancelRegionLink()
     );
-    this.cycleRegionLinkBtn = this.createTapButton(shell, "CycleRegionLink", "hud.btn.cycle_region_link", () =>
-      this.onCycleRegionLink()
+    this.cycleRegionLinkBtn = this.createTapButton(
+      this.cityUiLayer,
+      "CycleRegionLink",
+      "hud.btn.cycle_region_link",
+      () => this.onCycleRegionLink()
     );
-    this.openWorldTargetBtn = this.createTapButton(shell, "OpenWorldTarget", "hud.btn.world_open_target", () =>
-      this.onOpenWorldTarget()
+    this.openWorldTargetBtn = this.createTapButton(
+      this.cityUiLayer,
+      "OpenWorldTarget",
+      "hud.btn.world_open_target",
+      () => this.onOpenWorldTarget()
     );
-    this.cycleWorldTargetBtn = this.createTapButton(shell, "CycleWorldTarget", "hud.btn.world_cycle_target", () =>
-      this.onCycleWorldTarget()
+    this.cycleWorldTargetBtn = this.createTapButton(
+      this.cityUiLayer,
+      "CycleWorldTarget",
+      "hud.btn.world_cycle_target",
+      () => this.onCycleWorldTarget()
     );
-    this.queueWorldTrunkBtn = this.createTapButton(shell, "QueueWorldTrunk", "hud.btn.world_queue_trunk", () =>
-      this.onQueueWorldTrunk()
+    this.queueWorldTrunkBtn = this.createTapButton(
+      this.cityUiLayer,
+      "QueueWorldTrunk",
+      "hud.btn.world_queue_trunk",
+      () => this.onQueueWorldTrunk()
     );
-    this.queueSuperHydroBtn = this.createTapButton(shell, "QueueSuperHydro", "hud.btn.super_hydro", () =>
-      this.onQueueSuperHydro()
+    this.queueSuperHydroBtn = this.createTapButton(
+      this.cityUiLayer,
+      "QueueSuperHydro",
+      "hud.btn.super_hydro",
+      () => this.onQueueSuperHydro()
     );
-    this.queueSuperHydroGridBtn = this.createTapButton(shell, "QueueSuperHydroGrid", "hud.btn.super_hydro_grid", () =>
-      this.onQueueSuperHydroGrid()
+    this.queueSuperHydroGridBtn = this.createTapButton(
+      this.cityUiLayer,
+      "QueueSuperHydroGrid",
+      "hud.btn.super_hydro_grid",
+      () => this.onQueueSuperHydroGrid()
     );
-    this.adSpeedupBtn = this.createTapButton(shell, "AdSpeedup", "hud.btn.ad_speedup", () => {
+    this.adSpeedupBtn = this.createTapButton(this.cityUiLayer, "AdSpeedup", "hud.btn.ad_speedup", () => {
       void this.onAdSpeedup();
     });
-    this.openCompanyBtn = this.createTapButton(shell, "OpenCompany", "hud.btn.company", () => this.onOpenCompany());
-    this.openRegionBtn = this.createTapButton(shell, "OpenRegion", "hud.btn.region", () => this.onOpenRegion());
-    this.openWorldBtn = this.createTapButton(shell, "OpenWorld", "hud.btn.world", () => this.onOpenWorld());
-    this.openTechBtn = this.createTapButton(shell, "OpenTech", "hud.btn.tech", () => this.onOpenTech());
-    this.navBackBtn = this.createTapButton(shell, "NavBack", "hud.btn.back", () => this.onNavBack());
+    this.openCompanyBtn = this.createTapButton(this.cityUiLayer, "OpenCompany", "hud.btn.company", () =>
+      this.onOpenCompany()
+    );
+    this.openRegionBtn = this.createTapButton(this.cityUiLayer, "OpenRegion", "hud.btn.region", () =>
+      this.onOpenRegion()
+    );
+    this.openWorldBtn = this.createTapButton(this.cityUiLayer, "OpenWorld", "hud.btn.world", () => this.onOpenWorld());
+    this.openTechBtn = this.createTapButton(this.cityUiLayer, "OpenTech", "hud.btn.tech", () => this.onOpenTech());
+    this.navBackBtn = this.createTapButton(this.cityUiLayer, "NavBack", "hud.btn.back", () => this.onNavBack());
 
     this.applyLayout();
   }
 
   private applyLayout(): void {
-    if (!this.shell || !this.statusBand || !this.detailBand || !this.statusLabel || !this.hintLabel) return;
+    if (
+      !this.shell ||
+      !this.statusBand ||
+      !this.detailBand ||
+      !this.statusLabel ||
+      !this.hintLabel ||
+      !this.cityUiLayer ||
+      !this.cityIconLayer
+    ) return;
 
     const container = readHudContainerSize(this.node);
     if (container.width <= 0 || container.height <= 0) return;
@@ -260,12 +313,15 @@ export class CityHudPanel extends Component {
 
     const layout = buildHudBandLayout(container);
     this.redrawCityVisual(container);
+    placeCenteredRect(this.cityUiLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.cityIconLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
     this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
     this.redrawInfoPanel(this.detailBandBg, layout.detail, new Color(247, 252, 255, 224));
     this.fitLabelToBand(this.statusLabel, layout.status);
     this.fitLabelToBand(this.hintLabel, layout.detail);
+    this.placeStatusIcons(layout.status, layout.detail);
     this.statusLabel.fontSize = layout.statusFont;
     this.statusLabel.lineHeight = Math.round(layout.statusFont * 1.2);
     this.hintLabel.fontSize = layout.detailFont;
@@ -391,6 +447,44 @@ export class CityHudPanel extends Component {
     node.setParent(parent);
     node.addComponent(UITransform);
     return node;
+  }
+
+  private createIconSlot(parent: Node, name: string): Node {
+    const node = new Node(name);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    node.addComponent(Graphics);
+    return node;
+  }
+
+  private placeStatusIcons(status: HudBandLayout, detail: HudBandLayout): void {
+    if (!this.cashIcon || !this.socialValueIcon || !this.cleanlinessIcon) return;
+    const size = Math.max(12, Math.min(status.height, detail.height) * 0.3);
+    this.placeIcon(this.cashIcon, status.x - status.width * 0.45, status.y, size, new Color(255, 221, 99, 235));
+    this.placeIcon(
+      this.socialValueIcon,
+      status.x - status.width * 0.39,
+      status.y,
+      size,
+      new Color(104, 224, 177, 235)
+    );
+    this.placeIcon(
+      this.cleanlinessIcon,
+      detail.x - detail.width * 0.46,
+      detail.y,
+      size,
+      new Color(91, 199, 236, 220)
+    );
+  }
+
+  private placeIcon(node: Node, x: number, y: number, size: number, color: Color): void {
+    placeCenteredRect(node, x, y, size, size);
+    const graphics = node.getComponent(Graphics);
+    if (!graphics) return;
+    graphics.clear();
+    graphics.fillColor = color;
+    graphics.circle(0, 0, size / 2);
+    graphics.fill();
   }
 
   private drawCityBackground(

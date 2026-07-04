@@ -2,7 +2,7 @@
 id: engineering/project-task-board
 title: 项目级任务看板
 status: draft
-version: 1.167.0
+version: 1.168.0
 sources:
   - docs/design/TASK-LIST.md
   - docs/design/engineering/IMPLEMENTATION-TASKS.md
@@ -20,7 +20,7 @@ open_questions: []
 
 - 当前阶段：`FAST-01` Playable Demo 快线
 - 当前策略：采用快线批次节奏，冻结非阻塞小问题、模糊数据精磨和 HUD 细节闭环；先推进到较大的可玩/可验节点，再集中验证
-- 当前重点：正式 UI / Prefab 样张与资产规范批次推进中；先把城市页资产层级、命名与静态护栏固化，广告 SDK 后置
+- 当前重点：正式 UI / Prefab 样张与资产规范批次推进中；城市页背景、设施、电网、状态、UI 面板与图标层命名及静态护栏持续固化，广告 SDK 后置
 
 ## 2. 当前任务
 
@@ -58,6 +58,7 @@ open_questions: []
 
 | 日期 | 摘要 |
 |------|------|
+| 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 样张补齐 UI 面板与图标层命名，并纳入静态预检 |
 | 2026-07-04 | 执行环境规则补记：`verify:client:fast` 在普通沙箱下会触发 `tsx -> esbuild spawn EPERM`，后续直接提权运行 |
 | 2026-07-04 | 正式 UI / Prefab 规格批次推进：城市 HUD 样张抽出资产层级、槽位与状态 token 规格，并纳入静态预检 |
 | 2026-07-04 | 协作规则调整为快线批次节奏：小步重复验证后置到较大节点收口，commit 粒度改为开发批次 |
@@ -238,3 +239,4 @@ open_questions: []
 | 1.165.0 | 2026-07-04 | 调整协作节奏为快线批次：减少开发中重复验证，节点收口集中测试 |
 | 1.166.0 | 2026-07-04 | 记录城市 HUD 资产层级规格抽出并纳入静态预检 |
 | 1.167.0 | 2026-07-04 | 记录 `verify:client:fast` 沙箱 EPERM 后续直接提权执行 |
+| 1.168.0 | 2026-07-04 | 记录城市 HUD UI 面板与图标层规格纳入静态预检 |
