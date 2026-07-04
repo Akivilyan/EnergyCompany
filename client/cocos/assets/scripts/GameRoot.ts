@@ -4,13 +4,20 @@ import {
   ensureChineseDefaultForDev,
   mountGameClient,
   setMountedGameClient,
-  type GameBootstrap
+  type GameBootstrap,
+  type WechatRewardedAdSdk
 } from "../shared/game-client.mjs";
 import { CocosSceneHost } from "./CocosSceneHost";
 import { CityHudPanel } from "./CityHudPanel";
 import { loadConfigFromResources } from "./loadConfigFromResources";
 
 const { ccclass } = _decorator;
+
+declare const wx: unknown;
+
+function readWechatRuntime(): WechatRewardedAdSdk | null {
+  return typeof wx === "object" && wx !== null ? wx as WechatRewardedAdSdk : null;
+}
 
 /** 浏览器 F12 可见；`cc.log` 默认只进 Cocos 编辑器 Console。 */
 function trace(tag: string, detail?: string): void {
@@ -49,7 +56,7 @@ export class GameRoot extends Component {
     const sceneHost = new CocosSceneHost();
     try {
       const configRepo = await loadConfigFromResources();
-      const boot = mountGameClient({ configRepo, sceneHost });
+      const boot = mountGameClient({ configRepo, sceneHost, wxAdSdk: readWechatRuntime() });
       this.gameBoot = boot;
       setMountedGameClient(boot);
       this.getComponent(CityHudPanel)?.bindGameBoot(boot);

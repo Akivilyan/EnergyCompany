@@ -83,6 +83,7 @@ export {
   type ConfigBundleInput
 } from "../sim/config/configBundle.js";
 export { ConfigRepo } from "../sim/config/configRepo.js";
+export type { WechatRewardedAdSdk } from "../infra/monetization/rewardedAdProvider.js";
 export type { SceneHost } from "../ui/sceneHost.js";
 export { BUILT_SCENE_NAMES, isBuiltScene } from "../ui/sceneMap.js";
 export type { ScreenId } from "../ui/types.js";
