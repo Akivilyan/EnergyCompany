@@ -2,6 +2,9 @@
   "extends": "./temp/tsconfig.cocos.json",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "lib": ["ES2020", "DOM"],
     "paths": {
       "game/*": ["assets/shared/*"]
     }

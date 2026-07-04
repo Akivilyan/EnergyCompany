@@ -41,6 +41,7 @@
     "sim:cocos-hud-close": "tsx src/app/cocosHudCloseSpikeCli.ts",
     "verify:client": "tsx src/app/verifyClientCli.ts",
     "verify:client:fast": "tsx src/app/verifyClientFastCli.ts",
+    "check:cocos-ts": "tsc -p client/cocos/tsconfig.json --noEmit",
     "check:cocos-preview": "tsx src/app/previewProbeCli.ts",
     "lint:boundaries": "node scripts/check-sim-boundaries.mjs"
   },
