@@ -25,6 +25,8 @@ const CITY_HUD_PANEL_MARKERS = [
   "placeStageGridSlot",
   "createStageEffectSlot",
   "placeStageEffectSlot",
+  "createStageFeedbackSlot",
+  "placeStageFeedbackSlot",
   "createStageAssetSlot",
   "placeStageAssetSlot",
   "syncPanelStateTokens",
@@ -35,6 +37,8 @@ const CITY_HUD_PANEL_MARKERS = [
   "CITY_HUD_STAGE_ASSET_TOKENS.resourceRich",
   "CITY_HUD_STAGE_GRID_TOKENS.connected",
   "CITY_HUD_STAGE_EFFECT_TOKENS.construction",
+  "CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster",
+  "CITY_HUD_STAGE_FEEDBACK_TOKENS.completion",
   "CITY_HUD_STAGE_UI_TOKENS.primaryAction",
   "CITY_HUD_STAGE_ICON_TOKENS.active",
   "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
@@ -56,6 +60,8 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_GRID_TOKENS",
   "CITY_HUD_STAGE_EFFECT_SLOTS",
   "CITY_HUD_STAGE_EFFECT_TOKENS",
+  "CITY_HUD_STAGE_FEEDBACK_SLOTS",
+  "CITY_HUD_STAGE_FEEDBACK_TOKENS",
   "CITY_HUD_STAGE_STATE_TOKENS",
   "CityVisualLayer",
   "CityBackgroundLayer",
@@ -72,6 +78,9 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "StageGridSolarHydro",
   "StageEffectBuildGlow",
   "StageEffectGridGlow",
+  "StageFeedbackDisasterWarning",
+  "StageFeedbackConstructionProgress",
+  "StageFeedbackCompletionPulse",
   "city-stage:screen-city",
   "city-stage:screen-company",
   "city-stage:screen-region",
@@ -91,6 +100,12 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "city-stage:effect-grid",
   "city-stage:effect-low-cleanliness",
   "city-stage:effect-normal",
+  "city-stage:feedback-visible",
+  "city-stage:feedback-hidden",
+  "city-stage:feedback-disaster",
+  "city-stage:feedback-construction",
+  "city-stage:feedback-completion",
+  "city-stage:feedback-calm",
   "CITY_HUD_STAGE_UI_SLOTS",
   "CITY_HUD_STAGE_UI_TOKENS",
   "CITY_HUD_STAGE_ACTION_SLOTS",
@@ -331,6 +346,8 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_GRID_TOKENS") &&
       source.includes("CITY_HUD_STAGE_EFFECT_SLOTS") &&
       source.includes("CITY_HUD_STAGE_EFFECT_TOKENS") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_TOKENS") &&
       source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
@@ -401,6 +418,24 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_EFFECT_TOKENS.construction") &&
       source.includes("CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness"),
     detail: "CityHudPanel applies grid and effect runtime tokens"
+  });
+  checks.push({
+    id: "hud:city-stage-feedback-tokens",
+    ok:
+      source.includes("createStageFeedbackSlot") &&
+      source.includes("placeStageFeedbackSlot") &&
+      source.includes("hasPendingDisasterFeedback") &&
+      source.includes("hasConstructionFeedback") &&
+      source.includes("hasCompletionFeedback") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS.completionPulse") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.visible") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.hidden") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.construction") &&
+      source.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.completion"),
+    detail: "CityHudPanel applies temporary feedback runtime tokens"
   });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;

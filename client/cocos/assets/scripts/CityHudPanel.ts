@@ -62,6 +62,8 @@ import {
   CITY_HUD_STAGE_ASSET_TOKENS,
   CITY_HUD_STAGE_EFFECT_SLOTS,
   CITY_HUD_STAGE_EFFECT_TOKENS,
+  CITY_HUD_STAGE_FEEDBACK_SLOTS,
+  CITY_HUD_STAGE_FEEDBACK_TOKENS,
   CITY_HUD_STAGE_GRID_SLOTS,
   CITY_HUD_STAGE_GRID_TOKENS,
   CITY_HUD_STAGE_ICON_SLOTS,
@@ -77,6 +79,7 @@ import {
   type CityHudStageActionSlot,
   type CityHudStageAssetSlot,
   type CityHudStageEffectSlot,
+  type CityHudStageFeedbackSlot,
   type CityHudStageGridSlot,
   type CityHudStageIconSlot
 } from "./cityHudStageSpec";
@@ -117,6 +120,9 @@ export class CityHudPanel extends Component {
   private solarHydroGridSlot: Node | null = null;
   private buildGlowSlot: Node | null = null;
   private gridGlowSlot: Node | null = null;
+  private disasterWarningSlot: Node | null = null;
+  private constructionProgressSlot: Node | null = null;
+  private completionPulseSlot: Node | null = null;
   private cleanBadgeSlot: Node | null = null;
   private warningBadgeSlot: Node | null = null;
   private cashIcon: Node | null = null;
@@ -231,6 +237,18 @@ export class CityHudPanel extends Component {
     this.solarHydroGridSlot = this.createStageGridSlot(this.cityGridLayer, CITY_HUD_STAGE_GRID_SLOTS.solarHydro);
     this.buildGlowSlot = this.createStageEffectSlot(this.cityEffectLayer, CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow);
     this.gridGlowSlot = this.createStageEffectSlot(this.cityEffectLayer, CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow);
+    this.disasterWarningSlot = this.createStageFeedbackSlot(
+      this.cityStateLayer,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning
+    );
+    this.constructionProgressSlot = this.createStageFeedbackSlot(
+      this.cityStateLayer,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress
+    );
+    this.completionPulseSlot = this.createStageFeedbackSlot(
+      this.cityStateLayer,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.completionPulse
+    );
     this.cleanBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge);
     this.warningBadgeSlot = this.createStageAssetSlot(this.cityStateLayer, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge);
     this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash);
@@ -534,6 +552,36 @@ export class CityHudPanel extends Component {
     this.syncFacilityAssetStateTokens();
     this.placeStageAssetSlot(this.cleanBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge, left, bottom, w, h);
     this.placeStageAssetSlot(this.warningBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge, left, bottom, w, h);
+    this.placeStageFeedbackSlot(
+      this.disasterWarningSlot,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning,
+      left,
+      bottom,
+      w,
+      h,
+      this.hasPendingDisasterFeedback(),
+      CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster
+    );
+    this.placeStageFeedbackSlot(
+      this.constructionProgressSlot,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress,
+      left,
+      bottom,
+      w,
+      h,
+      this.hasConstructionFeedback(),
+      CITY_HUD_STAGE_FEEDBACK_TOKENS.construction
+    );
+    this.placeStageFeedbackSlot(
+      this.completionPulseSlot,
+      CITY_HUD_STAGE_FEEDBACK_SLOTS.completionPulse,
+      left,
+      bottom,
+      w,
+      h,
+      this.hasCompletionFeedback(),
+      CITY_HUD_STAGE_FEEDBACK_TOKENS.completion
+    );
     if (this.cleanBadgeSlot) this.cleanBadgeSlot.active = !lowCleanliness;
     if (this.warningBadgeSlot) this.warningBadgeSlot.active = lowCleanliness;
 
@@ -583,6 +631,13 @@ export class CityHudPanel extends Component {
   }
 
   private createStageEffectSlot(parent: Node, slot: CityHudStageEffectSlot): Node {
+    const node = new Node(slot.nodeName);
+    node.setParent(parent);
+    node.addComponent(UITransform);
+    return node;
+  }
+
+  private createStageFeedbackSlot(parent: Node, slot: CityHudStageFeedbackSlot): Node {
     const node = new Node(slot.nodeName);
     node.setParent(parent);
     node.addComponent(UITransform);
@@ -687,6 +742,46 @@ export class CityHudPanel extends Component {
       ? CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness
       : CITY_HUD_STAGE_EFFECT_TOKENS.normal;
     node.name = `${slot.nodeName}:${CITY_HUD_STAGE_EFFECT_TOKENS.active}:${roleToken}:${stateToken}`;
+  }
+
+  private placeStageFeedbackSlot(
+    node: Node | null,
+    slot: CityHudStageFeedbackSlot,
+    left: number,
+    bottom: number,
+    w: number,
+    h: number,
+    visible: boolean,
+    roleToken: string
+  ): void {
+    if (!node) return;
+    placeCenteredRect(
+      node,
+      left + w * slot.xRatio,
+      bottom + h * slot.yRatio,
+      w * slot.widthRatio,
+      h * slot.heightRatio
+    );
+    const visibilityToken = visible
+      ? CITY_HUD_STAGE_FEEDBACK_TOKENS.visible
+      : CITY_HUD_STAGE_FEEDBACK_TOKENS.hidden;
+    const stateToken = visible ? roleToken : CITY_HUD_STAGE_FEEDBACK_TOKENS.calm;
+    node.active = visible;
+    node.name = `${slot.nodeName}:${visibilityToken}:${stateToken}`;
+  }
+
+  private hasPendingDisasterFeedback(): boolean {
+    return !!this.boot?.app.screens.events.getSnapshot().pendingFullscreen;
+  }
+
+  private hasConstructionFeedback(): boolean {
+    return !!this.boot && this.boot.app.controller.state.constructionQueue.length > 0;
+  }
+
+  private hasCompletionFeedback(): boolean {
+    if (!this.boot) return false;
+    const viewModel = readCityHudViewModel(this.boot);
+    return viewModel.screen === "screen_city_detail" && viewModel.month > 1 && !this.hasConstructionFeedback();
   }
 
   private createIconSlot(parent: Node, slot: CityHudStageIconSlot): Node {

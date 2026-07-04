@@ -134,6 +134,42 @@ export const CITY_HUD_STAGE_EFFECT_TOKENS = {
   normal: "city-stage:effect-normal"
 } as const;
 
+export const CITY_HUD_STAGE_FEEDBACK_SLOTS = {
+  disasterWarning: {
+    nodeName: "StageFeedbackDisasterWarning",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.state,
+    xRatio: 0.5,
+    yRatio: 0.66,
+    widthRatio: 0.42,
+    heightRatio: 0.1
+  },
+  constructionProgress: {
+    nodeName: "StageFeedbackConstructionProgress",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.state,
+    xRatio: 0.24,
+    yRatio: 0.54,
+    widthRatio: 0.24,
+    heightRatio: 0.08
+  },
+  completionPulse: {
+    nodeName: "StageFeedbackCompletionPulse",
+    layer: CITY_HUD_STAGE_LAYER_NAMES.state,
+    xRatio: 0.5,
+    yRatio: 0.48,
+    widthRatio: 0.5,
+    heightRatio: 0.12
+  }
+} as const;
+
+export const CITY_HUD_STAGE_FEEDBACK_TOKENS = {
+  visible: "city-stage:feedback-visible",
+  hidden: "city-stage:feedback-hidden",
+  disaster: "city-stage:feedback-disaster",
+  construction: "city-stage:feedback-construction",
+  completion: "city-stage:feedback-completion",
+  calm: "city-stage:feedback-calm"
+} as const;
+
 export const CITY_HUD_STAGE_STATE_TOKENS = {
   clean: "city-stage:clean",
   lowCleanliness: "city-stage:low-cleanliness",
@@ -337,3 +373,6 @@ export type CityHudStageGridSlot =
 
 export type CityHudStageEffectSlot =
   (typeof CITY_HUD_STAGE_EFFECT_SLOTS)[keyof typeof CITY_HUD_STAGE_EFFECT_SLOTS];
+
+export type CityHudStageFeedbackSlot =
+  (typeof CITY_HUD_STAGE_FEEDBACK_SLOTS)[keyof typeof CITY_HUD_STAGE_FEEDBACK_SLOTS];
