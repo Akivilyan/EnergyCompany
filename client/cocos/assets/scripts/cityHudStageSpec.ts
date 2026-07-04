@@ -25,6 +25,7 @@ export const CITY_HUD_STAGE_ASSET_SLOTS = {
   windTurbine: {
     nodeName: "StageAssetWindTurbine",
     layer: CITY_HUD_STAGE_LAYER_NAMES.facility,
+    resource: "wind",
     xRatio: 0.2,
     yRatio: 0.4,
     widthRatio: 0.08,
@@ -33,6 +34,7 @@ export const CITY_HUD_STAGE_ASSET_SLOTS = {
   solarField: {
     nodeName: "StageAssetSolarField",
     layer: CITY_HUD_STAGE_LAYER_NAMES.facility,
+    resource: "solar",
     xRatio: 0.48,
     yRatio: 0.4,
     widthRatio: 0.11,
@@ -41,6 +43,7 @@ export const CITY_HUD_STAGE_ASSET_SLOTS = {
   hydroPlant: {
     nodeName: "StageAssetHydroPlant",
     layer: CITY_HUD_STAGE_LAYER_NAMES.facility,
+    resource: "hydro",
     xRatio: 0.76,
     yRatio: 0.5,
     widthRatio: 0.1,
@@ -62,6 +65,22 @@ export const CITY_HUD_STAGE_ASSET_SLOTS = {
     widthRatio: 0.18,
     heightRatio: 0.07
   }
+} as const;
+
+export const CITY_HUD_STAGE_SCREEN_TOKENS = {
+  city: "city-stage:screen-city",
+  company: "city-stage:screen-company",
+  region: "city-stage:screen-region",
+  world: "city-stage:screen-world",
+  tech: "city-stage:screen-tech"
+} as const;
+
+export const CITY_HUD_STAGE_ASSET_TOKENS = {
+  visible: "city-stage:asset-visible",
+  unavailable: "city-stage:asset-unavailable",
+  resourceRich: "city-stage:asset-resource-rich",
+  resourceNormal: "city-stage:asset-resource-normal",
+  placeholder: "city-stage:asset-placeholder"
 } as const;
 
 export const CITY_HUD_STAGE_STATE_TOKENS = {

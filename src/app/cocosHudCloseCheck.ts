@@ -24,7 +24,11 @@ const CITY_HUD_PANEL_MARKERS = [
   "createStageAssetSlot",
   "placeStageAssetSlot",
   "syncPanelStateTokens",
+  "syncScreenStateToken",
+  "syncFacilityAssetStateTokens",
   "resolveIconRoleToken",
+  "CITY_HUD_STAGE_SCREEN_TOKENS.city",
+  "CITY_HUD_STAGE_ASSET_TOKENS.resourceRich",
   "CITY_HUD_STAGE_UI_TOKENS.primaryAction",
   "CITY_HUD_STAGE_ICON_TOKENS.active",
   "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
@@ -40,6 +44,8 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_SHELL_ORDER",
   "CITY_HUD_STAGE_VISUAL_ORDER",
   "CITY_HUD_STAGE_ASSET_SLOTS",
+  "CITY_HUD_STAGE_SCREEN_TOKENS",
+  "CITY_HUD_STAGE_ASSET_TOKENS",
   "CITY_HUD_STAGE_STATE_TOKENS",
   "CityVisualLayer",
   "CityBackgroundLayer",
@@ -51,6 +57,16 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "StageAssetWindTurbine",
   "StageAssetSolarField",
   "StageAssetHydroPlant",
+  "city-stage:screen-city",
+  "city-stage:screen-company",
+  "city-stage:screen-region",
+  "city-stage:screen-world",
+  "city-stage:screen-tech",
+  "city-stage:asset-visible",
+  "city-stage:asset-unavailable",
+  "city-stage:asset-resource-rich",
+  "city-stage:asset-resource-normal",
+  "city-stage:asset-placeholder",
   "CITY_HUD_STAGE_UI_SLOTS",
   "CITY_HUD_STAGE_UI_TOKENS",
   "CITY_HUD_STAGE_ACTION_SLOTS",
@@ -285,6 +301,8 @@ export function runCocosHudCloseStaticChecks(
     ok:
       source.includes("./cityHudStageSpec") &&
       source.includes("CITY_HUD_STAGE_ASSET_SLOTS") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS") &&
+      source.includes("CITY_HUD_STAGE_ASSET_TOKENS") &&
       source.includes("CITY_HUD_STAGE_UI_SLOTS") &&
       source.includes("CITY_HUD_STAGE_UI_TOKENS") &&
       source.includes("CITY_HUD_STAGE_ACTION_SLOTS") &&
@@ -322,6 +340,22 @@ export function runCocosHudCloseStaticChecks(
       source.includes("CITY_HUD_STAGE_UI_TOKENS.primaryAction") &&
       source.includes("CITY_HUD_STAGE_ICON_TOKENS.active"),
     detail: "CityHudPanel applies panel and icon runtime tokens"
+  });
+  checks.push({
+    id: "hud:city-stage-screen-asset-tokens",
+    ok:
+      source.includes("syncScreenStateToken") &&
+      source.includes("syncFacilityAssetStateTokens") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS.city") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS.company") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS.region") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS.world") &&
+      source.includes("CITY_HUD_STAGE_SCREEN_TOKENS.tech") &&
+      source.includes("CITY_HUD_STAGE_ASSET_TOKENS.visible") &&
+      source.includes("CITY_HUD_STAGE_ASSET_TOKENS.unavailable") &&
+      source.includes("CITY_HUD_STAGE_ASSET_TOKENS.resourceRich") &&
+      source.includes("CITY_HUD_STAGE_ASSET_TOKENS.placeholder"),
+    detail: "CityHudPanel applies screen and facility asset runtime tokens"
   });
   const layoutCalls: string[] = [];
   const layoutCallPattern = /this\.placeRowButtons\([\s\S]*?\);/g;

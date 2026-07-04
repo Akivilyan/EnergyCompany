@@ -59,11 +59,13 @@ import {
 import {
   CITY_HUD_STAGE_ACTION_SLOTS,
   CITY_HUD_STAGE_ASSET_SLOTS,
+  CITY_HUD_STAGE_ASSET_TOKENS,
   CITY_HUD_STAGE_ICON_SLOTS,
   CITY_HUD_STAGE_ICON_TOKENS,
   CITY_HUD_STAGE_INTERACTION_TOKENS,
   CITY_HUD_STAGE_SHELL_ORDER,
   CITY_HUD_STAGE_LAYER_NAMES,
+  CITY_HUD_STAGE_SCREEN_TOKENS,
   CITY_HUD_STAGE_STATE_TOKENS,
   CITY_HUD_STAGE_UI_SLOTS,
   CITY_HUD_STAGE_UI_TOKENS,
@@ -507,9 +509,11 @@ export class CityHudPanel extends Component {
     const bottom = -h / 2;
     const lowCleanliness = this.isLowCleanlinessPreview();
     const nightPhase = this.boot ? readCityHudViewModel(this.boot).month % 12 >= 8 : false;
+    this.syncScreenStateToken();
     this.placeStageAssetSlot(this.windAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.windTurbine, left, bottom, w, h);
     this.placeStageAssetSlot(this.solarAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.solarField, left, bottom, w, h);
     this.placeStageAssetSlot(this.hydroAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant, left, bottom, w, h);
+    this.syncFacilityAssetStateTokens();
     this.placeStageAssetSlot(this.cleanBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge, left, bottom, w, h);
     this.placeStageAssetSlot(this.warningBadgeSlot, CITY_HUD_STAGE_ASSET_SLOTS.warningBadge, left, bottom, w, h);
     if (this.cleanBadgeSlot) this.cleanBadgeSlot.active = !lowCleanliness;
@@ -565,6 +569,48 @@ export class CityHudPanel extends Component {
       w * slot.widthRatio,
       h * slot.heightRatio
     );
+  }
+
+  private syncScreenStateToken(): void {
+    if (!this.cityVisualLayer || !this.boot) return;
+    const viewModel = readCityHudViewModel(this.boot);
+    const token =
+      viewModel.screen === "screen_company"
+        ? CITY_HUD_STAGE_SCREEN_TOKENS.company
+        : viewModel.screen === "screen_region"
+          ? CITY_HUD_STAGE_SCREEN_TOKENS.region
+          : viewModel.screen === "screen_world_map"
+            ? CITY_HUD_STAGE_SCREEN_TOKENS.world
+            : viewModel.screen === "screen_tech_tree"
+              ? CITY_HUD_STAGE_SCREEN_TOKENS.tech
+              : CITY_HUD_STAGE_SCREEN_TOKENS.city;
+    this.cityVisualLayer.name = `${CITY_HUD_STAGE_LAYER_NAMES.root}:${token}`;
+  }
+
+  private syncFacilityAssetStateTokens(): void {
+    const profile = this.boot ? getCityHudProfileSnapshot(this.boot) : null;
+    this.syncFacilityAssetStateToken(this.windAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.windTurbine, profile);
+    this.syncFacilityAssetStateToken(this.solarAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.solarField, profile);
+    this.syncFacilityAssetStateToken(this.hydroAssetSlot, CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant, profile);
+  }
+
+  private syncFacilityAssetStateToken(
+    node: Node | null,
+    slot: CityHudStageAssetSlot,
+    profile: ReturnType<typeof getCityHudProfileSnapshot>
+  ): void {
+    if (!node) return;
+    const resource = (slot as { resource?: "wind" | "solar" | "hydro" }).resource;
+    if (!resource) return;
+    const unavailable = resource === "hydro" && profile !== null && !profile.hasRiver;
+    const resourceToken = profile?.richResources.includes(resource)
+      ? CITY_HUD_STAGE_ASSET_TOKENS.resourceRich
+      : CITY_HUD_STAGE_ASSET_TOKENS.resourceNormal;
+    const visibilityToken = unavailable
+      ? CITY_HUD_STAGE_ASSET_TOKENS.unavailable
+      : CITY_HUD_STAGE_ASSET_TOKENS.visible;
+    const placeholderToken = unavailable ? CITY_HUD_STAGE_ASSET_TOKENS.placeholder : resourceToken;
+    node.name = `${slot.nodeName}:${visibilityToken}:${placeholderToken}`;
   }
 
   private createIconSlot(parent: Node, slot: CityHudStageIconSlot): Node {
