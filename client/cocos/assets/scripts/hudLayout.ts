@@ -116,8 +116,8 @@ export function buildHudBandLayout(container: Size2): {
   const top = container.height * 0.5;
   const bottom = -container.height * 0.5;
 
-  const statusH = container.height * 0.2;
-  const detailH = container.height * 0.14;
+  const statusH = container.height * 0.11;
+  const detailH = container.height * 0.2;
   const gap = container.height * 0.02;
   const rowCount = 5;
   const buttonsTop = top - statusH - detailH - gap * 3;

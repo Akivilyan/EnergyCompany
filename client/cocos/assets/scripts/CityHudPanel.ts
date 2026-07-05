@@ -497,6 +497,57 @@ export class CityHudPanel extends Component {
     }
   }
 
+  private formatStatusText(lines: string[], onCity: boolean): string {
+    return onCity ? lines.join("    ") : lines.join("\n");
+  }
+
+  private formatDetailText(lines: string[], onCity: boolean): string {
+    return this.selectPlayableDetailLines(lines, onCity).join("\n");
+  }
+
+  private selectPlayableDetailLines(lines: string[], onCity: boolean): string[] {
+    if (!onCity) return lines.slice(0, 6);
+    const hiddenPrefixes = [
+      "负荷",
+      "Demand",
+      "界面：",
+      "Screen:",
+      "返回层",
+      "Back stack",
+      "可切换建造",
+      "Build options"
+    ];
+    const visible = lines.filter(
+      (line) => !hiddenPrefixes.some((prefix) => line.startsWith(prefix))
+    );
+    const priorityPrefixes = [
+      "候选：",
+      "Candidate:",
+      "建造建议：",
+      "Build action:",
+      "备考建议：",
+      "Prep action:",
+      "灾害轴：",
+      "Disaster axis:",
+      "压力拆解：",
+      "Pressure breakdown:",
+      "科技解法：",
+      "Tech solution:",
+      "灾害待确认：",
+      "Disaster pending:"
+    ];
+    const picked: string[] = [];
+    for (const prefix of priorityPrefixes) {
+      const line = visible.find((item) => item.startsWith(prefix));
+      if (line && !picked.includes(line)) picked.push(line);
+    }
+    for (const line of visible) {
+      if (picked.length >= 5) break;
+      if (!picked.includes(line)) picked.push(line);
+    }
+    return picked.slice(0, 5);
+  }
+
   private fitLabelToBand(label: Label, band: HudBandLayout): void {
     const node = label.node;
     const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
@@ -1275,8 +1326,8 @@ export class CityHudPanel extends Component {
     }
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
-    this.statusLabel.string = display.statusLines.join("\n");
-    this.hintLabel.string = display.detailLines.join("\n");
+    this.statusLabel.string = this.formatStatusText(display.statusLines, onCity);
+    this.hintLabel.string = this.formatDetailText(display.detailLines, onCity);
     this.applyLayout();
   }
 

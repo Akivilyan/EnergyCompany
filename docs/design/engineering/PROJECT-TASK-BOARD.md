@@ -31,40 +31,40 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`WECHAT-RELEASE-01`
-- 模块标题：微信包阶段收口与真机验收
+- 当前模块：`PLAYTEST-UI-01`
+- 模块标题：试玩可交付 UI 首屏
 - 状态：`done`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
+### `PLAYTEST-UI-01` 试玩可交付 UI 首屏
 
-目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
+目标：把开发 HUD 的首屏城市页推进到普通试玩者可读、能知道下一步该点什么的状态。
 
 输入：
 
-- `docs/design/engineering/cocos-client-setup.md`
-- `AGENTS.md`
-- 当前所有已完成模块
+- `docs/design/ui/art-direction.md`
+- `docs/design/ui/00-screen-map.md`
+- `docs/design/ui/construction-flow.md`
+- 当前 Cocos `CityHudPanel` / `hudLayout`
 
 输出：
 
-- `verify:client` 通过。
-- 微信构建包启动模块完整。
-- 真机冒烟覆盖冷启动、存档恢复、公司 2 级、区域铺线、灾害弹窗、广告回调可用性。
-- 记录仍存在的非阻塞 UX / 性能 / 资源问题。
+- 城市页顶部资源栏更紧凑。
+- 城市状态卡过滤开发态导航信息，只保留候选建造、建造建议、灾害轴、压力拆解、科技解法等可行动信息。
+- 保持现有按钮能力与规则状态一致，不改变玩法命令。
 
 不做：
 
 - 不新增玩法。
-- 不再大改数值。
-- 不重做 UI 资产。
+- 不调数值。
+- 不做全屏幕正式 Prefab 重做。
 
 验收：
 
-- `npm run verify:client`
-- 微信开发者工具 / 真机手动冒烟
+- `npm run check:cocos-ts`
+- `npm run verify:client:fast`
 
 ## 当前工程状态
 
@@ -79,6 +79,7 @@
 | UX-GUIDANCE-01 经营压力、提示与反馈 | done |
 | MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
 | WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
+| PLAYTEST-UI-01 试玩可交付 UI 首屏 | done |
 
 ## 模块队列
 
@@ -230,6 +231,38 @@
 
 切换条件：验收通过后，看板进入后续试玩反馈修复模块；没有明确反馈前不新增大模块。
 
+### 6. `PLAYTEST-UI-01` 试玩可交付 UI 首屏
+
+状态：`done`
+
+目标：把开发 HUD 的首屏城市页推进到普通试玩者可读、能知道下一步该点什么的状态。
+
+输入：
+
+- `docs/design/ui/art-direction.md`
+- `docs/design/ui/00-screen-map.md`
+- `docs/design/ui/construction-flow.md`
+- 当前 Cocos `CityHudPanel` / `hudLayout`
+
+输出：
+
+- 城市页顶部资源栏更紧凑。
+- 城市状态卡过滤开发态导航信息，只保留候选建造、建造建议、灾害轴、压力拆解、科技解法等可行动信息。
+- 保持现有按钮能力与规则状态一致，不改变玩法命令。
+
+不做：
+
+- 不新增玩法。
+- 不调数值。
+- 不做全屏幕正式 Prefab 重做。
+
+验收：
+
+- `npm run check:cocos-ts`
+- `npm run verify:client:fast`
+
+切换条件：首屏试玩反馈明确后，进入下一批 UI 分层或具体屏幕 UI 模块。
+
 ## 下一步
 
-等待试玩反馈修复模块输入；没有明确反馈前不新增大模块。
+基于首屏试玩反馈，决定继续做城市页分层、公司页、科技页或启动/继续游戏入口。
