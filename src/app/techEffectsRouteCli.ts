@@ -148,7 +148,7 @@ function checkRiskReserve(config: ConfigRepo): void {
     state.funds = Math.max(state.funds, 100);
   }
   const penalty = stepMetric(state, config, "M11_events_apply", "disaster_penalty");
-  ensure(penalty === 7, `expected risk reserve M22 penalty 7, got ${penalty}`);
+  ensure(penalty === 3, `expected risk reserve M22 penalty 3, got ${penalty}`);
   pass("risk-reserve", `M22 penalty=${penalty}`);
 }
 

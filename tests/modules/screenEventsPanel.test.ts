@@ -25,8 +25,8 @@ describe("ScreenEventsPanel", () => {
     expect(snapshot.upcoming[0].monthsUntilTrigger).toBe(21);
     expect(snapshot.upcoming[0].warnLeadMonths).toBe(8);
     expect(snapshot.upcoming[0].inWarningWindow).toBe(false);
-    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(9);
-    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(9);
+    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(4);
+    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(4);
     expect(snapshot.upcoming[0].cashPenaltyReduced).toBe(false);
     expect(snapshot.upcoming[3].isFinal).toBe(true);
     expect(snapshot.active).toHaveLength(0);
@@ -108,8 +108,8 @@ describe("ScreenEventsPanel", () => {
 
     const snapshot = createScreenEventsPanel(controller).getSnapshot();
 
-    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(9);
-    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(7);
+    expect(snapshot.upcoming[0].immediateCashPenalty).toBe(4);
+    expect(snapshot.upcoming[0].adjustedCashPenalty).toBe(3);
     expect(snapshot.upcoming[0].cashPenaltyReduced).toBe(true);
   });
 

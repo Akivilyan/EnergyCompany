@@ -8,6 +8,7 @@ Desktop.ini
 node_modules/
 dist/
 coverage/
+playtest-lab/output/
 *.log
 npm-debug.log*
 *.tsbuildinfo

@@ -81,9 +81,9 @@ function checkPrepAndMitigation(): void {
   ensure(!!opportunity && opportunity.includes("风险储备机会"), `expected risk opportunity, got ${opportunity ?? "none"}`);
   boot.app.controller.state.litTechIds.push("eng_risk_reserve");
   const risk = formatUpcomingEventRiskLine(boot);
-  if (!risk || !risk.includes("7/9")) fail(`expected reduced M22 penalty, got ${risk ?? "none"}`);
+  if (!risk || !risk.includes("3/4")) fail(`expected reduced M22 penalty, got ${risk ?? "none"}`);
   const hold = formatUpcomingEventPrepActionLine(boot);
-  ensure(!!hold && hold.includes("现金已达17"), `expected hold prep line, got ${hold ?? "none"}`);
+  ensure(!!hold && hold.includes("现金已达13"), `expected hold prep line, got ${hold ?? "none"}`);
   pass("risk-reserve-prep", risk);
 }
 

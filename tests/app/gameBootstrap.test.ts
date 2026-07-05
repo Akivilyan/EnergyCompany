@@ -25,6 +25,6 @@ describe("createGameBootstrap", () => {
   it("shares one controller between app and play surface", () => {
     const boot = createGameBootstrapFromRepo({ repoRoot });
     boot.play.buildInCurrentCity("wind", 1);
-    expect(boot.app.controller.state.funds).toBeLessThan(140);
+    expect(boot.app.controller.state.funds).toBeLessThan(203);
   });
 });

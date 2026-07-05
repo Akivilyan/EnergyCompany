@@ -31,44 +31,45 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`BALANCE-PLAYTEST-01`
-- 模块标题：完整 demo 数值与试玩节奏收敛
+- 当前模块：`UX-GUIDANCE-01`
+- 模块标题：经营压力、提示与反馈闭环
 - 状态：`doing`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
+### `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
 
-目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
+目标：让玩家知道当前为什么卡、下一步该做什么，以及灾害/经营压力/终局结果为什么发生。
 
 输入：
 
-- `docs/design/engineering/v0-balance-target-lines.md`
-- `docs/design/engineering/v0-balance-knob-surface.md`
-- `docs/design/engineering/v0-balance-checkpoints.md`
-- `docs/design/engineering/v0-disaster-balance-policy.md`
-- `docs/design/data/vertical-slice-v0/`
-- `playtest-lab/run-first-round-batches.mjs`
+- `docs/design/features/company-management.md`
+- `docs/design/features/events.md`
+- `docs/design/features/tech-tree.md`
+- `docs/design/features/world-map.md`
+- `docs/design/ui/company.md`
+- `docs/design/ui/events.md`
+- `docs/design/ui/milestones.md`
+- `docs/design/ui/run-result.md`
 
 输出：
 
-- A/B/C 三类策略的可回归试玩结果。
-- 一组可解释的粗调参数：公司 I-V、灾害现金/收入压力、广告现金价值、地图资源分工、路线耗时。
-- playtest 脚本或回归入口能复现关键路线结果。
-- 数值改动对应配置与验收说明清楚，不靠口头判断。
+- 公司、科技、城市、区域、大地图、事件、结果页的关键提示闭环。
+- 经营压力、科技解法、灾害备考/恢复、终局路线摘要统一口径。
+- 文案键、状态 token、按钮能力与实际动作条件一致。
+- 相关模块测试覆盖错误态和推荐态。
 
 不做：
 
-- 不追求最终商业化数值。
-- 不做 UI 视觉精修。
+- 不改核心数值平衡。
+- 不做新的玩法系统。
 - 不接真实广告 SDK。
 
 验收：
 
 - `npm test`
-- `npm run build:client`
-- `npm run sim:playtest-bundle`
+- 涉及客户端显示时补 `npm run verify:client:fast`
 
 ## 当前工程状态
 
@@ -79,7 +80,8 @@
 | T51 真机构建与冒烟 | done |
 | Demo 七条核心试玩路线 | done |
 | UI-PREFAB-01 城市页样张 | done |
-| BALANCE-PLAYTEST-01 数值与节奏 | doing |
+| BALANCE-PLAYTEST-01 数值与节奏 | done |
+| UX-GUIDANCE-01 经营压力、提示与反馈 | doing |
 
 ## 模块队列
 
@@ -93,7 +95,7 @@
 
 ### 2. `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
 
-状态：`doing`
+状态：`done`
 
 目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
 
@@ -128,6 +130,8 @@
 切换条件：验收通过后，将当前模块改为 `UX-GUIDANCE-01`。
 
 ### 3. `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
+
+状态：`doing`
 
 目标：让玩家知道当前为什么卡、下一步该做什么，以及灾害/经营压力/终局结果为什么发生。
 
@@ -227,4 +231,4 @@
 
 ## 下一步
 
-完成 `UI-PREFAB-01` 后，进入 `BALANCE-PLAYTEST-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。
+当前推进 `UX-GUIDANCE-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。

@@ -39,7 +39,7 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
     const lines = [...display.statusLines, ...display.detailLines];
 
-    expect(display.statusLines).toEqual(["公司 1 级", "资金 140", "广告剩余 10 次"]);
+    expect(display.statusLines).toEqual(["公司 1 级", "资金 203", "广告剩余 10 次"]);
     expect(display.detailLines).toEqual([
       "社会价值 0/1（升级进度）",
       "升级目标：还差1SV到2级 · MAP-01 full province",
@@ -98,7 +98,7 @@ describe("clientHudDisplay", () => {
     const display = buildClientHudDisplay(boot);
 
     expect(display.detailLines).toContain("灾害轴：已过0/4 · M22预警中 · 还有7月");
-    expect(display.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
+    expect(display.detailLines).toContain("备考建议：M22前留14现金，还差4 · 剩7月");
   });
 
   it("shows disaster axis and prep action on city hud", () => {
@@ -115,7 +115,7 @@ describe("clientHudDisplay", () => {
 
     const warning = buildClientHudDisplay(boot);
     expect(warning.detailLines).toContain("灾害轴：已过0/4 · M22预警中 · 还有7月");
-    expect(warning.detailLines).toContain("备考建议：M22前留19现金，还差9 · 剩7月");
+    expect(warning.detailLines).toContain("备考建议：M22前留14现金，还差4 · 剩7月");
   });
 
   it("shows construction tech build cost reduction on company hud", () => {
@@ -420,7 +420,7 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至7/9");
+    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至3/4");
     expect(display.detailLines).toContain("现金流机会：研发后贷款等级+1 · 有效6级");
     expect(display.detailLines).toContain("运维机会：研发后核电运维-18%/通用运维-10%");
     expect(display.detailLines).toContain("发电机会：研发后风·3/光·3/火·3/水·3");
@@ -465,7 +465,7 @@ describe("clientHudDisplay", () => {
     clientNavOpenCompany(boot);
 
     const prep = buildClientHudDisplay(boot);
-    expect(prep.detailLines).toContain("灾害备考：M22现金冲击7/9 · 风险储备生效");
+    expect(prep.detailLines).toContain("灾害备考：M22现金冲击3/4 · 风险储备生效");
 
     boot.app.controller.state.funds = 10000;
     while (boot.app.controller.state.currentMonth < 23) {
@@ -485,7 +485,7 @@ describe("clientHudDisplay", () => {
 
     const display = buildClientHudDisplay(boot);
 
-    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至7/9");
+    expect(display.detailLines).toContain("风险储备机会：M22现金冲击可降至3/4");
   });
 
   it("shows selected research candidate and researchable count on tech screen", () => {

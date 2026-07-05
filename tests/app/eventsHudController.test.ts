@@ -48,7 +48,7 @@ describe("eventsHudController", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.litTechIds.push("eng_risk_reserve");
 
-    expect(formatUpcomingEventRiskLine(boot)).toBe("灾害备考：M22现金冲击7/9 · 风险储备生效");
+    expect(formatUpcomingEventRiskLine(boot)).toBe("灾害备考：M22现金冲击3/4 · 风险储备生效");
 
     boot.app.controller.state.funds = 10000;
     settleToMonth(boot, 23);
@@ -109,7 +109,7 @@ describe("eventsHudController", () => {
 
     boot.app.controller.state.funds = 10;
     expect(formatUpcomingEventPrepActionLine(boot)).toBe(
-      "备考建议：M22前留19现金，还差9 · 剩7月"
+      "备考建议：M22前留14现金，还差4 · 剩7月"
     );
 
     boot.app.controller.state.companyLevel = 4;
@@ -120,7 +120,7 @@ describe("eventsHudController", () => {
 
     boot.app.controller.state.litTechIds.push("eng_risk_reserve");
     expect(formatUpcomingEventPrepActionLine(boot)).toBe(
-      "备考建议：M22前现金已达17，避免长工期堆叠 · 剩7月"
+      "备考建议：M22前现金已达13，避免长工期堆叠 · 剩7月"
     );
   });
 
@@ -137,7 +137,7 @@ describe("eventsHudController", () => {
     boot.app.controller.state.companyLevel = 4;
 
     expect(formatUpcomingEventRiskOpportunityLine(boot)).toBe(
-      "风险储备机会：M22现金冲击可降至7/9"
+      "风险储备机会：M22现金冲击可降至3/4"
     );
 
     boot.app.controller.state.litTechIds.push("eng_risk_reserve");

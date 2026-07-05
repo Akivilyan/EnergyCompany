@@ -48,7 +48,7 @@ describe("cityHudController", () => {
     const boot = mountGameClient({ configRepo: config, autoResumeSlot: false });
     const build = cityHudBuildWind(boot);
     expect(build.ok).toBe(true);
-    expect(build.view.funds).toBeLessThan(140);
+    expect(build.view.funds).toBeLessThan(203);
 
     const advance = cityHudAdvanceMonth(boot);
     expect(advance.ok).toBe(true);
@@ -72,7 +72,7 @@ describe("cityHudController", () => {
 
     const build = cityHudBuildSelected(boot);
     expect(build.ok).toBe(true);
-    expect(build.view.funds).toBeLessThan(140);
+    expect(build.view.funds).toBeLessThan(203);
   });
 
   it("uses the highest lit wind tier for selected city build candidate", () => {

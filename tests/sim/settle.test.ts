@@ -336,7 +336,7 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.state.funds).toBe(129);
+    expect(result.value.state.funds).toBe(192);
   });
 
   it("dispatch rejects construction tier above lit max", () => {
@@ -370,7 +370,7 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.state.funds).toBe(116);
+    expect(result.value.state.funds).toBe(179);
     expect(result.value.state.constructionQueue[0]?.tier).toBe(2);
     expect(result.value.state.constructionQueue[0]?.monthsRemaining).toBe(3);
   });
@@ -394,7 +394,7 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.state.funds).toBe(134);
+    expect(result.value.state.funds).toBe(197);
     expect(result.value.state.gridLinks["CITY-MAP01-02::CITY-START"]?.lossMw).toBe(
       config.bundle.gridLoss.loss_regional_mw
     );
@@ -504,7 +504,7 @@ describe("settleNextMonth", () => {
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.state.funds).toBe(134);
+    expect(result.value.state.funds).toBe(197);
     expect(result.value.state.gridLinks["CITY-MAP03-01::CITY-START"]?.lossMw).toBe(
       config.bundle.gridLoss.loss_backbone_pre_uhv_mw
     );
