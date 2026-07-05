@@ -2,16 +2,14 @@
 id: data/README
 title: 配置总览
 status: draft
-version: 0.1.0
+version: 1.0.0
 sources:
   - docs/design/gdd/README.md#与-data-层映射
 supersedes: []
 depends_on:
   - gdd/README
   - data/schemas/README
-open_questions:
-  - 运行时配置根目录名（`assets/config/` vs `res/data/`）待 T42 定稿
-  - Excel 源文件仓库路径（策划工作簿是否入库）待团队约定
+open_questions: []
 ---
 
 # 配置总览
@@ -24,17 +22,17 @@ Data 层描述 **表结构、字段、ID 规范** 与 **策划 → 游戏** 的�
 
 ```text
 docs/design/data/
-  README.md                 ← 本文件（T36）
-  CHECKLIST.md              ← 数据验收清单（T40）
-  technology-tree.md        ← 科技树表结构（T38）
-  schemas/                  ← 核心表字段说明（T37）
+  README.md                 ← 本文件
+  CHECKLIST.md              ← 数据验收清单
+  technology-tree.md        ← 科技树表结构
+  schemas/                  ← 核心表字段说明
     README.md
     region-and-city.md
     facility-and-grid.md
     company-level-and-run.md
     events-and-campaign.md
     doctrine-meta.md
-  vertical-slice-v0/        ← Playable v0 占位包（T39，见 engineering/vertical-slice-v0.md）
+  vertical-slice-v0/        ← Playable v0 数据包（见 engineering/vertical-slice-v0.md）
 ```
 
 **运行时 JSON**（实现阶段，路径 T42 定）建议：
@@ -103,7 +101,7 @@ docs/design/data/
 | 3. 导出 | CI / 本地命令 | `config/*.json` |
 | 4. 验收 | 对照 [CHECKLIST](./CHECKLIST.md) | PR 通过 |
 
-导出脚本 **不在本仓库强制**（T42 后入 `tools/`）；本阶段只约定字段与文件清单。
+导出脚本不作为当前模块前置；本目录只约定字段与文件清单。
 
 ### 建议工作簿分页（与 schemas 对应）
 
@@ -152,5 +150,5 @@ docs/design/data/
 ## 7. 相关文档
 
 - [schemas 索引](./schemas/README.md)
-- [数据验收清单](./CHECKLIST.md)（T40）
+- [数据验收清单](./CHECKLIST.md)
 - GDD 索引 [gdd/README.md](../gdd/README.md)

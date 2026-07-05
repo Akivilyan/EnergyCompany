@@ -12,7 +12,7 @@ node playtest-lab/run-first-round-batches.mjs
 
 ## 输出文件
 
-- `playtest-lab/output/first-round-results.json`
+- `playtest-lab/output/first-round-results.json`（脚本运行后生成，不提交）
   - 中文注释：机器可读明细，适合后续脚本继续分析。
 
 ## 说明（重要）
