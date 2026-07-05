@@ -9,7 +9,7 @@
 - 平台：微信小游戏
 - 客户端：`Cocos Creator 3.x + TypeScript`
 - 规则真理：`src/sim/`
-- 当前目标：落地真正可玩的完整 demo；画面、数据、提示可以粗糙，但主要玩法闭环与核心分支必须可体验。
+- 当前目标：在已跑通玩法闭环的基础上，先搭完整成品级 UI 架构壳，再进入美术资源设计与补充，最后补游戏引导。
 
 ## 当前版本范围
 
@@ -20,51 +20,65 @@
 - `src/sim/` 规则闭环、`src/modules/` 编排层、`client/cocos/` 客户端壳层
 - 微信小游戏构建路径、客户端聚合验证、真机冒烟路径
 
-当前不作为统一阻塞项：
+当前不作为 UI 壳模块阻塞项：
 
-- Prefab 化正式 UI 资源
+- 最终美术资源定稿
 - 真正接入微信激励广告 SDK
 - 大规模数值精调
-- 经营提示、压力拆解、HUD 文案精修
 - 对含糊设计数据的逐项精磨
 
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`PLAYTEST-UI-01`
-- 模块标题：试玩可交付 UI 首屏
-- 状态：`done`
+- 当前模块：`UI-SHELL-LONG-01`
+- 模块标题：成品级 UI 架构壳
+- 状态：`ready`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `PLAYTEST-UI-01` 试玩可交付 UI 首屏
+### `UI-SHELL-LONG-01` 成品级 UI 架构壳
 
-目标：把开发 HUD 的首屏城市页推进到普通试玩者可读、能知道下一步该点什么的状态。
+目标：不追求最终美术，但按未来成品 UI 搭完整页面架构、资源插槽、状态绑定和交互分区，让后续正式图片、图标、科技点资源可以替换进入，而不是推倒重做。
 
 输入：
 
 - `docs/design/ui/art-direction.md`
 - `docs/design/ui/00-screen-map.md`
 - `docs/design/ui/construction-flow.md`
-- 当前 Cocos `CityHudPanel` / `hudLayout`
+- `docs/design/ui/company.md`
+- `docs/design/ui/tech-tree.md`
+- `docs/design/ui/region-main.md`
+- `docs/design/ui/world-map.md`
+- `docs/design/ui/events.md`
+- `docs/design/ui/run-result.md`
+- 当前 Cocos `GameRoot` / `CityHudPanel` / `hudLayout` / scene registry
 
 输出：
 
-- 城市页顶部资源栏更紧凑。
-- 城市状态卡过滤开发态导航信息，只保留候选建造、建造建议、灾害轴、压力拆解、科技解法等可行动信息。
-- 保持现有按钮能力与规则状态一致，不改变玩法命令。
+- 启动入口壳：开始新游戏、继续、清档重开、当前存档提示。
+- 城市页壳：背景层、建筑插槽、电网层、状态反馈层、资源栏、城市状态卡、建设操作区、底部导航。
+- 公司页壳：公司概览、现金流、贷款、广告激励、升级目标区块。
+- 科技页壳：科技分支、节点占位、当前研发、候选研发、加速入口。
+- 区域页壳：城市节点、线路、候选铺线、在建/完成状态。
+- 大地图壳：区域节点、解锁状态、主干线、候选目标。
+- 灾害/事件壳：全屏弹窗、确认按钮、影响说明、恢复建议。
+- 结果页壳：胜负结果、路线摘要、重开入口。
+- 通用 UI 基础：按钮样式、面板样式、图标占位、资源位命名、状态 token。
 
 不做：
 
 - 不新增玩法。
 - 不调数值。
-- 不做全屏幕正式 Prefab 重做。
+- 不产最终美术资源。
+- 不做游戏引导。
+- 不接真实广告收益/IAP。
 
 验收：
 
 - `npm run check:cocos-ts`
 - `npm run verify:client:fast`
+- 涉及入口装配或共享包时补 `npm run build`
 
 ## 当前工程状态
 
@@ -80,6 +94,7 @@
 | MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
 | WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
 | PLAYTEST-UI-01 试玩可交付 UI 首屏 | done |
+| UI-SHELL-LONG-01 成品级 UI 架构壳 | ready |
 
 ## 模块队列
 
@@ -263,6 +278,53 @@
 
 切换条件：首屏试玩反馈明确后，进入下一批 UI 分层或具体屏幕 UI 模块。
 
+### 7. `UI-SHELL-LONG-01` 成品级 UI 架构壳
+
+状态：`ready`
+
+目标：不追求最终美术，但按未来成品 UI 搭完整页面架构、资源插槽、状态绑定和交互分区，让后续正式图片、图标、科技点资源可以替换进入，而不是推倒重做。
+
+输入：
+
+- `docs/design/ui/art-direction.md`
+- `docs/design/ui/00-screen-map.md`
+- `docs/design/ui/construction-flow.md`
+- `docs/design/ui/company.md`
+- `docs/design/ui/tech-tree.md`
+- `docs/design/ui/region-main.md`
+- `docs/design/ui/world-map.md`
+- `docs/design/ui/events.md`
+- `docs/design/ui/run-result.md`
+- 当前 Cocos `GameRoot` / `CityHudPanel` / `hudLayout` / scene registry
+
+输出：
+
+- 启动入口壳：开始新游戏、继续、清档重开、当前存档提示。
+- 城市页壳：背景层、建筑插槽、电网层、状态反馈层、资源栏、城市状态卡、建设操作区、底部导航。
+- 公司页壳：公司概览、现金流、贷款、广告激励、升级目标区块。
+- 科技页壳：科技分支、节点占位、当前研发、候选研发、加速入口。
+- 区域页壳：城市节点、线路、候选铺线、在建/完成状态。
+- 大地图壳：区域节点、解锁状态、主干线、候选目标。
+- 灾害/事件壳：全屏弹窗、确认按钮、影响说明、恢复建议。
+- 结果页壳：胜负结果、路线摘要、重开入口。
+- 通用 UI 基础：按钮样式、面板样式、图标占位、资源位命名、状态 token。
+
+不做：
+
+- 不新增玩法。
+- 不调数值。
+- 不产最终美术资源。
+- 不做游戏引导。
+- 不接真实广告收益/IAP。
+
+验收：
+
+- `npm run check:cocos-ts`
+- `npm run verify:client:fast`
+- 涉及入口装配或共享包时补 `npm run build`
+
+切换条件：UI 壳全链路验收通过后，进入 UI 美术资源设计与补充；美术资源阶段完成后，再进入游戏引导模块。
+
 ## 下一步
 
-基于首屏试玩反馈，决定继续做城市页分层、公司页、科技页或启动/继续游戏入口。
+推进 `UI-SHELL-LONG-01`。该模块允许长程连续实施，中途仅在设计冲突、资源策略冲突、权限问题或技术阻塞时停下来确认；完成后再进入 UI 资源设计与补充，最后做游戏引导。

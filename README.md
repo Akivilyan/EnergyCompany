@@ -5,6 +5,8 @@
 ## 当前状态
 
 - 推进方式：模块交付制
+- 当前产品阶段：玩法闭环已跑通，进入成品级 UI 架构壳搭建
+- UI 顺序：先搭完整 UI 壳，再补正式美术资源，最后做游戏引导
 - 当前状态与模块：见 `docs/design/engineering/PROJECT-TASK-BOARD.md`
 - Agent 规则：见 `AGENTS.md`
 
@@ -20,6 +22,7 @@
 | 设计总览 | `docs/design/README.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
 | Cocos / 微信联调 | `docs/design/engineering/cocos-client-setup.md` |
+| UI 壳与美术方向 | `docs/design/ui/art-direction.md`、`docs/design/ui/00-screen-map.md` |
 
 ## 常用命令
 
