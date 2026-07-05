@@ -87,6 +87,8 @@
 
 边界：当前模块，完成后再进入数值、提示或广告模块。
 
+切换条件：验收通过后，将当前模块改为 `BALANCE-PLAYTEST-01`。
+
 ### 2. `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
 
 目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
@@ -118,6 +120,8 @@
 - `npm test`
 - `npm run build:client`
 - `npm run sim:playtest-bundle`
+
+切换条件：验收通过后，将当前模块改为 `UX-GUIDANCE-01`。
 
 ### 3. `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
 
@@ -152,6 +156,8 @@
 - `npm test`
 - 涉及客户端显示时补 `npm run verify:client:fast`
 
+切换条件：验收通过后，将当前模块改为 `MONETIZATION-WECHAT-01`。
+
 ### 4. `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
 
 目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
@@ -183,6 +189,8 @@
 - `npm run verify:client`
 - 真机或微信开发者工具手动冒烟路径按 `cocos-client-setup.md` 执行并在最终回复说明结果。
 
+切换条件：验收通过后，将当前模块改为 `WECHAT-RELEASE-01`。
+
 ### 5. `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
 
 目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
@@ -210,6 +218,8 @@
 
 - `npm run verify:client`
 - 微信开发者工具 / 真机手动冒烟
+
+切换条件：验收通过后，看板进入后续试玩反馈修复模块；没有明确反馈前不新增大模块。
 
 ## 下一步
 
