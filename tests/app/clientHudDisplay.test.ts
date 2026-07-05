@@ -674,6 +674,7 @@ describe("clientHudDisplay", () => {
       canApplyLoan: true,
       canCycleLoanCandidate: true,
       canClaimCashAd: true,
+      canSpeedupConstructionByAd: false,
       canStartResearch: false,
       canCancelResearch: false,
       canSpeedupResearchByAd: false,

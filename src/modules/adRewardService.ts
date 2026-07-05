@@ -11,6 +11,7 @@ import type { RunController } from "./runController.js";
 export type AdRewardUiErrorCode =
   | "ad_not_completed"
   | "ad_provider_failed"
+  | "ad_in_progress"
   | "reward_rejected";
 
 export interface AdRewardActionOutput {
@@ -31,12 +32,14 @@ export interface AdRewardActionOutput {
 function toClaimCommand(adType: RewardedAdType, targetId?: string): Command {
   return {
     type: "claim_ad_reward",
-    adType,
+    adType: adType === "speedup" ? "instant_research" : adType,
     targetId
   };
 }
 
 export class AdRewardService {
+  private pending = false;
+
   constructor(
     private readonly controller: RunController,
     private readonly adProvider: RewardedAdProvider
@@ -102,9 +105,34 @@ export class AdRewardService {
       adsRemaining: this.controller.state.adsRemaining,
       funds: this.controller.state.funds
     };
-    const adOutcome = this.adProvider.showRewardedAdAsync
-      ? await this.adProvider.showRewardedAdAsync({ adType, placementId })
-      : this.adProvider.showRewardedAd({ adType, placementId });
+    if (this.pending) {
+      const adOutcome: RewardedAdOutcome = {
+        status: "failed",
+        provider: "stub",
+        providerCode: "ad_in_progress",
+        message: "rewarded ad already in progress"
+      };
+      return {
+        adOutcome,
+        rewarded: false,
+        claimResult: null,
+        uiErrorCode: "ad_in_progress",
+        before,
+        after: {
+          adsRemaining: this.controller.state.adsRemaining,
+          funds: this.controller.state.funds
+        }
+      };
+    }
+    this.pending = true;
+    let adOutcome: RewardedAdOutcome;
+    try {
+      adOutcome = this.adProvider.showRewardedAdAsync
+        ? await this.adProvider.showRewardedAdAsync({ adType, placementId })
+        : this.adProvider.showRewardedAd({ adType, placementId });
+    } finally {
+      this.pending = false;
+    }
     if (adOutcome.status === "cancelled") {
       return {
         adOutcome,

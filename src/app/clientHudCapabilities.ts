@@ -24,6 +24,7 @@ export interface ClientHudCapabilities {
   canApplyLoan: boolean;
   canCycleLoanCandidate: boolean;
   canClaimCashAd: boolean;
+  canSpeedupConstructionByAd: boolean;
   canStartResearch: boolean;
   canCancelResearch: boolean;
   canSpeedupResearchByAd: boolean;
@@ -109,6 +110,8 @@ export function getClientHudCapabilities(boot: GameBootstrap): ClientHudCapabili
     canApplyLoan: company.activeLoan === null && selectedLoanCandidate !== null,
     canCycleLoanCandidate: company.activeLoan === null && companySelection.candidates.length > 0,
     canClaimCashAd: state.adsRemaining > 0,
+    canSpeedupConstructionByAd:
+      state.adsRemaining > 0 && company.activeConstruction.length > 0,
     canStartResearch:
       tech.canOpen &&
       !hasActiveResearch &&

@@ -17,7 +17,9 @@ export type CompanyUiErrorCode =
   | "loan_already_active"
   | "ad_not_completed"
   | "ad_provider_failed"
+  | "ad_in_progress"
   | "ads_exhausted"
+  | "no_active_construction"
   | "action_invalid"
   | "action_failed";
 
@@ -47,9 +49,17 @@ export const COMPANY_UI_COPY: Record<CompanyUiErrorCode, CompanyUiCopySpec> = {
     messageKey: "company.error.ad_provider_failed",
     actionKey: "company.action.retry_ad"
   },
+  ad_in_progress: {
+    messageKey: "company.error.ad_in_progress",
+    actionKey: "company.action.wait_ad"
+  },
   ads_exhausted: {
     messageKey: "company.error.ads_exhausted",
     actionKey: "company.action.close_ad_panel"
+  },
+  no_active_construction: {
+    messageKey: "company.error.no_active_construction",
+    actionKey: "company.action.start_build_first"
   },
   action_invalid: {
     messageKey: "company.error.action_invalid",
@@ -88,6 +98,15 @@ export interface CompanySnapshot {
   } | null;
   loanTierOptions: CompanyLoanTierOption[];
   canApplyLoan: boolean;
+  activeConstruction: CompanyConstructionQueueItem[];
+}
+
+export interface CompanyConstructionQueueItem {
+  queueItemId: string;
+  cityId: string;
+  facilityId: string;
+  tier: number;
+  monthsRemaining: number;
 }
 
 export interface CompanyMonthlyCashflow {
@@ -172,9 +191,12 @@ function mapAdUiError(
 ): CompanyUiErrorCode | null {
   if (adError === "ad_not_completed") return "ad_not_completed";
   if (adError === "ad_provider_failed") return "ad_provider_failed";
+  if (adError === "ad_in_progress") return "ad_in_progress";
   if (adError === "reward_rejected" && claimResult && !claimResult.ok) {
     if (claimResult.error === "conflict_in_progress") return "ads_exhausted";
+    if (claimResult.error === "not_found") return "no_active_construction";
     if (claimResult.error === "invalid_phase") return "action_invalid";
+    if (claimResult.error === "invalid_command_payload") return "action_invalid";
   }
   return "action_failed";
 }
@@ -217,7 +239,14 @@ export class ScreenCompany {
           }
         : null,
       loanTierOptions,
-      canApplyLoan: activeLoan === null
+      canApplyLoan: activeLoan === null,
+      activeConstruction: state.constructionQueue.map((item) => ({
+        queueItemId: item.id,
+        cityId: item.cityId,
+        facilityId: item.facilityId,
+        tier: item.tier,
+        monthsRemaining: item.monthsRemaining
+      }))
     };
   }
 
@@ -285,6 +314,34 @@ export class ScreenCompany {
     };
   }
 
+  private toAdActionOutput(
+    before: CompanySnapshot,
+    adAction: ReturnType<AdRewardService["claimRewardByAd"]>
+  ): CompanyAdActionOutput {
+    const after = this.getSnapshot();
+    if (!adAction.rewarded) {
+      const uiErrorCode = mapAdUiError(adAction.uiErrorCode, adAction.claimResult);
+      const result =
+        adAction.claimResult ??
+        syntheticAdBlockedResult(adAction.adOutcome.message ?? "ad reward blocked");
+      return {
+        before,
+        after,
+        result,
+        uiErrorCode,
+        uiCopy: resolveUiCopy(uiErrorCode)
+      };
+    }
+    const result = adAction.claimResult!;
+    return {
+      before,
+      after,
+      result,
+      uiErrorCode: null,
+      uiCopy: null
+    };
+  }
+
   claimCashByAd(): CompanyAdActionOutput {
     const before = this.getSnapshot();
     const adAction = this.adRewardService.claimRewardByAd("cash", "screen_company.cash");
@@ -295,6 +352,46 @@ export class ScreenCompany {
     const before = this.getSnapshot();
     const adAction = await this.adRewardService.claimRewardByAdAsync("cash", "screen_company.cash");
     return this.toCashAdActionOutput(before, adAction);
+  }
+
+  speedupConstructionByAd(queueItemId: string): CompanyAdActionOutput {
+    const before = this.getSnapshot();
+    if (!before.activeConstruction.some((item) => item.queueItemId === queueItemId)) {
+      const uiErrorCode: CompanyUiErrorCode = "no_active_construction";
+      return {
+        before,
+        after: before,
+        result: syntheticAdBlockedResult("no active construction target"),
+        uiErrorCode,
+        uiCopy: resolveUiCopy(uiErrorCode)
+      };
+    }
+    const adAction = this.adRewardService.claimRewardByAd(
+      "instant_build",
+      "screen_company.instant_build",
+      queueItemId
+    );
+    return this.toAdActionOutput(before, adAction);
+  }
+
+  async speedupConstructionByAdAsync(queueItemId: string): Promise<CompanyAdActionOutput> {
+    const before = this.getSnapshot();
+    if (!before.activeConstruction.some((item) => item.queueItemId === queueItemId)) {
+      const uiErrorCode: CompanyUiErrorCode = "no_active_construction";
+      return {
+        before,
+        after: before,
+        result: syntheticAdBlockedResult("no active construction target"),
+        uiErrorCode,
+        uiCopy: resolveUiCopy(uiErrorCode)
+      };
+    }
+    const adAction = await this.adRewardService.claimRewardByAdAsync(
+      "instant_build",
+      "screen_company.instant_build",
+      queueItemId
+    );
+    return this.toAdActionOutput(before, adAction);
   }
 }
 

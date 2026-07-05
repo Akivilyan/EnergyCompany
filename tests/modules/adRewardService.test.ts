@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 import {
   StubRewardedAdProvider,
   WechatRewardedAdProvider,
+  type RewardedAdOutcome,
+  type RewardedAdProvider,
+  type RewardedAdRequest,
   type WechatRewardedAdSdk
 } from "../../src/infra/monetization/rewardedAdProvider.js";
 import { createAdRewardService } from "../../src/modules/adRewardService.js";
@@ -44,6 +47,32 @@ function createFakeWechatSdk(
       };
     }
   };
+}
+
+class DeferredRewardedAdProvider implements RewardedAdProvider {
+  private resolveOutcome: ((outcome: RewardedAdOutcome) => void) | null = null;
+
+  showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
+    return {
+      status: "failed",
+      provider: "stub",
+      providerCode: "sync_not_supported"
+    };
+  }
+
+  showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
+    return new Promise((resolve) => {
+      this.resolveOutcome = resolve;
+    });
+  }
+
+  complete(): void {
+    this.resolveOutcome?.({
+      status: "completed",
+      provider: "stub",
+      providerCode: "deferred_completed"
+    });
+  }
 }
 
 
@@ -135,5 +164,22 @@ describe("AdRewardService", () => {
     expect(out.uiErrorCode).toBe("ad_provider_failed");
     expect(out.adOutcome.providerCode).toBe("wechat_1002");
     expect(out.after.adsRemaining).toBe(out.before.adsRemaining);
+  });
+
+  it("rejects duplicate async reward requests while one is pending", async () => {
+    const controller = createTestController(repoRoot);
+    const provider = new DeferredRewardedAdProvider();
+    const service = createAdRewardService(controller, provider);
+
+    const first = service.claimRewardByAdAsync("cash", "screen_company.cash");
+    const duplicate = await service.claimRewardByAdAsync("cash", "screen_company.cash");
+    provider.complete();
+    const completed = await first;
+
+    expect(duplicate.rewarded).toBe(false);
+    expect(duplicate.uiErrorCode).toBe("ad_in_progress");
+    expect(duplicate.after.adsRemaining).toBe(duplicate.before.adsRemaining);
+    expect(completed.rewarded).toBe(true);
+    expect(completed.after.adsRemaining).toBe(completed.before.adsRemaining - 1);
   });
 });

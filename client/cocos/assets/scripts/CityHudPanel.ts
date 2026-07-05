@@ -30,6 +30,7 @@ import {
   regionQueueDefaultLink,
   companyApplySelectedLoan,
   companyClaimCashByAdAsync,
+  companySpeedupSelectedConstructionByAdAsync,
   companyCycleLoanCandidate,
   worldCycleTargetCandidate,
   worldQueueSelectedTrunk,
@@ -158,6 +159,7 @@ export class CityHudPanel extends Component {
   private openTechBtn: HudButton | null = null;
   private navBackBtn: HudButton | null = null;
   private lastActionKey: string | null = null;
+  private adActionPending = false;
   private readonly onLayoutChange = (): void => this.applyLayout();
 
   onLoad(): void {
@@ -1254,8 +1256,8 @@ export class CityHudPanel extends Component {
     this.startResearchBtn!.node.active = onTech && caps.canStartResearch;
     this.cancelResearchBtn!.node.active = onTech && caps.canCancelResearch;
     this.adSpeedupBtn!.node.active =
-      onTech &&
-      (hasActiveResearch ? caps.canSpeedupResearchByAd : caps.canCycleResearchCandidate);
+      (onCompany && caps.canSpeedupConstructionByAd) ||
+      (onTech && (hasActiveResearch ? caps.canSpeedupResearchByAd : caps.canCycleResearchCandidate));
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
     this.openWorldBtn!.node.active = true;
@@ -1268,6 +1270,8 @@ export class CityHudPanel extends Component {
     }
     if (onTech && !hasActiveResearch) {
       this.setButtonCaption(this.adSpeedupBtn, "hud.btn.cycle_research");
+    } else if (onCompany) {
+      this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_build_speedup");
     }
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
@@ -1351,10 +1355,17 @@ export class CityHudPanel extends Component {
 
   private async onAdCash(): Promise<void> {
     if (!this.boot) return;
-    const out = await companyClaimCashByAdAsync(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
+    if (this.adActionPending) return;
+    this.adActionPending = true;
+    try {
+      const out = await companyClaimCashByAdAsync(this.boot);
+      this.lastActionKey = out.messageKey;
+      this.refresh();
+      if (!out.ok) console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
+    } finally {
+      this.adActionPending = false;
+      this.refresh();
+    }
   }
 
   private onStartResearch(): void {
@@ -1375,6 +1386,17 @@ export class CityHudPanel extends Component {
 
   private async onAdSpeedup(): Promise<void> {
     if (!this.boot) return;
+    if (this.adActionPending) return;
+    this.adActionPending = true;
+    try {
+      const viewModel = readCityHudViewModel(this.boot);
+      if (viewModel.screen === "screen_company") {
+        const companyOut = await companySpeedupSelectedConstructionByAdAsync(this.boot);
+        this.lastActionKey = companyOut.messageKey;
+        this.refresh();
+        if (!companyOut.ok) console.warn(`[CityHudPanel] build ad failed: ${companyOut.uiErrorCode ?? "unknown"}`);
+        return;
+      }
     const hasActiveResearch = !!this.boot.app.screens.tech.getSnapshot().activeResearch;
     const out = hasActiveResearch
       ? await techSpeedupResearchByAdAsync(this.boot)
@@ -1382,6 +1404,10 @@ export class CityHudPanel extends Component {
     this.lastActionKey = out.messageKey;
     this.refresh();
     if (!out.ok) console.warn(`[CityHudPanel] tech action failed: ${out.uiErrorCode ?? "unknown"}`);
+    } finally {
+      this.adActionPending = false;
+      this.refresh();
+    }
   }
 
   private onAckEvent(): void {

@@ -18,12 +18,21 @@ export interface CompanyHudCandidate {
   monthlyPayment: number;
 }
 
+export interface CompanyHudConstructionCandidate {
+  queueItemId: string;
+  displayName: string;
+  monthsRemaining: number;
+}
+
 export interface CompanyHudSelectionSnapshot {
   candidates: CompanyHudCandidate[];
   selectedLoanId: string | null;
+  constructionCandidates: CompanyHudConstructionCandidate[];
+  selectedConstructionQueueItemId: string | null;
 }
 
 const selectedLoanByBoot = new WeakMap<GameBootstrap, string>();
+const selectedConstructionByBoot = new WeakMap<GameBootstrap, string>();
 
 function toActionResult(boot: GameBootstrap, ok: boolean, uiErrorCode: string | null, messageKey: string | null): CompanyHudActionResult {
   return {
@@ -47,6 +56,14 @@ function getLoanCandidates(boot: GameBootstrap): CompanyHudCandidate[] {
     }));
 }
 
+function getConstructionCandidates(boot: GameBootstrap): CompanyHudConstructionCandidate[] {
+  return boot.app.screens.company.getSnapshot().activeConstruction.map((item) => ({
+    queueItemId: item.queueItemId,
+    displayName: `${item.facilityId} ${item.tier}`,
+    monthsRemaining: item.monthsRemaining
+  }));
+}
+
 function ensureSelectedCandidate(boot: GameBootstrap): CompanyHudCandidate | null {
   const candidates = getLoanCandidates(boot);
   if (candidates.length === 0) {
@@ -59,12 +76,31 @@ function ensureSelectedCandidate(boot: GameBootstrap): CompanyHudCandidate | nul
   return selected;
 }
 
+function ensureSelectedConstructionCandidate(
+  boot: GameBootstrap
+): CompanyHudConstructionCandidate | null {
+  const candidates = getConstructionCandidates(boot);
+  if (candidates.length === 0) {
+    selectedConstructionByBoot.delete(boot);
+    return null;
+  }
+  const remembered = selectedConstructionByBoot.get(boot);
+  const selected =
+    candidates.find((candidate) => candidate.queueItemId === remembered) ?? candidates[0];
+  selectedConstructionByBoot.set(boot, selected.queueItemId);
+  return selected;
+}
+
 export function getCompanyHudSelectionSnapshot(boot: GameBootstrap): CompanyHudSelectionSnapshot {
   const candidates = getLoanCandidates(boot);
   const selected = ensureSelectedCandidate(boot);
+  const constructionCandidates = getConstructionCandidates(boot);
+  const selectedConstruction = ensureSelectedConstructionCandidate(boot);
   return {
     candidates,
-    selectedLoanId: selected?.loanId ?? null
+    selectedLoanId: selected?.loanId ?? null,
+    constructionCandidates,
+    selectedConstructionQueueItemId: selectedConstruction?.queueItemId ?? null
   };
 }
 
@@ -567,4 +603,40 @@ export async function companyClaimCashByAdAsync(
     out.uiErrorCode,
     out.uiCopy?.messageKey ?? null
   );
+}
+
+export function companySpeedupSelectedConstructionByAd(
+  boot: GameBootstrap,
+  queueItemId?: string
+): CompanyHudActionResult {
+  const selected = ensureSelectedConstructionCandidate(boot);
+  const targetQueueItemId = queueItemId ?? selected?.queueItemId;
+  if (!targetQueueItemId) {
+    return toActionResult(
+      boot,
+      false,
+      "no_active_construction",
+      "company.error.no_active_construction"
+    );
+  }
+  const out = boot.app.screens.company.speedupConstructionByAd(targetQueueItemId);
+  return toActionResult(boot, out.result.ok, out.uiErrorCode, out.uiCopy?.messageKey ?? null);
+}
+
+export async function companySpeedupSelectedConstructionByAdAsync(
+  boot: GameBootstrap,
+  queueItemId?: string
+): Promise<CompanyHudActionResult> {
+  const selected = ensureSelectedConstructionCandidate(boot);
+  const targetQueueItemId = queueItemId ?? selected?.queueItemId;
+  if (!targetQueueItemId) {
+    return toActionResult(
+      boot,
+      false,
+      "no_active_construction",
+      "company.error.no_active_construction"
+    );
+  }
+  const out = await boot.app.screens.company.speedupConstructionByAdAsync(targetQueueItemId);
+  return toActionResult(boot, out.result.ok, out.uiErrorCode, out.uiCopy?.messageKey ?? null);
 }

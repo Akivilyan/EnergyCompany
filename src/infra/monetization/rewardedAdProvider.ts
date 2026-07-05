@@ -1,4 +1,4 @@
-export type RewardedAdType = "cash" | "speedup" | "shield";
+export type RewardedAdType = "cash" | "instant_build" | "instant_research" | "speedup" | "shield";
 
 export interface RewardedAdRequest {
   adType: RewardedAdType;

@@ -28,6 +28,8 @@ export {
   companyApplyFirstUnlockedLoan,
   companyClaimCashByAd,
   companyClaimCashByAdAsync,
+  companySpeedupSelectedConstructionByAd,
+  companySpeedupSelectedConstructionByAdAsync,
   companyCycleLoanCandidate,
   formatSelectedLoanCandidate,
   getCompanyHudSelectionSnapshot

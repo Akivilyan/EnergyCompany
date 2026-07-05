@@ -22,14 +22,15 @@ import {
 class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
   showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
     return {
-      completed: false,
+      status: "failed",
+      provider: "stub",
       providerCode: "sync_not_supported",
       message: "sync path should not be used"
     };
   }
 
   showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
-    return Promise.resolve({ completed: true, providerCode: "async_only" });
+    return Promise.resolve({ status: "completed", provider: "stub", providerCode: "async_only" });
   }
 }
 

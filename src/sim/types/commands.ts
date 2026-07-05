@@ -10,6 +10,6 @@ export type Command =
   | { type: "skip_onboarding" }
   | {
       type: "claim_ad_reward";
-      adType: "cash" | "speedup" | "shield";
+      adType: "cash" | "instant_build" | "instant_research" | "speedup" | "shield";
       targetId?: string;
     };

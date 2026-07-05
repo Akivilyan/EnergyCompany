@@ -18,6 +18,7 @@ export type TechTreeUiErrorCode =
   | "no_active_research"
   | "ad_not_completed"
   | "ad_provider_failed"
+  | "ad_in_progress"
   | "action_blocked"
   | "action_invalid"
   | "action_failed";
@@ -55,6 +56,10 @@ export const TECH_TREE_UI_COPY: Record<TechTreeUiErrorCode, TechTreeUiCopySpec> 
   ad_provider_failed: {
     messageKey: "tech_tree.error.ad_provider_failed",
     actionKey: "tech_tree.action.retry_ad"
+  },
+  ad_in_progress: {
+    messageKey: "tech_tree.error.ad_in_progress",
+    actionKey: "tech_tree.action.wait_ad"
   },
   action_blocked: {
     messageKey: "tech_tree.error.action_blocked",
@@ -143,6 +148,7 @@ function mapAdUiError(
 ): TechTreeUiErrorCode | null {
   if (adError === "ad_not_completed") return "ad_not_completed";
   if (adError === "ad_provider_failed") return "ad_provider_failed";
+  if (adError === "ad_in_progress") return "ad_in_progress";
   if (adError === "reward_rejected" && claimResult) {
     return mapUiError(claimResult);
   }

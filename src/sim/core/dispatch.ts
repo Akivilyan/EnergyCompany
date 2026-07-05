@@ -77,6 +77,40 @@ function countCityFacility(
   return built;
 }
 
+function completeConstructionQueueItem(
+  state: GameState,
+  config: ConfigRepo,
+  queueItemId: string
+): SimResult<true> {
+  const index = state.constructionQueue.findIndex((item) => item.id === queueItemId);
+  if (index < 0) {
+    return err("not_found", "construction queue item not found", {
+      queue_item_id: queueItemId
+    });
+  }
+  const item = state.constructionQueue[index];
+  const facilitySpec = getFacilityTierSpec(config, item.facilityId, item.tier);
+  if (!facilitySpec) {
+    return err("not_found", "facility tier config not found", {
+      facility_id: item.facilityId,
+      requested_tier: item.tier
+    });
+  }
+  const id = `fac-${Object.keys(state.facilities).length + 1}`;
+  state.facilities[id] = {
+    id,
+    cityId: item.cityId,
+    facilityId: item.facilityId,
+    tier: facilitySpec.tier,
+    outputMw: facilitySpec.outputMw,
+    monthlyOpex: facilitySpec.monthlyOpex,
+    monthlyFuel: facilitySpec.monthlyFuel
+  };
+  state.constructionQueue.splice(index, 1);
+  syncFacilityRuntimeTiers(state, config);
+  return ok(true);
+}
+
 function isBlockedAllowedCommand(command: Command): boolean {
   return command.type === "advance_onboarding" || command.type === "skip_onboarding";
 }
@@ -440,7 +474,13 @@ export function dispatch(
       }
       if (command.adType === "cash") {
         next.funds += config.getAdReward(next.companyLevel);
-      } else if (command.adType === "speedup") {
+      } else if (command.adType === "instant_build") {
+        if (!command.targetId) {
+          return err("invalid_command_payload", "instant build reward requires targetId");
+        }
+        const completed = completeConstructionQueueItem(next, config, command.targetId);
+        if (!completed.ok) return completed;
+      } else if (command.adType === "instant_research" || command.adType === "speedup") {
         const activeResearch = Object.values(next.researches)[0];
         if (!activeResearch) {
           return err("conflict_in_progress", "no active research");
@@ -450,6 +490,8 @@ export function dispatch(
           next.litTechIds.push(activeResearch.techId);
         }
         syncFacilityRuntimeTiers(next, config);
+      } else {
+        return err("invalid_command_payload", "unsupported ad reward type");
       }
       next.adsRemaining -= 1;
       break;

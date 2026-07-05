@@ -31,8 +31,8 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`MONETIZATION-WECHAT-01`
-- 模块标题：微信激励广告与商业化链路
+- 当前模块：`WECHAT-RELEASE-01`
+- 模块标题：微信包阶段收口与真机验收
 - 状态：`doing`
 - 开始时间：2026-07-05
 
@@ -80,7 +80,8 @@
 | UI-PREFAB-01 城市页样张 | done |
 | BALANCE-PLAYTEST-01 数值与节奏 | done |
 | UX-GUIDANCE-01 经营压力、提示与反馈 | done |
-| MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | doing |
+| MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
+| WECHAT-RELEASE-01 微信包阶段收口与真机验收 | doing |
 
 ## 模块队列
 
@@ -167,7 +168,7 @@
 
 ### 4. `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
 
-状态：`doing`
+状态：`done`
 
 目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
 
@@ -202,6 +203,8 @@
 
 ### 5. `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
 
+状态：`doing`
+
 目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
 
 输入：
@@ -232,4 +235,4 @@
 
 ## 下一步
 
-当前推进 `MONETIZATION-WECHAT-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。
+当前推进 `WECHAT-RELEASE-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。

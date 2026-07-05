@@ -14,14 +14,15 @@ import { createScreenCompany } from "../../src/modules/screenCompany.js";
 class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
   showRewardedAd(_request: RewardedAdRequest): RewardedAdOutcome {
     return {
-      completed: false,
+      status: "failed",
+      provider: "stub",
       providerCode: "sync_not_supported",
       message: "sync path should not be used"
     };
   }
 
   showRewardedAdAsync(_request: RewardedAdRequest): Promise<RewardedAdOutcome> {
-    return Promise.resolve({ completed: true, providerCode: "async_only" });
+    return Promise.resolve({ status: "completed", provider: "stub", providerCode: "async_only" });
   }
 }
 
@@ -141,5 +142,37 @@ describe("ScreenCompany", () => {
     });
     expect(out.after.adsRemaining).toBe(out.before.adsRemaining);
     expect(out.after.funds).toBe(out.before.funds);
+  });
+
+  it("speeds up selected construction through async ad provider", async () => {
+    const controller = createTestController(repoRoot);
+    const queued = controller.runCommand({
+      type: "queue_construction",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1
+    });
+    expect(queued.ok).toBe(true);
+    const target = controller.state.constructionQueue[0];
+    const screen = createScreenCompany(controller, new AsyncOnlyRewardedAdProvider());
+
+    const out = await screen.speedupConstructionByAdAsync(target.id);
+
+    expect(out.result.ok).toBe(true);
+    expect(out.uiErrorCode).toBeNull();
+    expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);
+    expect(out.after.activeConstruction).toHaveLength(0);
+    expect(Object.values(controller.state.facilities).some((item) => item.facilityId === "wind")).toBe(true);
+  });
+
+  it("does not play construction ad without an active target", async () => {
+    const controller = createTestController(repoRoot);
+    const screen = createScreenCompany(controller, new AsyncOnlyRewardedAdProvider());
+
+    const out = await screen.speedupConstructionByAdAsync("missing");
+
+    expect(out.result.ok).toBe(false);
+    expect(out.uiErrorCode).toBe("no_active_construction");
+    expect(out.after.adsRemaining).toBe(out.before.adsRemaining);
   });
 });
