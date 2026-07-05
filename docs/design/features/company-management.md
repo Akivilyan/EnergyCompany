@@ -1,21 +1,3 @@
----
-id: features/company-management
-title: 公司管理
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/09-year-end-and-monetization.md#公司经营界面大理石式快照
-  - docs/design/gdd/09-year-end-and-monetization.md#借贷
-  - docs/design/gdd/09-year-end-and-monetization.md#总监岗位
-supersedes: []
-depends_on:
-  - gdd/03-social-value
-  - gdd/09-year-end-and-monetization
-  - features/00-game-state
-  - features/social-value-settlement
-open_questions: []
----
-
 # 公司管理
 
 ## 1. 目标

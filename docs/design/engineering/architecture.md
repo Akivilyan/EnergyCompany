@@ -1,21 +1,3 @@
----
-id: engineering/architecture
-title: 模块划分与依赖（core / config / ui / modules）
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/engineering/stack.md
-  - docs/design/engineering/vertical-slice-v0.md
-  - docs/design/features/00-game-state.md
-supersedes: []
-depends_on:
-  - engineering/stack
-  - engineering/vertical-slice-v0
-  - features/00-game-state
-open_questions:
-  - v0 是否需要单独拆出 `net/`（当前默认离线单机，不单列）
----
-
 # 模块划分与依赖（core / config / ui / modules）
 
 ## 1. 目标

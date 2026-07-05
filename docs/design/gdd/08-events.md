@@ -1,23 +1,3 @@
----
-id: gdd/08-events
-title: 事件系统
-status: locked
-version: 0.3.2
-sources:
-  - docs/game-core-design.md#16
-  - docs/game-core-design-整合摘要.md#事件
-  - docs/balance-data-structure.md#4.9
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/04-energy-supply
-  - gdd/07-tech
-open_questions:
-  - 首版 `campaign_disasters` 各场 `event_id` 与触发月（T37）
-  - policy / market 与战役灾害并存时的排期冲突规则（T22）
----
-
 # 事件系统
 
 ## 概述

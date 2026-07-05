@@ -1,21 +1,3 @@
----
-id: data/schemas/company-level-and-run
-title: 公司等级与单局参数字段
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/03-social-value.md
-  - docs/design/gdd/11-replayability.md
-  - docs/design/gdd/10-onboarding.md
-supersedes: []
-depends_on:
-  - gdd/03-social-value
-  - gdd/10-onboarding
-  - gdd/11-replayability
-open_questions:
-  - 教学局 `tutorial_run_config` 是独立表还是附在 run_config，待 T24a 决定
----
-
 # 公司等级与单局参数字段
 
 ## 1) 等级门槛表 `company_level_config`

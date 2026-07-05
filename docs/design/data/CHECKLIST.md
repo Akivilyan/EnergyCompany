@@ -1,17 +1,3 @@
----
-id: data/CHECKLIST
-title: 数据验收清单
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/data/README.md
-supersedes: []
-depends_on:
-  - data/README
-  - data/schemas/README
-open_questions: []
----
-
 # 数据验收清单
 
 导出或手填 JSON 后，按本清单自检。实现层可据此写自动化校验（T44）。

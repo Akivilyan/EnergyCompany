@@ -1,27 +1,3 @@
----
-id: features/00-game-state
-title: 全局游戏状态与月度结算
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/01-core-loop.md#月度结算管道
-  - docs/design/gdd/09-year-end-and-monetization.md#借贷
-  - docs/design/gdd/11-replayability.md#新游戏流程
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-  - gdd/06-grid
-  - gdd/07-tech
-  - gdd/08-events
-  - gdd/09-year-end-and-monetization
-  - gdd/11-replayability
-open_questions:
-  - 是否需要在 `month_advance_lock_reason` 中区分 UI 锁（弹窗）与规则锁（教程强制步骤）枚举
----
-
 # 全局游戏状态与月度结算
 
 ## 1. 目标

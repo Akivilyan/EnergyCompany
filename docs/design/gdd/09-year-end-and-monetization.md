@@ -1,26 +1,3 @@
----
-id: gdd/09-year-end-and-monetization
-title: 公司经营与商业化
-status: locked
-version: 1.0.0
-sources:
-  - docs/game-core-design.md#17
-  - docs/game-core-design.md#18
-  - docs/balance-data-structure.md#4.6
-  - docs/balance-data-structure.md#4.7
-  - docs/balance-data-structure.md#8
-  - 《大理石时代》Polis / 城市统计界面（经营快照参考）
-  - 用户对话 2026-05-26（工程总监、激励广告、队列上限）
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/03-social-value
-  - gdd/07-tech
-  - gdd/00-vision
-open_questions: []
----
-
 # 公司经营与商业化
 
 ## 概述

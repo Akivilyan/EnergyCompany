@@ -1,16 +1,3 @@
----
-id: ui/README
-title: UI Spec 索引
-status: draft
-version: 0.3.0
-sources:
-  - docs/design/README.md
-supersedes: []
-depends_on:
-  - ui/00-screen-map
-open_questions: []
----
-
 # UI Spec 索引
 
 `docs/design/ui/` 负责屏幕结构、组件树、交互和状态，不重复讲完整玩法规则。

@@ -1,19 +1,3 @@
----
-id: ui/onboarding
-title: 新手引导 UI
-status: draft
-version: 0.1.2
-sources:
-  - docs/design/features/onboarding.md
-  - docs/design/gdd/10-onboarding.md#遮罩交互
-supersedes: []
-depends_on:
-  - features/onboarding
-  - ui/00-screen-map
-  - ui/construction-flow
-open_questions: []
----
-
 # 新手引导 UI
 
 ## 1. 叠加 ID

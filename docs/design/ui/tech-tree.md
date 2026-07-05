@@ -1,18 +1,3 @@
----
-id: ui/tech-tree
-title: 科技树界面
-status: draft
-version: 0.1.2
-sources:
-  - docs/design/features/tech-tree.md
-  - docs/design/gdd/07-tech.md
-supersedes: []
-depends_on:
-  - features/tech-tree
-  - ui/00-screen-map
-open_questions: []
----
-
 # 科技树界面
 
 ## 1. 屏幕 ID

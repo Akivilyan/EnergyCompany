@@ -1,28 +1,3 @@
----
-id: gdd/10-onboarding
-title: 新手引导与教程
-status: locked
-version: 1.0.0
-sources:
-  - docs/game-core-design.md#3
-  - docs/game-core-design.md#4
-  - docs/game-core-design-整合摘要.md#核心循环（玩法闭环）
-  - docs/design/gdd/11-replayability.md#新游戏流程
-  - 用户对话 2026-05-26（教学方针独立入口）
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/03-social-value
-  - gdd/05-map-and-slots
-  - gdd/07-tech
-  - gdd/08-events
-  - gdd/09-year-end-and-monetization
-  - gdd/11-replayability
-open_questions: []
----
-
 # 新手引导与教程
 
 ## 概述

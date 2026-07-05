@@ -1,19 +1,3 @@
----
-id: gdd/06-grid
-title: 电网
-status: draft
-version: 0.5.2
-sources:
-  - docs/game-core-design.md#14
-supersedes: []
-depends_on:
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-open_questions:
-  - `city_demand_profile` 四类城市范围值（中心/常规/农村/边陲）首版上下界待 T39 试跑
----
-
 # 电网
 
 ## 概述

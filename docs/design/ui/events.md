@@ -1,19 +1,3 @@
----
-id: ui/events
-title: 事件面板与弹窗
-status: draft
-version: 0.1.3
-sources:
-  - docs/design/features/events.md
-  - docs/design/gdd/08-events.md
-  - docs/design/gdd/01-core-loop.md#关键节点反馈
-supersedes: []
-depends_on:
-  - features/events
-  - ui/00-screen-map
-open_questions: []
----
-
 # 事件面板与弹窗
 
 ## 1. 屏幕与叠加 ID

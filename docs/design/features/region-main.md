@@ -1,22 +1,3 @@
----
-id: features/region-main
-title: 地区主界面
-status: draft
-version: 0.2.0
-sources:
-  - docs/design/gdd/01-core-loop.md
-  - docs/design/gdd/03-social-value.md
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/03-social-value
-  - gdd/05-map-and-slots
-  - gdd/06-grid
-  - features/00-game-state
-open_questions:
-  - 区域界面是否展示线损后的二级供能指标
----
-
 # 地区主界面
 
 ## 1. 目标

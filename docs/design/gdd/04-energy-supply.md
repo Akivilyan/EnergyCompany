@@ -1,23 +1,3 @@
----
-id: gdd/04-energy-supply
-title: 供能与能源类型
-status: draft
-version: 0.6.5
-sources:
-  - docs/game-core-design.md#10
-  - docs/game-core-design.md#11
-  - docs/game-core-design-整合摘要.md#供能与能源
-  - docs/balance-data-structure.md#6
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-  - gdd/02-economy
-open_questions:
-  - 各 tier `output_capacity_mw` 与储能 ×2 叠乘后平衡（数值表，T37）
-  - 超级水电单座 MW、火/核单城上限、运维倍率等（GDD 定型后统一精算）
----
-
 # 供能与能源类型
 
 ## 概述

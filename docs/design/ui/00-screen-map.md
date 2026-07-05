@@ -1,20 +1,3 @@
----
-id: ui/00-screen-map
-title: 屏幕地图
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/01-core-loop.md#界面体系五类
-  - docs/design/gdd/10-onboarding.md#方针选择屏布局
-  - docs/design/features/00-game-state.md#状态机单局
-supersedes: []
-depends_on:
-  - features/README
-  - gdd/01-core-loop
-  - gdd/10-onboarding
-open_questions: []
----
-
 # 屏幕地图
 
 全项目 **屏幕 ID** 注册表：层级、入口/出口、对应 Feature、与顶层状态机关系。线框与组件树在各屏 UI 任务（T27–T35a）中展开。

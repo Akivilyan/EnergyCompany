@@ -1,21 +1,3 @@
----
-id: gdd/02-economy
-title: 资源与经济
-status: locked
-version: 0.3.1
-sources:
-  - docs/game-core-design.md#6
-  - docs/game-core-design.md#7
-  - docs/game-core-design-整合摘要.md#资源与经济
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-open_questions:
-  - 地区标签对造价/运维的具体 **整数** 修正（待 data 层 T37）
-  - `campaign_disasters` 与起始资金在各难度下的整数表
----
-
 # 资源与经济
 
 ## 概述

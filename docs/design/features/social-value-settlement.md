@@ -1,23 +1,3 @@
----
-id: features/social-value-settlement
-title: 社会价值结算
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/03-social-value.md#每月重算m9
-  - docs/design/gdd/03-social-value.md#城市社会价值公式按城市
-  - docs/design/gdd/03-social-value.md#升级判定m10
-supersedes: []
-depends_on:
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-  - gdd/07-tech
-  - features/00-game-state
-  - features/supply-calculation
-open_questions: []
----
-
 # 社会价值结算
 
 ## 1. 目标

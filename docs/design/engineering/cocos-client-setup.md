@@ -1,16 +1,3 @@
----
-id: engineering/cocos-client-setup
-title: Cocos 客户端工程初始化清单
-status: draft
-version: 0.10.0
-sources:
-  - docs/design/engineering/stack.md
-  - client/cocos/scene-registry.json
-depends_on:
-  - engineering/stack
-open_questions: []
----
-
 # Cocos 客户端工程初始化清单
 
 在 Cocos Creator 中首次打开 `client/cocos` 前，先在仓库根目录执行：

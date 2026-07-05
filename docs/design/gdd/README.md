@@ -1,16 +1,3 @@
----
-id: gdd/README
-title: GDD 索引
-status: draft
-version: 0.2.0
-sources:
-  - docs/design/README.md
-supersedes: []
-depends_on:
-  - gdd/00-vision
-open_questions: []
----
-
 # GDD 索引
 
 `docs/design/gdd/` 是玩法规则的权威来源。这里只写规则、流程、边界与公式，不写实现细节。

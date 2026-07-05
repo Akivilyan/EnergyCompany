@@ -1,17 +1,3 @@
----
-id: ui/art-direction
-title: UI 美术与音频方向
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/engineering/PROJECT-TASK-BOARD.md
-  - docs/design/ui/README.md
-supersedes: []
-depends_on:
-  - ui/README
-open_questions: []
----
-
 # UI 美术与音频方向
 
 本文定义当前 demo 的视觉与音乐基调，作为正式 UI / Prefab 批次、场景资产、图标和反馈动效的共同依据。具体屏幕结构仍以 `docs/design/ui/` 各屏幕文档为准。

@@ -1,29 +1,3 @@
----
-id: features/monetization
-title: 商业化
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/09-year-end-and-monetization.md#激励广告
-  - docs/design/gdd/09-year-end-and-monetization.md#商业化分阶段
-  - docs/design/gdd/09-year-end-and-monetization.md#总监岗位
-  - docs/design/gdd/00-vision.md#商业化边界
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/02-economy
-  - gdd/07-tech
-  - gdd/09-year-end-and-monetization
-  - features/00-game-state
-  - features/company-management
-  - features/construction
-  - features/grid-network
-  - features/tech-tree
-open_questions:
-  - 首发阶段工程礼包未开放时，插屏/横幅的首次展示月与频率表（T37 `ad_placement_config`）
-  - 激励视频 SDK 失败重试次数与离线降级策略（工程层）
----
-
 # 商业化
 
 ## 1. 目标

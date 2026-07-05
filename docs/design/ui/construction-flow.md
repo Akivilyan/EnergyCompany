@@ -1,18 +1,3 @@
----
-id: ui/construction-flow
-title: 建设流程（城市屏）
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/features/construction.md
-  - docs/design/gdd/01-core-loop.md#城市详细建设界面-screen_city_detail
-supersedes: []
-depends_on:
-  - features/construction
-  - ui/00-screen-map
-open_questions: []
----
-
 # 建设流程（城市屏）
 
 ## 1. 屏幕与叠加 ID

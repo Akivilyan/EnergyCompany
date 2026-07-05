@@ -1,20 +1,3 @@
----
-id: ui/company
-title: 公司管理界面
-status: draft
-version: 0.1.2
-sources:
-  - docs/design/features/company-management.md
-  - docs/design/gdd/09-year-end-and-monetization.md#公司经营界面大理石式快照
-supersedes: []
-depends_on:
-  - features/company-management
-  - features/monetization
-  - features/social-value-settlement
-  - ui/00-screen-map
-open_questions: []
----
-
 # 公司管理界面
 
 ## 1. 屏幕 ID

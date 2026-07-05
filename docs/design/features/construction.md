@@ -1,24 +1,3 @@
----
-id: features/construction
-title: 设施建设
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/02-economy.md#设施建设规则
-  - docs/design/gdd/05-map-and-slots.md#建设位系统
-  - docs/design/gdd/04-energy-supply.md#首版能源类型
-supersedes: []
-depends_on:
-  - gdd/02-economy
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-  - gdd/07-tech
-  - features/00-game-state
-  - features/region-main
-open_questions:
-  - 在建取消的退款比例是否首版固定 100%（当前按旧规则暂定全额返还，后续可调）
----
-
 # 设施建设
 
 ## 1. 目标

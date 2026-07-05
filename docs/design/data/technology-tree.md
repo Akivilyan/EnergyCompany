@@ -1,20 +1,3 @@
----
-id: data/technology-tree
-title: 科技树配置说明
-status: draft
-version: 0.1.1
-sources:
-  - docs/design/gdd/07-tech.md
-  - docs/design/gdd/11-replayability.md
-  - docs/tech-tree-design.md
-supersedes: []
-depends_on:
-  - gdd/07-tech
-  - gdd/11-replayability
-  - data/schemas/doctrine-meta
-open_questions: []
----
-
 # 科技树配置说明（T38）
 
 本文定义 `technology_config` 的数据结构、取值约束与最小样例，作为科技系统实现与数值表落地的直接依据。

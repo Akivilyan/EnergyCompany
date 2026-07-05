@@ -1,27 +1,3 @@
----
-id: features/onboarding
-title: 新手引导
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/10-onboarding.md#教学方针教学关卡
-  - docs/design/gdd/10-onboarding.md#强制引导链仅-doctrine_id--tutorial
-  - docs/design/gdd/10-onboarding.md#存档字段
-  - docs/design/gdd/10-onboarding.md#弱提示正式局
-supersedes: []
-depends_on:
-  - gdd/10-onboarding
-  - gdd/11-replayability
-  - features/00-game-state
-  - features/construction
-  - features/company-management
-  - features/tech-tree
-  - features/monetization
-open_questions:
-  - `tutorial_run_config` 独立表 vs 附在 `run_config`（与 [company-level-and-run](../data/schemas/company-level-and-run.md) 对齐，T37 定稿）
-  - 教学局是否完全禁用 `campaign_disasters` 或仅裁剪至第一场前（T37）
----
-
 # 新手引导
 
 ## 1. 目标

@@ -1,25 +1,3 @@
----
-id: gdd/05-map-and-slots
-title: 地图与建设位
-status: draft
-version: 0.3.6
-sources:
-  - docs/game-core-design.md#12
-  - docs/game-core-design.md#13
-  - docs/game-core-design.md#9
-  - docs/balance-data-structure.md#4.1
-  - docs/balance-data-structure.md#4.2
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-open_questions:
-  - 八省与两都的现实地名/美术映射（占位 ID 已定，展示名待品牌或地图稿）
-  - 入门单城 CITY-START 落在哪一省壳内（建议 MAP-01 中心城，数值表落表时确认）
----
-
 # 地图与建设位
 
 ## 概述

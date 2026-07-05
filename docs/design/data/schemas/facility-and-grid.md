@@ -1,23 +1,3 @@
----
-id: data/schemas/facility-and-grid
-title: 设施与电网字段
-status: draft
-version: 0.1.1
-sources:
-  - docs/design/gdd/04-energy-supply.md
-  - docs/design/gdd/05-map-and-slots.md
-  - docs/design/gdd/06-grid.md
-  - docs/design/gdd/07-tech.md
-supersedes: []
-depends_on:
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-  - gdd/06-grid
-  - gdd/07-tech
-open_questions:
-  - `city_demand_profile` 的范围边界（中心/常规/农村/边陲）首版具体值待 T39 试跑
----
-
 # 设施与电网字段
 
 ## 1) 设施配置表 `facility_config`

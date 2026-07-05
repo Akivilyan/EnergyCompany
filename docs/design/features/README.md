@@ -1,16 +1,3 @@
----
-id: features/README
-title: Feature Spec 索引
-status: draft
-version: 0.2.0
-sources:
-  - docs/design/gdd/README.md
-supersedes: []
-depends_on:
-  - gdd/README
-open_questions: []
----
-
 # Feature Spec 索引
 
 `docs/design/features/` 面向实现与验收。规则细节引用 GDD，不重复整章玩法说明。

@@ -1,18 +1,3 @@
----
-id: ui/run-result
-title: 终局结果界面
-status: draft
-version: 0.2.0
-sources:
-  - docs/design/ui/README.md
-  - docs/design/features/00-game-state.md
-supersedes: []
-depends_on:
-  - features/00-game-state
-  - ui/00-screen-map
-open_questions: []
----
-
 # 终局结果界面
 
 ## 1. 屏幕 ID

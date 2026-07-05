@@ -1,19 +1,3 @@
----
-id: data/vertical-slice-v0/README
-title: Playable v0 垂直切片数据包
-status: draft
-version: 0.3.5
-sources:
-  - docs/design/engineering/vertical-slice-v0.md
-  - docs/design/gdd/11-replayability.md
-supersedes: []
-depends_on:
-  - engineering/vertical-slice-v0
-  - data/README
-open_questions:
-  - 设施 `build_cost` / `research_cost` 待 T37 全表替换
----
-
 # Playable v0 垂直切片数据包（T39）
 
 **占位数值**，仅供 v0 工程联调。玩法以 GDD 为准；已完成首轮代理仿真调参与一轮后半程试玩扩张，仍需引擎实跑复验。

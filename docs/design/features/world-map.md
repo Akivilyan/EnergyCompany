@@ -1,20 +1,3 @@
----
-id: features/world-map
-title: 全国大地图
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/05-map-and-slots.md#大地图拓扑
-  - docs/design/gdd/06-grid.md#链路类型与建造界面
-supersedes: []
-depends_on:
-  - gdd/05-map-and-slots
-  - gdd/06-grid
-  - features/00-game-state
-  - features/region-main
-open_questions: []
----
-
 # 全国大地图
 
 ## 1. 目标

@@ -1,23 +1,3 @@
----
-id: data/schemas/region-and-city
-title: 地区与城市表字段
-status: draft
-version: 0.1.2
-sources:
-  - docs/design/gdd/03-social-value.md
-  - docs/design/gdd/04-energy-supply.md
-  - docs/design/gdd/05-map-and-slots.md
-  - docs/design/gdd/06-grid.md
-supersedes: []
-depends_on:
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-  - gdd/06-grid
-open_questions:
-  - 四类区内行政单位需求范围是否先全国统一，再在 T39 做省级微调
----
-
 # 地区与城市表字段
 
 ## 1) 地区主表 `region_nodes`

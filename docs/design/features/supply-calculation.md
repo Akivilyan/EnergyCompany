@@ -1,21 +1,3 @@
----
-id: features/supply-calculation
-title: 供能计算
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/04-energy-supply.md#分层公式设施--城市--电网
-  - docs/design/gdd/06-grid.md#并网岛算法m4
-supersedes: []
-depends_on:
-  - gdd/04-energy-supply
-  - gdd/06-grid
-  - gdd/03-social-value
-  - features/00-game-state
-open_questions:
-  - `city_demand_profile` 首版取值区间在 T39 试跑后是否需要收窄
----
-
 # 供能计算
 
 ## 1. 目标

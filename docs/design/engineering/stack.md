@@ -1,21 +1,3 @@
----
-id: engineering/stack
-title: 技术选型定稿（微信小游戏 + 配置驱动模拟层）
-status: draft
-version: 0.1.0
-sources:
-  - docs/technical-and-tooling-plan.md
-  - docs/design/engineering/vertical-slice-v0.md
-  - 用户确认 2026-05-27（T42 方向：微信小游戏 + 配置驱动模拟层）
-supersedes: []
-depends_on:
-  - engineering/vertical-slice-v0
-  - features/00-game-state
-  - data/README
-open_questions:
-  - 是否保留 Unity PoC 分支（仅用于未来中重度 3D 版本预研）
----
-
 # 技术选型定稿（微信小游戏 + 配置驱动模拟层）
 
 ## 1. 结论（先给答案）

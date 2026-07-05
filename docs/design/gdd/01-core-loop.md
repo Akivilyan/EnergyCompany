@@ -1,19 +1,3 @@
----
-id: gdd/01-core-loop
-title: 核心循环与时间
-status: locked
-version: 0.4.0
-sources:
-  - docs/game-core-design.md#3
-  - docs/game-core-design.md#4
-  - docs/game-core-design.md#5
-supersedes: []
-depends_on:
-  - gdd/00-vision
-open_questions:
-  - 大型工程竣工是否继续使用全屏弹窗
----
-
 # 核心循环与时间
 
 ## 概述

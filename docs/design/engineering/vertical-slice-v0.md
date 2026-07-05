@@ -1,23 +1,3 @@
----
-id: engineering/vertical-slice-v0
-title: Playable v0 垂直切片范围
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/11-replayability.md#playable-v0内测垂直切片
-  - docs/design/gdd/00-vision.md
-  - docs/design/gdd/10-onboarding.md
-  - docs/design/features/README.md
-  - 用户确认 2026-05-27（按 Agent 默认裁剪，基本满意）
-supersedes: []
-depends_on:
-  - features/README
-  - gdd/11-replayability
-  - data/README
-open_questions:
-  - 首局可玩时长目标待 playtest 后修订（当前为设计假设）
----
-
 # Playable v0 垂直切片范围
 
 **Playable v0** = 可在微信小游戏环境跑通的一条 **内测闭环**，用于验证核心循环与战役轴，**不是** 正式首发功能全集。

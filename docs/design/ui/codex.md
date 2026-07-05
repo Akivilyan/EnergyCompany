@@ -1,17 +1,3 @@
----
-id: ui/codex
-title: 图鉴（overlay_codex）UI
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/ui/onboarding.md
-supersedes: []
-depends_on:
-  - ui/00-screen-map
-  - ui/onboarding
-open_questions: []
----
-
 # 图鉴（overlay_codex）UI
 
 `overlay_codex` 在 v0 采用简版 1-2 页只读内容，用于快速解释核心循环与广告 stub 行为，不阻塞主流程。

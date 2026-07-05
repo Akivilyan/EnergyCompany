@@ -1,22 +1,3 @@
----
-id: ui/milestones
-title: 关键节点反馈
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/01-core-loop.md#关键节点反馈
-  - docs/design/gdd/03-social-value.md
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/03-social-value
-  - ui/00-screen-map
-  - ui/construction-flow
-  - ui/events
-open_questions:
-  - 战略工程竣工是否一律全屏（GDD 默认保留，可 v0 仅 Toast）
----
-
 # 关键节点反馈
 
 跨屏 **反馈组件** 注册表（非独立导航屏）。

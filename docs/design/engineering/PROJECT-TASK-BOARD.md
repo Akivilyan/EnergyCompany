@@ -1,14 +1,3 @@
----
-id: engineering/project-task-board
-title: 项目状态与任务看板
-status: draft
-version: 2.0.0
-sources:
-  - docs/design/gdd/00-vision.md
-  - docs/design/gdd/01-core-loop.md
-open_questions: []
----
-
 # 项目状态与任务看板
 
 本文件只记录当前产品状态、当前模块和下一步。协作规则写入根目录 `AGENTS.md`；执行结果写入 Git commit 与最终回复；历史查 Git。

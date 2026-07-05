@@ -1,28 +1,3 @@
----
-id: gdd/11-replayability
-title: 重玩性、经营方针与胜负
-status: locked
-version: 0.6.3
-sources:
-  - docs/game-core-design-整合摘要.md#事件
-  - 用户对话 2026-05-23～24（大理石时代式路线 × 难度 × 灾害通关）
-  - 用户对话 2026-05-26（v0=tech+简单、固定月灾害轴、术语、起始资金）
-  - 用户对话 2026-05-26（研发 50%、4 场灾害/约 72 月、12 月预警、熟练度上限 3）
-  - 用户对话 2026-05-26（熟练度 3 才给 50%/-1 月；单局时长审视）
-  - 用户对话 2026-05-26（建设 **仅 %**；科技 80→60%、−1～−3 月；水电高 mult+核电）
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/04-energy-supply
-  - gdd/07-tech
-  - gdd/08-events
-open_questions:
-  - 4 场固定灾害各 `event_id` 与金额、备考文案（T37）
-  - 社会价值门槛与 `campaign_run_target_months` 联调（T37 playtest）
----
-
 # 重玩性、经营方针与胜负
 
 ## 概述

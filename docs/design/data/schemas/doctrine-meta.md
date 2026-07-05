@@ -1,19 +1,3 @@
----
-id: data/schemas/doctrine-meta
-title: 方针熟练度与科技门槛字段
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/07-tech.md
-  - docs/design/gdd/11-replayability.md
-supersedes: []
-depends_on:
-  - gdd/07-tech
-  - gdd/11-replayability
-open_questions:
-  - 熟练度升级经验公式（目前仅定义通关增量）
----
-
 # 方针熟练度与科技门槛字段
 
 ## 1) 方针熟练度表 `doctrine_meta_table`

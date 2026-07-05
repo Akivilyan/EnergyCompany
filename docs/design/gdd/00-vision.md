@@ -1,18 +1,3 @@
----
-id: gdd/00-vision
-title: 愿景与边界
-status: locked
-version: 0.3.9
-sources:
-  - docs/game-core-design.md#1
-  - docs/game-core-design.md#2
-  - docs/game-core-design.md#19
-  - docs/game-core-design-整合摘要.md#设计支柱与原则
-supersedes: []
-depends_on: []
-open_questions: []
----
-
 # 愿景与边界
 
 ## 概述
@@ -30,9 +15,9 @@ open_questions: []
 | 首发平台 | **微信小游戏** |
 | 跨平台方向 | 玩法与工程需为**其它高可移植性小游戏平台**预留空间（如与微信同属一类运行时、抽象层可复用的渠道）；**不考虑**移植成本高的平台 |
 | **明确不做** | **PC 版 / 桌面端**；不为此增加玩法复杂度或专属系统 |
-| 本文档范围 | 仅玩法与系统设计，**不涉及**引擎、工具链、实现架构 |
+| 本文档范围 | 仅玩法与系统设计；实现架构见 `engineering/architecture.md` |
 | 命名（首版） | 游戏名、玩家主体公司名在 UI 中**使用占位**；不在首版写死品牌文案，后续由配置或品牌文档替换 |
-| 技术选型时机 | **待 GDD 全套确认完成**（`gdd/` 各章 `locked` 且 `gdd/README.md` 索引就绪，对应任务 T12）后，再编写 `engineering/stack.md`（T42） |
+| 技术选型 | 微信小游戏 + Cocos Creator 3.x + TypeScript；细节见 `engineering/stack.md` |
 
 跨平台时**不**扩展玩法深度，仅适配发行与 SDK 差异；复杂度上限仍以单局小游戏会话为准。
 
@@ -133,7 +118,7 @@ open_questions: []
 | 议题 | 决策 |
 |------|------|
 | 首版命名 | UI **占位**，不写死游戏名与公司名 |
-| 技术选型 | **GDD 确认完成后**再写 `engineering/stack.md` |
+| 技术选型 | 微信小游戏 + Cocos Creator 3.x + TypeScript |
 | 平台扩展 | **放弃 PC**；仅考虑**高可移植性**的其它小游戏平台，低可移植平台不做 |
 
 ---

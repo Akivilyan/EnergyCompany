@@ -1,23 +1,3 @@
----
-id: features/grid-network
-title: 区域电网与主干
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/06-grid.md#链路类型与建造界面
-  - docs/design/gdd/06-grid.md#特高压与跨区组网
-  - docs/design/gdd/06-grid.md#线损尺度固定配置值
-supersedes: []
-depends_on:
-  - gdd/06-grid
-  - gdd/05-map-and-slots
-  - features/00-game-state
-  - features/region-main
-  - features/world-map
-  - features/supply-calculation
-open_questions: []
----
-
 # 区域电网与主干
 
 ## 1. 目标

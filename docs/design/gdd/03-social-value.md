@@ -1,22 +1,3 @@
----
-id: gdd/03-social-value
-title: 社会价值与公司等级
-status: locked
-version: 1.0.1
-sources:
-  - docs/game-core-design.md#8
-  - docs/game-core-design.md#9
-  - docs/game-core-design-整合摘要.md#社会价值与进度
-supersedes: []
-depends_on:
-  - gdd/00-vision
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-open_questions: []
----
-
 # 社会价值与公司等级
 
 ## 概述

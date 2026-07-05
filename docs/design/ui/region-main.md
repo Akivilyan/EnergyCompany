@@ -1,19 +1,3 @@
----
-id: ui/region-main
-title: 地区主界面
-status: draft
-version: 0.2.0
-sources:
-  - docs/design/features/region-main.md
-  - docs/design/ui/00-screen-map.md
-supersedes: []
-depends_on:
-  - features/region-main
-  - ui/00-screen-map
-open_questions:
-  - 区域供能摘要是否展示线损后二级指标
----
-
 # 地区主界面
 
 ## 1. 屏幕 ID
@@ -35,7 +19,7 @@ open_questions:
 │                                              │
 │     [城A]────施工中────[城B]                  │
 │        \                 /                    │
-│         [城C](只读)                           │
+│         城C（只读）                           │
 │                                              │
 ├──────────────────────────────────────────────┤
 │ [事件] [科技] [公司]           (无下一月)    │

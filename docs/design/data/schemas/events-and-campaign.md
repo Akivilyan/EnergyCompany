@@ -1,19 +1,3 @@
----
-id: data/schemas/events-and-campaign
-title: 事件与固定灾害轴字段
-status: draft
-version: 0.1.1
-sources:
-  - docs/design/gdd/08-events.md
-  - docs/design/gdd/11-replayability.md
-supersedes: []
-depends_on:
-  - gdd/08-events
-  - gdd/11-replayability
-open_questions:
-  - 4 场固定灾害 `event_id` 与金额档（T37 数值精算）
----
-
 # 事件与固定灾害轴字段
 
 ## 1) 随机事件池 `event_pool`

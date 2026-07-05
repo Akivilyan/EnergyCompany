@@ -1,17 +1,3 @@
----
-id: data/README
-title: 配置总览
-status: draft
-version: 1.0.0
-sources:
-  - docs/design/gdd/README.md#与-data-层映射
-supersedes: []
-depends_on:
-  - gdd/README
-  - data/schemas/README
-open_questions: []
----
-
 # 配置总览
 
 Data 层描述 **表结构、字段、ID 规范** 与 **策划 → 游戏** 的交付物形态。玩法规则仍以 GDD / Feature 为准；本目录只回答「配什么、怎么导、放哪」。

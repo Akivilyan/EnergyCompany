@@ -1,24 +1,3 @@
----
-id: gdd/07-tech
-title: 科技研发
-status: draft
-version: 0.3.8
-sources:
-  - docs/game-core-design.md#15
-  - docs/tech-tree-design.md
-supersedes: []
-depends_on:
-  - gdd/01-core-loop
-  - gdd/02-economy
-  - gdd/03-social-value
-  - gdd/04-energy-supply
-  - gdd/05-map-and-slots
-  - gdd/06-grid
-open_questions:
-  - 各节点 `research_cost` / `research_months`（T37）
-  - 减压类节点具体倍率（工期 -1 月、运维 -10% 等；`eng_risk_reserve` 挂钩见 [08-events.md](./08-events.md)）
----
-
 # 科技研发
 
 ## 概述
@@ -139,7 +118,7 @@ screen_tech_tree（II 级起可见）
 
 **2026-05 合并**：旧稿拆成 **`storage_system`（出力 ×2）** + **`storage_system_1`（卡 ·III）** 两个节点，玩家与策划易混淆。现 **合并为一条三级线**：显示名 **储能系统·I / ·II / ·III**，`tech_id` 为 `storage_system_1～3`（命名与显示一致）。
 
-**非设施**：更早草案曾有「初级/中级/高级储能设备」等 **可部署设施**；为简化已 **取消**，储能效果 **仅** 在本节科技树体现（见 [`tech-tree-design.md`](../../tech-tree-design.md) §1.1）。
+**非设施**：更早草案曾有「初级/中级/高级储能设备」等 **可部署设施**；为简化已 **取消**，储能效果 **仅** 在本节科技树体现（见 [technology-tree.md](../data/technology-tree.md)）。
 
 | `tech_id` | 显示名 | 公司等级 | 点亮效果 |
 |-----------|--------|----------|----------|

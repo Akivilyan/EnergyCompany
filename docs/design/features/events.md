@@ -1,24 +1,3 @@
----
-id: features/events
-title: 事件系统
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/08-events.md#实例生命周期
-  - docs/design/gdd/08-events.md#与月度结算的关系
-  - docs/design/gdd/08-events.md#固定灾害轴与随机事件单局通关
-supersedes: []
-depends_on:
-  - gdd/08-events
-  - gdd/11-replayability
-  - features/00-game-state
-  - features/construction
-  - features/tech-tree
-  - features/supply-calculation
-open_questions:
-  - policy/market 与固定灾害同月排期冲突时的优先级细则（实现层细化）
----
-
 # 事件系统
 
 ## 1. 目标

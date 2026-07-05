@@ -1,24 +1,3 @@
----
-id: engineering/simulation-api
-title: 模拟层接口（GameState / 结算函数 / 单测策略）
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/engineering/architecture.md
-  - docs/design/features/00-game-state.md
-  - docs/design/features/supply-calculation.md
-  - docs/design/features/social-value-settlement.md
-  - docs/design/data/schemas/company-level-and-run.md
-supersedes: []
-depends_on:
-  - engineering/architecture
-  - features/00-game-state
-  - features/supply-calculation
-  - features/social-value-settlement
-open_questions:
-  - `rollback_to_snapshot` 是否在 v0 暴露给外层（当前默认仅测试/调试使用）
----
-
 # 模拟层接口（GameState / 结算函数 / 单测策略）
 
 ## 1. 目标

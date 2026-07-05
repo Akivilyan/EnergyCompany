@@ -1,21 +1,3 @@
----
-id: ui/world-map
-title: 全国大地图
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/features/world-map.md
-  - docs/design/gdd/01-core-loop.md#大地图界面-screen_world_map
-  - docs/design/ui/00-screen-map.md
-supersedes: []
-depends_on:
-  - features/world-map
-  - ui/00-screen-map
-  - features/grid-network
-open_questions:
-  - 主干建链为地图内联还是独立全屏（默认地图内浮层，与区域建线一致）
----
-
 # 全国大地图
 
 ## 1. 屏幕 ID

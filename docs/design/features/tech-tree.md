@@ -1,23 +1,3 @@
----
-id: features/tech-tree
-title: 科技树
-status: draft
-version: 0.1.0
-sources:
-  - docs/design/gdd/07-tech.md#系统开放与研发规则
-  - docs/design/gdd/07-tech.md#术语解锁-vs-点亮
-  - docs/design/data/technology-tree.md
-supersedes: []
-depends_on:
-  - gdd/07-tech
-  - gdd/11-replayability
-  - features/00-game-state
-  - features/construction
-  - features/grid-network
-  - features/supply-calculation
-open_questions: []
----
-
 # 科技树
 
 ## 1. 目标
