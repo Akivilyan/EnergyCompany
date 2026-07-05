@@ -49,6 +49,11 @@ const CITY_HUD_PANEL_MARKERS = [
   "bindGameBoot"
 ] as const;
 
+const GAME_ROOT_MARKERS = [
+  "defaultRewardedAdUnitId",
+  "defaultRewardedAdUnitId: rewardedAdUnitId.length > 0 ? rewardedAdUnitId : undefined"
+] as const;
+
 const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_LAYER_NAMES",
   "CITY_HUD_STAGE_SHELL_ORDER",
@@ -320,6 +325,12 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "CityHudPanel.ts"
   );
+  const gameRootPath = path.join(
+    resolveClientCocosRoot(repoRoot),
+    "assets",
+    "scripts",
+    "GameRoot.ts"
+  );
   const stageSpecPath = path.join(
     resolveClientCocosRoot(repoRoot),
     "assets",
@@ -343,6 +354,14 @@ export function runCocosHudCloseStaticChecks(
     checks.push({
       id: `hud:${marker}`,
       ok: source.includes(marker),
+      detail: marker
+    });
+  }
+  const gameRootSource = fs.existsSync(gameRootPath) ? fs.readFileSync(gameRootPath, "utf8") : "";
+  for (const marker of GAME_ROOT_MARKERS) {
+    checks.push({
+      id: `game-root:${marker}`,
+      ok: gameRootSource.includes(marker),
       detail: marker
     });
   }

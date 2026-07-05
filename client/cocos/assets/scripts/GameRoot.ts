@@ -11,7 +11,7 @@ import { CocosSceneHost } from "./CocosSceneHost";
 import { CityHudPanel } from "./CityHudPanel";
 import { loadConfigFromResources } from "./loadConfigFromResources";
 
-const { ccclass } = _decorator;
+const { ccclass, property } = _decorator;
 
 declare const wx: unknown;
 
@@ -29,6 +29,9 @@ function trace(tag: string, detail?: string): void {
 /** Cocos 主场景挂载点：从 resources 异步加载 config 后挂载 GameClient。 */
 @ccclass("GameRoot")
 export class GameRoot extends Component {
+  @property({ tooltip: "微信激励广告位。留空时使用 stub，填 adunit-* 后走 wx.createRewardedVideoAd。" })
+  defaultRewardedAdUnitId = "";
+
   /** 供 CityHudPanel 读取；避免 Cocos 预览里 game-client.mjs 被重复实例化导致 registry 失联。 */
   gameBoot: GameBootstrap | null = null;
   private mounted = false;
@@ -56,7 +59,13 @@ export class GameRoot extends Component {
     const sceneHost = new CocosSceneHost();
     try {
       const configRepo = await loadConfigFromResources();
-      const boot = mountGameClient({ configRepo, sceneHost, wxAdSdk: readWechatRuntime() });
+      const rewardedAdUnitId = this.defaultRewardedAdUnitId.trim();
+      const boot = mountGameClient({
+        configRepo,
+        sceneHost,
+        wxAdSdk: readWechatRuntime(),
+        defaultRewardedAdUnitId: rewardedAdUnitId.length > 0 ? rewardedAdUnitId : undefined
+      });
       this.gameBoot = boot;
       setMountedGameClient(boot);
       this.getComponent(CityHudPanel)?.bindGameBoot(boot);

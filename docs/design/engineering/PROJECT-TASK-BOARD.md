@@ -33,41 +33,38 @@
 - 阶段：模块交付制推进
 - 当前模块：`WECHAT-RELEASE-01`
 - 模块标题：微信包阶段收口与真机验收
-- 状态：`doing`
+- 状态：`done`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
+### `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
 
-目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
+目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
 
 输入：
 
-- `docs/design/features/monetization.md`
-- `docs/design/features/company-management.md`
-- `docs/design/ui/company.md`
 - `docs/design/engineering/cocos-client-setup.md`
-- 现有 `RewardedAdProvider` / `AdRewardService` / Cocos GameRoot 挂载入口
+- `AGENTS.md`
+- 当前所有已完成模块
 
 输出：
 
-- 微信 `wx.createRewardedVideoAd` provider。
-- 完成、取消、加载失败、SDK 缺失、重复点击的完整状态处理。
-- 公司现金广告与科技/建设加速入口统一走异步广告服务。
-- 真机/微信开发者工具排障路径清楚；无 wx 环境继续使用 stub。
+- `verify:client` 通过。
+- 微信构建包启动模块完整。
+- 真机冒烟覆盖冷启动、存档恢复、公司 2 级、区域铺线、灾害弹窗、广告回调可用性。
+- 记录仍存在的非阻塞 UX / 性能 / 资源问题。
 
 不做：
 
-- 不实现 IAP 支付。
-- 不调广告收益数值。
-- 不重做公司屏 UI。
+- 不新增玩法。
+- 不再大改数值。
+- 不重做 UI 资产。
 
 验收：
 
-- `npm test`
 - `npm run verify:client`
-- 真机或微信开发者工具手动冒烟路径按 `cocos-client-setup.md` 执行并在最终回复说明结果。
+- 微信开发者工具 / 真机手动冒烟
 
 ## 当前工程状态
 
@@ -81,7 +78,7 @@
 | BALANCE-PLAYTEST-01 数值与节奏 | done |
 | UX-GUIDANCE-01 经营压力、提示与反馈 | done |
 | MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
-| WECHAT-RELEASE-01 微信包阶段收口与真机验收 | doing |
+| WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
 
 ## 模块队列
 
@@ -203,7 +200,7 @@
 
 ### 5. `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
 
-状态：`doing`
+状态：`done`
 
 目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
 
@@ -235,4 +232,4 @@
 
 ## 下一步
 
-当前推进 `WECHAT-RELEASE-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。
+等待试玩反馈修复模块输入；没有明确反馈前不新增大模块。

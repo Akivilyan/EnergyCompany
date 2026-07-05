@@ -165,7 +165,7 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
    - 玩 2～3 月后切后台再进，月份/资金与退出前一致（`onHide` 存档）
    - 公司 2 级后可进 **区域** 并 **铺线**
    - 推至约 M23 出现灾害 **知道了** 并可确认
-5. **广告**：激励视频仍为 stub；真机接 WeChat 广告需替换 `RewardedAdProvider`（见 `engineering/stack.md`）
+5. **广告**：`GameRoot.defaultRewardedAdUnitId` 留空时使用 stub，填入真实 `adunit-*` 后走 `wx.createRewardedVideoAd`。真机 / 微信开发者工具冒烟需记录广告完成、提前关闭、加载失败三类回调；没有真实广告位时只验 stub 回退，不视为阻塞。
 6. **语言**：预览 URL `?locale=en` 或 `localStorage` 键 `energy-company.locale`
 
 ## 6.1 T51 运行期冒烟用例（给真机 / 微信开发者工具）
@@ -209,6 +209,11 @@ CityDetail 在编辑器预览与 `npm run verify:client` 通过后：
    - 如果灾害弹窗出现时还未点确认，先切后台再回来
    - 期望：弹窗仍在，且回来后仍可点击 **知道了** 正常确认
 
+7. **广告回调可用性**
+   - 若 `GameRoot.defaultRewardedAdUnitId` 已配置真实 `adunit-*`，在公司页点击 **广告领钱**，分别记录完整播放、提前关闭、加载失败 / 无广告时的结果
+   - 期望：完整播放后发放奖励并消耗广告次数；提前关闭不发奖励；加载失败显示广告服务失败但不消耗次数、不锁死按钮
+   - 若未配置真实广告位，期望：按钮走 stub 完成路径，可发放奖励；最终回复必须说明“未配置真实 adunit，仅验证 stub 回退”
+
 记录要求：
 
 - 只要微信开发者工具 Console 出现红错，就导出文本日志
@@ -234,7 +239,7 @@ Console 红错：
 - `npm run verify:client` 会在微信包存在时检查最新微信构建日志和 `game.js` 引用的启动模块是否真实存在；若日志里有 `SIGTERM` 但启动模块完整，该项记为非阻塞
 - 最新一次用户手工冒烟反馈：按钮主链路在真机与微信开发者工具上一致可用；日志里未见运行时崩溃，只看到 `conflict_in_progress`、`research_queue_full`、`loan_already_active` 这类预期业务拒绝日志
 - 真机上“关掉再开还保持上一次进度”是当前实现的预期行为，不是异常缓存：客户端默认会从 `slot-main` 自动读档，并在 `wx.onHide` 时自动存档
-- `T51` 仍未完成，但阻塞点已从“构建/半包”收敛为“是否还存在真正的运行期异常或残余 UX 误导”
+- `T51` 已收口到构建链路与运行期冒烟清单；后续阻塞只来自微信开发者工具 / 真机红错、真实广告位回调异常或残余 UX 误导
 - 本页继续作为构建、联调、问题复现和回归自检的操作入口
 
 ---
