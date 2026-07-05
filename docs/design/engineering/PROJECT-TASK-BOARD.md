@@ -30,16 +30,44 @@
 
 - 阶段：模块交付制推进
 - 当前模块：`UI-PREFAB-01`
-- 模块标题：正式 UI / Prefab 城市页样张模块交付
+- 模块标题：正式 UI / Prefab 与城市页可玩样张
 - 状态：`doing`
 - 开始时间：2026-07-04
 
 ## 当前模块完成定义
 
-- 城市页正式 UI 样张具备稳定的背景、设施、电网、状态、面板、图标与交互槽位层级。
-- 运行时状态 token 与静态预检覆盖关键资产槽位和交互状态。
-- 模块交付时给出输入、输出/API、验证命令与结果。
-- 广告 SDK、数值平衡与提示精修保持后置模块，不混入当前模块。
+### `UI-PREFAB-01` 正式 UI / Prefab 与城市页可玩样张
+
+目标：把当前开发 HUD 推进到一个可继续扩展的正式 UI 资产与运行时槽位基础，不只做单个视觉小改。
+
+输入：
+
+- `docs/design/ui/art-direction.md`
+- `docs/design/ui/00-screen-map.md`
+- `docs/design/ui/construction-flow.md`
+- `docs/design/ui/company.md`
+- `docs/design/ui/world-map.md`
+- 现有 `client/cocos/` 城市 HUD 与静态预检
+
+输出：
+
+- 城市页正式 UI 样张：背景、设施、电网、状态、资源栏、城市状态卡、建设按钮、临时反馈层。
+- 可复用资产槽位规范：背景层、建筑层、电网层、光效层、UI 层、图标层。
+- 运行时状态 token：可操作、隐藏、禁用、建设中、完成、接网、受灾、低清洁度等。
+- Cocos 侧静态预检：缺关键槽位、层级、状态 token 或导出时直接失败。
+- 至少一个实际可玩路径使用正式槽位，而不是只停在设计稿或死样张。
+
+不做：
+
+- 不接微信广告 SDK。
+- 不做全屏幕 Prefab 化。
+- 不做数值平衡。
+- 不做所有提示文案精修。
+
+验收：
+
+- `npm run verify:client:fast`
+- 涉及共享包或配置同步时补 `npm run build:client`
 
 ## 当前工程状态
 
@@ -51,8 +79,138 @@
 | Demo 七条核心试玩路线 | done |
 | UI-PREFAB-01 城市页样张 | doing |
 
+## 模块队列
+
+### 1. `UI-PREFAB-01` 正式 UI / Prefab 与城市页可玩样张
+
+状态：`doing`
+
+边界：当前模块，完成后再进入数值、提示或广告模块。
+
+### 2. `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
+
+目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
+
+输入：
+
+- `docs/design/engineering/v0-balance-target-lines.md`
+- `docs/design/engineering/v0-balance-knob-surface.md`
+- `docs/design/engineering/v0-balance-checkpoints.md`
+- `docs/design/engineering/v0-disaster-balance-policy.md`
+- `docs/design/data/vertical-slice-v0/`
+- `playtest-lab/run-first-round-batches.mjs`
+
+输出：
+
+- A/B/C 三类策略的可回归试玩结果。
+- 一组可解释的粗调参数：公司 I-V、灾害现金/收入压力、广告现金价值、地图资源分工、路线耗时。
+- playtest 脚本或回归入口能复现关键路线结果。
+- 数值改动对应配置与验收说明清楚，不靠口头判断。
+
+不做：
+
+- 不追求最终商业化数值。
+- 不做 UI 视觉精修。
+- 不接真实广告 SDK。
+
+验收：
+
+- `npm test`
+- `npm run build:client`
+- `npm run sim:playtest-bundle`
+
+### 3. `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
+
+目标：让玩家知道当前为什么卡、下一步该做什么，以及灾害/经营压力/终局结果为什么发生。
+
+输入：
+
+- `docs/design/features/company-management.md`
+- `docs/design/features/events.md`
+- `docs/design/features/tech-tree.md`
+- `docs/design/features/world-map.md`
+- `docs/design/ui/company.md`
+- `docs/design/ui/events.md`
+- `docs/design/ui/milestones.md`
+- `docs/design/ui/run-result.md`
+
+输出：
+
+- 公司、科技、城市、区域、大地图、事件、结果页的关键提示闭环。
+- 经营压力、科技解法、灾害备考/恢复、终局路线摘要统一口径。
+- 文案键、状态 token、按钮能力与实际动作条件一致。
+- 相关模块测试覆盖错误态和推荐态。
+
+不做：
+
+- 不改核心数值平衡。
+- 不做新的玩法系统。
+- 不接真实广告 SDK。
+
+验收：
+
+- `npm test`
+- 涉及客户端显示时补 `npm run verify:client:fast`
+
+### 4. `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
+
+目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
+
+输入：
+
+- `docs/design/features/monetization.md`
+- `docs/design/features/company-management.md`
+- `docs/design/ui/company.md`
+- `docs/design/engineering/cocos-client-setup.md`
+- 现有 `RewardedAdProvider` / `AdRewardService` / Cocos GameRoot 挂载入口
+
+输出：
+
+- 微信 `wx.createRewardedVideoAd` provider。
+- 完成、取消、加载失败、SDK 缺失、重复点击的完整状态处理。
+- 公司现金广告与科技/建设加速入口统一走异步广告服务。
+- 真机/微信开发者工具排障路径清楚；无 wx 环境继续使用 stub。
+
+不做：
+
+- 不实现 IAP 支付。
+- 不调广告收益数值。
+- 不重做公司屏 UI。
+
+验收：
+
+- `npm test`
+- `npm run verify:client`
+- 真机或微信开发者工具手动冒烟路径按 `cocos-client-setup.md` 执行并在最终回复说明结果。
+
+### 5. `WECHAT-RELEASE-01` 微信包阶段收口与真机验收
+
+目标：把完整 demo 的微信包链路收口到“可交给人试玩”的状态。
+
+输入：
+
+- `docs/design/engineering/cocos-client-setup.md`
+- `AGENTS.md`
+- 当前所有已完成模块
+
+输出：
+
+- `verify:client` 通过。
+- 微信构建包启动模块完整。
+- 真机冒烟覆盖冷启动、存档恢复、公司 2 级、区域铺线、灾害弹窗、广告回调可用性。
+- 记录仍存在的非阻塞 UX / 性能 / 资源问题。
+
+不做：
+
+- 不新增玩法。
+- 不再大改数值。
+- 不重做 UI 资产。
+
+验收：
+
+- `npm run verify:client`
+- 微信开发者工具 / 真机手动冒烟
+
 ## 下一步
 
-1. 完成 `UI-PREFAB-01`：城市页正式 UI / Prefab 样张模块，交付资产槽位、状态 token、静态预检与验证结果。
-2. 保持 demo 路线矩阵常绿：`sim:playtest-bundle` 作为完整 demo 回归入口。
-3. 后续模块独立交付：数值收敛、提示精修、广告 SDK 真机链路。
+完成 `UI-PREFAB-01` 后，进入 `BALANCE-PLAYTEST-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。
