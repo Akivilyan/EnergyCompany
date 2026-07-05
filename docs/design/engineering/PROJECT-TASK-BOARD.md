@@ -32,7 +32,7 @@
 - 阶段：模块交付制推进
 - 当前模块：`UI-SHELL-LONG-01`
 - 模块标题：成品级 UI 架构壳
-- 状态：`ready`
+- 状态：`done`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
@@ -94,14 +94,14 @@
 | MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
 | WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
 | PLAYTEST-UI-01 试玩可交付 UI 首屏 | done |
-| UI-SHELL-LONG-01 成品级 UI 架构壳 | ready |
+| UI-SHELL-LONG-01 成品级 UI 架构壳 | done |
 
 ## 模块队列
 
 | 模块 | 状态 | 切换条件 |
 |------|------|----------|
-| `UI-SHELL-LONG-01` 成品级 UI 架构壳 | ready | 验收通过后进入 UI 美术资源设计与补充 |
-| UI 美术资源设计与补充 | pending | UI 壳稳定后启动，需要用户审美术方向与资源质量 |
+| `UI-SHELL-LONG-01` 成品级 UI 架构壳 | done | 验收通过后进入 UI 美术资源设计与补充 |
+| UI 美术资源设计与补充 | ready | UI 壳稳定后启动，需要用户审美术方向与资源质量 |
 | 游戏引导模块 | pending | UI 壳与主要美术资源稳定后启动 |
 
 ## 下一步

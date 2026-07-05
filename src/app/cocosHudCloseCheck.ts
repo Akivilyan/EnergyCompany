@@ -142,6 +142,61 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "city-stage:low-cleanliness"
 ] as const;
 
+const UI_SHELL_STAGE_SPEC_MARKERS = [
+  "UI_SHELL_LAYER_NAMES",
+  "UI_SHELL_SCREEN_TOKENS",
+  "UI_SHELL_SLOT_STATE_TOKENS",
+  "UI_SHELL_SLOT_ROLE_TOKENS",
+  "UI_SHELL_ENTRY_SLOTS",
+  "UI_SHELL_PAGE_SLOTS",
+  "UI_SHELL_MODAL_SLOTS",
+  "UI_SHELL_RESULT_SLOTS",
+  "UI_SHELL_STAGE_PREFAB_MANIFEST",
+  "UI_SHELL_ALL_SLOTS",
+  "ProductUiShellLayer",
+  "EntryActionStartNewRun",
+  "EntryActionContinueRun",
+  "EntryActionClearSave",
+  "EntryCurrentSaveHint",
+  "CompanyOverviewPanel",
+  "CompanyCashflowPanel",
+  "CompanyLoanAdsUpgradeArea",
+  "TechBranchTabs",
+  "TechNodeGraphPlaceholder",
+  "TechResearchDrawer",
+  "RegionCityNodeLayer",
+  "RegionLinkBuildBar",
+  "WorldRegionNodeLayer",
+  "WorldBackboneLinkLayer",
+  "WorldSuperHydroEntryCard",
+  "EventFullscreenModalShell",
+  "EventModalArtSlot",
+  "EventModalConfirmButton",
+  "RunResultBanner",
+  "RunResultRouteSummary",
+  "RunResultRestartEntry",
+  "ui-shell:screen-main-menu",
+  "ui-shell:screen-city-detail",
+  "ui-shell:screen-company",
+  "ui-shell:screen-tech-tree",
+  "ui-shell:screen-region",
+  "ui-shell:screen-world-map",
+  "ui-shell:screen-run-result",
+  "ui-shell:slot-active",
+  "ui-shell:slot-hidden",
+  "ui-shell:slot-placeholder",
+  "ui-shell:slot-bound",
+  "ui-shell:role-resource-bar",
+  "ui-shell:role-status-card",
+  "ui-shell:role-action-area",
+  "ui-shell:role-bottom-nav",
+  "ui-shell:role-asset-slot",
+  "ui-shell:role-graph",
+  "ui-shell:role-map",
+  "ui-shell:role-modal",
+  "ui-shell:role-result"
+] as const;
+
 const CITY_HUD_STAGE_PREFAB_MANIFEST_MARKERS = [
   "screen_city_detail",
   "layers",
@@ -337,6 +392,12 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "cityHudStageSpec.ts"
   );
+  const uiShellSpecPath = path.join(
+    resolveClientCocosRoot(repoRoot),
+    "assets",
+    "scripts",
+    "uiShellStageSpec.ts"
+  );
   const checks: CocosHudCloseCheckItem[] = [];
 
   if (!fs.existsSync(panelPath)) {
@@ -380,6 +441,44 @@ export function runCocosHudCloseStaticChecks(
       detail: marker
     });
   }
+  checks.push({
+    id: "hud:ui-shell-stage-spec-file",
+    ok: fs.existsSync(uiShellSpecPath),
+    detail: path.relative(repoRoot, uiShellSpecPath)
+  });
+  const uiShellSpecSource = fs.existsSync(uiShellSpecPath)
+    ? fs.readFileSync(uiShellSpecPath, "utf8")
+    : "";
+  for (const marker of UI_SHELL_STAGE_SPEC_MARKERS) {
+    checks.push({
+      id: `hud:ui-shell-spec:${marker}`,
+      ok: uiShellSpecSource.includes(marker),
+      detail: marker
+    });
+  }
+  checks.push({
+    id: "hud:ui-shell-spec-import",
+    ok:
+      source.includes("./uiShellStageSpec") &&
+      source.includes("UI_SHELL_ALL_SLOTS") &&
+      source.includes("UI_SHELL_LAYER_NAMES") &&
+      source.includes("UI_SHELL_SCREEN_TOKENS") &&
+      source.includes("UI_SHELL_SLOT_STATE_TOKENS"),
+    detail: "CityHudPanel imports product UI shell spec"
+  });
+  checks.push({
+    id: "hud:ui-shell-runtime-slots",
+    ok:
+      source.includes("productUiShellLayer") &&
+      source.includes("productUiShellSlots") &&
+      source.includes("createProductUiShellSlots") &&
+      source.includes("syncProductUiShellSlots") &&
+      source.includes("slotMatchesCurrentScreen") &&
+      source.includes("redrawProductUiShellSlot") &&
+      source.includes("UI_SHELL_SLOT_STATE_TOKENS.active") &&
+      source.includes("UI_SHELL_SLOT_STATE_TOKENS.bound"),
+    detail: "CityHudPanel creates and synchronizes product UI shell runtime slots"
+  });
   checks.push({
     id: "hud:city-stage-prefab-manifest",
     ok:

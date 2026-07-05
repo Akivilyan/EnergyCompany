@@ -84,6 +84,13 @@ import {
   type CityHudStageGridSlot,
   type CityHudStageIconSlot
 } from "./cityHudStageSpec";
+import {
+  UI_SHELL_ALL_SLOTS,
+  UI_SHELL_LAYER_NAMES,
+  UI_SHELL_SCREEN_TOKENS,
+  UI_SHELL_SLOT_STATE_TOKENS,
+  type UiShellStageSlot
+} from "./uiShellStageSpec";
 
 const { ccclass } = _decorator;
 
@@ -110,6 +117,8 @@ export class CityHudPanel extends Component {
   private cityStateLayer: Node | null = null;
   private cityUiLayer: Node | null = null;
   private cityIconLayer: Node | null = null;
+  private productUiShellLayer: Node | null = null;
+  private readonly productUiShellSlots = new Map<string, Node>();
   private cityBackgroundGraphics: Graphics | null = null;
   private cityFacilityGraphics: Graphics | null = null;
   private cityGridGraphics: Graphics | null = null;
@@ -227,6 +236,7 @@ export class CityHudPanel extends Component {
     this.cityStateLayer = this.createVisualSubLayer(this.cityVisualLayer, CITY_HUD_STAGE_LAYER_NAMES.state);
     this.cityUiLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.ui);
     this.cityIconLayer = this.createVisualSubLayer(shell, CITY_HUD_STAGE_LAYER_NAMES.icon);
+    this.productUiShellLayer = this.createVisualSubLayer(shell, UI_SHELL_LAYER_NAMES.root);
     this.applyStageLayerOrder();
     this.cityBackgroundGraphics = this.cityBackgroundLayer.addComponent(Graphics);
     this.cityFacilityGraphics = this.cityFacilityLayer.addComponent(Graphics);
@@ -256,6 +266,7 @@ export class CityHudPanel extends Component {
     this.cashIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cash);
     this.socialValueIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.socialValue);
     this.cleanlinessIcon = this.createIconSlot(this.cityIconLayer, CITY_HUD_STAGE_ICON_SLOTS.cleanliness);
+    this.createProductUiShellSlots();
 
     this.statusBand = new Node(CITY_HUD_STAGE_UI_SLOTS.resourceBar.nodeName);
     this.statusBand.setParent(this.cityUiLayer);
@@ -421,7 +432,8 @@ export class CityHudPanel extends Component {
       !this.statusLabel ||
       !this.hintLabel ||
       !this.cityUiLayer ||
-      !this.cityIconLayer
+      !this.cityIconLayer ||
+      !this.productUiShellLayer
     ) return;
 
     const container = readHudContainerSize(this.node);
@@ -438,6 +450,7 @@ export class CityHudPanel extends Component {
     this.redrawCityVisual(container);
     placeCenteredRect(this.cityUiLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.cityIconLayer, 0, 0, container.width, container.height);
+    placeCenteredRect(this.productUiShellLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
     this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
@@ -446,6 +459,7 @@ export class CityHudPanel extends Component {
     this.fitLabelToBand(this.statusLabel, layout.status);
     this.fitLabelToBand(this.hintLabel, layout.detail);
     this.placeStatusIcons(layout.status, layout.detail);
+    this.syncProductUiShellSlots(container);
     this.statusLabel.fontSize = layout.statusFont;
     this.statusLabel.lineHeight = Math.round(layout.statusFont * 1.2);
     this.hintLabel.fontSize = layout.detailFont;
@@ -669,6 +683,17 @@ export class CityHudPanel extends Component {
     return node;
   }
 
+  private createProductUiShellSlots(): void {
+    if (!this.productUiShellLayer) return;
+    for (const slot of UI_SHELL_ALL_SLOTS) {
+      const node = new Node(slot.nodeName);
+      node.setParent(this.productUiShellLayer);
+      node.addComponent(UITransform);
+      node.addComponent(Graphics);
+      this.productUiShellSlots.set(slot.nodeName, node);
+    }
+  }
+
   private createStageAssetSlot(parent: Node, slot: CityHudStageAssetSlot): Node {
     const node = new Node(slot.nodeName);
     node.setParent(parent);
@@ -729,6 +754,91 @@ export class CityHudPanel extends Component {
               ? CITY_HUD_STAGE_SCREEN_TOKENS.tech
               : CITY_HUD_STAGE_SCREEN_TOKENS.city;
     this.cityVisualLayer.name = `${CITY_HUD_STAGE_LAYER_NAMES.root}:${token}`;
+  }
+
+  private resolveProductScreenToken(): string {
+    if (!this.boot) return UI_SHELL_SCREEN_TOKENS.mainMenu;
+    const screen = readCityHudViewModel(this.boot).screen;
+    switch (screen) {
+      case "screen_company":
+        return UI_SHELL_SCREEN_TOKENS.company;
+      case "screen_region":
+        return UI_SHELL_SCREEN_TOKENS.region;
+      case "screen_world_map":
+        return UI_SHELL_SCREEN_TOKENS.world;
+      case "screen_tech_tree":
+        return UI_SHELL_SCREEN_TOKENS.tech;
+      case "screen_run_result":
+        return UI_SHELL_SCREEN_TOKENS.runResult;
+      case "screen_main_menu":
+        return UI_SHELL_SCREEN_TOKENS.mainMenu;
+      case "screen_city_detail":
+      default:
+        return UI_SHELL_SCREEN_TOKENS.city;
+    }
+  }
+
+  private slotMatchesCurrentScreen(slot: UiShellStageSlot): boolean {
+    if (!this.boot) return slot.screen === "mainMenu";
+    if (slot.screen === "eventModal") {
+      return this.hasPendingDisasterFeedback();
+    }
+    const screen = readCityHudViewModel(this.boot).screen;
+    return (
+      (slot.screen === "mainMenu" && screen === "screen_main_menu") ||
+      (slot.screen === "city" && screen === "screen_city_detail") ||
+      (slot.screen === "company" && screen === "screen_company") ||
+      (slot.screen === "tech" && screen === "screen_tech_tree") ||
+      (slot.screen === "region" && screen === "screen_region") ||
+      (slot.screen === "world" && screen === "screen_world_map") ||
+      (slot.screen === "runResult" && screen === "screen_run_result")
+    );
+  }
+
+  private syncProductUiShellSlots(container: { width: number; height: number }): void {
+    if (!this.productUiShellLayer) return;
+    const left = -container.width / 2;
+    const bottom = -container.height / 2;
+    this.productUiShellLayer.name = `${UI_SHELL_LAYER_NAMES.root}:${this.resolveProductScreenToken()}`;
+    for (const slot of UI_SHELL_ALL_SLOTS) {
+      const node = this.productUiShellSlots.get(slot.nodeName);
+      if (!node) continue;
+      const active = this.slotMatchesCurrentScreen(slot);
+      node.active = active;
+      placeCenteredRect(
+        node,
+        left + container.width * slot.xRatio,
+        bottom + container.height * slot.yRatio,
+        container.width * slot.widthRatio,
+        container.height * slot.heightRatio
+      );
+      const stateToken = active
+        ? UI_SHELL_SLOT_STATE_TOKENS.active
+        : UI_SHELL_SLOT_STATE_TOKENS.hidden;
+      const bindingToken = active && this.boot
+        ? UI_SHELL_SLOT_STATE_TOKENS.bound
+        : UI_SHELL_SLOT_STATE_TOKENS.placeholder;
+      node.name = `${slot.nodeName}:${stateToken}:${bindingToken}:${slot.role}`;
+      this.redrawProductUiShellSlot(node, slot, active);
+    }
+  }
+
+  private redrawProductUiShellSlot(node: Node, slot: UiShellStageSlot, active: boolean): void {
+    const graphics = node.getComponent(Graphics);
+    const transform = node.getComponent(UITransform);
+    if (!graphics || !transform) return;
+    graphics.clear();
+    if (!active) return;
+    const w = transform.width;
+    const h = transform.height;
+    if (w <= 0 || h <= 0) return;
+    graphics.fillColor = slot.screen === "eventModal"
+      ? new Color(255, 248, 238, 226)
+      : slot.screen === "runResult"
+        ? new Color(242, 252, 255, 214)
+        : new Color(236, 251, 255, 82);
+    graphics.roundRect(-w / 2, -h / 2, w, h, Math.min(18, h * 0.16));
+    graphics.fill();
   }
 
   private syncFacilityAssetStateTokens(): void {
@@ -846,11 +956,14 @@ export class CityHudPanel extends Component {
   }
 
   private applyStageLayerOrder(): void {
-    const shellLayers = [this.cityVisualLayer, this.cityUiLayer, this.cityIconLayer];
+    const shellLayers = [this.cityVisualLayer, this.productUiShellLayer, this.cityUiLayer, this.cityIconLayer];
     for (const layerName of CITY_HUD_STAGE_SHELL_ORDER) {
       const layer = shellLayers.find((item) => item?.name === layerName);
       layer?.setSiblingIndex(CITY_HUD_STAGE_SHELL_ORDER.indexOf(layerName));
     }
+    this.productUiShellLayer?.setSiblingIndex(1);
+    this.cityUiLayer?.setSiblingIndex(2);
+    this.cityIconLayer?.setSiblingIndex(3);
     const visualLayers = [
       this.cityBackgroundLayer,
       this.cityFacilityLayer,
