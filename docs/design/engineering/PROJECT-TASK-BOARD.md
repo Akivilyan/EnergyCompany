@@ -31,45 +31,44 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`UI-PREFAB-01`
-- 模块标题：正式 UI / Prefab 与城市页可玩样张
+- 当前模块：`BALANCE-PLAYTEST-01`
+- 模块标题：完整 demo 数值与试玩节奏收敛
 - 状态：`doing`
-- 开始时间：2026-07-04
+- 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `UI-PREFAB-01` 正式 UI / Prefab 与城市页可玩样张
+### `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
 
-目标：把当前开发 HUD 推进到一个可继续扩展的正式 UI 资产与运行时槽位基础，不只做单个视觉小改。
+目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
 
 输入：
 
-- `docs/design/ui/art-direction.md`
-- `docs/design/ui/00-screen-map.md`
-- `docs/design/ui/construction-flow.md`
-- `docs/design/ui/company.md`
-- `docs/design/ui/world-map.md`
-- 现有 `client/cocos/` 城市 HUD 与静态预检
+- `docs/design/engineering/v0-balance-target-lines.md`
+- `docs/design/engineering/v0-balance-knob-surface.md`
+- `docs/design/engineering/v0-balance-checkpoints.md`
+- `docs/design/engineering/v0-disaster-balance-policy.md`
+- `docs/design/data/vertical-slice-v0/`
+- `playtest-lab/run-first-round-batches.mjs`
 
 输出：
 
-- 城市页正式 UI 样张：背景、设施、电网、状态、资源栏、城市状态卡、建设按钮、临时反馈层。
-- 可复用资产槽位规范：背景层、建筑层、电网层、光效层、UI 层、图标层。
-- 运行时状态 token：可操作、隐藏、禁用、建设中、完成、接网、受灾、低清洁度等。
-- Cocos 侧静态预检：缺关键槽位、层级、状态 token 或导出时直接失败。
-- 至少一个实际可玩路径使用正式槽位，而不是只停在设计稿或死样张。
+- A/B/C 三类策略的可回归试玩结果。
+- 一组可解释的粗调参数：公司 I-V、灾害现金/收入压力、广告现金价值、地图资源分工、路线耗时。
+- playtest 脚本或回归入口能复现关键路线结果。
+- 数值改动对应配置与验收说明清楚，不靠口头判断。
 
 不做：
 
-- 不接微信广告 SDK。
-- 不做全屏幕 Prefab 化。
-- 不做数值平衡。
-- 不做所有提示文案精修。
+- 不追求最终商业化数值。
+- 不做 UI 视觉精修。
+- 不接真实广告 SDK。
 
 验收：
 
-- `npm run verify:client:fast`
-- 涉及共享包或配置同步时补 `npm run build:client`
+- `npm test`
+- `npm run build:client`
+- `npm run sim:playtest-bundle`
 
 ## 当前工程状态
 
@@ -79,19 +78,22 @@
 | T48-T50 客户端装配与开发 HUD | done |
 | T51 真机构建与冒烟 | done |
 | Demo 七条核心试玩路线 | done |
-| UI-PREFAB-01 城市页样张 | doing |
+| UI-PREFAB-01 城市页样张 | done |
+| BALANCE-PLAYTEST-01 数值与节奏 | doing |
 
 ## 模块队列
 
 ### 1. `UI-PREFAB-01` 正式 UI / Prefab 与城市页可玩样张
 
-状态：`doing`
+状态：`done`
 
 边界：当前模块，完成后再进入数值、提示或广告模块。
 
 切换条件：验收通过后，将当前模块改为 `BALANCE-PLAYTEST-01`。
 
 ### 2. `BALANCE-PLAYTEST-01` 完整 demo 数值与试玩节奏收敛
+
+状态：`doing`
 
 目标：让七条 demo 路线在粗糙但可玩的数值区间内稳定成立，避免“能跑但不好玩”。
 

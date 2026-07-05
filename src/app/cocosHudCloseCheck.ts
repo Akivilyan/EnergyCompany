@@ -112,6 +112,8 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "CITY_HUD_STAGE_INTERACTION_TOKENS",
   "CITY_HUD_STAGE_ICON_SLOTS",
   "CITY_HUD_STAGE_ICON_TOKENS",
+  "CITY_HUD_STAGE_PREFAB_MANIFEST",
+  "CityHudStagePrefabManifest",
   "StageUiResourceBar",
   "StageUiCityStateCard",
   "StageUiPrimaryBuildButton",
@@ -133,6 +135,30 @@ const CITY_HUD_STAGE_SPEC_MARKERS = [
   "city-stage:icon-social-value",
   "city-stage:icon-cleanliness",
   "city-stage:low-cleanliness"
+] as const;
+
+const CITY_HUD_STAGE_PREFAB_MANIFEST_MARKERS = [
+  "screen_city_detail",
+  "layers",
+  "background",
+  "buildings",
+  "grid",
+  "effects",
+  "ui",
+  "icons",
+  "requiredAssetSlots",
+  "requiredGridSlots",
+  "requiredEffectSlots",
+  "requiredFeedbackSlots",
+  "requiredUiSlots",
+  "requiredIconSlots",
+  "playablePath",
+  "primaryAction",
+  "cycleAction",
+  "advanceAction",
+  "runtimeGate",
+  "canBuildInCity",
+  "requiredRuntimeTokens"
 ] as const;
 
 const CITY_HUD_LAYOUT_BUTTON_MARKERS = [
@@ -335,6 +361,58 @@ export function runCocosHudCloseStaticChecks(
       detail: marker
     });
   }
+  checks.push({
+    id: "hud:city-stage-prefab-manifest",
+    ok:
+      stageSpecSource.includes("CITY_HUD_STAGE_PREFAB_MANIFEST") &&
+      CITY_HUD_STAGE_PREFAB_MANIFEST_MARKERS.every((marker) => stageSpecSource.includes(marker)),
+    detail: "city stage prefab manifest covers layers, required slots, runtime tokens, and playable path"
+  });
+  checks.push({
+    id: "hud:city-stage-prefab-layer-groups",
+    ok:
+      stageSpecSource.includes("background: CITY_HUD_STAGE_LAYER_NAMES.background") &&
+      stageSpecSource.includes("buildings: CITY_HUD_STAGE_LAYER_NAMES.facility") &&
+      stageSpecSource.includes("grid: CITY_HUD_STAGE_LAYER_NAMES.grid") &&
+      stageSpecSource.includes("effects: CITY_HUD_STAGE_LAYER_NAMES.effect") &&
+      stageSpecSource.includes("ui: CITY_HUD_STAGE_LAYER_NAMES.ui") &&
+      stageSpecSource.includes("icons: CITY_HUD_STAGE_LAYER_NAMES.icon"),
+    detail: "prefab manifest maps background/buildings/grid/effects/ui/icons layers"
+  });
+  checks.push({
+    id: "hud:city-stage-prefab-critical-slots",
+    ok:
+      stageSpecSource.includes("CITY_HUD_STAGE_ASSET_SLOTS.windTurbine") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ASSET_SLOTS.solarField") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_GRID_SLOTS.windSolar") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_GRID_SLOTS.solarHydro") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_UI_SLOTS.resourceBar") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_UI_SLOTS.cityStateCard") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ICON_SLOTS.cash") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ICON_SLOTS.socialValue") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ICON_SLOTS.cleanliness"),
+    detail: "prefab manifest includes required city sample slots"
+  });
+  checks.push({
+    id: "hud:city-stage-prefab-runtime-tokens",
+    ok:
+      stageSpecSource.includes("CITY_HUD_STAGE_INTERACTION_TOKENS.active") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_INTERACTION_TOKENS.hidden") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_ASSET_TOKENS.unavailable") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_GRID_TOKENS.connected") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.construction") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_FEEDBACK_TOKENS.completion") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_STATE_TOKENS.clean") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_STATE_TOKENS.lowCleanliness") &&
+      stageSpecSource.includes("CITY_HUD_STAGE_UI_TOKENS.primaryAction"),
+    detail: "prefab manifest includes required runtime state tokens"
+  });
   checks.push({
     id: "hud:city-stage-spec-import",
     ok:

@@ -359,6 +359,78 @@ export const CITY_HUD_STAGE_ICON_TOKENS = {
   cleanliness: "city-stage:icon-cleanliness"
 } as const;
 
+export const CITY_HUD_STAGE_PREFAB_MANIFEST = {
+  screenId: "screen_city_detail",
+  layers: {
+    background: CITY_HUD_STAGE_LAYER_NAMES.background,
+    buildings: CITY_HUD_STAGE_LAYER_NAMES.facility,
+    grid: CITY_HUD_STAGE_LAYER_NAMES.grid,
+    effects: CITY_HUD_STAGE_LAYER_NAMES.effect,
+    ui: CITY_HUD_STAGE_LAYER_NAMES.ui,
+    icons: CITY_HUD_STAGE_LAYER_NAMES.icon,
+    state: CITY_HUD_STAGE_LAYER_NAMES.state
+  },
+  requiredAssetSlots: [
+    CITY_HUD_STAGE_ASSET_SLOTS.windTurbine,
+    CITY_HUD_STAGE_ASSET_SLOTS.solarField,
+    CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant,
+    CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge,
+    CITY_HUD_STAGE_ASSET_SLOTS.warningBadge
+  ],
+  requiredGridSlots: [
+    CITY_HUD_STAGE_GRID_SLOTS.windSolar,
+    CITY_HUD_STAGE_GRID_SLOTS.solarHydro
+  ],
+  requiredEffectSlots: [
+    CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow,
+    CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow
+  ],
+  requiredFeedbackSlots: [
+    CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning,
+    CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress,
+    CITY_HUD_STAGE_FEEDBACK_SLOTS.completionPulse
+  ],
+  requiredUiSlots: [
+    CITY_HUD_STAGE_UI_SLOTS.resourceBar,
+    CITY_HUD_STAGE_UI_SLOTS.cityStateCard,
+    CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton
+  ],
+  requiredIconSlots: [
+    CITY_HUD_STAGE_ICON_SLOTS.cash,
+    CITY_HUD_STAGE_ICON_SLOTS.socialValue,
+    CITY_HUD_STAGE_ICON_SLOTS.cleanliness
+  ],
+  playablePath: {
+    primaryAction: CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName,
+    cycleAction: CITY_HUD_STAGE_ACTION_SLOTS.cycleBuild.nodeName,
+    advanceAction: CITY_HUD_STAGE_ACTION_SLOTS.advanceMonth.nodeName,
+    runtimeGate: "canBuildInCity"
+  },
+  requiredRuntimeTokens: [
+    CITY_HUD_STAGE_INTERACTION_TOKENS.active,
+    CITY_HUD_STAGE_INTERACTION_TOKENS.hidden,
+    CITY_HUD_STAGE_ASSET_TOKENS.visible,
+    CITY_HUD_STAGE_ASSET_TOKENS.unavailable,
+    CITY_HUD_STAGE_ASSET_TOKENS.placeholder,
+    CITY_HUD_STAGE_GRID_TOKENS.connected,
+    CITY_HUD_STAGE_GRID_TOKENS.disconnected,
+    CITY_HUD_STAGE_EFFECT_TOKENS.construction,
+    CITY_HUD_STAGE_EFFECT_TOKENS.grid,
+    CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness,
+    CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster,
+    CITY_HUD_STAGE_FEEDBACK_TOKENS.construction,
+    CITY_HUD_STAGE_FEEDBACK_TOKENS.completion,
+    CITY_HUD_STAGE_STATE_TOKENS.clean,
+    CITY_HUD_STAGE_STATE_TOKENS.lowCleanliness,
+    CITY_HUD_STAGE_UI_TOKENS.resource,
+    CITY_HUD_STAGE_UI_TOKENS.detail,
+    CITY_HUD_STAGE_UI_TOKENS.primaryAction,
+    CITY_HUD_STAGE_ICON_TOKENS.cash,
+    CITY_HUD_STAGE_ICON_TOKENS.socialValue,
+    CITY_HUD_STAGE_ICON_TOKENS.cleanliness
+  ]
+} as const;
+
 export type CityHudStageAssetSlot =
   (typeof CITY_HUD_STAGE_ASSET_SLOTS)[keyof typeof CITY_HUD_STAGE_ASSET_SLOTS];
 
@@ -376,3 +448,5 @@ export type CityHudStageEffectSlot =
 
 export type CityHudStageFeedbackSlot =
   (typeof CITY_HUD_STAGE_FEEDBACK_SLOTS)[keyof typeof CITY_HUD_STAGE_FEEDBACK_SLOTS];
+
+export type CityHudStagePrefabManifest = typeof CITY_HUD_STAGE_PREFAB_MANIFEST;
