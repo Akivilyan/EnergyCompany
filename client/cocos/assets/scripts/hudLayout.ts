@@ -102,7 +102,7 @@ export interface HudBandLayout {
   height: number;
 }
 
-/** 根据容器尺寸计算开发 HUD 各区块与按钮格。 */
+/** 根据容器尺寸计算产品 UI 壳各区块与按钮格，预留顶部刘海与底部手势区。 */
 export function buildHudBandLayout(container: Size2): {
   status: HudBandLayout;
   detail: HudBandLayout;
@@ -116,18 +116,20 @@ export function buildHudBandLayout(container: Size2): {
   const top = container.height * 0.5;
   const bottom = -container.height * 0.5;
 
-  const statusH = Math.min(68, Math.max(46, container.height * 0.095));
-  const detailH = Math.min(104, Math.max(72, container.height * 0.15));
-  const gap = Math.min(14, Math.max(8, container.height * 0.018));
+  const topInset = Math.min(92, Math.max(54, container.height * 0.09));
+  const bottomInset = Math.min(74, Math.max(44, container.height * 0.07));
+  const statusH = Math.min(86, Math.max(64, container.height * 0.11));
+  const detailH = Math.min(128, Math.max(92, container.height * 0.16));
+  const gap = Math.min(16, Math.max(10, container.height * 0.018));
   const rowCount = 5;
-  const buttonsBottom = bottom + Math.min(22, container.height * 0.035);
-  const navRowH = Math.min(64, Math.max(48, container.height * 0.085));
-  const actionRowH = Math.min(60, Math.max(46, container.height * 0.08));
-  const supportRowH = Math.min(48, Math.max(0, container.height * 0.06));
+  const buttonsBottom = bottom + bottomInset;
+  const navRowH = Math.min(78, Math.max(60, container.height * 0.1));
+  const actionRowH = Math.min(82, Math.max(64, container.height * 0.105));
+  const supportRowH = Math.min(58, Math.max(42, container.height * 0.07));
   const rowHeights = [actionRowH, supportRowH, supportRowH, navRowH, navRowH];
 
   const centerX = 0;
-  let cursorY = top - container.height * 0.03 - statusH / 2;
+  let cursorY = top - topInset - statusH / 2;
   const status: HudBandLayout = { x: centerX, y: cursorY, width: contentW, height: statusH };
   cursorY -= statusH / 2 + gap + detailH / 2;
   const detail: HudBandLayout = { x: centerX, y: cursorY, width: contentW, height: detailH };
@@ -144,9 +146,9 @@ export function buildHudBandLayout(container: Size2): {
     status,
     detail,
     rows,
-    statusFont: Math.round(Math.min(24, Math.max(18, statusH * 0.34))),
-    detailFont: Math.round(Math.min(15, Math.max(12, detailH * 0.15))),
-    buttonFont: Math.round(Math.min(22, Math.max(16, actionRowH * 0.36)))
+    statusFont: Math.round(Math.min(28, Math.max(20, statusH * 0.34))),
+    detailFont: Math.round(Math.min(18, Math.max(14, detailH * 0.16))),
+    buttonFont: Math.round(Math.min(28, Math.max(20, actionRowH * 0.36)))
   };
 }
 

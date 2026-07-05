@@ -119,6 +119,7 @@ export class CityHudPanel extends Component {
   private cityIconLayer: Node | null = null;
   private productUiShellLayer: Node | null = null;
   private readonly productUiShellSlots = new Map<string, Node>();
+  private readonly productUiShellLabels = new Map<string, Label>();
   private cityBackgroundGraphics: Graphics | null = null;
   private cityFacilityGraphics: Graphics | null = null;
   private cityGridGraphics: Graphics | null = null;
@@ -540,7 +541,7 @@ export class CityHudPanel extends Component {
     this.eventRailBg.roundRect(-width / 2, -height / 2, width, height, Math.min(14, width * 0.24));
     this.eventRailBg.fill();
     this.eventRailLabel.string = pending ? "事件\n!" : "事件\n0";
-    this.eventRailLabel.fontSize = Math.max(14, Math.round(fontSize * 0.88));
+    this.eventRailLabel.fontSize = Math.max(18, Math.round(fontSize * 0.9));
     this.eventRailLabel.lineHeight = Math.round(this.eventRailLabel.fontSize * 1.3);
     this.eventRailLabel.color = new Color(255, 255, 255, 255);
     this.fitLabelToBand(this.eventRailLabel, { x, y, width, height });
@@ -776,6 +777,9 @@ export class CityHudPanel extends Component {
       node.setParent(this.productUiShellLayer);
       node.addComponent(UITransform);
       node.addComponent(Graphics);
+      const label = this.createBandLabel(node);
+      label.color = new Color(37, 79, 94, 255);
+      this.productUiShellLabels.set(slot.nodeName, label);
       this.productUiShellSlots.set(slot.nodeName, node);
     }
   }
@@ -906,6 +910,7 @@ export class CityHudPanel extends Component {
         : UI_SHELL_SLOT_STATE_TOKENS.placeholder;
       node.name = `${slot.nodeName}:${stateToken}:${bindingToken}:${slot.role}`;
       this.redrawProductUiShellSlot(node, slot, active);
+      this.syncProductUiShellSlotLabel(slot, active);
     }
   }
 
@@ -925,6 +930,63 @@ export class CityHudPanel extends Component {
         : new Color(236, 251, 255, 82);
     graphics.roundRect(-w / 2, -h / 2, w, h, Math.min(18, h * 0.16));
     graphics.fill();
+  }
+
+  private syncProductUiShellSlotLabel(slot: UiShellStageSlot, active: boolean): void {
+    const label = this.productUiShellLabels.get(slot.nodeName);
+    const node = this.productUiShellSlots.get(slot.nodeName);
+    if (!label || !node) return;
+    label.node.active = active;
+    if (!active) return;
+    const transform = node.getComponent(UITransform);
+    const w = transform?.width ?? 0;
+    const h = transform?.height ?? 0;
+    label.string = this.resolveProductUiShellSlotText(slot);
+    label.fontSize = Math.round(Math.min(24, Math.max(13, h * 0.12)));
+    label.lineHeight = Math.round(label.fontSize * 1.25);
+    label.enableWrapText = true;
+    this.fitLabelToBand(label, { x: 0, y: 0, width: w, height: h });
+  }
+
+  private resolveProductUiShellSlotText(slot: UiShellStageSlot): string {
+    switch (slot.nodeName) {
+      case "CompanyOverviewPanel":
+        return "公司概览\n等级 / 社会价值 / 升级目标";
+      case "CompanyCashflowPanel":
+        return "现金流\n收入 · 运维 · 贷款";
+      case "CompanyLoanAdsUpgradeArea":
+        return "经营操作\n贷款 / 激励 / 升级目标";
+      case "TechBranchTabs":
+        return "风能  光伏  水电  核电  电网  经营";
+      case "TechNodeGraphPlaceholder":
+        return "科技节点图\n已点亮 / 研发中 / 可研发";
+      case "TechResearchDrawer":
+        return "研发详情\n成本 · 工期 · 前置 · 加速";
+      case "RegionCityNodeLayer":
+        return "区域城市节点\n可进入城市 / 在建线路 / 完成线路";
+      case "RegionLinkBuildBar":
+        return "区内铺线\n候选线路 · 成本 · 工期";
+      case "WorldRegionNodeLayer":
+        return "大地图\n区域解锁 / 主干线 / 都市节点";
+      case "WorldBackboneLinkLayer":
+        return "主干电网层\n已接通 / 施工中 / 候选目标";
+      case "WorldSuperHydroEntryCard":
+        return "战略工程\n超级水电槽位";
+      case "RunResultBanner":
+        return "终局结果";
+      case "RunResultRouteSummary":
+        return "路线摘要\n区域解锁 · 主干接通 · 灾害应对";
+      case "RunResultRestartEntry":
+        return "重新开始";
+      case "EventFullscreenModalShell":
+        return "事件影响";
+      case "EventModalArtSlot":
+        return "事件插画位";
+      case "EventModalConfirmButton":
+        return "知道了";
+      default:
+        return slot.nodeName;
+    }
   }
 
   private syncFacilityAssetStateTokens(): void {
@@ -1527,11 +1589,39 @@ export class CityHudPanel extends Component {
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
     this.statusLabel.string = onCity
       ? this.formatCityShellStatus()
-      : this.formatStatusText(display.statusLines, false);
+      : this.formatPageShellStatus(viewModel.screen, display.statusLines);
     this.hintLabel.string = onCity
       ? this.formatCityShellDetail(display.detailLines)
-      : this.formatDetailText(display.detailLines, false);
+      : this.formatPageShellDetail(viewModel.screen, display.detailLines);
     this.applyLayout();
+  }
+
+  private formatPageShellStatus(screen: string, fallbackLines: string[]): string {
+    const state = this.boot?.app.controller.state;
+    const prefix =
+      screen === "screen_company"
+        ? "公司经营"
+        : screen === "screen_tech_tree"
+          ? "科技研发"
+          : screen === "screen_region"
+            ? "区域电网"
+            : screen === "screen_world_map"
+              ? "全国大地图"
+              : screen === "screen_run_result"
+                ? "结算结果"
+                : fallbackLines[0] ?? "";
+    return state
+      ? `${prefix}  第${state.currentMonth}月  资金 ${state.funds}  SV ${state.socialValueCurrent}`
+      : prefix;
+  }
+
+  private formatPageShellDetail(screen: string, fallbackLines: string[]): string {
+    if (screen === "screen_company") return "经营总览、现金流、贷款与激励入口";
+    if (screen === "screen_tech_tree") return "选择科技分支，查看节点状态与当前研发";
+    if (screen === "screen_region") return "查看城市节点、区内线路与候选铺线";
+    if (screen === "screen_world_map") return "查看区域解锁、主干线和战略工程目标";
+    if (screen === "screen_run_result") return "查看胜负结果、路线摘要和重开入口";
+    return this.formatDetailText(fallbackLines, false);
   }
 
   private onBuildWind(): void {
