@@ -67,6 +67,7 @@ import type {
   ResourceKind,
   WorldMapRegionItem
 } from "../modules/screenWorldMap.js";
+import type { RunResultRouteSummaryToken } from "../modules/screenRunResult.js";
 
 export function formatLoanTierLabel(loanId: string): string {
   const key = `loan.tier.${loanId}`;
@@ -700,6 +701,7 @@ function formatRunResultStatus(boot: GameBootstrap): ClientHudDisplay {
     result: t(`run_result.${snapshot.runResult}`),
     month: snapshot.month
   });
+  const routeSummaryLines = formatRunResultRouteSummaryLines(snapshot.routeSummaryTokens);
   const detailLines = hudLines(
     t("hud.status.run_result_core", {
       level: snapshot.companyLevel,
@@ -721,7 +723,8 @@ function formatRunResultStatus(boot: GameBootstrap): ClientHudDisplay {
       state: snapshot.finalDisasterTriggered
         ? t("hud.result.state.triggered")
         : t("hud.result.state.pending")
-    })
+    }),
+    ...routeSummaryLines
   );
   return {
     statusLine,
@@ -729,6 +732,10 @@ function formatRunResultStatus(boot: GameBootstrap): ClientHudDisplay {
     statusLines: hudLines(statusLine),
     detailLines
   };
+}
+
+function formatRunResultRouteSummaryLines(tokens: RunResultRouteSummaryToken[]): string[] {
+  return tokens.map((token) => t(`hud.result.summary.${token}`));
 }
 
 export function formatNavHint(boot: GameBootstrap): string {

@@ -31,45 +31,43 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`UX-GUIDANCE-01`
-- 模块标题：经营压力、提示与反馈闭环
+- 当前模块：`MONETIZATION-WECHAT-01`
+- 模块标题：微信激励广告与商业化链路
 - 状态：`doing`
 - 开始时间：2026-07-05
 
 ## 当前模块完成定义
 
-### `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
+### `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
 
-目标：让玩家知道当前为什么卡、下一步该做什么，以及灾害/经营压力/终局结果为什么发生。
+目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
 
 输入：
 
+- `docs/design/features/monetization.md`
 - `docs/design/features/company-management.md`
-- `docs/design/features/events.md`
-- `docs/design/features/tech-tree.md`
-- `docs/design/features/world-map.md`
 - `docs/design/ui/company.md`
-- `docs/design/ui/events.md`
-- `docs/design/ui/milestones.md`
-- `docs/design/ui/run-result.md`
+- `docs/design/engineering/cocos-client-setup.md`
+- 现有 `RewardedAdProvider` / `AdRewardService` / Cocos GameRoot 挂载入口
 
 输出：
 
-- 公司、科技、城市、区域、大地图、事件、结果页的关键提示闭环。
-- 经营压力、科技解法、灾害备考/恢复、终局路线摘要统一口径。
-- 文案键、状态 token、按钮能力与实际动作条件一致。
-- 相关模块测试覆盖错误态和推荐态。
+- 微信 `wx.createRewardedVideoAd` provider。
+- 完成、取消、加载失败、SDK 缺失、重复点击的完整状态处理。
+- 公司现金广告与科技/建设加速入口统一走异步广告服务。
+- 真机/微信开发者工具排障路径清楚；无 wx 环境继续使用 stub。
 
 不做：
 
-- 不改核心数值平衡。
-- 不做新的玩法系统。
-- 不接真实广告 SDK。
+- 不实现 IAP 支付。
+- 不调广告收益数值。
+- 不重做公司屏 UI。
 
 验收：
 
 - `npm test`
-- 涉及客户端显示时补 `npm run verify:client:fast`
+- `npm run verify:client`
+- 真机或微信开发者工具手动冒烟路径按 `cocos-client-setup.md` 执行并在最终回复说明结果。
 
 ## 当前工程状态
 
@@ -81,7 +79,8 @@
 | Demo 七条核心试玩路线 | done |
 | UI-PREFAB-01 城市页样张 | done |
 | BALANCE-PLAYTEST-01 数值与节奏 | done |
-| UX-GUIDANCE-01 经营压力、提示与反馈 | doing |
+| UX-GUIDANCE-01 经营压力、提示与反馈 | done |
+| MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | doing |
 
 ## 模块队列
 
@@ -131,7 +130,7 @@
 
 ### 3. `UX-GUIDANCE-01` 经营压力、提示与反馈闭环
 
-状态：`doing`
+状态：`done`
 
 目标：让玩家知道当前为什么卡、下一步该做什么，以及灾害/经营压力/终局结果为什么发生。
 
@@ -167,6 +166,8 @@
 切换条件：验收通过后，将当前模块改为 `MONETIZATION-WECHAT-01`。
 
 ### 4. `MONETIZATION-WECHAT-01` 微信激励广告与商业化链路
+
+状态：`doing`
 
 目标：把当前 stub / 预研广告链路推进到微信小游戏可验证的真实激励广告路径，并保持 Node/无 wx 环境可回退。
 
@@ -231,4 +232,4 @@
 
 ## 下一步
 
-当前推进 `UX-GUIDANCE-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。
+当前推进 `MONETIZATION-WECHAT-01`。每次只推进一个大模块；模块内由 Agent 自行连续完成实现、验证和必要自修复，不再按小步骤等待口头推进。

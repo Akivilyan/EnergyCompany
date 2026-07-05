@@ -10,6 +10,16 @@ export interface RunResultTerminalRouteSnapshot {
   superHydroTotalOutputMw: number;
 }
 
+export type RunResultRouteSummaryToken =
+  | "victory_route_complete"
+  | "bankrupt_cash_pressure"
+  | "metb_locked"
+  | "metb_unconnected"
+  | "metb_supply_gap"
+  | "super_hydro_missing"
+  | "super_hydro_isolated"
+  | "final_disaster_pending";
+
 export interface RunResultSnapshot {
   month: number;
   runResult: Exclude<GameState["runResult"], null>;
@@ -19,6 +29,7 @@ export interface RunResultSnapshot {
   disastersTriggeredCount: number;
   finalDisasterTriggered: boolean;
   terminalRoute: RunResultTerminalRouteSnapshot;
+  routeSummaryTokens: RunResultRouteSummaryToken[];
   canRunPlayableCommands: false;
 }
 
@@ -66,6 +77,19 @@ export class ScreenRunResult {
         )
       )
       .reduce((sum, slot) => sum + slot.outputMw, 0);
+    const terminalRoute: RunResultTerminalRouteSnapshot = {
+      metBUnlocked,
+      metBConnected,
+      metBSupplyGapMw: metBCities.length > 0 ? Math.max(0, metBDemandMw - metBEffectiveSupplyMw) : null,
+      superHydroFinishedSlots,
+      superHydroConnectedOutputMw,
+      superHydroTotalOutputMw
+    };
+    const routeSummaryTokens = buildRouteSummaryTokens(
+      state.runResult,
+      finalDisasterTriggered,
+      terminalRoute
+    );
     return {
       month: state.currentMonth,
       runResult: state.runResult,
@@ -74,17 +98,42 @@ export class ScreenRunResult {
       socialValue: state.socialValueCurrent,
       disastersTriggeredCount: state.disastersTriggered.length,
       finalDisasterTriggered,
-      terminalRoute: {
-        metBUnlocked,
-        metBConnected,
-        metBSupplyGapMw: metBCities.length > 0 ? Math.max(0, metBDemandMw - metBEffectiveSupplyMw) : null,
-        superHydroFinishedSlots,
-        superHydroConnectedOutputMw,
-        superHydroTotalOutputMw
-      },
+      terminalRoute,
+      routeSummaryTokens,
       canRunPlayableCommands: false
     };
   }
+}
+
+function buildRouteSummaryTokens(
+  runResult: Exclude<GameState["runResult"], null>,
+  finalDisasterTriggered: boolean,
+  terminalRoute: RunResultTerminalRouteSnapshot
+): RunResultRouteSummaryToken[] {
+  if (
+    runResult === "victory" &&
+    finalDisasterTriggered &&
+    terminalRoute.metBConnected &&
+    (terminalRoute.metBSupplyGapMw ?? 0) <= 0 &&
+    terminalRoute.superHydroConnectedOutputMw > 0
+  ) {
+    return ["victory_route_complete"];
+  }
+  const tokens: RunResultRouteSummaryToken[] = [];
+  if (runResult === "bankrupt") tokens.push("bankrupt_cash_pressure");
+  if (!terminalRoute.metBUnlocked) {
+    tokens.push("metb_locked");
+  } else if (!terminalRoute.metBConnected) {
+    tokens.push("metb_unconnected");
+  }
+  if ((terminalRoute.metBSupplyGapMw ?? 0) > 0) tokens.push("metb_supply_gap");
+  if (terminalRoute.superHydroTotalOutputMw <= 0) {
+    tokens.push("super_hydro_missing");
+  } else if (terminalRoute.superHydroConnectedOutputMw < terminalRoute.superHydroTotalOutputMw) {
+    tokens.push("super_hydro_isolated");
+  }
+  if (!finalDisasterTriggered) tokens.push("final_disaster_pending");
+  return tokens;
 }
 
 export function createScreenRunResult(controller: RunController): ScreenRunResult {

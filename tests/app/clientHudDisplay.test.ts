@@ -1167,6 +1167,62 @@ describe("clientHudDisplay", () => {
     expect(display.detailLines).toContain("超水电候选：超级水电一号槽 · 可建 · 未建 · 160资金 · 6月 · 4200MW");
   });
 
+  it("shows result route summary reasons on run result hud", () => {
+    const boot = createGameBootstrapFromRepo();
+    const finalDisaster = boot.app.controller.config.bundle.disasters.find((item) => item.is_final);
+    expect(finalDisaster).toBeTruthy();
+    if (!finalDisaster) return;
+    boot.app.controller.state.phase = "run_result";
+    boot.app.controller.state.runResult = "victory";
+    boot.app.controller.state.companyLevel = 5;
+    boot.app.controller.state.disastersTriggered.push(finalDisaster.seq);
+    for (const city of boot.app.controller.config.bundle.cities.filter((item) => item.region_id === "MET-B")) {
+      boot.app.controller.state.cities[city.city_id] = {
+        cityId: city.city_id,
+        demandMw: city.base_demand_mw,
+        localSupplyMw: city.base_demand_mw,
+        effectiveSupplyMw: city.base_demand_mw,
+        netImportMw: 0,
+        supplyRatio: 1,
+        cityFullyEcoSupply: true,
+        ecoCapFactor: 1,
+        cityBaseSocialValue: city.city_base_social_value
+      };
+    }
+    boot.app.controller.state.gridLinks["CITY-METB-01::CITY-START"] = {
+      linkId: "CITY-METB-01::CITY-START",
+      fromCityId: "CITY-START",
+      toCityId: "CITY-METB-01",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 250
+    };
+    boot.app.controller.state.superHydros["super_hydro_1"] = {
+      slotId: "super_hydro_1",
+      nodeId: "SUPER-HYDRO-1",
+      displayName: "超级水电一号槽",
+      status: "finished",
+      monthsRemaining: 0,
+      outputMw: 4200
+    };
+    boot.app.controller.state.gridLinks["CITY-METB-01::SUPER-HYDRO-1"] = {
+      linkId: "CITY-METB-01::SUPER-HYDRO-1",
+      fromCityId: "CITY-METB-01",
+      toCityId: "SUPER-HYDRO-1",
+      linkType: "trunk",
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 250
+    };
+    boot.play.openScreen("screen_run_result");
+
+    const display = buildClientHudDisplay(boot);
+
+    expect(display.statusLine).toBe("终局 · 胜利 · 第1月");
+    expect(display.detailLines).toContain("结果原因：最终灾害已过，MET-B贯通、超水电接网且缺口清零");
+  });
+
   it("shows finished but isolated super hydro output as world map grid pressure", () => {
     const boot = createGameBootstrapFromRepo();
     boot.app.controller.state.companyLevel = 5;
