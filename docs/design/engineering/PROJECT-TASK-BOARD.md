@@ -13,7 +13,7 @@ open_questions: []
 
 # 项目级任务看板
 
-本文件只记录当前模块、当前状态和下一步。规则写入 `codex-project-rules.md`；执行结果写入 Git commit 与最终回复；历史查 Git 或归档。
+本文件只记录当前模块、当前状态和下一步。规则写入根目录 `AGENTS.md`；执行结果写入 Git commit 与最终回复；历史查 Git 或归档。
 
 ## 当前阶段
 
