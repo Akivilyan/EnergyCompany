@@ -498,11 +498,11 @@ export function runCocosHudCloseStaticChecks(
   checks.push({
     id: "hud:mobile-ui-safe-zone-layout",
     ok:
-      layoutSource.includes("topInset = Math.min(108") &&
-      layoutSource.includes("bottomInset = Math.min(92") &&
-      layoutSource.includes("Math.max(68, container.height * 0.108)") &&
-      layoutSource.includes("Math.max(72, container.height * 0.112)") &&
-      layoutSource.includes("Math.max(22, actionRowH"),
+      layoutSource.includes("topInset = Math.min(122") &&
+      layoutSource.includes("bottomInset = Math.min(118") &&
+      layoutSource.includes("Math.max(86, container.height * 0.13)") &&
+      layoutSource.includes("Math.max(94, container.height * 0.14)") &&
+      layoutSource.includes("Math.max(28, actionRowH"),
     detail: "HUD layout keeps top/bottom safe zones and mobile touch targets above the game UI minimum"
   });
   checks.push({

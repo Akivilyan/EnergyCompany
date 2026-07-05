@@ -659,7 +659,7 @@ export class CityHudPanel extends Component {
     const state = this.boot.app.controller.state;
     const profile = getCityHudProfileSnapshot(this.boot);
     const supplyRatio = profile ? Math.round(profile.supplyRatio * 100) : 0;
-    return `M${view.month}  资金 ${view.funds}  SV ${state.socialValueCurrent}  供能 ${supplyRatio}%`;
+    return `M${view.month}  资金 ${view.funds}\nSV ${state.socialValueCurrent}  供能 ${supplyRatio}%`;
   }
 
   private formatCityShellDetail(fallbackLines: string[]): string {
@@ -672,13 +672,12 @@ export class CityHudPanel extends Component {
       return candidate ? `${cityName}\n${this.compactHudLine(candidate, 34)}` : cityName;
     }
     const supplyLine = profile.supplyGapMw > 0
-      ? `缺口 ${profile.supplyGapMw}MW · 负荷 ${profile.demandMw}MW`
-      : `供能稳定 · 负荷 ${profile.demandMw}MW`;
-    const cleanLine = profile.cityFullyEcoSupply ? "清洁供能达标" : `清洁度 ${Math.round(profile.ecoCapFactor * 100)}%`;
+      ? `缺口 ${profile.supplyGapMw}MW`
+      : "供能稳定";
+    const cleanLine = profile.cityFullyEcoSupply ? "清洁达标" : `清洁 ${Math.round(profile.ecoCapFactor * 100)}%`;
     return [
       `${cityName}  ${supplyLine}`,
-      cleanLine,
-      candidate ? this.compactHudLine(candidate, 34) : null
+      `${cleanLine}${candidate ? `  ${this.compactHudLine(candidate.replace("候选：", ""), 16)}` : ""}`
     ].filter((line): line is string => !!line).join("\n");
   }
 
@@ -1651,7 +1650,7 @@ export class CityHudPanel extends Component {
     label.color = new Color(245, 245, 245, 255);
     label.horizontalAlign = HorizontalTextAlignment.CENTER;
     label.verticalAlign = VerticalTextAlignment.CENTER;
-    label.overflow = Overflow.SHRINK;
+    label.overflow = Overflow.CLAMP;
     label.enableWrapText = true;
     return label;
   }
@@ -1749,9 +1748,9 @@ export class CityHudPanel extends Component {
   }
 
   private syncButtonCaptions(): void {
-    this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind");
-    this.setButtonCaption(this.cycleBuildBtn, "hud.btn.cycle_build");
-    this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month");
+    this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind.short");
+    this.setButtonCaption(this.cycleBuildBtn, "hud.btn.cycle_build.short");
+    this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month.short");
     this.setButtonCaption(this.applyLoanBtn, "hud.btn.loan");
     this.setButtonCaption(this.cycleLoanBtn, "hud.btn.cycle_loan");
     this.setButtonCaption(this.adCashBtn, "hud.btn.ad_cash");
@@ -1824,7 +1823,7 @@ export class CityHudPanel extends Component {
     this.syncButtonStateTokens();
     this.syncButtonCaptions();
     if (onCity) {
-      this.setButtonCaption(this.buildWindBtn, "hud.btn.build_selected");
+      this.setButtonCaption(this.buildWindBtn, "hud.btn.build_selected.short");
     }
     if (onTech && !hasActiveResearch) {
       this.setButtonCaption(this.adSpeedupBtn, "hud.btn.cycle_research");

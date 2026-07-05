@@ -116,16 +116,16 @@ export function buildHudBandLayout(container: Size2): {
   const top = container.height * 0.5;
   const bottom = -container.height * 0.5;
 
-  const topInset = Math.min(108, Math.max(68, container.height * 0.105));
-  const bottomInset = Math.min(92, Math.max(58, container.height * 0.085));
-  const statusH = Math.min(92, Math.max(70, container.height * 0.115));
-  const detailH = Math.min(136, Math.max(104, container.height * 0.165));
-  const gap = Math.min(16, Math.max(10, container.height * 0.018));
+  const topInset = Math.min(122, Math.max(76, container.height * 0.115));
+  const bottomInset = Math.min(118, Math.max(76, container.height * 0.105));
+  const statusH = Math.min(142, Math.max(104, container.height * 0.16));
+  const detailH = Math.min(156, Math.max(118, container.height * 0.17));
+  const gap = Math.min(20, Math.max(12, container.height * 0.02));
   const rowCount = 5;
   const buttonsBottom = bottom + bottomInset;
-  const navRowH = Math.min(88, Math.max(68, container.height * 0.108));
-  const actionRowH = Math.min(92, Math.max(72, container.height * 0.112));
-  const supportRowH = Math.min(66, Math.max(50, container.height * 0.078));
+  const navRowH = Math.min(116, Math.max(86, container.height * 0.13));
+  const actionRowH = Math.min(126, Math.max(94, container.height * 0.14));
+  const supportRowH = Math.min(82, Math.max(62, container.height * 0.09));
   const rowHeights = [actionRowH, supportRowH, supportRowH, navRowH, navRowH];
 
   const centerX = 0;
@@ -146,9 +146,9 @@ export function buildHudBandLayout(container: Size2): {
     status,
     detail,
     rows,
-    statusFont: Math.round(Math.min(30, Math.max(22, statusH * 0.36))),
-    detailFont: Math.round(Math.min(22, Math.max(16, detailH * 0.17))),
-    buttonFont: Math.round(Math.min(30, Math.max(22, actionRowH * 0.37)))
+    statusFont: Math.round(Math.min(38, Math.max(28, statusH * 0.3))),
+    detailFont: Math.round(Math.min(28, Math.max(22, detailH * 0.2))),
+    buttonFont: Math.round(Math.min(36, Math.max(28, actionRowH * 0.34)))
   };
 }
 
