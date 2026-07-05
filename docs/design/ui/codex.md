@@ -5,7 +5,6 @@ status: draft
 version: 0.1.0
 sources:
   - docs/design/ui/onboarding.md
-  - docs/design/engineering/IMPLEMENTATION-TASKS.md#T45-P1-01
 supersedes: []
 depends_on:
   - ui/00-screen-map
@@ -43,9 +42,3 @@ open_questions: []
 - 图鉴只读，不触发 sim 命令，不改变 `GameState`。
 - 无论 tutorial/normal run，均可打开并切页。
 - 页签不存在时，回退到 `codex_core`。
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-29 | T45-P1-01：新增简版图鉴（2 页）壳层契约与错误码映射 |

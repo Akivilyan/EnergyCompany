@@ -148,9 +148,3 @@ scheduled → active → expired
   - [科技树](./tech-tree.md)
   - [供能计算](./supply-calculation.md)
   - [事件 UI](../ui/events.md)（T32）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T22 初稿：生命周期、M11 调度、效果挂载、固定灾害与验收标准 |

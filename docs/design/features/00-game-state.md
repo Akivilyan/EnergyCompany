@@ -165,9 +165,3 @@ open_questions:
   - `features/social-value-settlement.md`（T17）
   - [商业化](./monetization.md)（T24）
   - [新手引导](./onboarding.md)（T24a）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T13 初稿：状态机、命令枚举、M1-M14 结算管道与验收标准 |

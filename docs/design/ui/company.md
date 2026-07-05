@@ -131,11 +131,3 @@ open_questions: []
 ## 10. 相关文档
 
 - Feature：[company-management](../features/company-management.md)、[monetization](../features/monetization.md)、[social-value-settlement](../features/social-value-settlement.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T29 初稿 |
-| 0.1.1 | 2026-05-29 | 对齐 T45-13：补 `screenCompany` 快照/近月流水/贷款动作壳层契约与错误码映射 |
-| 0.1.2 | 2026-05-30 | 对齐 T45-P1-04：公司屏激励广告改经 `AdRewardService`，补广告错误码映射 |

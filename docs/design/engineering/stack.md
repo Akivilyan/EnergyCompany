@@ -172,9 +172,3 @@ tools/
 - [Playable v0 垂直切片](./vertical-slice-v0.md)
 - [全局状态机与结算管道](../features/00-game-state.md)
 - [数据配置总览](../data/README.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T42 初稿：定稿为 Cocos + TS + 配置驱动模拟层，并给出 Unity 审稿结论 |

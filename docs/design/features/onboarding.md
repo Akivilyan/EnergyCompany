@@ -204,9 +204,3 @@ open_questions:
   - [商业化](./monetization.md)
 - UI：[新手引导 UI](../ui/onboarding.md)（T35a）
 - Data：`tutorial_run_config`（T37）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T24a 初稿：7 步白名单、跳过/打勾、弱提示与存档字段 |

@@ -136,9 +136,3 @@ while social_value_current >= social_value_threshold_next(current_level):
   - [全局游戏状态与月度结算](./00-game-state.md)
   - [供能计算](./supply-calculation.md)
   - `features/company-management.md`（T18）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T17 初稿：M9 城市汇总公式、M10 升级检视、边界与验收标准 |

@@ -151,9 +151,3 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 - GDD：[核心循环与时间](../gdd/01-core-loop.md)、[新手引导](../gdd/10-onboarding.md)
 - Feature：[索引](../features/README.md)、[00-game-state](../features/00-game-state.md)
 - UI 子任务：T27 region、T28 world、T29 company、T30 construction、T31 tech、T32 events、T34 milestones、T35a onboarding
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T26 初稿：屏幕 ID 注册、层级、导航矩阵与叠加层 |

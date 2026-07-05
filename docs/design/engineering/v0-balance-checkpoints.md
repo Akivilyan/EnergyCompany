@@ -6,7 +6,7 @@
 - 大城市承担负荷与基荷，外围资源点承担外送。
 - 存在等待月，但等待是“有预期的等待”。
 
-配套填写模板：`docs/design/engineering/v0-balance-runlog-template.md`。
+试玩记录直接写入本轮 Git 提交说明或外部表格，不再维护仓库内 runlog 模板。
 首轮目标区间：`docs/design/engineering/v0-balance-target-lines.md`。
 
 ## 试玩设置

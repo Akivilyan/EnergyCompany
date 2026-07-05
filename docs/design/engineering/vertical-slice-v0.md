@@ -166,9 +166,3 @@ open_questions:
 - Feature：[README](../features/README.md)
 - UI：[00-screen-map](../ui/00-screen-map.md)
 - Data：[vertical-slice-v0](../data/vertical-slice-v0/README.md)、[CHECKLIST](../data/CHECKLIST.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T41 初稿：用户确认默认裁剪 |

@@ -47,4 +47,3 @@ open_questions:
 | `bankrupt_consecutive_months` | int | 是 | 连续破产判负月数（2） |
 | `allow_decimal_in_config` | bool | 是 | 配置允许小数 |
 | `settlement_rounding_mode` | enum | 是 | `truncate_to_int` |
-

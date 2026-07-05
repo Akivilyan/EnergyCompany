@@ -165,9 +165,3 @@ locked → unlocked → researching → lit
   - [区域电网与主干](./grid-network.md)
   - [供能计算](./supply-calculation.md)
   - [科技树 UI](../ui/tech-tree.md)（T31）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T21 初稿：状态机、单队列、取消返还、效果挂载与验收标准 |

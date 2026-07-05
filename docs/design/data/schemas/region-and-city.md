@@ -82,4 +82,3 @@ open_questions:
 | 风/光/常规水电 `region_mult` | `normal -> 1`，`rich -> 2` |
 | 火电/核电/超级水电 `region_mult` | 恒 `1` |
 | 常规水电可建 | `has_river = true` |
-

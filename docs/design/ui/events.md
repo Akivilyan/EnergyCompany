@@ -134,12 +134,3 @@ open_questions: []
 
 - Feature：[events](../features/events.md)
 - UI：[milestones](./milestones.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T32 初稿 |
-| 0.1.1 | 2026-05-29 | 对齐 T45-12：补 `screenEventsPanel` 错误码与 `messageKey/actionKey` 清单 |
-| 0.1.2 | 2026-05-29 | 对齐 T45-12：补全屏弹窗内容键契约（title/summary/impact/acknowledge） |
-| 0.1.3 | 2026-05-29 | 对齐 T45-12：补多场叠加分槽与弹窗队列优先级契约 |

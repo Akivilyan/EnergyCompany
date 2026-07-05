@@ -104,9 +104,3 @@ screen_city_detail
 - `06-grid.md`
 - `09-year-end-and-monetization.md`
 - `11-replayability.md`
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.4.0 | 2026-06-17 | 压缩重复说明，保留界面关系、主循环、月结与反馈规则 |

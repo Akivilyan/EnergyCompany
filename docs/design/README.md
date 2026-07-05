@@ -25,15 +25,15 @@
 
 | 用途 | 文件 |
 |------|------|
-| 当前产品真相 | `current-product-truth.md` |
-| 文档规范 | `META.md` |
-| 旧文档映射 | `LEGACY.md` |
-| 设计阶段摘要 | `TASK-LIST.md` |
-| 当前模块状态 | `engineering/PROJECT-TASK-BOARD.md` |
+| 当前产品状态与任务 | `engineering/PROJECT-TASK-BOARD.md` |
+| 玩法规则 | `gdd/README.md` |
+| 功能验收规格 | `features/README.md` |
+| UI 规格 | `ui/README.md` |
+| 配置规格 | `data/README.md` |
+| 工程边界 | `engineering/architecture.md` |
 
 ## 说明
 
-- 旧 `docs/*.md` 仅保留为历史参考
-- 当前开发不再依赖设计迁移任务流程
-- 判断“当前版本做到哪、什么算阶段完成”时，读 `current-product-truth.md`
+- 当前开发不维护独立历史流水文档；历史看 Git
+- 判断“当前版本做到哪、当前做什么、下一步做什么”时，读 `engineering/PROJECT-TASK-BOARD.md`
 - 若设计文档与旧记录冲突，以 `docs/design/` 当前文档为准

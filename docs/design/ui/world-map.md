@@ -106,9 +106,3 @@ open_questions:
 
 - Feature：[world-map](../features/world-map.md)、[grid-network](../features/grid-network.md)
 - GDD：[05-map](../gdd/05-map-and-slots.md)、[06-grid](../gdd/06-grid.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T28 初稿 |

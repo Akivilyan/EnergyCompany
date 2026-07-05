@@ -97,11 +97,3 @@ open_questions: []
 ## 10. 相关文档
 
 - Feature：[tech-tree](../features/tech-tree.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T31 初稿 |
-| 0.1.1 | 2026-05-29 | 对齐 T45-11：补 `uiErrorCode` 对应 `messageKey/actionKey` 清单，统一壳层错误提示契约 |
-| 0.1.2 | 2026-05-30 | 对齐 T45-P1-04：研发广告加速改经 `AdRewardService`，补广告错误码映射 |

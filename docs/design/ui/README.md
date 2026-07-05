@@ -4,7 +4,7 @@ title: UI Spec 索引
 status: draft
 version: 0.3.0
 sources:
-  - docs/design/META.md
+  - docs/design/README.md
 supersedes: []
 depends_on:
   - ui/00-screen-map
@@ -37,9 +37,3 @@ open_questions: []
 - 线框以文字和 ASCII 为主
 - 组件命名、屏幕 ID 与 Feature 对齐
 - 正式 UI / Prefab 批次的视觉与音频基调以 `art-direction.md` 为准
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.3.0 | 2026-07-04 | 新增 UI 美术与音频方向文档入口 |

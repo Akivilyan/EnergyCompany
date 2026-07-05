@@ -192,9 +192,3 @@ T44 将给出具体 TypeScript 签名、错误码和测试模板。
 - [技术选型定稿](./stack.md)
 - [Playable v0 垂直切片](./vertical-slice-v0.md)
 - [全局状态机与月度结算](../features/00-game-state.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T43 初稿：定义 core/config/ui/modules 边界、依赖矩阵与数据流 |

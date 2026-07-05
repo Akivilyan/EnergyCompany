@@ -53,9 +53,3 @@ open_questions:
 
 - GDD：[01-core-loop](../gdd/01-core-loop.md)
 - UI：[construction-flow](./construction-flow.md)、[events](./events.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T34 初稿 |

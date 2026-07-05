@@ -58,4 +58,3 @@ open_questions:
 2. 应用 `difficulty_modifiers.disaster_cash_mult`、`exam_tier_delta`。
 3. 写入持续性 debuff（收益/建造/科研）并设置 `debuff_duration_months`。
 4. 月结算按 active debuff 叠乘后统一截断为整数。
-

@@ -5,7 +5,7 @@
 ## 当前状态
 
 - 推进方式：模块交付制
-- 当前模块：见 `docs/design/engineering/PROJECT-TASK-BOARD.md`
+- 当前状态与模块：见 `docs/design/engineering/PROJECT-TASK-BOARD.md`
 - Agent 规则：见 `AGENTS.md`
 
 ## 新会话入口
@@ -17,11 +17,9 @@
 
 | 任务 | 文档 |
 |------|------|
-| 产品范围 / 阶段定义 | `docs/design/current-product-truth.md` |
 | 设计总览 | `docs/design/README.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
 | Cocos / 微信联调 | `docs/design/engineering/cocos-client-setup.md` |
-| 实现拆条 | `docs/design/engineering/IMPLEMENTATION-TASKS.md` |
 
 ## 常用命令
 

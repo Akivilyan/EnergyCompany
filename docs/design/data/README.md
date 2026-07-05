@@ -4,8 +4,6 @@ title: 配置总览
 status: draft
 version: 0.1.0
 sources:
-  - docs/design/TASK-LIST.md#T36
-  - docs/design/META.md#2-目录与命名
   - docs/design/gdd/README.md#与-data-层映射
 supersedes: []
 depends_on:
@@ -156,9 +154,3 @@ docs/design/data/
 - [schemas 索引](./schemas/README.md)
 - [数据验收清单](./CHECKLIST.md)（T40）
 - GDD 索引 [gdd/README.md](../gdd/README.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T36 初稿：目录、ID 规范、表清单与 Excel→JSON 流程 |

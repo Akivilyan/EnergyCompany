@@ -42,4 +42,3 @@ open_questions:
 - 储能科技 ID 使用 `storage_system_1`～`storage_system_3`。
 - 显示名与 tech_id 分离：显示名始终用「储能系统·I～III」。
 - 数值结算按 GDD 约定：允许配置小数，结算层仅保留整数。
-

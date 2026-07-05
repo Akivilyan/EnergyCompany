@@ -89,9 +89,3 @@ open_questions: []
 
 - Feature：[construction](../features/construction.md)
 - UI：[milestones](./milestones.md)（供能 100% 内提示）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T30 初稿（含城市屏壳） |

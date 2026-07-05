@@ -373,9 +373,3 @@ T45 实现任务拆分应直接引用以下工作包：
 - [供能计算](../features/supply-calculation.md)
 - [社会价值结算](../features/social-value-settlement.md)
 - [公司等级与单局参数字段](../data/schemas/company-level-and-run.md)
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-28 | T44 初稿：定义模拟层类型、函数签名、错误码与单测策略 |

@@ -14,8 +14,6 @@ node playtest-lab/run-first-round-batches.mjs
 
 - `playtest-lab/output/first-round-results.json`
   - 中文注释：机器可读明细，适合后续脚本继续分析。
-- `playtest-lab/output/first-round-results.md`
-  - 中文注释：人工速读报告，适合快速看每个 batch 的结果。
 
 ## 说明（重要）
 

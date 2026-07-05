@@ -4,7 +4,7 @@ title: UI 美术与音频方向
 status: draft
 version: 0.1.0
 sources:
-  - docs/design/current-product-truth.md
+  - docs/design/engineering/PROJECT-TASK-BOARD.md
   - docs/design/ui/README.md
 supersedes: []
 depends_on:
@@ -167,9 +167,3 @@ open_questions: []
 - 1 个临时状态反馈：低清洁度、灾害预警或建设完成
 
 样张通过后，再进入正式 UI / Prefab 拆分与 Cocos 落地。
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-07-04 | 固化明亮卡通新能源群岛、昼夜四季、污染灾害状态与音频基调 |

@@ -60,4 +60,3 @@ open_questions:
   - `storage_system_1`
   - `storage_system_2`
   - `storage_system_3`
-

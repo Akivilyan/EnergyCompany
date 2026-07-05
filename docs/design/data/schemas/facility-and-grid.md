@@ -62,4 +62,3 @@ open_questions:
 | `ordinary_city_reference_demand_mw` | int | 是 | 常规城需求参考值（由 `city_demand_profile` 选档） |
 | `loss_regional_mw` | int | 是 | 区域链路固定损耗 |
 | `loss_backbone_mw` | int | 是 | 主干链路固定损耗 |
-

@@ -143,4 +143,3 @@ open_questions: []
 - 与 `data/schemas/doctrine-meta.md`：`doctrine_lit_budget`、方针开局 lit 规则联动。
 - 与 `data/schemas/facility-and-grid.md`：`facility_tier` 和 `eco_sync` 触发运行态同步。
 - 与 `data/schemas/events-and-campaign.md`：政策事件可调整研发 cost/duration（通过 tech_id 命中）。
-

@@ -4,7 +4,7 @@ title: 数据验收清单
 status: draft
 version: 0.1.0
 sources:
-  - docs/design/TASK-LIST.md#T40
+  - docs/design/data/README.md
 supersedes: []
 depends_on:
   - data/README
@@ -49,9 +49,3 @@ open_questions: []
 
 - [ ] 仅暴露 `tech` + `simple` 相关行仍满足完整引用（其它行可保留不展示）
 - [ ] 垂直切片地图节点子集无悬空 `city_id`
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T40 初稿 |

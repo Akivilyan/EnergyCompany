@@ -4,7 +4,7 @@ title: GDD 索引
 status: draft
 version: 0.2.0
 sources:
-  - docs/design/TASK-LIST.md
+  - docs/design/README.md
 supersedes: []
 depends_on:
   - gdd/00-vision

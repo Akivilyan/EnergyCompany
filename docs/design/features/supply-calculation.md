@@ -145,9 +145,3 @@ eco_cap_factor = city_fully_eco_supply ? 1.0 : 0.8
   - [全局游戏状态与月度结算](./00-game-state.md)
   - `features/grid-network.md`（T20）
   - `features/social-value-settlement.md`（T17）
-
-## 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 0.1.0 | 2026-05-27 | T16 初稿：设施层+并网岛+城市层供能重算与输出定义 |
