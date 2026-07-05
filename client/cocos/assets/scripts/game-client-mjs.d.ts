@@ -48,6 +48,8 @@ declare module "*.mjs" {
   export function companyApplySelectedLoan(...args: any[]): any;
   export function companyClaimCashByAd(...args: any[]): any;
   export function companyClaimCashByAdAsync(...args: any[]): Promise<any>;
+  export function companySpeedupSelectedConstructionByAd(...args: any[]): any;
+  export function companySpeedupSelectedConstructionByAdAsync(...args: any[]): Promise<any>;
   export function companyCycleLoanCandidate(...args: any[]): any;
   export function worldCycleTargetCandidate(...args: any[]): any;
   export function worldQueueSelectedTrunk(...args: any[]): any;

@@ -5,6 +5,7 @@ import {
   StubRewardedAdProvider,
   WechatRewardedAdProvider,
   type RewardedAdProvider,
+  type RewardedAdType,
   type WechatRewardedAdSdk
 } from "../infra/monetization/rewardedAdProvider.js";
 import type { ConfigRepo } from "../sim/index.js";
@@ -37,16 +38,34 @@ export interface GameClientMountOptions {
   adProvider?: RewardedAdProvider;
   /** Cocos/微信运行时注入全局 wx；无广告能力时回退 stub。 */
   wxAdSdk?: WechatRewardedAdSdk | null;
+  /** 真实微信激励广告位；未配置真实 adunit 时回退 stub，避免真机冒烟被占位 ID 卡住。 */
+  rewardedAdUnitIds?: Partial<Record<RewardedAdType, string>>;
+  defaultRewardedAdUnitId?: string;
+}
+
+function isWechatAdUnitId(value: string | undefined): value is string {
+  return typeof value === "string" && /^adunit-[A-Za-z0-9_-]+$/.test(value);
+}
+
+function hasWechatAdUnitConfig(options: GameClientMountOptions): boolean {
+  if (isWechatAdUnitId(options.defaultRewardedAdUnitId)) return true;
+  return Object.values(options.rewardedAdUnitIds ?? {}).some(isWechatAdUnitId);
 }
 
 function resolveClientAdProvider(options: GameClientMountOptions): RewardedAdProvider {
   if (options.adProvider) return options.adProvider;
-  if (options.wxAdSdk?.createRewardedVideoAd) {
-    return new WechatRewardedAdProvider({ wx: options.wxAdSdk });
+  const adUnitConfig = hasWechatAdUnitConfig(options)
+    ? {
+        adUnitIds: options.rewardedAdUnitIds,
+        defaultAdUnitId: options.defaultRewardedAdUnitId
+      }
+    : null;
+  if (options.wxAdSdk?.createRewardedVideoAd && adUnitConfig) {
+    return new WechatRewardedAdProvider({ wx: options.wxAdSdk, ...adUnitConfig });
   }
   const globalWx = (globalThis as { wx?: WechatRewardedAdSdk }).wx;
-  if (globalWx?.createRewardedVideoAd) {
-    return new WechatRewardedAdProvider({ wx: globalWx });
+  if (globalWx?.createRewardedVideoAd && adUnitConfig) {
+    return new WechatRewardedAdProvider({ wx: globalWx, ...adUnitConfig });
   }
   return new StubRewardedAdProvider({ kind: "always_complete" });
 }
