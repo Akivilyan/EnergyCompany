@@ -116,36 +116,37 @@ export function buildHudBandLayout(container: Size2): {
   const top = container.height * 0.5;
   const bottom = -container.height * 0.5;
 
-  const statusH = container.height * 0.11;
-  const detailH = container.height * 0.2;
-  const gap = container.height * 0.02;
+  const statusH = Math.min(68, Math.max(46, container.height * 0.095));
+  const detailH = Math.min(104, Math.max(72, container.height * 0.15));
+  const gap = Math.min(14, Math.max(8, container.height * 0.018));
   const rowCount = 5;
-  const buttonsTop = top - statusH - detailH - gap * 3;
-  const buttonsBottom = bottom + container.height * 0.03;
-  const buttonsH = buttonsTop - buttonsBottom;
-  const rowH = (buttonsH - gap * (rowCount - 1)) / rowCount;
-  const colW = (contentW - gap) / 2;
+  const buttonsBottom = bottom + Math.min(22, container.height * 0.035);
+  const navRowH = Math.min(64, Math.max(48, container.height * 0.085));
+  const actionRowH = Math.min(60, Math.max(46, container.height * 0.08));
+  const supportRowH = Math.min(48, Math.max(0, container.height * 0.06));
+  const rowHeights = [actionRowH, supportRowH, supportRowH, navRowH, navRowH];
 
   const centerX = 0;
   let cursorY = top - container.height * 0.03 - statusH / 2;
   const status: HudBandLayout = { x: centerX, y: cursorY, width: contentW, height: statusH };
   cursorY -= statusH / 2 + gap + detailH / 2;
   const detail: HudBandLayout = { x: centerX, y: cursorY, width: contentW, height: detailH };
-  cursorY -= detailH / 2 + gap + rowH / 2;
 
   const rows: HudBandLayout[] = [];
-  for (let i = 0; i < rowCount; i += 1) {
-    rows.push({ x: centerX, y: cursorY, width: contentW, height: rowH });
-    cursorY -= rowH + gap;
+  let rowBottom = buttonsBottom;
+  for (let i = rowCount - 1; i >= 0; i -= 1) {
+    const height = rowHeights[i] ?? actionRowH;
+    rows[i] = { x: centerX, y: rowBottom + height / 2, width: contentW, height };
+    rowBottom += height + gap;
   }
 
   return {
     status,
     detail,
     rows,
-    statusFont: Math.round(container.height * 0.048),
-    detailFont: Math.round(container.height * 0.034),
-    buttonFont: Math.round(rowH * 0.38)
+    statusFont: Math.round(Math.min(24, Math.max(18, statusH * 0.34))),
+    detailFont: Math.round(Math.min(15, Math.max(12, detailH * 0.15))),
+    buttonFont: Math.round(Math.min(22, Math.max(16, actionRowH * 0.36)))
   };
 }
 

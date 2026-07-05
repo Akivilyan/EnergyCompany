@@ -516,7 +516,10 @@ export class CityHudPanel extends Component {
   }
 
   private formatDetailText(lines: string[], onCity: boolean): string {
-    return this.selectPlayableDetailLines(lines, onCity).join("\n");
+    const selected = this.selectPlayableDetailLines(lines, onCity);
+    return onCity
+      ? selected.map((line) => this.compactHudLine(line, 36)).join("\n")
+      : selected.map((line) => this.compactHudLine(line, 48)).join("\n");
   }
 
   private selectPlayableDetailLines(lines: string[], onCity: boolean): string[] {
@@ -529,7 +532,13 @@ export class CityHudPanel extends Component {
       "返回层",
       "Back stack",
       "可切换建造",
-      "Build options"
+      "Build options",
+      "压力拆解：",
+      "Pressure breakdown:",
+      "科技解法：",
+      "Tech solution:",
+      "灾害轴：",
+      "Disaster axis:"
     ];
     const visible = lines.filter(
       (line) => !hiddenPrefixes.some((prefix) => line.startsWith(prefix))
@@ -541,12 +550,6 @@ export class CityHudPanel extends Component {
       "Build action:",
       "备考建议：",
       "Prep action:",
-      "灾害轴：",
-      "Disaster axis:",
-      "压力拆解：",
-      "Pressure breakdown:",
-      "科技解法：",
-      "Tech solution:",
       "灾害待确认：",
       "Disaster pending:"
     ];
@@ -556,10 +559,14 @@ export class CityHudPanel extends Component {
       if (line && !picked.includes(line)) picked.push(line);
     }
     for (const line of visible) {
-      if (picked.length >= 5) break;
+      if (picked.length >= 3) break;
       if (!picked.includes(line)) picked.push(line);
     }
-    return picked.slice(0, 5);
+    return picked.slice(0, 3);
+  }
+
+  private compactHudLine(line: string, maxLength: number): string {
+    return line.length > maxLength ? `${line.slice(0, maxLength - 1)}...` : line;
   }
 
   private fitLabelToBand(label: Label, band: HudBandLayout): void {
@@ -1426,7 +1433,7 @@ export class CityHudPanel extends Component {
     this.openRegionBtn!.node.active = true;
     this.openWorldBtn!.node.active = true;
     this.openTechBtn!.node.active = true;
-    this.navBackBtn!.node.active = true;
+    this.navBackBtn!.node.active = !onCity;
     this.syncButtonStateTokens();
     this.syncButtonCaptions();
     if (onCity) {
