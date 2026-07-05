@@ -116,16 +116,16 @@ export function buildHudBandLayout(container: Size2): {
   const top = container.height * 0.5;
   const bottom = -container.height * 0.5;
 
-  const topInset = Math.min(92, Math.max(54, container.height * 0.09));
-  const bottomInset = Math.min(74, Math.max(44, container.height * 0.07));
-  const statusH = Math.min(86, Math.max(64, container.height * 0.11));
-  const detailH = Math.min(128, Math.max(92, container.height * 0.16));
+  const topInset = Math.min(108, Math.max(68, container.height * 0.105));
+  const bottomInset = Math.min(92, Math.max(58, container.height * 0.085));
+  const statusH = Math.min(92, Math.max(70, container.height * 0.115));
+  const detailH = Math.min(136, Math.max(104, container.height * 0.165));
   const gap = Math.min(16, Math.max(10, container.height * 0.018));
   const rowCount = 5;
   const buttonsBottom = bottom + bottomInset;
-  const navRowH = Math.min(78, Math.max(60, container.height * 0.1));
-  const actionRowH = Math.min(82, Math.max(64, container.height * 0.105));
-  const supportRowH = Math.min(58, Math.max(42, container.height * 0.07));
+  const navRowH = Math.min(88, Math.max(68, container.height * 0.108));
+  const actionRowH = Math.min(92, Math.max(72, container.height * 0.112));
+  const supportRowH = Math.min(66, Math.max(50, container.height * 0.078));
   const rowHeights = [actionRowH, supportRowH, supportRowH, navRowH, navRowH];
 
   const centerX = 0;
@@ -146,9 +146,9 @@ export function buildHudBandLayout(container: Size2): {
     status,
     detail,
     rows,
-    statusFont: Math.round(Math.min(28, Math.max(20, statusH * 0.34))),
-    detailFont: Math.round(Math.min(18, Math.max(14, detailH * 0.16))),
-    buttonFont: Math.round(Math.min(28, Math.max(20, actionRowH * 0.36)))
+    statusFont: Math.round(Math.min(30, Math.max(22, statusH * 0.36))),
+    detailFont: Math.round(Math.min(22, Math.max(16, detailH * 0.17))),
+    buttonFont: Math.round(Math.min(30, Math.max(22, actionRowH * 0.37)))
   };
 }
 

@@ -88,6 +88,7 @@ import {
   UI_SHELL_ALL_SLOTS,
   UI_SHELL_LAYER_NAMES,
   UI_SHELL_SCREEN_TOKENS,
+  UI_SHELL_SLOT_ROLE_TOKENS,
   UI_SHELL_SLOT_STATE_TOKENS,
   type UiShellStageSlot
 } from "./uiShellStageSpec";
@@ -458,12 +459,15 @@ export class CityHudPanel extends Component {
     this.shell.setPosition(0, 0, 0);
 
     const layout = buildHudBandLayout(container);
+    const onCity = this.isCurrentCityScreen();
     this.redrawCityVisual(container);
     placeCenteredRect(this.cityUiLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.cityIconLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.productUiShellLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
+    this.detailBand.active = onCity;
+    this.hintLabel.node.active = onCity;
     this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
     this.redrawInfoPanel(this.detailBandBg, layout.detail, new Color(247, 252, 255, 224));
     this.syncPanelStateTokens(container);
@@ -478,8 +482,8 @@ export class CityHudPanel extends Component {
     this.hintLabel.color = new Color(31, 66, 82, 255);
     this.placeEventRail(container, layout.buttonFont);
 
-    if (this.isCurrentCityScreen()) {
-      this.placeRowButtons(layout.rows[3], [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
+    if (onCity) {
+      this.placeCityActionButtons(layout.rows[3], layout.buttonFont);
       this.placeRowButtons(
         layout.rows[4],
         [this.openCompanyBtn, this.openTechBtn, this.openRegionBtn, this.openWorldBtn],
@@ -562,6 +566,35 @@ export class CityHudPanel extends Component {
     }
   }
 
+  private placeCityActionButtons(row: HudBandLayout, fontSize: number): void {
+    const active = [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn].filter(
+      (btn): btn is HudButton => !!btn && btn.node.active
+    );
+    if (active.length !== 3) {
+      this.placeRowButtons(row, active, fontSize);
+      return;
+    }
+    const gap = row.width * 0.025;
+    const sideW = (row.width - gap * 2) * 0.29;
+    const primaryW = row.width - gap * 2 - sideW * 2;
+    const left = row.x - row.width / 2;
+    const slots: HudBandLayout[] = [
+      { x: left + sideW / 2, y: row.y, width: sideW, height: row.height },
+      { x: left + sideW + gap + sideW / 2, y: row.y, width: sideW, height: row.height },
+      { x: left + sideW * 2 + gap * 2 + primaryW / 2, y: row.y, width: primaryW, height: row.height }
+    ];
+    for (let i = 0; i < active.length; i += 1) {
+      const btn = active[i];
+      const slot = slots[i];
+      placeCenteredRect(btn.node, slot.x, slot.y, slot.width, slot.height);
+      btn.label.fontSize = i === 2 ? Math.round(fontSize * 1.04) : Math.round(fontSize * 0.92);
+      btn.label.lineHeight = Math.round(btn.label.fontSize * 1.12);
+      btn.label.enableWrapText = false;
+      this.fitLabelToBand(btn.label, slot);
+      this.redrawButton(btn);
+    }
+  }
+
   private formatStatusText(lines: string[], onCity: boolean): string {
     return onCity ? lines.join("    ") : lines.join("\n");
   }
@@ -626,7 +659,7 @@ export class CityHudPanel extends Component {
     const state = this.boot.app.controller.state;
     const profile = getCityHudProfileSnapshot(this.boot);
     const supplyRatio = profile ? Math.round(profile.supplyRatio * 100) : 0;
-    return `第${view.month}月  资金 ${view.funds}  SV ${state.socialValueCurrent}  供能 ${supplyRatio}%`;
+    return `M${view.month}  资金 ${view.funds}  SV ${state.socialValueCurrent}  供能 ${supplyRatio}%`;
   }
 
   private formatCityShellDetail(fallbackLines: string[]): string {
@@ -923,13 +956,224 @@ export class CityHudPanel extends Component {
     const w = transform.width;
     const h = transform.height;
     if (w <= 0 || h <= 0) return;
-    graphics.fillColor = slot.screen === "eventModal"
-      ? new Color(255, 248, 238, 226)
-      : slot.screen === "runResult"
-        ? new Color(242, 252, 255, 214)
-        : new Color(236, 251, 255, 82);
+    graphics.fillColor = this.resolveProductShellFill(slot);
     graphics.roundRect(-w / 2, -h / 2, w, h, Math.min(18, h * 0.16));
     graphics.fill();
+    this.drawProductShellContent(graphics, slot, w, h);
+  }
+
+  private resolveProductShellFill(slot: UiShellStageSlot): Color {
+    if (slot.screen === "eventModal") return new Color(255, 248, 238, 238);
+    if (slot.screen === "runResult") return new Color(242, 252, 255, 224);
+    if (slot.role === UI_SHELL_SLOT_ROLE_TOKENS.graph || slot.role === UI_SHELL_SLOT_ROLE_TOKENS.map) {
+      return new Color(232, 249, 255, 176);
+    }
+    if (slot.role === UI_SHELL_SLOT_ROLE_TOKENS.actionArea) return new Color(31, 122, 177, 218);
+    if (slot.role === UI_SHELL_SLOT_ROLE_TOKENS.nav) return new Color(23, 102, 156, 226);
+    return new Color(247, 253, 255, 202);
+  }
+
+  private drawProductShellContent(g: Graphics, slot: UiShellStageSlot, w: number, h: number): void {
+    switch (slot.nodeName) {
+      case "TechBranchTabs":
+        this.drawShellTabs(g, w, h, 6);
+        return;
+      case "TechNodeGraphPlaceholder":
+        this.drawTechGraphShell(g, w, h);
+        return;
+      case "TechResearchDrawer":
+        this.drawDrawerShell(g, w, h);
+        return;
+      case "CompanyOverviewPanel":
+        this.drawCompanyOverviewShell(g, w, h);
+        return;
+      case "CompanyCashflowPanel":
+        this.drawCashflowShell(g, w, h);
+        return;
+      case "CompanyLoanAdsUpgradeArea":
+        this.drawActionStripShell(g, w, h, 3);
+        return;
+      case "RegionCityNodeLayer":
+        this.drawRegionMapShell(g, w, h);
+        return;
+      case "RegionLinkBuildBar":
+        this.drawActionStripShell(g, w, h, 2);
+        return;
+      case "WorldRegionNodeLayer":
+        this.drawWorldMapShell(g, w, h);
+        return;
+      case "WorldBackboneLinkLayer":
+        this.drawWorldBackboneShell(g, w, h);
+        return;
+      case "WorldSuperHydroEntryCard":
+        this.drawHydroEntryShell(g, w, h);
+        return;
+      case "EventFullscreenModalShell":
+        this.drawModalFrameShell(g, w, h);
+        return;
+      case "RunResultBanner":
+        this.drawResultBannerShell(g, w, h);
+        return;
+      default:
+        return;
+    }
+  }
+
+  private drawShellTabs(g: Graphics, w: number, h: number, count: number): void {
+    const gap = w * 0.018;
+    const cellW = (w - gap * (count + 1)) / count;
+    for (let i = 0; i < count; i += 1) {
+      const x = -w / 2 + gap + cellW / 2 + i * (cellW + gap);
+      g.fillColor = i === 0 ? new Color(111, 221, 177, 235) : new Color(245, 252, 255, 214);
+      g.roundRect(x - cellW / 2, -h * 0.32, cellW, h * 0.64, Math.min(12, h * 0.22));
+      g.fill();
+    }
+  }
+
+  private drawTechGraphShell(g: Graphics, w: number, h: number): void {
+    const nodes = [
+      { x: -w * 0.34, y: h * 0.18, active: true },
+      { x: -w * 0.1, y: h * 0.02, active: true },
+      { x: w * 0.16, y: h * 0.2, active: false },
+      { x: w * 0.34, y: -h * 0.08, active: false },
+      { x: -w * 0.24, y: -h * 0.22, active: true },
+      { x: w * 0.02, y: -h * 0.26, active: false }
+    ];
+    g.strokeColor = new Color(65, 122, 151, 185);
+    g.lineWidth = Math.max(3, h * 0.018);
+    for (let i = 0; i < nodes.length - 1; i += 1) {
+      g.moveTo(nodes[i].x, nodes[i].y);
+      g.lineTo(nodes[i + 1].x, nodes[i + 1].y);
+      g.stroke();
+    }
+    for (const node of nodes) {
+      this.drawMapNode(g, node.x, node.y, Math.max(18, Math.min(w, h) * 0.08), node.active);
+    }
+  }
+
+  private drawRegionMapShell(g: Graphics, w: number, h: number): void {
+    const a = { x: -w * 0.26, y: h * 0.1 };
+    const b = { x: w * 0.18, y: h * 0.18 };
+    const c = { x: -w * 0.02, y: -h * 0.2 };
+    g.strokeColor = new Color(81, 223, 226, 215);
+    g.lineWidth = Math.max(4, h * 0.02);
+    g.moveTo(a.x, a.y);
+    g.lineTo(b.x, b.y);
+    g.moveTo(a.x, a.y);
+    g.lineTo(c.x, c.y);
+    g.stroke();
+    this.drawMapNode(g, a.x, a.y, Math.max(24, h * 0.13), true);
+    this.drawMapNode(g, b.x, b.y, Math.max(24, h * 0.13), true);
+    this.drawMapNode(g, c.x, c.y, Math.max(24, h * 0.13), false);
+  }
+
+  private drawWorldMapShell(g: Graphics, w: number, h: number): void {
+    const nodes = [
+      { x: -w * 0.28, y: h * 0.14, active: true },
+      { x: w * 0.08, y: h * 0.2, active: true },
+      { x: w * 0.3, y: -h * 0.02, active: false },
+      { x: -w * 0.08, y: -h * 0.18, active: true },
+      { x: w * 0.18, y: -h * 0.26, active: false }
+    ];
+    g.strokeColor = new Color(66, 187, 217, 178);
+    g.lineWidth = Math.max(3, h * 0.018);
+    for (let i = 0; i < nodes.length - 1; i += 1) {
+      g.moveTo(nodes[i].x, nodes[i].y);
+      g.lineTo(nodes[i + 1].x, nodes[i + 1].y);
+      g.stroke();
+    }
+    for (const node of nodes) {
+      this.drawMapNode(g, node.x, node.y, Math.max(22, h * 0.11), node.active);
+    }
+  }
+
+  private drawWorldBackboneShell(g: Graphics, w: number, h: number): void {
+    g.strokeColor = new Color(247, 227, 111, 218);
+    g.lineWidth = Math.max(4, h * 0.022);
+    g.moveTo(-w * 0.36, h * 0.08);
+    g.bezierCurveTo(-w * 0.12, h * 0.26, w * 0.1, -h * 0.16, w * 0.36, h * 0.02);
+    g.stroke();
+  }
+
+  private drawMapNode(g: Graphics, x: number, y: number, radius: number, active: boolean): void {
+    g.fillColor = active ? new Color(104, 219, 163, 240) : new Color(146, 165, 176, 188);
+    g.circle(x, y, radius);
+    g.fill();
+    g.strokeColor = active ? new Color(255, 244, 148, 235) : new Color(226, 235, 240, 190);
+    g.lineWidth = Math.max(3, radius * 0.16);
+    g.circle(x, y, radius * 1.18);
+    g.stroke();
+  }
+
+  private drawDrawerShell(g: Graphics, w: number, h: number): void {
+    g.fillColor = new Color(255, 255, 255, 86);
+    for (let i = 0; i < 4; i += 1) {
+      const y = h * 0.3 - i * h * 0.18;
+      g.roundRect(-w * 0.38, y, w * 0.76, h * 0.06, h * 0.03);
+      g.fill();
+    }
+  }
+
+  private drawCompanyOverviewShell(g: Graphics, w: number, h: number): void {
+    g.fillColor = new Color(101, 221, 174, 230);
+    g.circle(-w * 0.28, h * 0.12, Math.min(w, h) * 0.14);
+    g.fill();
+    g.fillColor = new Color(255, 218, 101, 230);
+    g.circle(w * 0.25, h * 0.14, Math.min(w, h) * 0.13);
+    g.fill();
+    this.drawProgressTrack(g, -w * 0.35, -h * 0.25, w * 0.7, h * 0.1, 0.58);
+  }
+
+  private drawCashflowShell(g: Graphics, w: number, h: number): void {
+    const barW = w * 0.09;
+    for (let i = 0; i < 6; i += 1) {
+      const value = [0.38, 0.62, 0.48, 0.74, 0.52, 0.68][i] ?? 0.5;
+      const x = -w * 0.34 + i * w * 0.13;
+      const barH = h * value * 0.56;
+      g.fillColor = i % 2 === 0 ? new Color(78, 188, 221, 220) : new Color(107, 219, 164, 220);
+      g.roundRect(x - barW / 2, -h * 0.28, barW, barH, barW * 0.35);
+      g.fill();
+    }
+  }
+
+  private drawActionStripShell(g: Graphics, w: number, h: number, count: number): void {
+    const gap = w * 0.04;
+    const cellW = (w - gap * (count + 1)) / count;
+    for (let i = 0; i < count; i += 1) {
+      const x = -w / 2 + gap + cellW / 2 + i * (cellW + gap);
+      g.fillColor = i === 0 ? new Color(255, 216, 100, 232) : new Color(245, 252, 255, 220);
+      g.roundRect(x - cellW / 2, -h * 0.22, cellW, h * 0.44, Math.min(12, h * 0.16));
+      g.fill();
+    }
+  }
+
+  private drawHydroEntryShell(g: Graphics, w: number, h: number): void {
+    g.fillColor = new Color(74, 188, 223, 210);
+    g.ellipse(0, 0, w * 0.32, h * 0.22);
+    g.fill();
+    g.fillColor = new Color(255, 232, 103, 235);
+    g.circle(w * 0.26, h * 0.18, Math.min(w, h) * 0.1);
+    g.fill();
+  }
+
+  private drawModalFrameShell(g: Graphics, w: number, h: number): void {
+    g.strokeColor = new Color(181, 139, 74, 230);
+    g.lineWidth = Math.max(4, h * 0.012);
+    g.roundRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, Math.min(18, h * 0.06));
+    g.stroke();
+  }
+
+  private drawResultBannerShell(g: Graphics, w: number, h: number): void {
+    this.drawProgressTrack(g, -w * 0.36, -h * 0.12, w * 0.72, h * 0.22, 0.82);
+  }
+
+  private drawProgressTrack(g: Graphics, x: number, y: number, w: number, h: number, ratio: number): void {
+    g.fillColor = new Color(33, 83, 110, 168);
+    g.roundRect(x, y, w, h, h * 0.45);
+    g.fill();
+    g.fillColor = new Color(104, 219, 163, 230);
+    g.roundRect(x, y, w * ratio, h, h * 0.45);
+    g.fill();
   }
 
   private syncProductUiShellSlotLabel(slot: UiShellStageSlot, active: boolean): void {
@@ -942,7 +1186,7 @@ export class CityHudPanel extends Component {
     const w = transform?.width ?? 0;
     const h = transform?.height ?? 0;
     label.string = this.resolveProductUiShellSlotText(slot);
-    label.fontSize = Math.round(Math.min(24, Math.max(13, h * 0.12)));
+    label.fontSize = Math.round(Math.min(24, Math.max(16, h * 0.13)));
     label.lineHeight = Math.round(label.fontSize * 1.25);
     label.enableWrapText = true;
     this.fitLabelToBand(label, { x: 0, y: 0, width: w, height: h });
@@ -1128,6 +1372,7 @@ export class CityHudPanel extends Component {
   private placeStatusIcons(status: HudBandLayout, detail: HudBandLayout): void {
     if (!this.cashIcon || !this.socialValueIcon || !this.cleanlinessIcon) return;
     const size = Math.max(12, Math.min(status.height, detail.height) * 0.3);
+    this.cleanlinessIcon.active = this.isCurrentCityScreen();
     this.placeIcon(
       this.cashIcon,
       CITY_HUD_STAGE_ICON_SLOTS.cash,
@@ -1142,6 +1387,7 @@ export class CityHudPanel extends Component {
       size,
       new Color(104, 224, 177, 235)
     );
+    if (!this.cleanlinessIcon.active) return;
     this.placeIcon(
       this.cleanlinessIcon,
       CITY_HUD_STAGE_ICON_SLOTS.cleanliness,
@@ -1552,7 +1798,7 @@ export class CityHudPanel extends Component {
 
     this.buildWindBtn!.node.active = onCity && caps.canBuildInCity;
     this.cycleBuildBtn!.node.active = onCity && caps.canCycleBuildCandidate;
-    this.advanceMonthBtn!.node.active = onCity || onRegion;
+    this.advanceMonthBtn!.node.active = onCity;
     this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
     this.cancelRegionLinkBtn!.node.active = onRegion && caps.canCancelRegionLink;
     this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;

@@ -407,6 +407,12 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "uiShellStageSpec.ts"
   );
+  const layoutPath = path.join(
+    resolveClientCocosRoot(repoRoot),
+    "assets",
+    "scripts",
+    "hudLayout.ts"
+  );
   const checks: CocosHudCloseCheckItem[] = [];
 
   if (!fs.existsSync(panelPath)) {
@@ -420,6 +426,7 @@ export function runCocosHudCloseStaticChecks(
   }
 
   const source = fs.readFileSync(panelPath, "utf8");
+  const layoutSource = fs.existsSync(layoutPath) ? fs.readFileSync(layoutPath, "utf8") : "";
   for (const marker of CITY_HUD_PANEL_MARKERS) {
     checks.push({
       id: `hud:${marker}`,
@@ -487,6 +494,45 @@ export function runCocosHudCloseStaticChecks(
       source.includes("UI_SHELL_SLOT_STATE_TOKENS.active") &&
       source.includes("UI_SHELL_SLOT_STATE_TOKENS.bound"),
     detail: "CityHudPanel creates and synchronizes product UI shell runtime slots"
+  });
+  checks.push({
+    id: "hud:mobile-ui-safe-zone-layout",
+    ok:
+      layoutSource.includes("topInset = Math.min(108") &&
+      layoutSource.includes("bottomInset = Math.min(92") &&
+      layoutSource.includes("Math.max(68, container.height * 0.108)") &&
+      layoutSource.includes("Math.max(72, container.height * 0.112)") &&
+      layoutSource.includes("Math.max(22, actionRowH"),
+    detail: "HUD layout keeps top/bottom safe zones and mobile touch targets above the game UI minimum"
+  });
+  checks.push({
+    id: "hud:city-primary-action-layout",
+    ok:
+      source.includes("placeCityActionButtons") &&
+      source.includes("primaryW = row.width - gap * 2 - sideW * 2") &&
+      source.includes("i === 2 ? Math.round(fontSize * 1.04)") &&
+      source.includes("this.advanceMonthBtn!.node.active = onCity;"),
+    detail: "city screen keeps next-month as the larger city-only primary CTA"
+  });
+  checks.push({
+    id: "hud:product-page-shell-visuals",
+    ok:
+      source.includes("resolveProductShellFill") &&
+      source.includes("drawProductShellContent") &&
+      source.includes("drawTechGraphShell") &&
+      source.includes("drawCompanyOverviewShell") &&
+      source.includes("drawRegionMapShell") &&
+      source.includes("drawWorldMapShell") &&
+      source.includes("drawWorldBackboneShell"),
+    detail: "company, tech, region, and world screens render visible page shells instead of debug text only"
+  });
+  checks.push({
+    id: "hud:non-city-page-content-space",
+    ok:
+      source.includes("const onCity = this.isCurrentCityScreen()") &&
+      source.includes("this.detailBand.active = onCity") &&
+      source.includes("this.hintLabel.node.active = onCity"),
+    detail: "non-city screens hide the city state card so page content has usable space"
   });
   checks.push({
     id: "hud:city-stage-prefab-manifest",
