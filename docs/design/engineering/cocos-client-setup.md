@@ -6,7 +6,7 @@
 npm run verify:client
 ```
 
-（等价于 `build:client` + 工程预检 + T50 HUD 全屏冒烟 + hide 存档恢复 + 微信包新鲜度检查，**不打开 Cocos** 也能验证逻辑与资源。）
+（等价于 `build:client` + 工程预检 + HUD 全屏冒烟 + hide 存档恢复 + 微信包新鲜度检查，**不打开 Cocos** 也能验证逻辑与资源。）
 
 日常编码优先走快路径：
 
@@ -28,7 +28,7 @@ npm run verify:client:fast
 | 命令 | 用途 |
 |------|------|
 | `npm run verify:client:fast` | 日常客户端快验：工程预检 + HUD 冒烟 |
-| `npm run sim:cocos-hud-close` | 仅 T50 静态检查 + HUD 冒烟 |
+| `npm run sim:cocos-hud-close` | 仅 HUD 静态检查 + 冒烟 |
 | `npm run sim:client-sync-spike` | 冒烟 + T49 存档恢复（playtest 子步骤） |
 | `npm run sim:cocos-init-spike` | 仅工程/资源预检 |
 
@@ -70,7 +70,7 @@ npm run check:cocos-preview
 1. 新建场景，命名为 `**CityDetail**`
 2. 添加 **Canvas**（含 Camera）
 3. Canvas 下建空节点（建议命名 `GameRoot`），挂载 `**GameRoot`** 组件
-4. **无需**手动添加 `CityHudPanel`（`GameRoot` 会自动挂上并**用代码画**文字和按钮，不是 3D 模型）
+4. **无需**手动添加 `CityHudPanel`（`GameRoot` 会自动挂上；`CityHudPanel` 只做全局壳、导航和城市视觉底层，具体屏幕由 `ScreenHost` 分发到各 `ScreenPanel`）
 5. 确认层级：`CityDetail` → `Canvas` → `GameRoot`（GameRoot **必须在 Canvas 下面**，否则 UI 不显示）
 5. **项目设置 → 项目数据 → 默认场景**：设为 `CityDetail`
 
@@ -99,7 +99,7 @@ npm run check:cocos-preview
 
 | 路径                            | 用途                                         |
 | ----------------------------- | ------------------------------------------ |
-| `assets/scripts/`             | Cocos 组件（GameRoot、CityHudPanel 等）          |
+| `assets/scripts/`             | Cocos 组件（GameRoot、CityHudPanel、screens/* 等）          |
 | `assets/shared/game-client.mjs` | `build:client` 用 esbuild 打好的浏览器包（**不提交**） |
 | `sync-manifest.json`            | `build:client` 本地同步 stamp（**不提交**）           |
 | `assets/resources/config/v0/` | 表数据 JSON                                   |
@@ -128,7 +128,7 @@ npm run check:cocos-preview
 | Console 刷屏 `CityDetail is already being loaded` | 已修：`CocosSceneHost` 在**当前场景同名**时不再 `loadScene`；去掉 `addPersistRootNode`（Canvas 子节点不能常驻根） |
 | `game-client.mjs.map.meta is not exist` | 正常：`build:client` 不再生成 `.map`；若仍报错，删 `assets/shared/*.map*` 后重跑 `npm run build:client`，再在 Cocos 里 **资源 → 刷新** |
 | 微信模拟器 `URLSearchParams is not defined` | 已修：`previewLocale` 不依赖 URLSearchParams；改 `src/` 后 `npm run build:client` 再 **构建微信小游戏** |
-| 改了 `CityHudPanel.ts` 但微信工具界面没变化 | `npm run build:client` 只同步 `assets/shared/game-client.mjs`，不会重编 Cocos 脚本。关闭微信开发者工具与 Cocos，删除 `client/cocos/temp`、`client/cocos/library`、`client/cocos/build/wechatgame`，重开 Cocos 等脚本编译完成，再重新构建微信小游戏。`npm run verify:client` 若报 `wechat-build:fresh-city-hud-panel`，说明微信包仍是旧编译产物 |
+| 改了 `client/cocos/assets/scripts/*.ts` 但微信工具界面没变化 | `npm run build:client` 只同步 `assets/shared/game-client.mjs`，不会重编 Cocos 脚本。关闭微信开发者工具与 Cocos，删除 `client/cocos/temp`、`client/cocos/library`、`client/cocos/build/wechatgame`，重开 Cocos 等脚本编译完成，再重新构建微信小游戏。`npm run verify:client` 若报 `wechat-build:fresh-city-hud-panel`，说明微信包仍是旧编译产物 |
 | 按钮无反应                    | 确认 Console 有 `[GameRoot] mounted`；检查 Canvas 有 Camera |
 | 推月后出现「知道了」按钮            | 灾害全屏确认（T50-06）；顶栏会显示待确认标题，点 **知道了** 清除 pending |
 | 导航条 **区域** + **铺线**        | 需公司 **2 级**（可先公司屏借贷/推月或科技屏升到 II）；区域屏点 **铺线** 排队 `CITY-START → CITY-MAP01-02` |
@@ -136,7 +136,7 @@ npm run check:cocos-preview
 
 ---
 
-## 5.1 T50 开发 HUD 验收（已收口）
+## 5.1 HUD 架构与冒烟验收（已收口）
 
 `npm run sim:cocos-hud-close` 或 `npm run verify:client` 会逐项打印：
 
@@ -149,7 +149,22 @@ npm run check:cocos-preview
 | t50-06 | 推至 M23、灾害确认 |
 | t49-persistence | hide 存档与 remount 恢复（仅 `verify:client` / `client-sync-spike`） |
 
-当前为 **代码绘制** 的开发 HUD，不是 Prefab 真 UI（见 `PROJECT-TASK-BOARD` T55 入口条件）。
+当前为 **代码绘制** 的开发 HUD，不是 Prefab 真 UI。新增屏幕 UI、按钮和展示字段必须进入对应 screen 目录或 display builder，不能回到 `CityHudPanel` 单体补丁路径。
+
+### 5.2 后续开发边界
+
+| 改动类型 | 入口 |
+|----------|------|
+| 屏幕节点、按钮、触摸布局 | `client/cocos/assets/scripts/screens/<screen>/<Screen>Panel.ts` |
+| 屏幕按钮行为 | `client/cocos/assets/scripts/screens/<screen>/<screen>Actions.ts` |
+| Cocos 屏幕展示数据 | `client/cocos/assets/scripts/screens/<screen>/<screen>ViewModel.ts` |
+| HUD 文案与多行展示 | `src/app/hudDisplay/<screen>Display.ts` |
+| 全局壳、导航、安全区、城市视觉底层 | `CityHudPanel.ts` / `hudLayout.ts` |
+
+`npm run verify:client:fast` 会拦截两类回退：
+
+- `CityHudPanel.ts` 重新导入屏幕业务 action 或能力聚合。
+- `clientHudDisplay.ts` 重新承载各屏 `formatXxxStatus` 之类格式化逻辑。
 
 ---
 

@@ -237,6 +237,83 @@ const CITY_HUD_LAYOUT_BUTTON_MARKERS = [
   "WorldActionQueueSuperHydroGrid"
 ] as const;
 
+const CITY_HUD_FORBIDDEN_BUSINESS_MARKERS = [
+  "cityHudBuildSelected",
+  "cityHudBuildWind",
+  "cityHudCycleBuildCandidate",
+  "cityHudAdvanceMonth",
+  "companyApplySelectedLoan",
+  "companyClaimCashByAdAsync",
+  "companySpeedupSelectedConstructionByAdAsync",
+  "companyCycleLoanCandidate",
+  "techStartDefaultResearch",
+  "techCancelActiveResearch",
+  "techSpeedupResearchByAdAsync",
+  "techCycleResearchCandidate",
+  "regionQueueDefaultLink",
+  "regionQueueLinkByCities",
+  "regionCycleLinkCandidate",
+  "regionCancelSelectedLink",
+  "worldQueueSelectedTrunk",
+  "worldQueueSuperHydro",
+  "worldQueueSuperHydroGridLink",
+  "worldOpenSelectedTarget",
+  "worldCycleTargetCandidate",
+  "eventsAcknowledgeNextPending",
+  "getClientHudCapabilities"
+] as const;
+
+const CLIENT_HUD_DISPLAY_FORBIDDEN_FORMATTERS = [
+  "formatCompanyStatus",
+  "formatRegionStatus",
+  "formatWorldStatus",
+  "formatTechStatus",
+  "formatRunResultStatus",
+  "formatCityBuildAction",
+  "formatOperatingPressureTechSolutions",
+  "getCompanyHudSelectionSnapshot",
+  "getWorldHudSelectionSnapshot",
+  "getTechHudSelectionSnapshot"
+] as const;
+
+const REQUIRED_SCREEN_ARCHITECTURE_FILES = [
+  ["screens/ScreenHost.ts", "ScreenHost"],
+  ["screens/ScreenPanel.ts", "ScreenPanel"],
+  ["screens/city/CityScreenPanel.ts", "CityScreenPanel"],
+  ["screens/city/cityActions.ts", "buildSelectedCityFacility"],
+  ["screens/city/cityViewModel.ts", "readCityScreenViewModel"],
+  ["screens/company/CompanyScreenPanel.ts", "CompanyScreenPanel"],
+  ["screens/company/companyActions.ts", "applySelectedCompanyLoan"],
+  ["screens/company/companyViewModel.ts", "readCompanyScreenViewModel"],
+  ["screens/tech/TechScreenPanel.ts", "TechScreenPanel"],
+  ["screens/tech/techActions.ts", "startDefaultTechResearch"],
+  ["screens/tech/techViewModel.ts", "readTechScreenViewModel"],
+  ["screens/region/RegionScreenPanel.ts", "RegionScreenPanel"],
+  ["screens/region/regionActions.ts", "queueDefaultRegionLink"],
+  ["screens/region/regionViewModel.ts", "readRegionScreenViewModel"],
+  ["screens/world/WorldScreenPanel.ts", "WorldScreenPanel"],
+  ["screens/world/worldActions.ts", "queueSelectedWorldTrunk"],
+  ["screens/world/worldViewModel.ts", "readWorldScreenViewModel"],
+  ["screens/event/EventModalPanel.ts", "EventModalPanel"],
+  ["screens/event/eventActions.ts", "acknowledgePendingEvent"],
+  ["screens/event/eventViewModel.ts", "readEventModalViewModel"],
+  ["screens/result/RunResultScreenPanel.ts", "RunResultScreenPanel"],
+  ["screens/result/runResultViewModel.ts", "readRunResultScreenViewModel"],
+  ["ui/HudButton.ts", "HudButton"]
+] as const;
+
+const REQUIRED_HUD_DISPLAY_FILES = [
+  ["cityDisplay.ts", "buildCityHudDisplay"],
+  ["companyDisplay.ts", "buildCompanyHudDisplay"],
+  ["techDisplay.ts", "buildTechHudDisplay"],
+  ["regionDisplay.ts", "buildRegionHudDisplay"],
+  ["worldDisplay.ts", "buildWorldHudDisplay"],
+  ["runResultDisplay.ts", "buildRunResultHudDisplay"],
+  ["registry.ts", "buildScreenHudDisplay"],
+  ["shared.ts", "hudLines"],
+  ["types.ts", "ClientHudDisplay"]
+] as const;
+
 export interface CocosHudCloseStaticCheckOptions {
   withWechatBuildFreshness?: boolean;
 }
@@ -416,6 +493,9 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "hudLayout.ts"
   );
+  const clientHudDisplayPath = path.join(repoRoot, "src", "app", "clientHudDisplay.ts");
+  const hudDisplayDir = path.join(repoRoot, "src", "app", "hudDisplay");
+  const scriptsRoot = path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts");
   const screenPanelSource = [
     path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "city", "CityScreenPanel.ts"),
     path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "world", "WorldScreenPanel.ts"),
@@ -442,6 +522,9 @@ export function runCocosHudCloseStaticChecks(
 
   const source = fs.readFileSync(panelPath, "utf8");
   const layoutSource = fs.existsSync(layoutPath) ? fs.readFileSync(layoutPath, "utf8") : "";
+  const clientHudDisplaySource = fs.existsSync(clientHudDisplayPath)
+    ? fs.readFileSync(clientHudDisplayPath, "utf8")
+    : "";
   for (const marker of CITY_HUD_PANEL_MARKERS) {
     checks.push({
       id: `hud:${marker}`,
@@ -510,6 +593,40 @@ export function runCocosHudCloseStaticChecks(
       source.includes("UI_SHELL_SLOT_STATE_TOKENS.bound"),
     detail: "CityHudPanel creates and synchronizes product UI shell runtime slots"
   });
+  checks.push({
+    id: "hud:city-hud-panel-no-screen-business-actions",
+    ok: CITY_HUD_FORBIDDEN_BUSINESS_MARKERS.every((marker) => !source.includes(marker)),
+    detail: CITY_HUD_FORBIDDEN_BUSINESS_MARKERS
+      .filter((marker) => source.includes(marker))
+      .join(", ") || "CityHudPanel stays as shell/navigation host; screen business actions live in screen panels"
+  });
+  for (const [relativePath, marker] of REQUIRED_SCREEN_ARCHITECTURE_FILES) {
+    const filePath = path.join(scriptsRoot, ...relativePath.split("/"));
+    const fileSource = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : "";
+    checks.push({
+      id: `hud:screen-architecture:${relativePath}`,
+      ok: fs.existsSync(filePath) && fileSource.includes(marker),
+      detail: `${relativePath} contains ${marker}`
+    });
+  }
+  checks.push({
+    id: "hud:client-display-registry-only",
+    ok:
+      clientHudDisplaySource.includes("buildScreenHudDisplay") &&
+      CLIENT_HUD_DISPLAY_FORBIDDEN_FORMATTERS.every((marker) => !clientHudDisplaySource.includes(marker)),
+    detail: CLIENT_HUD_DISPLAY_FORBIDDEN_FORMATTERS
+      .filter((marker) => clientHudDisplaySource.includes(marker))
+      .join(", ") || "clientHudDisplay delegates to hudDisplay registry instead of owning screen formatters"
+  });
+  for (const [relativePath, marker] of REQUIRED_HUD_DISPLAY_FILES) {
+    const filePath = path.join(hudDisplayDir, relativePath);
+    const fileSource = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : "";
+    checks.push({
+      id: `hud:display-builder:${relativePath}`,
+      ok: fs.existsSync(filePath) && fileSource.includes(marker),
+      detail: `${path.join("src", "app", "hudDisplay", relativePath)} contains ${marker}`
+    });
+  }
   checks.push({
     id: "hud:mobile-ui-safe-zone-layout",
     ok:

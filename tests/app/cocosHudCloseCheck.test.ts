@@ -23,7 +23,7 @@ describe("cocosHudCloseCheck", () => {
     fs.writeFileSync(path.join(scriptsDir, "cityHudStageSpec.ts"), `${stageSpecMarkers} ${manifestMarkers}`, "utf8");
   }
 
-  it("CityHudPanel contains T50 handler markers", () => {
+  it("keeps Cocos HUD screen architecture markers", () => {
     const checks = runCocosHudCloseStaticChecks(repoRoot);
     expect(checks.every((item) => item.ok)).toBe(true);
   });
