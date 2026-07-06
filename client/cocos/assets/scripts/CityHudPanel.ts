@@ -16,36 +16,14 @@ import {
 } from "cc";
 import {
   buildClientHudDisplay,
-  cityHudAdvanceMonth,
-  cityHudBuildSelected,
-  cityHudBuildWind,
-  cityHudCycleBuildCandidate,
   clientNavBack,
   clientNavOpenCompany,
   clientNavOpenRegion,
   clientNavOpenWorldMap,
   clientNavOpenTechTree,
-  regionCycleLinkCandidate,
-  regionCancelSelectedLink,
-  regionQueueDefaultLink,
-  companyApplySelectedLoan,
-  companyClaimCashByAdAsync,
-  companySpeedupSelectedConstructionByAdAsync,
-  companyCycleLoanCandidate,
-  worldCycleTargetCandidate,
-  worldQueueSelectedTrunk,
-  worldQueueSuperHydro,
-  worldQueueSuperHydroGridLink,
-  worldOpenSelectedTarget,
-  getClientHudCapabilities,
   getCityHudProfileSnapshot,
   readCityHudViewModel,
-  techCancelActiveResearch,
-  techSpeedupResearchByAdAsync,
-  techStartDefaultResearch,
-  eventsAcknowledgeNextPending,
   t,
-  techCycleResearchCandidate,
   type GameBootstrap
 } from "../shared/game-client.mjs";
 import {
@@ -92,6 +70,15 @@ import {
   UI_SHELL_SLOT_STATE_TOKENS,
   type UiShellStageSlot
 } from "./uiShellStageSpec";
+import { CityScreenPanel } from "./screens/city/CityScreenPanel";
+import { readCityScreenViewModel } from "./screens/city/cityViewModel";
+import { CompanyScreenPanel } from "./screens/company/CompanyScreenPanel";
+import { EventModalPanel } from "./screens/event/EventModalPanel";
+import { RegionScreenPanel } from "./screens/region/RegionScreenPanel";
+import { RunResultScreenPanel } from "./screens/result/RunResultScreenPanel";
+import { ScreenHost } from "./screens/ScreenHost";
+import { TechScreenPanel } from "./screens/tech/TechScreenPanel";
+import { WorldScreenPanel } from "./screens/world/WorldScreenPanel";
 
 const { ccclass } = _decorator;
 
@@ -149,31 +136,13 @@ export class CityHudPanel extends Component {
   private eventRail: Node | null = null;
   private eventRailBg: Graphics | null = null;
   private eventRailLabel: Label | null = null;
-  private buildWindBtn: HudButton | null = null;
-  private cycleBuildBtn: HudButton | null = null;
-  private advanceMonthBtn: HudButton | null = null;
-  private applyLoanBtn: HudButton | null = null;
-  private cycleLoanBtn: HudButton | null = null;
-  private adCashBtn: HudButton | null = null;
-  private startResearchBtn: HudButton | null = null;
-  private cancelResearchBtn: HudButton | null = null;
-  private adSpeedupBtn: HudButton | null = null;
-  private ackEventBtn: HudButton | null = null;
-  private queueRegionLinkBtn: HudButton | null = null;
-  private cancelRegionLinkBtn: HudButton | null = null;
-  private cycleRegionLinkBtn: HudButton | null = null;
-  private openWorldTargetBtn: HudButton | null = null;
-  private cycleWorldTargetBtn: HudButton | null = null;
-  private queueWorldTrunkBtn: HudButton | null = null;
-  private queueSuperHydroBtn: HudButton | null = null;
-  private queueSuperHydroGridBtn: HudButton | null = null;
   private openCompanyBtn: HudButton | null = null;
   private openRegionBtn: HudButton | null = null;
   private openWorldBtn: HudButton | null = null;
   private openTechBtn: HudButton | null = null;
   private navBackBtn: HudButton | null = null;
+  private screenHost: ScreenHost | null = null;
   private lastActionKey: string | null = null;
-  private adActionPending = false;
   private readonly onLayoutChange = (): void => this.applyLayout();
 
   onLoad(): void {
@@ -201,12 +170,15 @@ export class CityHudPanel extends Component {
 
   onDestroy(): void {
     if (this.shell) unparentWatch(this.shell, this.onLayoutChange);
+    this.screenHost?.dispose();
+    this.screenHost = null;
     view.off("canvas-resize", this.onLayoutChange, this);
     this.boot = null;
   }
 
   bindGameBoot(boot: GameBootstrap): void {
     this.boot = boot;
+    this.screenHost?.bindGameBoot(boot);
     this.refresh();
   }
 
@@ -290,118 +262,6 @@ export class CityHudPanel extends Component {
     this.eventRailLabel = this.createBandLabel(this.eventRail);
     this.eventRail.on(Node.EventType.TOUCH_END, () => this.onEventRail(), this);
 
-    this.buildWindBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName,
-      "hud.btn.build_wind",
-      () => this.onBuildWind()
-    );
-    this.cycleBuildBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cycleBuild.nodeName,
-      "hud.btn.cycle_build",
-      () => this.onCycleBuild()
-    );
-    this.advanceMonthBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.advanceMonth.nodeName,
-      "hud.btn.next_month",
-      () => this.onAdvanceMonth()
-    );
-    this.ackEventBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.ackEvent.nodeName,
-      "hud.btn.ack_event",
-      () => this.onAckEvent()
-    );
-    this.applyLoanBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.applyLoan.nodeName,
-      "hud.btn.loan",
-      () => this.onApplyLoan()
-    );
-    this.cycleLoanBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cycleLoan.nodeName,
-      "hud.btn.cycle_loan",
-      () => this.onCycleLoan()
-    );
-    this.adCashBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.adCash.nodeName,
-      "hud.btn.ad_cash",
-      () => {
-        void this.onAdCash();
-      }
-    );
-    this.startResearchBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.startResearch.nodeName,
-      "hud.btn.start_research",
-      () => this.onStartResearch()
-    );
-    this.cancelResearchBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cancelResearch.nodeName,
-      "hud.btn.cancel_research",
-      () => this.onCancelResearch()
-    );
-    this.queueRegionLinkBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.queueRegionLink.nodeName,
-      "hud.btn.queue_link",
-      () => this.onQueueRegionLink()
-    );
-    this.cancelRegionLinkBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cancelRegionLink.nodeName,
-      "hud.btn.cancel_link",
-      () => this.onCancelRegionLink()
-    );
-    this.cycleRegionLinkBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cycleRegionLink.nodeName,
-      "hud.btn.cycle_region_link",
-      () => this.onCycleRegionLink()
-    );
-    this.openWorldTargetBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.openWorldTarget.nodeName,
-      "hud.btn.world_open_target",
-      () => this.onOpenWorldTarget()
-    );
-    this.cycleWorldTargetBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.cycleWorldTarget.nodeName,
-      "hud.btn.world_cycle_target",
-      () => this.onCycleWorldTarget()
-    );
-    this.queueWorldTrunkBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.queueWorldTrunk.nodeName,
-      "hud.btn.world_queue_trunk",
-      () => this.onQueueWorldTrunk()
-    );
-    this.queueSuperHydroBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.queueSuperHydro.nodeName,
-      "hud.btn.super_hydro",
-      () => this.onQueueSuperHydro()
-    );
-    this.queueSuperHydroGridBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.queueSuperHydroGrid.nodeName,
-      "hud.btn.super_hydro_grid",
-      () => this.onQueueSuperHydroGrid()
-    );
-    this.adSpeedupBtn = this.createTapButton(
-      this.cityUiLayer,
-      CITY_HUD_STAGE_ACTION_SLOTS.adSpeedup.nodeName,
-      "hud.btn.ad_speedup",
-      () => {
-        void this.onAdSpeedup();
-      }
-    );
     this.openCompanyBtn = this.createTapButton(
       this.cityUiLayer,
       CITY_HUD_STAGE_ACTION_SLOTS.openCompany.nodeName,
@@ -432,6 +292,20 @@ export class CityHudPanel extends Component {
       "hud.btn.back",
       () => this.onNavBack()
     );
+    const screenPanelHost = {
+      requestRefresh: (messageKey?: string | null) => {
+        this.lastActionKey = messageKey ?? null;
+        this.refresh();
+      }
+    };
+    this.screenHost = new ScreenHost()
+      .register("screen_city_detail", new CityScreenPanel(this.cityUiLayer, screenPanelHost))
+      .register("screen_company", new CompanyScreenPanel(this.cityUiLayer, screenPanelHost))
+      .register("screen_tech_tree", new TechScreenPanel(this.cityUiLayer, screenPanelHost))
+      .register("screen_run_result", new RunResultScreenPanel(this.cityUiLayer))
+      .register("screen_world_map", new WorldScreenPanel(this.cityUiLayer, screenPanelHost))
+      .register("screen_region", new RegionScreenPanel(this.cityUiLayer, screenPanelHost))
+      .register("screen_events", new EventModalPanel(this.cityUiLayer, screenPanelHost));
 
     this.applyLayout();
   }
@@ -481,37 +355,25 @@ export class CityHudPanel extends Component {
     this.hintLabel.lineHeight = Math.round(layout.detailFont * 1.2);
     this.hintLabel.color = new Color(31, 66, 82, 255);
     this.placeEventRail(container, layout.buttonFont);
+    this.screenHost?.applyLayout({
+      container,
+      rows: layout.rows,
+      buttonFont: layout.buttonFont
+    });
 
     if (onCity) {
-      this.placeCityActionButtons(layout.rows[3], layout.buttonFont);
       this.placeRowButtons(
         layout.rows[4],
         [this.openCompanyBtn, this.openTechBtn, this.openRegionBtn, this.openWorldBtn],
         Math.max(15, Math.round(layout.buttonFont * 0.88))
       );
     } else {
-      this.placeRowButtons(layout.rows[0], [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn], layout.buttonFont);
       this.placeRowButtons(
         layout.rows[1],
         [
-          this.cycleRegionLinkBtn,
-          this.queueRegionLinkBtn,
-          this.cancelRegionLinkBtn,
-          this.ackEventBtn,
-          this.cycleWorldTargetBtn,
-          this.openWorldTargetBtn,
-          this.queueWorldTrunkBtn,
-          this.queueSuperHydroBtn,
-          this.queueSuperHydroGridBtn,
-          this.cycleLoanBtn,
-          this.applyLoanBtn,
-          this.adCashBtn,
-          this.startResearchBtn,
-          this.cancelResearchBtn
         ],
         layout.buttonFont
       );
-      this.placeRowButtons(layout.rows[2], [this.adSpeedupBtn], layout.buttonFont);
       this.placeRowButtons(
         layout.rows[3],
         [this.openCompanyBtn, this.openRegionBtn, this.openWorldBtn],
@@ -560,35 +422,6 @@ export class CityHudPanel extends Component {
       placeCenteredRect(btn.node, slot.x, slot.y, slot.width, slot.height);
       btn.label.fontSize = fontSize;
       btn.label.lineHeight = Math.round(fontSize * 1.12);
-      btn.label.enableWrapText = false;
-      this.fitLabelToBand(btn.label, slot);
-      this.redrawButton(btn);
-    }
-  }
-
-  private placeCityActionButtons(row: HudBandLayout, fontSize: number): void {
-    const active = [this.cycleBuildBtn, this.buildWindBtn, this.advanceMonthBtn].filter(
-      (btn): btn is HudButton => !!btn && btn.node.active
-    );
-    if (active.length !== 3) {
-      this.placeRowButtons(row, active, fontSize);
-      return;
-    }
-    const gap = row.width * 0.025;
-    const sideW = (row.width - gap * 2) * 0.29;
-    const primaryW = row.width - gap * 2 - sideW * 2;
-    const left = row.x - row.width / 2;
-    const slots: HudBandLayout[] = [
-      { x: left + sideW / 2, y: row.y, width: sideW, height: row.height },
-      { x: left + sideW + gap + sideW / 2, y: row.y, width: sideW, height: row.height },
-      { x: left + sideW * 2 + gap * 2 + primaryW / 2, y: row.y, width: primaryW, height: row.height }
-    ];
-    for (let i = 0; i < active.length; i += 1) {
-      const btn = active[i];
-      const slot = slots[i];
-      placeCenteredRect(btn.node, slot.x, slot.y, slot.width, slot.height);
-      btn.label.fontSize = i === 2 ? Math.round(fontSize * 1.04) : Math.round(fontSize * 0.92);
-      btn.label.lineHeight = Math.round(btn.label.fontSize * 1.12);
       btn.label.enableWrapText = false;
       this.fitLabelToBand(btn.label, slot);
       this.redrawButton(btn);
@@ -654,31 +487,11 @@ export class CityHudPanel extends Component {
   }
 
   private formatCityShellStatus(): string {
-    if (!this.boot) return t("hud.loading");
-    const view = readCityHudViewModel(this.boot);
-    const state = this.boot.app.controller.state;
-    const profile = getCityHudProfileSnapshot(this.boot);
-    const supplyRatio = profile ? Math.round(profile.supplyRatio * 100) : 0;
-    return `M${view.month}  资金 ${view.funds}\nSV ${state.socialValueCurrent}  供能 ${supplyRatio}%`;
+    return readCityScreenViewModel(this.boot).status || t("hud.loading");
   }
 
   private formatCityShellDetail(fallbackLines: string[]): string {
-    if (!this.boot) return t("hud.wait_mount");
-    const view = readCityHudViewModel(this.boot);
-    const profile = getCityHudProfileSnapshot(this.boot);
-    const cityName = view.cityId === "CITY-START" ? "起始城" : view.cityId;
-    const candidate = fallbackLines.find((line) => line.startsWith("候选：") || line.startsWith("Candidate:"));
-    if (!profile) {
-      return candidate ? `${cityName}\n${this.compactHudLine(candidate, 34)}` : cityName;
-    }
-    const supplyLine = profile.supplyGapMw > 0
-      ? `缺口 ${profile.supplyGapMw}MW`
-      : "供能稳定";
-    const cleanLine = profile.cityFullyEcoSupply ? "清洁达标" : `清洁 ${Math.round(profile.ecoCapFactor * 100)}%`;
-    return [
-      `${cityName}  ${supplyLine}`,
-      `${cleanLine}${candidate ? `  ${this.compactHudLine(candidate.replace("候选：", ""), 16)}` : ""}`
-    ].filter((line): line is string => !!line).join("\n");
+    return readCityScreenViewModel(this.boot).detail || this.formatDetailText(fallbackLines, true);
   }
 
   private fitLabelToBand(label: Label, band: HudBandLayout): void {
@@ -1051,19 +864,10 @@ export class CityHudPanel extends Component {
   }
 
   private drawRegionMapShell(g: Graphics, w: number, h: number): void {
-    const a = { x: -w * 0.26, y: h * 0.1 };
-    const b = { x: w * 0.18, y: h * 0.18 };
-    const c = { x: -w * 0.02, y: -h * 0.2 };
-    g.strokeColor = new Color(81, 223, 226, 215);
-    g.lineWidth = Math.max(4, h * 0.02);
-    g.moveTo(a.x, a.y);
-    g.lineTo(b.x, b.y);
-    g.moveTo(a.x, a.y);
-    g.lineTo(c.x, c.y);
+    g.strokeColor = new Color(83, 225, 231, 120);
+    g.lineWidth = Math.max(3, h * 0.012);
+    g.roundRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, Math.min(18, h * 0.06));
     g.stroke();
-    this.drawMapNode(g, a.x, a.y, Math.max(24, h * 0.13), true);
-    this.drawMapNode(g, b.x, b.y, Math.max(24, h * 0.13), true);
-    this.drawMapNode(g, c.x, c.y, Math.max(24, h * 0.13), false);
   }
 
   private drawWorldMapShell(g: Graphics, w: number, h: number): void {
@@ -1432,9 +1236,6 @@ export class CityHudPanel extends Component {
     if (this.detailBand) {
       this.detailBand.name = `${CITY_HUD_STAGE_UI_SLOTS.cityStateCard.nodeName}:${CITY_HUD_STAGE_UI_TOKENS.detail}:${densityToken}`;
     }
-    if (this.buildWindBtn) {
-      this.buildWindBtn.baseName = `${CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton.nodeName}:${CITY_HUD_STAGE_UI_TOKENS.primaryAction}`;
-    }
     this.syncButtonStateTokens();
   }
 
@@ -1608,24 +1409,6 @@ export class CityHudPanel extends Component {
 
   private allButtons(): HudButton[] {
     return [
-      this.buildWindBtn,
-      this.cycleBuildBtn,
-      this.advanceMonthBtn,
-      this.applyLoanBtn,
-      this.cycleLoanBtn,
-      this.adCashBtn,
-      this.startResearchBtn,
-      this.cancelResearchBtn,
-      this.adSpeedupBtn,
-      this.ackEventBtn,
-      this.queueRegionLinkBtn,
-      this.cancelRegionLinkBtn,
-      this.cycleRegionLinkBtn,
-      this.openWorldTargetBtn,
-      this.cycleWorldTargetBtn,
-      this.queueWorldTrunkBtn,
-      this.queueSuperHydroBtn,
-      this.queueSuperHydroGridBtn,
       this.openCompanyBtn,
       this.openRegionBtn,
       this.openWorldBtn,
@@ -1748,24 +1531,6 @@ export class CityHudPanel extends Component {
   }
 
   private syncButtonCaptions(): void {
-    this.setButtonCaption(this.buildWindBtn, "hud.btn.build_wind.short");
-    this.setButtonCaption(this.cycleBuildBtn, "hud.btn.cycle_build.short");
-    this.setButtonCaption(this.advanceMonthBtn, "hud.btn.next_month.short");
-    this.setButtonCaption(this.applyLoanBtn, "hud.btn.loan");
-    this.setButtonCaption(this.cycleLoanBtn, "hud.btn.cycle_loan");
-    this.setButtonCaption(this.adCashBtn, "hud.btn.ad_cash");
-    this.setButtonCaption(this.startResearchBtn, "hud.btn.start_research");
-    this.setButtonCaption(this.cancelResearchBtn, "hud.btn.cancel_research");
-    this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_speedup");
-    this.setButtonCaption(this.ackEventBtn, "hud.btn.ack_event");
-    this.setButtonCaption(this.queueRegionLinkBtn, "hud.btn.queue_link");
-    this.setButtonCaption(this.cancelRegionLinkBtn, "hud.btn.cancel_link");
-    this.setButtonCaption(this.cycleRegionLinkBtn, "hud.btn.cycle_region_link");
-    this.setButtonCaption(this.openWorldTargetBtn, "hud.btn.world_open_target");
-    this.setButtonCaption(this.cycleWorldTargetBtn, "hud.btn.world_cycle_target");
-    this.setButtonCaption(this.queueWorldTrunkBtn, "hud.btn.world_queue_trunk");
-    this.setButtonCaption(this.queueSuperHydroBtn, "hud.btn.super_hydro");
-    this.setButtonCaption(this.queueSuperHydroGridBtn, "hud.btn.super_hydro_grid");
     this.setButtonCaption(this.openCompanyBtn, "hud.btn.company");
     this.setButtonCaption(this.openRegionBtn, "hud.btn.region");
     this.setButtonCaption(this.openWorldBtn, "hud.btn.world");
@@ -1785,36 +1550,11 @@ export class CityHudPanel extends Component {
       return;
     }
     const viewModel = readCityHudViewModel(this.boot);
-    const caps = getClientHudCapabilities(this.boot);
     const onCompany = viewModel.screen === "screen_company";
     const onRegion = viewModel.screen === "screen_region";
     const onWorld = viewModel.screen === "screen_world_map";
     const onTech = viewModel.screen === "screen_tech_tree";
     const onCity = !onCompany && !onRegion && !onWorld && !onTech;
-    const pendingEvent = !!this.boot.app.screens.events.getSnapshot().pendingFullscreen;
-    const techSnapshot = this.boot.app.screens.tech.getSnapshot();
-    const hasActiveResearch = !!techSnapshot.activeResearch;
-
-    this.buildWindBtn!.node.active = onCity && caps.canBuildInCity;
-    this.cycleBuildBtn!.node.active = onCity && caps.canCycleBuildCandidate;
-    this.advanceMonthBtn!.node.active = onCity;
-    this.queueRegionLinkBtn!.node.active = onRegion && caps.canQueueRegionLink;
-    this.cancelRegionLinkBtn!.node.active = onRegion && caps.canCancelRegionLink;
-    this.cycleRegionLinkBtn!.node.active = onRegion && caps.canCycleRegionLink;
-    this.openWorldTargetBtn!.node.active = onWorld && caps.canOpenWorldTarget;
-    this.cycleWorldTargetBtn!.node.active = onWorld && caps.canCycleWorldTarget;
-    this.queueWorldTrunkBtn!.node.active = onWorld && caps.canQueueWorldTrunk;
-    this.queueSuperHydroBtn!.node.active = onWorld && caps.canQueueSuperHydro;
-    this.queueSuperHydroGridBtn!.node.active = onWorld && caps.canQueueSuperHydroGridLink;
-    this.ackEventBtn!.node.active = onCity && pendingEvent;
-    this.applyLoanBtn!.node.active = onCompany && caps.canApplyLoan;
-    this.cycleLoanBtn!.node.active = onCompany && caps.canCycleLoanCandidate;
-    this.adCashBtn!.node.active = onCompany && caps.canClaimCashAd;
-    this.startResearchBtn!.node.active = onTech && caps.canStartResearch;
-    this.cancelResearchBtn!.node.active = onTech && caps.canCancelResearch;
-    this.adSpeedupBtn!.node.active =
-      (onCompany && caps.canSpeedupConstructionByAd) ||
-      (onTech && (hasActiveResearch ? caps.canSpeedupResearchByAd : caps.canCycleResearchCandidate));
     this.openCompanyBtn!.node.active = true;
     this.openRegionBtn!.node.active = true;
     this.openWorldBtn!.node.active = true;
@@ -1822,14 +1562,7 @@ export class CityHudPanel extends Component {
     this.navBackBtn!.node.active = !onCity;
     this.syncButtonStateTokens();
     this.syncButtonCaptions();
-    if (onCity) {
-      this.setButtonCaption(this.buildWindBtn, "hud.btn.build_selected.short");
-    }
-    if (onTech && !hasActiveResearch) {
-      this.setButtonCaption(this.adSpeedupBtn, "hud.btn.cycle_research");
-    } else if (onCompany) {
-      this.setButtonCaption(this.adSpeedupBtn, "hud.btn.ad_build_speedup");
-    }
+    this.screenHost?.refresh();
 
     const display = buildClientHudDisplay(this.boot, this.actionMessage());
     this.statusLabel.string = onCity
@@ -1869,28 +1602,6 @@ export class CityHudPanel extends Component {
     return this.formatDetailText(fallbackLines, false);
   }
 
-  private onBuildWind(): void {
-    if (!this.boot) return;
-    const out = cityHudBuildSelected(this.boot);
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] build failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onCycleBuild(): void {
-    if (!this.boot) return;
-    const out = cityHudCycleBuildCandidate(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] build candidate failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onAdvanceMonth(): void {
-    if (!this.boot) return;
-    const out = cityHudAdvanceMonth(this.boot);
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] advance failed: ${out.errorCode ?? "unknown"}`);
-  }
-
   private onOpenCompany(): void {
     if (!this.boot) return;
     this.lastActionKey = null;
@@ -1926,153 +1637,7 @@ export class CityHudPanel extends Component {
     this.refresh();
   }
 
-  private onApplyLoan(): void {
-    if (!this.boot) return;
-    const out = companyApplySelectedLoan(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] loan failed: ${out.uiErrorCode ?? "unknown"}`);
-  }
-
-  private onCycleLoan(): void {
-    if (!this.boot) return;
-    const out = companyCycleLoanCandidate(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] loan candidate failed: ${out.uiErrorCode ?? "unknown"}`);
-  }
-
-  private async onAdCash(): Promise<void> {
-    if (!this.boot) return;
-    if (this.adActionPending) return;
-    this.adActionPending = true;
-    try {
-      const out = await companyClaimCashByAdAsync(this.boot);
-      this.lastActionKey = out.messageKey;
-      this.refresh();
-      if (!out.ok) console.warn(`[CityHudPanel] ad cash failed: ${out.uiErrorCode ?? "unknown"}`);
-    } finally {
-      this.adActionPending = false;
-      this.refresh();
-    }
-  }
-
-  private onStartResearch(): void {
-    if (!this.boot) return;
-    const out = techStartDefaultResearch(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] start research failed: ${out.uiErrorCode ?? "unknown"}`);
-  }
-
-  private onCancelResearch(): void {
-    if (!this.boot) return;
-    const out = techCancelActiveResearch(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] cancel research failed: ${out.uiErrorCode ?? "unknown"}`);
-  }
-
-  private async onAdSpeedup(): Promise<void> {
-    if (!this.boot) return;
-    if (this.adActionPending) return;
-    this.adActionPending = true;
-    try {
-      const viewModel = readCityHudViewModel(this.boot);
-      if (viewModel.screen === "screen_company") {
-        const companyOut = await companySpeedupSelectedConstructionByAdAsync(this.boot);
-        this.lastActionKey = companyOut.messageKey;
-        this.refresh();
-        if (!companyOut.ok) console.warn(`[CityHudPanel] build ad failed: ${companyOut.uiErrorCode ?? "unknown"}`);
-        return;
-      }
-    const hasActiveResearch = !!this.boot.app.screens.tech.getSnapshot().activeResearch;
-    const out = hasActiveResearch
-      ? await techSpeedupResearchByAdAsync(this.boot)
-      : techCycleResearchCandidate(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] tech action failed: ${out.uiErrorCode ?? "unknown"}`);
-    } finally {
-      this.adActionPending = false;
-      this.refresh();
-    }
-  }
-
-  private onAckEvent(): void {
-    if (!this.boot) return;
-    const out = eventsAcknowledgeNextPending(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] ack event failed: ${out.uiErrorCode ?? "unknown"}`);
-  }
-
   private onEventRail(): void {
-    if (!this.boot || !this.hasPendingDisasterFeedback()) return;
-    this.onAckEvent();
-  }
-
-  private onQueueRegionLink(): void {
-    if (!this.boot) return;
-    const out = regionQueueDefaultLink(this.boot);
-    this.lastActionKey = out.messageKey;
     this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] region link failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onCancelRegionLink(): void {
-    if (!this.boot) return;
-    const out = regionCancelSelectedLink(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] cancel region link failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onCycleRegionLink(): void {
-    if (!this.boot) return;
-    const out = regionCycleLinkCandidate(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] region candidate failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onOpenWorldTarget(): void {
-    if (!this.boot) return;
-    const out = worldOpenSelectedTarget(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] world open failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onCycleWorldTarget(): void {
-    if (!this.boot) return;
-    const out = worldCycleTargetCandidate(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] world cycle failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onQueueWorldTrunk(): void {
-    if (!this.boot) return;
-    const out = worldQueueSelectedTrunk(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] world trunk failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onQueueSuperHydro(): void {
-    if (!this.boot) return;
-    const out = worldQueueSuperHydro(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] super hydro failed: ${out.errorCode ?? "unknown"}`);
-  }
-
-  private onQueueSuperHydroGrid(): void {
-    if (!this.boot) return;
-    const out = worldQueueSuperHydroGridLink(this.boot);
-    this.lastActionKey = out.messageKey;
-    this.refresh();
-    if (!out.ok) console.warn(`[CityHudPanel] super hydro grid failed: ${out.errorCode ?? "unknown"}`);
   }
 }

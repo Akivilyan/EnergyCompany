@@ -37,6 +37,7 @@ declare module "*.mjs" {
   export function cityHudBuildSelected(...args: any[]): any;
   export function cityHudBuildWind(...args: any[]): any;
   export function cityHudCycleBuildCandidate(...args: any[]): any;
+  export function getCityHudBuildSelectionSnapshot(...args: any[]): any;
   export function clientNavBack(...args: any[]): any;
   export function clientNavOpenCompany(...args: any[]): any;
   export function clientNavOpenRegion(...args: any[]): any;
@@ -44,6 +45,7 @@ declare module "*.mjs" {
   export function clientNavOpenTechTree(...args: any[]): any;
   export function regionCycleLinkCandidate(...args: any[]): any;
   export function regionCancelSelectedLink(...args: any[]): any;
+  export function regionQueueLinkByCities(...args: any[]): any;
   export function regionQueueDefaultLink(...args: any[]): any;
   export function companyApplySelectedLoan(...args: any[]): any;
   export function companyClaimCashByAd(...args: any[]): any;
@@ -64,6 +66,7 @@ declare module "*.mjs" {
   export function techSpeedupResearchByAdAsync(...args: any[]): Promise<any>;
   export function techStartDefaultResearch(...args: any[]): any;
   export function eventsAcknowledgeNextPending(...args: any[]): any;
+  export function formatPendingEventModalLines(...args: any[]): any;
   export function t(messageKey: string, args?: Record<string, unknown>): string;
   export function techCycleResearchCandidate(...args: any[]): any;
 }

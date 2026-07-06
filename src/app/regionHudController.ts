@@ -254,6 +254,38 @@ export function regionQueueDefaultLink(boot: GameBootstrap): RegionHudActionResu
   return toActionResult(boot, false, out.result.error, resolveQueueErrorMessageKey(out.result.error));
 }
 
+export function regionQueueLinkByCities(
+  boot: GameBootstrap,
+  fromCityId: string,
+  toCityId: string
+): RegionHudActionResult {
+  const candidates = getLinkCandidates(boot);
+  const selected = candidates.find(
+    (candidate) =>
+      (candidate.fromCityId === fromCityId && candidate.toCityId === toCityId) ||
+      (candidate.fromCityId === toCityId && candidate.toCityId === fromCityId)
+  );
+  if (!selected) {
+    return toActionResult(boot, false, "invalid_link", "region.error.invalid_link");
+  }
+  selectedCandidateByBoot.set(boot, selected.candidateId);
+  const regionId = boot.play.getNavigation().regionId ?? "MAP-01";
+  const out = boot.app.screens.region(regionId).queueGridLink(
+    selected.fromCityId,
+    selected.toCityId,
+    selected.linkType
+  );
+  if (out.result.ok) {
+    return toActionResult(
+      boot,
+      true,
+      null,
+      selected.linkType === "trunk" ? "region.success.trunk_queued" : "region.success.link_queued"
+    );
+  }
+  return toActionResult(boot, false, out.result.error, resolveQueueErrorMessageKey(out.result.error));
+}
+
 export function regionCancelSelectedLink(boot: GameBootstrap): RegionHudActionResult {
   const selected = ensureSelectedCancelableLink(boot);
   if (!selected) {

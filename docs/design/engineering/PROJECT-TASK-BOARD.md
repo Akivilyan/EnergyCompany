@@ -9,7 +9,7 @@
 - 平台：微信小游戏
 - 客户端：`Cocos Creator 3.x + TypeScript`
 - 规则真理：`src/sim/`
-- 当前目标：在已跑通玩法闭环的基础上，先搭完整成品级 UI 架构壳，再进入美术资源设计与补充，最后补游戏引导。
+- 当前目标：在已跑通玩法闭环与 UI 壳的基础上，先完成 UI 架构解耦收口，再进入美术资源设计与补充，最后补游戏引导。
 
 ## 当前版本范围
 
@@ -30,41 +30,29 @@
 ## 当前阶段
 
 - 阶段：模块交付制推进
-- 当前模块：`UI-SHELL-LONG-01`
-- 模块标题：成品级 UI 架构壳
+- 当前模块：`UI-REBUILD-FOUNDATION-01`
+- 模块标题：UI 架构瘦身与解耦基础
 - 状态：`done`
-- 开始时间：2026-07-05
+- 开始时间：2026-07-06
 
 ## 当前模块完成定义
 
-### `UI-SHELL-LONG-01` 成品级 UI 架构壳
+### `UI-REBUILD-FOUNDATION-01` UI 架构瘦身与解耦基础
 
-目标：不追求最终美术，但按未来成品 UI 搭完整页面架构、资源插槽、状态绑定和交互分区，让后续正式图片、图标、科技点资源可以替换进入，而不是推倒重做。
+目标：冻结旧 `CityHudPanel` 单体增长路径，建立 `ScreenHost` / `ScreenPanel` 分层与公共 UI 控件基础，让新增屏幕 UI、按钮和展示字段只修改对应 screen 目录或 display builder，不再牵动全局 HUD 单体。
 
 输入：
 
-- `docs/design/ui/art-direction.md`
-- `docs/design/ui/00-screen-map.md`
-- `docs/design/ui/construction-flow.md`
-- `docs/design/ui/company.md`
-- `docs/design/ui/tech-tree.md`
-- `docs/design/ui/region-main.md`
-- `docs/design/ui/world-map.md`
-- `docs/design/ui/events.md`
-- `docs/design/ui/run-result.md`
-- 当前 Cocos `GameRoot` / `CityHudPanel` / `hudLayout` / scene registry
+- 当前 Cocos `GameRoot` / `CityHudPanel` / `hudLayout` / `uiShellStageSpec`
+- 当前 `clientHudDisplay` / HUD controller / screen module 输出
 
 输出：
 
-- 启动入口壳：开始新游戏、继续、清档重开、当前存档提示。
-- 城市页壳：背景层、建筑插槽、电网层、状态反馈层、资源栏、城市状态卡、建设操作区、底部导航。
-- 公司页壳：公司概览、现金流、贷款、广告激励、升级目标区块。
-- 科技页壳：科技分支、节点占位、当前研发、候选研发、加速入口。
-- 区域页壳：城市节点、线路、候选铺线、在建/完成状态。
-- 大地图壳：区域节点、解锁状态、主干线、候选目标。
-- 灾害/事件壳：全屏弹窗、确认按钮、影响说明、恢复建议。
-- 结果页壳：胜负结果、路线摘要、重开入口。
-- 通用 UI 基础：按钮样式、面板样式、图标占位、资源位命名、状态 token。
+- `CityHudPanel` 降级为启动、导航、城市视觉底层和全局壳宿主。
+- Company、Tech、RunResult、Event、World、Region、City 迁移为独立 `ScreenPanel`。
+- 屏幕按钮通过 screen action/viewModel/panel 分层组织，不再在 `CityHudPanel` 手写堆叠。
+- `clientHudDisplay` 降级为 display registry 入口，各屏展示 builder 按目录拆分。
+- `uiShellStageSpec` 保留为壳层 slot/token manifest，不承载屏幕行为。
 
 不做：
 
@@ -78,7 +66,9 @@
 
 - `npm run check:cocos-ts`
 - `npm run verify:client:fast`
-- 涉及入口装配或共享包时补 `npm run build`
+- `npm run build`
+- `npm test`
+- `npm run lint:boundaries`
 
 ## 当前工程状态
 
@@ -95,15 +85,17 @@
 | WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
 | PLAYTEST-UI-01 试玩可交付 UI 首屏 | done |
 | UI-SHELL-LONG-01 成品级 UI 架构壳 | done |
+| UI-REBUILD-FOUNDATION-01 UI 架构瘦身与解耦基础 | done |
 
 ## 模块队列
 
 | 模块 | 状态 | 切换条件 |
 |------|------|----------|
 | `UI-SHELL-LONG-01` 成品级 UI 架构壳 | done | 验收通过后进入 UI 美术资源设计与补充 |
+| `UI-REBUILD-FOUNDATION-01` UI 架构瘦身与解耦基础 | done | 验收通过后恢复游戏实现与资源补充 |
 | UI 美术资源设计与补充 | ready | UI 壳稳定后启动，需要用户审美术方向与资源质量 |
 | 游戏引导模块 | pending | UI 壳与主要美术资源稳定后启动 |
 
 ## 下一步
 
-用新 UI 壳生成预览 / 真机截图复核安全区、按钮尺寸、顶部资源栏、底部导航、公司页、科技页、区域页和大地图；截图通过后进入 UI 美术资源设计与补充。
+基于已解耦的 screen panel 和 display builder 恢复游戏实现推进；新增 UI 只进入对应 screen 目录、HUD controller 或 display builder，避免回到 `CityHudPanel` 单体补丁路径。

@@ -12,10 +12,13 @@ const CITY_HUD_PANEL_MARKERS = [
   "onOpenCompany",
   "onOpenRegion",
   "onOpenTech",
-  "onAckEvent",
-  "onQueueRegionLink",
-  "onQueueSuperHydroGrid",
-  "worldQueueSuperHydroGridLink",
+  "ScreenHost",
+  "CompanyScreenPanel",
+  "TechScreenPanel",
+  "RegionScreenPanel",
+  "WorldScreenPanel",
+  "EventModalPanel",
+  "RunResultScreenPanel",
   "drawCityBackground",
   "drawCityFacilities",
   "drawCityGrid",
@@ -48,7 +51,7 @@ const CITY_HUD_PANEL_MARKERS = [
   "CITY_HUD_STAGE_EFFECT_TOKENS.construction",
   "CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster",
   "CITY_HUD_STAGE_FEEDBACK_TOKENS.completion",
-  "CITY_HUD_STAGE_UI_TOKENS.primaryAction",
+  "CityScreenPanel",
   "CITY_HUD_STAGE_ICON_TOKENS.active",
   "CITY_HUD_STAGE_ASSET_SLOTS.windTurbine",
   "CITY_HUD_STAGE_ASSET_SLOTS.solarField",
@@ -231,7 +234,7 @@ const CITY_HUD_STAGE_PREFAB_MANIFEST_MARKERS = [
 ] as const;
 
 const CITY_HUD_LAYOUT_BUTTON_MARKERS = [
-  "queueSuperHydroGridBtn"
+  "WorldActionQueueSuperHydroGrid"
 ] as const;
 
 export interface CocosHudCloseStaticCheckOptions {
@@ -413,6 +416,18 @@ export function runCocosHudCloseStaticChecks(
     "scripts",
     "hudLayout.ts"
   );
+  const screenPanelSource = [
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "city", "CityScreenPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "world", "WorldScreenPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "region", "RegionScreenPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "tech", "TechScreenPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "company", "CompanyScreenPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "event", "EventModalPanel.ts"),
+    path.join(resolveClientCocosRoot(repoRoot), "assets", "scripts", "screens", "result", "RunResultScreenPanel.ts")
+  ]
+    .filter((filePath) => fs.existsSync(filePath))
+    .map((filePath) => fs.readFileSync(filePath, "utf8"))
+    .join("\n");
   const checks: CocosHudCloseCheckItem[] = [];
 
   if (!fs.existsSync(panelPath)) {
@@ -508,10 +523,11 @@ export function runCocosHudCloseStaticChecks(
   checks.push({
     id: "hud:city-primary-action-layout",
     ok:
-      source.includes("placeCityActionButtons") &&
-      source.includes("primaryW = row.width - gap * 2 - sideW * 2") &&
-      source.includes("i === 2 ? Math.round(fontSize * 1.04)") &&
-      source.includes("this.advanceMonthBtn!.node.active = onCity;"),
+      screenPanelSource.includes("class CityScreenPanel") &&
+      screenPanelSource.includes("placeCityActionButtons") &&
+      screenPanelSource.includes("primaryW = row.width - gap * 2 - sideW * 2") &&
+      screenPanelSource.includes("i === 2 ? Math.round(fontSize * 1.04)") &&
+      screenPanelSource.includes("this.advanceMonthBtn.node.active = true"),
     detail: "city screen keeps next-month as the larger city-only primary CTA"
   });
   checks.push({
@@ -525,6 +541,38 @@ export function runCocosHudCloseStaticChecks(
       source.includes("drawWorldMapShell") &&
       source.includes("drawWorldBackboneShell"),
     detail: "company, tech, region, and world screens render visible page shells instead of debug text only"
+  });
+  checks.push({
+    id: "hud:city-build-picker-shell",
+    ok:
+      screenPanelSource.includes("CityBuildPickerSheet") &&
+      screenPanelSource.includes("CityBuildPickerRow") &&
+      screenPanelSource.includes("readCityScreenViewModel") &&
+      screenPanelSource.includes("onBuildPickerRow") &&
+      screenPanelSource.includes("buildSelectedCityFacility(this.boot, facilityId)") &&
+      screenPanelSource.includes("this.buildPickerOpen = true"),
+    detail: "city construction uses a build picker sheet before queuing a facility"
+  });
+  checks.push({
+    id: "hud:region-drag-link-shell",
+    ok:
+      screenPanelSource.includes("onMapTouchStart") &&
+      screenPanelSource.includes("onMapTouchMove") &&
+      screenPanelSource.includes("onMapTouchEnd") &&
+      screenPanelSource.includes("queueRegionLinkByCityPair") &&
+      screenPanelSource.includes("resolveRegionMapPoints") &&
+      screenPanelSource.includes("findNearestRegionPoint"),
+    detail: "region map supports drag-from-city to city link preview and queue action"
+  });
+  checks.push({
+    id: "hud:region-fullscreen-map-slot",
+    ok:
+      uiShellSpecSource.includes('nodeName: "RegionCityNodeLayer"') &&
+      uiShellSpecSource.includes("widthRatio: 0.88") &&
+      uiShellSpecSource.includes("heightRatio: 0.58") &&
+      uiShellSpecSource.includes('nodeName: "RegionLinkBuildBar"') &&
+      uiShellSpecSource.includes("widthRatio: 0.74"),
+    detail: "region screen allocates the map as the main full-width play surface"
   });
   checks.push({
     id: "hud:non-city-page-content-space",
@@ -633,7 +681,8 @@ export function runCocosHudCloseStaticChecks(
       source.includes("resolveIconRoleToken") &&
       source.includes("CITY_HUD_STAGE_UI_TOKENS.resource") &&
       source.includes("CITY_HUD_STAGE_UI_TOKENS.detail") &&
-      source.includes("CITY_HUD_STAGE_UI_TOKENS.primaryAction") &&
+      (source.includes("CITY_HUD_STAGE_UI_TOKENS.primaryAction") ||
+        screenPanelSource.includes("StageUiPrimaryBuildButton")) &&
       source.includes("CITY_HUD_STAGE_ICON_TOKENS.active"),
     detail: "CityHudPanel applies panel and icon runtime tokens"
   });
@@ -698,8 +747,10 @@ export function runCocosHudCloseStaticChecks(
   for (const marker of CITY_HUD_LAYOUT_BUTTON_MARKERS) {
     checks.push({
       id: `hud:${marker}-layout`,
-      ok: layoutCalls.some((call) => call.includes(`this.${marker}`)),
-      detail: `${marker} in placeRowButtons`
+      ok:
+        layoutCalls.some((call) => call.includes(`this.${marker}`)) ||
+        (screenPanelSource.includes(marker) && screenPanelSource.includes("placeHudButtons")),
+      detail: `${marker} in screen panel button layout`
     });
   }
   if (options.withWechatBuildFreshness) {

@@ -56,6 +56,7 @@ export {
   getRegionHudSelectionSnapshot,
   regionCancelSelectedLink,
   regionCycleLinkCandidate,
+  regionQueueLinkByCities,
   regionQueueDefaultLink
 } from "./regionHudController.js";
 export {

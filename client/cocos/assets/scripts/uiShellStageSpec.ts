@@ -146,18 +146,18 @@ export const UI_SHELL_PAGE_SLOTS = {
     nodeName: "RegionCityNodeLayer",
     screen: "region",
     role: UI_SHELL_SLOT_ROLE_TOKENS.map,
-    xRatio: 0.42,
-    yRatio: 0.5,
-    widthRatio: 0.5,
-    heightRatio: 0.34
+    xRatio: 0.5,
+    yRatio: 0.47,
+    widthRatio: 0.88,
+    heightRatio: 0.58
   },
   regionLinkBuildBar: {
     nodeName: "RegionLinkBuildBar",
     screen: "region",
     role: UI_SHELL_SLOT_ROLE_TOKENS.actionArea,
-    xRatio: 0.72,
-    yRatio: 0.35,
-    widthRatio: 0.24,
+    xRatio: 0.5,
+    yRatio: 0.24,
+    widthRatio: 0.74,
     heightRatio: 0.12
   },
   worldRegionNodes: {
