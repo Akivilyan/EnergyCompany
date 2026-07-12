@@ -8,7 +8,7 @@ import {
   UITransform,
   VerticalTextAlignment
 } from "cc";
-import { t, type GameBootstrap } from "../../shared/game-client.mjs";
+import { t, type GameBootstrap } from "../../../shared/game-client.mjs";
 import { placeCenteredRect, splitRowSlots, type HudBandLayout } from "../../hudLayout";
 import {
   createHudButton,
@@ -31,14 +31,53 @@ export class CityScreenPanel implements ScreenPanel {
   private readonly buildPickerLayer: Node;
   private readonly buildPickerBg: Graphics;
   private readonly buildPickerRows: Array<{ node: Node; bg: Graphics; label: Label; facilityId: string | null }> = [];
+  private readonly objectiveCard: Node;
+  private readonly objectiveBg: Graphics;
+  private readonly objectiveTitle: Label;
+  private readonly objectiveDetail: Label;
+  private readonly cityHealthCard: Node;
+  private readonly cityHealthBg: Graphics;
+  private readonly cityHealthLabel: Label;
+  private readonly buildPlanCard: Node;
+  private readonly buildPlanBg: Graphics;
+  private readonly buildPlanTitle: Label;
+  private readonly buildPlanDetail: Label;
+  private readonly feedbackCard: Node;
+  private readonly feedbackBg: Graphics;
+  private readonly feedbackTitle: Label;
+  private readonly feedbackDetail: Label;
   private readonly buildBtn: HudButton;
   private readonly cycleBuildBtn: HudButton;
   private readonly advanceMonthBtn: HudButton;
+  private actionFeedback: string | null = null;
 
   constructor(parent: Node, private readonly host: ScreenPanelHost) {
     this.root = new Node("CityScreenPanel");
     this.root.setParent(parent);
     this.root.addComponent(UITransform);
+
+    const objective = this.createCard("CityObjectiveCard");
+    this.objectiveCard = objective.node;
+    this.objectiveBg = objective.bg;
+    this.objectiveTitle = this.createLabel("ObjectiveTitle", this.objectiveCard);
+    this.objectiveDetail = this.createLabel("ObjectiveDetail", this.objectiveCard);
+
+    const cityHealth = this.createCard("CityHealthCard");
+    this.cityHealthCard = cityHealth.node;
+    this.cityHealthBg = cityHealth.bg;
+    this.cityHealthLabel = this.createLabel("CityHealthLabel", this.cityHealthCard);
+
+    const buildPlan = this.createCard("CityBuildPlanCard");
+    this.buildPlanCard = buildPlan.node;
+    this.buildPlanBg = buildPlan.bg;
+    this.buildPlanTitle = this.createLabel("BuildPlanTitle", this.buildPlanCard);
+    this.buildPlanDetail = this.createLabel("BuildPlanDetail", this.buildPlanCard);
+
+    const feedback = this.createCard("CityFeedbackCard");
+    this.feedbackCard = feedback.node;
+    this.feedbackBg = feedback.bg;
+    this.feedbackTitle = this.createLabel("FeedbackTitle", this.feedbackCard);
+    this.feedbackDetail = this.createLabel("FeedbackDetail", this.feedbackCard);
 
     this.buildPickerLayer = new Node("CityBuildPickerSheet");
     this.buildPickerLayer.setParent(this.root);
@@ -95,13 +134,21 @@ export class CityScreenPanel implements ScreenPanel {
     this.buildBtn.node.active = vm.canBuild;
     this.cycleBuildBtn.node.active = vm.canCycleBuild;
     this.advanceMonthBtn.node.active = true;
-    setHudButtonCaption(this.buildBtn, "hud.btn.build_selected.short");
+    setHudButtonCaption(this.buildBtn, vm.canBuild ? "hud.btn.build_selected.short" : "hud.btn.build_selected");
+    this.objectiveTitle.string = vm.objectiveTitle;
+    this.objectiveDetail.string = vm.objectiveDetail;
+    this.cityHealthLabel.string = vm.cityHealth;
+    this.buildPlanTitle.string = "本月建设方案";
+    this.buildPlanDetail.string = vm.selectedBuildSummary;
+    this.feedbackTitle.string = this.actionFeedback ? "行动反馈" : "工程队列";
+    this.feedbackDetail.string = this.actionFeedback ?? vm.queueSummary;
   }
 
   applyLayout(layout: ScreenPanelLayout): void {
     placeCenteredRect(this.root, 0, 0, layout.container.width, layout.container.height);
     if (!this.root.active) return;
 
+    this.placeCityDashboard(layout.container, layout.buttonFont);
     this.placeCityActionButtons(layout.rows[3], layout.buttonFont);
     this.placeBuildPicker(layout.container, layout.buttonFont);
   }
@@ -124,6 +171,105 @@ export class CityScreenPanel implements ScreenPanel {
     label.overflow = Overflow.CLAMP;
     label.enableWrapText = true;
     return label;
+  }
+
+  private createCard(name: string): { node: Node; bg: Graphics } {
+    const node = new Node(name);
+    node.setParent(this.root);
+    node.addComponent(UITransform);
+    const bg = node.addComponent(Graphics);
+    return { node, bg };
+  }
+
+  private placeCityDashboard(container: { width: number; height: number }, buttonFont: number): void {
+    const contentW = container.width * 0.92;
+    const topY = container.height * 0.24;
+    const objectiveH = Math.min(88, Math.max(72, container.height * 0.09));
+    this.placeInfoCard(
+      this.objectiveCard,
+      this.objectiveBg,
+      0,
+      topY,
+      contentW,
+      objectiveH,
+      new Color(20, 82, 114, 226)
+    );
+    this.placeCardLabel(this.objectiveTitle, 0, objectiveH * 0.18, contentW * 0.9, objectiveH * 0.34, Math.round(buttonFont * 0.78), new Color(255, 255, 255, 255));
+    this.placeCardLabel(this.objectiveDetail, 0, -objectiveH * 0.2, contentW * 0.88, objectiveH * 0.42, Math.round(buttonFont * 0.56), new Color(222, 244, 255, 255));
+
+    const gap = container.width * 0.035;
+    const cardW = (contentW - gap) / 2;
+    const cardH = Math.min(72, Math.max(58, container.height * 0.068));
+    const rowY = topY - objectiveH / 2 - cardH / 2 - Math.max(12, container.height * 0.015);
+    this.placeInfoCard(
+      this.cityHealthCard,
+      this.cityHealthBg,
+      -cardW / 2 - gap / 2,
+      rowY,
+      cardW,
+      cardH,
+      new Color(238, 249, 252, 232)
+    );
+    this.placeCardLabel(this.cityHealthLabel, 0, 0, cardW * 0.86, cardH * 0.72, Math.round(buttonFont * 0.55), new Color(32, 70, 84, 255));
+
+    this.placeInfoCard(
+      this.buildPlanCard,
+      this.buildPlanBg,
+      cardW / 2 + gap / 2,
+      rowY,
+      cardW,
+      cardH,
+      new Color(243, 250, 255, 236)
+    );
+    this.placeCardLabel(this.buildPlanTitle, 0, cardH * 0.22, cardW * 0.84, cardH * 0.28, Math.round(buttonFont * 0.48), new Color(56, 93, 112, 255));
+    this.placeCardLabel(this.buildPlanDetail, 0, -cardH * 0.16, cardW * 0.86, cardH * 0.5, Math.round(buttonFont * 0.52), new Color(24, 62, 86, 255));
+
+    const feedbackH = Math.min(52, Math.max(42, container.height * 0.048));
+    const feedbackY = rowY - cardH / 2 - feedbackH / 2 - Math.max(10, container.height * 0.012);
+    this.placeInfoCard(
+      this.feedbackCard,
+      this.feedbackBg,
+      0,
+      feedbackY,
+      contentW,
+      feedbackH,
+      this.actionFeedback ? new Color(34, 132, 104, 232) : new Color(42, 101, 138, 224)
+    );
+    this.placeCardLabel(this.feedbackTitle, -contentW * 0.31, 0, contentW * 0.22, feedbackH * 0.7, Math.round(buttonFont * 0.48), new Color(255, 255, 255, 255));
+    this.placeCardLabel(this.feedbackDetail, contentW * 0.08, 0, contentW * 0.62, feedbackH * 0.72, Math.round(buttonFont * 0.54), new Color(239, 252, 255, 255));
+  }
+
+  private placeInfoCard(
+    node: Node,
+    bg: Graphics,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    fill: Color
+  ): void {
+    placeCenteredRect(node, x, y, width, height);
+    bg.clear();
+    bg.fillColor = fill;
+    bg.roundRect(-width / 2, -height / 2, width, height, Math.min(16, height * 0.16));
+    bg.fill();
+  }
+
+  private placeCardLabel(
+    label: Label,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    fontSize: number,
+    color: Color
+  ): void {
+    const transform = label.node.getComponent(UITransform) ?? label.node.addComponent(UITransform);
+    transform.setContentSize(width, height);
+    label.node.setPosition(x, y, 0);
+    label.fontSize = fontSize;
+    label.lineHeight = Math.round(fontSize * 1.16);
+    label.color = color;
   }
 
   private placeCityActionButtons(row: HudBandLayout, fontSize: number): void {
@@ -234,6 +380,7 @@ export class CityScreenPanel implements ScreenPanel {
     if (!this.boot || !facilityId) return;
     const out = buildSelectedCityFacility(this.boot, facilityId);
     this.buildPickerOpen = false;
+    this.actionFeedback = out.messageKey ? t(out.messageKey) : (out.ok ? "建设已加入队列" : "建设失败");
     this.host.requestRefresh(out.messageKey);
     if (!out.ok) console.warn(`[CityScreenPanel] build failed: ${out.errorCode ?? "unknown"}`);
   }
@@ -242,6 +389,7 @@ export class CityScreenPanel implements ScreenPanel {
     if (!this.boot) return;
     const out = cycleCityBuildCandidate(this.boot);
     this.buildPickerOpen = true;
+    this.actionFeedback = out.messageKey ? t(out.messageKey) : null;
     this.host.requestRefresh(out.messageKey);
     if (!out.ok) console.warn(`[CityScreenPanel] build candidate failed: ${out.errorCode ?? "unknown"}`);
   }
@@ -249,6 +397,8 @@ export class CityScreenPanel implements ScreenPanel {
   private onAdvanceMonth(): void {
     if (!this.boot) return;
     const out = advanceCityMonth(this.boot);
+    const month = this.boot.app.controller.state.currentMonth;
+    this.actionFeedback = out.messageKey ? t(out.messageKey) : `已进入 M${month}`;
     this.host.requestRefresh(out.messageKey);
     if (!out.ok) console.warn(`[CityScreenPanel] advance failed: ${out.errorCode ?? "unknown"}`);
   }

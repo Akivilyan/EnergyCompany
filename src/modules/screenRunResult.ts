@@ -52,7 +52,9 @@ export class ScreenRunResult {
     const metBUnlocked = metBRegion ? state.companyLevel >= metBRegion.unlock_company_level : false;
     const metBCentralCity =
       metBCities.find((city) => city.city_type === "central") ?? metBCities[0] ?? null;
-    const metBTrunk = metBCentralCity ? state.gridLinks[linkKey("CITY-START", metBCentralCity.city_id)] : null;
+    const gridLinks = state.gridLinks ?? {};
+    const superHydros = state.superHydros ?? {};
+    const metBTrunk = metBCentralCity ? gridLinks[linkKey("CITY-START", metBCentralCity.city_id)] : null;
     const metBConnected = metBTrunk?.linkType === "trunk" && metBTrunk.status === "finished";
     const metBDemandMw = metBCities.reduce((sum, city) => {
       const runtime = state.cities[city.city_id];
@@ -62,14 +64,14 @@ export class ScreenRunResult {
       const runtime = state.cities[city.city_id];
       return sum + (runtime?.effectiveSupplyMw ?? 0);
     }, 0);
-    const superHydroSlots = Object.values(state.superHydros);
+    const superHydroSlots = Object.values(superHydros);
     const superHydroFinishedSlots = superHydroSlots.filter((slot) => slot.status === "finished").length;
     const superHydroTotalOutputMw = superHydroSlots
       .filter((slot) => slot.status === "finished")
       .reduce((sum, slot) => sum + slot.outputMw, 0);
     const superHydroConnectedOutputMw = superHydroSlots
       .filter((slot) =>
-        Object.values(state.gridLinks).some(
+        Object.values(gridLinks).some(
           (link) =>
             link.status === "finished" &&
             link.linkType === "trunk" &&

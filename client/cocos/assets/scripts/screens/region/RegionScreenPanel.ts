@@ -2,19 +2,16 @@ import {
   Color,
   EventTouch,
   Graphics,
-  HorizontalTextAlignment,
-  Label,
   Node,
-  Overflow,
   UITransform,
-  VerticalTextAlignment,
   Vec3,
   type Vec2
 } from "cc";
-import { t, type GameBootstrap } from "../../shared/game-client.mjs";
+import { t, type GameBootstrap } from "../../../shared/game-client.mjs";
 import { placeCenteredRect } from "../../hudLayout";
 import { createHudButton, placeHudButtons, type HudButton } from "../../ui/HudButton";
 import type { ScreenPanel, ScreenPanelHost, ScreenPanelLayout } from "../ScreenPanel";
+import { bottomActionRow, createScreenTextCard, placeDecisionCards, type ScreenTextCard } from "../screenUi";
 import {
   cancelSelectedRegionLink,
   cycleRegionLink,
@@ -39,10 +36,10 @@ export class RegionScreenPanel implements ScreenPanel {
   private regionDragToPoint: Vec2 | null = null;
   private readonly mapLayer: Node;
   private readonly mapGraphics: Graphics;
-  private readonly card: Node;
-  private readonly cardBg: Graphics;
-  private readonly titleLabel: Label;
-  private readonly detailLabel: Label;
+  private readonly objectiveCard: ScreenTextCard;
+  private readonly stateCard: ScreenTextCard;
+  private readonly focusCard: ScreenTextCard;
+  private readonly feedbackCard: ScreenTextCard;
   private readonly cycleLinkBtn: HudButton;
   private readonly queueLinkBtn: HudButton;
   private readonly cancelLinkBtn: HudButton;
@@ -61,12 +58,10 @@ export class RegionScreenPanel implements ScreenPanel {
     this.mapLayer.on(Node.EventType.TOUCH_END, (event: EventTouch) => this.onMapTouchEnd(event));
     this.mapLayer.on(Node.EventType.TOUCH_CANCEL, () => this.clearRegionDrag());
 
-    this.card = new Node("RegionScreenSummaryCard");
-    this.card.setParent(this.root);
-    this.card.addComponent(UITransform);
-    this.cardBg = this.card.addComponent(Graphics);
-    this.titleLabel = this.createLabel("RegionScreenTitle", this.card, new Color(245, 252, 255, 255));
-    this.detailLabel = this.createLabel("RegionScreenDetail", this.card, new Color(33, 74, 92, 255));
+    this.objectiveCard = createScreenTextCard(this.root, "RegionObjectiveCard");
+    this.stateCard = createScreenTextCard(this.root, "RegionStateCard");
+    this.focusCard = createScreenTextCard(this.root, "RegionLinkCard");
+    this.feedbackCard = createScreenTextCard(this.root, "RegionFeedbackCard");
 
     this.cycleLinkBtn = createHudButton(this.root, "RegionActionCycleLink", "hud.btn.cycle_region_link", "secondary", () => this.onCycleLink());
     this.queueLinkBtn = createHudButton(this.root, "RegionActionQueueLink", "hud.btn.queue_link", "primary", () => this.onQueueLink());
@@ -84,8 +79,14 @@ export class RegionScreenPanel implements ScreenPanel {
     this.root.active = vm.active;
     if (!vm.active) return;
 
-    this.titleLabel.string = vm.title || t("hud.btn.region");
-    this.detailLabel.string = vm.detail;
+    this.objectiveCard.title.string = vm.objectiveTitle;
+    this.objectiveCard.detail.string = vm.objectiveDetail;
+    this.stateCard.title.string = vm.stateTitle;
+    this.stateCard.detail.string = vm.stateDetail;
+    this.focusCard.title.string = vm.focusTitle;
+    this.focusCard.detail.string = vm.focusDetail;
+    this.feedbackCard.title.string = vm.feedbackTitle;
+    this.feedbackCard.detail.string = vm.feedbackDetail;
     this.cycleLinkBtn.node.active = vm.canCycleLink;
     this.queueLinkBtn.node.active = vm.canQueueLink;
     this.cancelLinkBtn.node.active = vm.canCancelLink;
@@ -95,30 +96,22 @@ export class RegionScreenPanel implements ScreenPanel {
     placeCenteredRect(this.root, 0, 0, layout.container.width, layout.container.height);
     if (!this.root.active) return;
 
-    const mapWidth = layout.container.width * 0.88;
-    const mapHeight = layout.container.height * 0.58;
+    const mapWidth = layout.container.width * 0.82;
+    const mapHeight = layout.container.height * 0.34;
     const mapX = 0;
-    const mapY = -layout.container.height * 0.03;
+    const mapY = -layout.container.height * 0.11;
     placeCenteredRect(this.mapLayer, mapX, mapY, mapWidth, mapHeight);
     this.drawRegionMap(mapWidth, mapHeight);
 
-    const cardWidth = layout.container.width * 0.34;
-    const cardHeight = Math.max(120, Math.min(190, layout.container.height * 0.22));
-    placeCenteredRect(this.card, layout.container.width * 0.27, layout.container.height * 0.12, cardWidth, cardHeight);
-    this.cardBg.clear();
-    this.cardBg.fillColor = new Color(242, 252, 255, 226);
-    this.cardBg.roundRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, Math.min(18, cardHeight * 0.12));
-    this.cardBg.fill();
-
-    placeCenteredRect(this.titleLabel.node, 0, cardHeight * 0.28, cardWidth * 0.88, cardHeight * 0.3);
-    this.titleLabel.fontSize = Math.max(18, Math.round(layout.buttonFont * 0.62));
-    this.titleLabel.lineHeight = Math.round(this.titleLabel.fontSize * 1.12);
-    placeCenteredRect(this.detailLabel.node, 0, -cardHeight * 0.15, cardWidth * 0.86, cardHeight * 0.58);
-    this.detailLabel.fontSize = Math.max(15, Math.round(layout.buttonFont * 0.48));
-    this.detailLabel.lineHeight = Math.round(this.detailLabel.fontSize * 1.15);
+    placeDecisionCards(layout.container, layout.buttonFont, {
+      objective: this.objectiveCard,
+      state: this.stateCard,
+      focus: this.focusCard,
+      feedback: this.feedbackCard
+    });
 
     placeHudButtons(
-      layout.rows[1],
+      bottomActionRow(layout.rows),
       [this.cycleLinkBtn, this.queueLinkBtn, this.cancelLinkBtn],
       layout.buttonFont,
       (role) => this.fillForRole(role)
@@ -128,21 +121,6 @@ export class RegionScreenPanel implements ScreenPanel {
   dispose(): void {
     this.root.destroy();
     this.boot = null;
-  }
-
-  private createLabel(name: string, parent: Node, color: Color): Label {
-    const node = new Node(name);
-    node.setParent(parent);
-    node.addComponent(UITransform);
-    const label = node.addComponent(Label);
-    label.useSystemFont = true;
-    label.fontFamily = "Arial";
-    label.color = color;
-    label.horizontalAlign = HorizontalTextAlignment.CENTER;
-    label.verticalAlign = VerticalTextAlignment.CENTER;
-    label.overflow = Overflow.CLAMP;
-    label.enableWrapText = true;
-    return label;
   }
 
   private fillForRole(role: string): Color {

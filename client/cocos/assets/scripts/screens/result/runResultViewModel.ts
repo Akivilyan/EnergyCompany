@@ -1,4 +1,4 @@
-import { buildClientHudDisplay, type GameBootstrap } from "../../shared/game-client.mjs";
+import { buildClientHudDisplay, type GameBootstrap } from "../../../shared/game-client.mjs";
 
 export interface RunResultScreenViewModel {
   active: boolean;

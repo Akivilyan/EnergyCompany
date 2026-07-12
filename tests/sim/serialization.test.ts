@@ -73,4 +73,19 @@ describe("serialization", () => {
     if (loaded.ok) return;
     expect(loaded.error).toBe("state_invariant_broken");
   });
+
+  it("normalizes same-schema saves that predate optional runtime maps", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config);
+    const saved = serializeState(state);
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) return;
+    delete (saved.value.state as Partial<typeof saved.value.state>).superHydros;
+
+    const loaded = deserializeState(saved.value, config);
+
+    expect(loaded.ok).toBe(true);
+    if (!loaded.ok) return;
+    expect(loaded.value.superHydros).toEqual({});
+  });
 });

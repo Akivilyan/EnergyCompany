@@ -8,7 +8,7 @@ import {
   UITransform,
   VerticalTextAlignment
 } from "cc";
-import type { GameBootstrap } from "../../shared/game-client.mjs";
+import type { GameBootstrap } from "../../../shared/game-client.mjs";
 import { placeCenteredRect } from "../../hudLayout";
 import type { ScreenPanel, ScreenPanelLayout } from "../ScreenPanel";
 import { readRunResultScreenViewModel } from "./runResultViewModel";

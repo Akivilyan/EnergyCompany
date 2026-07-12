@@ -340,8 +340,8 @@ export class CityHudPanel extends Component {
     placeCenteredRect(this.productUiShellLayer, 0, 0, container.width, container.height);
     placeCenteredRect(this.statusBand, layout.status.x, layout.status.y, layout.status.width, layout.status.height);
     placeCenteredRect(this.detailBand, layout.detail.x, layout.detail.y, layout.detail.width, layout.detail.height);
-    this.detailBand.active = onCity;
-    this.hintLabel.node.active = onCity;
+    this.detailBand.active = false;
+    this.hintLabel.node.active = false;
     this.redrawInfoPanel(this.statusBandBg, layout.status, new Color(18, 73, 104, 218));
     this.redrawInfoPanel(this.detailBandBg, layout.detail, new Color(247, 252, 255, 224));
     this.syncPanelStateTokens(container);
@@ -722,10 +722,6 @@ export class CityHudPanel extends Component {
     return (
       (slot.screen === "mainMenu" && screen === "screen_main_menu") ||
       (slot.screen === "city" && screen === "screen_city_detail") ||
-      (slot.screen === "company" && screen === "screen_company") ||
-      (slot.screen === "tech" && screen === "screen_tech_tree") ||
-      (slot.screen === "region" && screen === "screen_region") ||
-      (slot.screen === "world" && screen === "screen_world_map") ||
       (slot.screen === "runResult" && screen === "screen_run_result")
     );
   }
@@ -1536,6 +1532,12 @@ export class CityHudPanel extends Component {
     this.setButtonCaption(this.openWorldBtn, "hud.btn.world");
     this.setButtonCaption(this.openTechBtn, "hud.btn.tech");
     this.setButtonCaption(this.navBackBtn, "hud.btn.back");
+    if (!this.boot || !this.isCurrentCityScreen()) return;
+    const level = this.boot.app.controller.state.companyLevel;
+    if (this.openCompanyBtn) this.openCompanyBtn.label.string = `公司${level}级`;
+    if (this.openTechBtn) this.openTechBtn.label.string = level >= 2 ? "科技" : "科技2级";
+    if (this.openRegionBtn) this.openRegionBtn.label.string = level >= 2 ? "区域" : "区域2级";
+    if (this.openWorldBtn) this.openWorldBtn.label.string = level >= 3 ? "大地图" : "地图3级";
   }
 
   private actionMessage(): string | null {

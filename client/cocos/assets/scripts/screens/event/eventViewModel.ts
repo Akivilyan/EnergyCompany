@@ -1,4 +1,4 @@
-import { formatPendingEventModalLines, type GameBootstrap } from "../../shared/game-client.mjs";
+import { formatPendingEventModalLines, type GameBootstrap } from "../../../shared/game-client.mjs";
 
 export interface EventModalViewModel {
   active: boolean;

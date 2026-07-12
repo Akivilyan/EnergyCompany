@@ -53,6 +53,19 @@ function validateStateReferences(state: GameState, config: ConfigRepo): SimResul
   return ok(true);
 }
 
+function normalizeSameSchemaState(state: GameState): GameState {
+  state.gridLinks ??= {};
+  state.superHydros ??= {};
+  state.researches ??= {};
+  state.loans ??= {};
+  state.constructionQueue ??= [];
+  state.litTechIds ??= [];
+  state.activeDebuffs ??= [];
+  state.disastersTriggered ??= [];
+  state.acknowledgedDisasterSeqs ??= [];
+  return state;
+}
+
 function validateStateBasics(state: GameState): SimResult<true> {
   if (state.version !== STATE_SCHEMA_VERSION) {
     return err("state_invariant_broken", "unsupported state version", {
@@ -92,7 +105,7 @@ export function deserializeState(
     });
   }
 
-  const state = deepClone(envelope.state);
+  const state = normalizeSameSchemaState(deepClone(envelope.state));
   const basic = validateStateBasics(state);
   if (!basic.ok) return basic;
   const refs = validateStateReferences(state, config);

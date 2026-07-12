@@ -1,4 +1,4 @@
-import type { GameBootstrap } from "../shared/game-client.mjs";
+import type { GameBootstrap } from "../../shared/game-client.mjs";
 import type { ScreenPanel, ScreenPanelLayout } from "./ScreenPanel";
 
 export type CocosScreenId =

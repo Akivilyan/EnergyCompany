@@ -141,4 +141,16 @@ describe("ScreenRunResult", () => {
       "super_hydro_isolated"
     ]);
   });
+
+  it("handles restored legacy result state without super hydro runtime map", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.phase = "run_result";
+    controller.state.runResult = "bankrupt";
+    delete (controller.state as Partial<typeof controller.state>).superHydros;
+
+    const snapshot = createScreenRunResult(controller).getSnapshot();
+
+    expect(snapshot?.terminalRoute.superHydroTotalOutputMw).toBe(0);
+    expect(snapshot?.routeSummaryTokens).toContain("super_hydro_missing");
+  });
 });

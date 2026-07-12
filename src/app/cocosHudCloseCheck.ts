@@ -279,6 +279,7 @@ const CLIENT_HUD_DISPLAY_FORBIDDEN_FORMATTERS = [
 const REQUIRED_SCREEN_ARCHITECTURE_FILES = [
   ["screens/ScreenHost.ts", "ScreenHost"],
   ["screens/ScreenPanel.ts", "ScreenPanel"],
+  ["screens/screenUi.ts", "placeDecisionCards"],
   ["screens/city/CityScreenPanel.ts", "CityScreenPanel"],
   ["screens/city/cityActions.ts", "buildSelectedCityFacility"],
   ["screens/city/cityViewModel.ts", "readCityScreenViewModel"],
@@ -695,9 +696,29 @@ export function runCocosHudCloseStaticChecks(
     id: "hud:non-city-page-content-space",
     ok:
       source.includes("const onCity = this.isCurrentCityScreen()") &&
-      source.includes("this.detailBand.active = onCity") &&
-      source.includes("this.hintLabel.node.active = onCity"),
-    detail: "non-city screens hide the city state card so page content has usable space"
+      source.includes("this.detailBand.active = false") &&
+      source.includes("this.hintLabel.node.active = false") &&
+      screenPanelSource.includes('this.createCard("CityObjectiveCard")') &&
+      screenPanelSource.includes('this.createCard("CityBuildPlanCard")') &&
+      screenPanelSource.includes('this.createCard("CityFeedbackCard")'),
+    detail: "city and non-city screens retire the old city state card; city screen owns objective, plan, and feedback cards"
+  });
+  checks.push({
+    id: "hud:screen-decision-card-architecture",
+    ok:
+      screenPanelSource.includes("createScreenTextCard") &&
+      screenPanelSource.includes("placeDecisionCards") &&
+      screenPanelSource.includes("CompanyObjectiveCard") &&
+      screenPanelSource.includes("CompanyLoanCard") &&
+      screenPanelSource.includes("TechObjectiveCard") &&
+      screenPanelSource.includes("TechResearchCard") &&
+      screenPanelSource.includes("RegionObjectiveCard") &&
+      screenPanelSource.includes("RegionLinkCard") &&
+      screenPanelSource.includes("WorldObjectiveCard") &&
+      screenPanelSource.includes("WorldTargetCard") &&
+      screenPanelSource.includes("feedbackTitle") &&
+      screenPanelSource.includes("feedbackDetail"),
+    detail: "company, tech, region, and world screens use objective/state/focus/feedback cards instead of single debug summary cards"
   });
   checks.push({
     id: "hud:city-stage-prefab-manifest",

@@ -4,7 +4,7 @@ import {
   techSpeedupResearchByAdAsync,
   techStartDefaultResearch,
   type GameBootstrap
-} from "../../shared/game-client.mjs";
+} from "../../../shared/game-client.mjs";
 
 export interface TechActionResult {
   ok: boolean;

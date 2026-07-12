@@ -3,7 +3,7 @@ import {
   cityHudBuildSelected,
   cityHudCycleBuildCandidate,
   type GameBootstrap
-} from "../../shared/game-client.mjs";
+} from "../../../shared/game-client.mjs";
 
 export interface CityActionResult {
   ok: boolean;

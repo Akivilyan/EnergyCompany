@@ -1,17 +1,9 @@
-import {
-  Color,
-  Graphics,
-  HorizontalTextAlignment,
-  Label,
-  Node,
-  Overflow,
-  UITransform,
-  VerticalTextAlignment
-} from "cc";
-import { t, type GameBootstrap } from "../../shared/game-client.mjs";
+import { Color, Node, UITransform } from "cc";
+import { t, type GameBootstrap } from "../../../shared/game-client.mjs";
 import { placeCenteredRect } from "../../hudLayout";
 import { createHudButton, placeHudButtons, type HudButton } from "../../ui/HudButton";
 import type { ScreenPanel, ScreenPanelHost, ScreenPanelLayout } from "../ScreenPanel";
+import { bottomActionRow, createScreenTextCard, placeDecisionCards, type ScreenTextCard } from "../screenUi";
 import {
   cycleWorldTarget,
   openSelectedWorldTarget,
@@ -25,10 +17,10 @@ export class WorldScreenPanel implements ScreenPanel {
   readonly root: Node;
   private boot: GameBootstrap | null = null;
   private actionMessageKey: string | null = null;
-  private readonly card: Node;
-  private readonly cardBg: Graphics;
-  private readonly titleLabel: Label;
-  private readonly detailLabel: Label;
+  private readonly objectiveCard: ScreenTextCard;
+  private readonly stateCard: ScreenTextCard;
+  private readonly focusCard: ScreenTextCard;
+  private readonly feedbackCard: ScreenTextCard;
   private readonly openTargetBtn: HudButton;
   private readonly cycleTargetBtn: HudButton;
   private readonly queueTrunkBtn: HudButton;
@@ -40,12 +32,10 @@ export class WorldScreenPanel implements ScreenPanel {
     this.root.setParent(parent);
     this.root.addComponent(UITransform);
 
-    this.card = new Node("WorldScreenSummaryCard");
-    this.card.setParent(this.root);
-    this.card.addComponent(UITransform);
-    this.cardBg = this.card.addComponent(Graphics);
-    this.titleLabel = this.createLabel("WorldScreenTitle", this.card, new Color(245, 252, 255, 255));
-    this.detailLabel = this.createLabel("WorldScreenDetail", this.card, new Color(33, 74, 92, 255));
+    this.objectiveCard = createScreenTextCard(this.root, "WorldObjectiveCard");
+    this.stateCard = createScreenTextCard(this.root, "WorldStateCard");
+    this.focusCard = createScreenTextCard(this.root, "WorldTargetCard");
+    this.feedbackCard = createScreenTextCard(this.root, "WorldFeedbackCard");
 
     this.cycleTargetBtn = createHudButton(this.root, "WorldActionCycleTarget", "hud.btn.world_cycle_target", "secondary", () => this.onCycleTarget());
     this.openTargetBtn = createHudButton(this.root, "WorldActionOpenTarget", "hud.btn.world_open_target", "secondary", () => this.onOpenTarget());
@@ -65,8 +55,14 @@ export class WorldScreenPanel implements ScreenPanel {
     this.root.active = vm.active;
     if (!vm.active) return;
 
-    this.titleLabel.string = vm.title || t("hud.btn.world");
-    this.detailLabel.string = vm.detail;
+    this.objectiveCard.title.string = vm.objectiveTitle;
+    this.objectiveCard.detail.string = vm.objectiveDetail;
+    this.stateCard.title.string = vm.stateTitle;
+    this.stateCard.detail.string = vm.stateDetail;
+    this.focusCard.title.string = vm.focusTitle;
+    this.focusCard.detail.string = vm.focusDetail;
+    this.feedbackCard.title.string = vm.feedbackTitle;
+    this.feedbackCard.detail.string = vm.feedbackDetail;
     this.cycleTargetBtn.node.active = vm.canCycleTarget;
     this.openTargetBtn.node.active = vm.canOpenTarget;
     this.queueTrunkBtn.node.active = vm.canQueueTrunk;
@@ -78,23 +74,15 @@ export class WorldScreenPanel implements ScreenPanel {
     placeCenteredRect(this.root, 0, 0, layout.container.width, layout.container.height);
     if (!this.root.active) return;
 
-    const cardWidth = layout.container.width * 0.34;
-    const cardHeight = Math.max(130, Math.min(210, layout.container.height * 0.25));
-    placeCenteredRect(this.card, layout.container.width * 0.26, layout.container.height * 0.08, cardWidth, cardHeight);
-    this.cardBg.clear();
-    this.cardBg.fillColor = new Color(242, 252, 255, 226);
-    this.cardBg.roundRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, Math.min(18, cardHeight * 0.12));
-    this.cardBg.fill();
-
-    placeCenteredRect(this.titleLabel.node, 0, cardHeight * 0.28, cardWidth * 0.88, cardHeight * 0.3);
-    this.titleLabel.fontSize = Math.max(19, Math.round(layout.buttonFont * 0.64));
-    this.titleLabel.lineHeight = Math.round(this.titleLabel.fontSize * 1.12);
-    placeCenteredRect(this.detailLabel.node, 0, -cardHeight * 0.15, cardWidth * 0.86, cardHeight * 0.58);
-    this.detailLabel.fontSize = Math.max(16, Math.round(layout.buttonFont * 0.5));
-    this.detailLabel.lineHeight = Math.round(this.detailLabel.fontSize * 1.15);
+    placeDecisionCards(layout.container, layout.buttonFont, {
+      objective: this.objectiveCard,
+      state: this.stateCard,
+      focus: this.focusCard,
+      feedback: this.feedbackCard
+    });
 
     placeHudButtons(
-      layout.rows[1],
+      bottomActionRow(layout.rows),
       [this.cycleTargetBtn, this.openTargetBtn, this.queueTrunkBtn, this.queueSuperHydroBtn, this.queueSuperHydroGridBtn],
       layout.buttonFont,
       (role) => this.fillForRole(role)
@@ -104,21 +92,6 @@ export class WorldScreenPanel implements ScreenPanel {
   dispose(): void {
     this.root.destroy();
     this.boot = null;
-  }
-
-  private createLabel(name: string, parent: Node, color: Color): Label {
-    const node = new Node(name);
-    node.setParent(parent);
-    node.addComponent(UITransform);
-    const label = node.addComponent(Label);
-    label.useSystemFont = true;
-    label.fontFamily = "Arial";
-    label.color = color;
-    label.horizontalAlign = HorizontalTextAlignment.CENTER;
-    label.verticalAlign = VerticalTextAlignment.CENTER;
-    label.overflow = Overflow.CLAMP;
-    label.enableWrapText = true;
-    return label;
   }
 
   private fillForRole(role: string): Color {

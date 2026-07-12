@@ -4,7 +4,7 @@ import {
   regionQueueLinkByCities,
   regionQueueDefaultLink,
   type GameBootstrap
-} from "../../shared/game-client.mjs";
+} from "../../../shared/game-client.mjs";
 
 export interface RegionActionResult {
   ok: boolean;

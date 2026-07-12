@@ -1,5 +1,5 @@
 import type { Node } from "cc";
-import type { GameBootstrap } from "../shared/game-client.mjs";
+import type { GameBootstrap } from "../../shared/game-client.mjs";
 
 export interface ScreenPanelLayout {
   container: { width: number; height: number };

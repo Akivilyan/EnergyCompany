@@ -9,7 +9,7 @@ import {
   UITransform,
   VerticalTextAlignment
 } from "cc";
-import { t } from "../shared/game-client.mjs";
+import { t } from "../../shared/game-client.mjs";
 import { placeCenteredRect, splitRowSlots, type HudBandLayout } from "../hudLayout";
 
 export interface HudButton {

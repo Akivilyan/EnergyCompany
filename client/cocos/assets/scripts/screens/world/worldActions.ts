@@ -5,7 +5,7 @@ import {
   worldQueueSuperHydro,
   worldQueueSuperHydroGridLink,
   type GameBootstrap
-} from "../../shared/game-client.mjs";
+} from "../../../shared/game-client.mjs";
 
 export interface WorldActionResult {
   ok: boolean;

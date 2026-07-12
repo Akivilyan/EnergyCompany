@@ -1,4 +1,4 @@
-import { eventsAcknowledgeNextPending, type GameBootstrap } from "../../shared/game-client.mjs";
+import { eventsAcknowledgeNextPending, type GameBootstrap } from "../../../shared/game-client.mjs";
 
 export interface EventActionResult {
   ok: boolean;
