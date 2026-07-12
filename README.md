@@ -4,10 +4,11 @@
 
 ## 当前状态
 
-- 推进方式：模块交付制
-- 当前产品阶段：玩法闭环已跑通，进入成品级 UI 架构壳搭建
-- UI 顺序：先搭完整 UI 壳，再补正式美术资源，最后做游戏引导
+- 推进方式：可玩切片优先的模块交付制
+- 当前产品阶段：工程原型稳定，产品原型尚未成立
+- 当前目标：先修通首局 10–15 分钟真实可玩路线，再扩页面、内容与美术
 - 当前状态与模块：见 `docs/design/engineering/PROJECT-TASK-BOARD.md`
+- 长期开发策略：见 `docs/design/engineering/DEVELOPMENT-STRATEGY.md`
 - Agent 规则：见 `AGENTS.md`
 
 ## 新会话入口
@@ -19,10 +20,11 @@
 
 | 任务 | 文档 |
 |------|------|
-| 设计总览 | `docs/design/README.md` |
+| 开发方向 | `docs/design/engineering/DEVELOPMENT-STRATEGY.md` |
+| 可玩性验证 | `docs/design/engineering/PLAYTEST-PLAN.md` |
 | 架构边界 | `docs/design/engineering/architecture.md` |
 | Cocos / 微信联调 | `docs/design/engineering/cocos-client-setup.md` |
-| UI 壳与美术方向 | `docs/design/ui/art-direction.md`、`docs/design/ui/00-screen-map.md` |
+| UI 与美术方向 | `docs/design/ui/art-direction.md`、`docs/design/ui/00-screen-map.md` |
 
 ## 常用命令
 

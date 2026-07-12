@@ -18,7 +18,7 @@ docs/design/data/
     company-level-and-run.md
     events-and-campaign.md
     doctrine-meta.md
-  vertical-slice-v0/        ← Playable v0 数据包（见 engineering/vertical-slice-v0.md）
+  vertical-slice-v0/        ← 当前规则与开发试玩使用的配置数据包
 ```
 
 **运行时 JSON**（实现阶段，路径 T42 定）建议：

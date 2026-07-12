@@ -1,101 +1,63 @@
 # 项目状态与任务看板
 
-本文件只记录当前产品状态、当前模块和下一步。协作规则写入根目录 `AGENTS.md`；执行结果写入 Git commit 与最终回复；历史查 Git。
+本文件只记录当前产品状态、当前模块和下一步。长期策略见 `DEVELOPMENT-STRATEGY.md`，协作规则见根目录 `AGENTS.md`，历史查 Git。
 
-模块完成后只改三处：当前模块状态、下一个模块状态、当前工程状态。不写流水、最近进展或变更记录。
+## 当前产品状态
 
-## 当前产品定位
+- 平台与技术：微信小游戏，Cocos Creator 3.x + TypeScript。
+- 已有资产：纯 TS 模拟闭环、配置包、业务模块、Cocos 单场景客户端、存档/广告抽象与大量自动化测试。
+- 基线质量：规则与类型基线稳定；2026-07-12 审计时 411 个测试、build、边界检查和客户端快速验证均通过。
+- 真实完成度：工程原型已成立，产品原型未成立。现有手机预览仍有小字、重叠、调试壳和信息层级问题，不能按“成品 UI / 发布就绪”判断。
+- 当前目标：停止横向扩张，用现有规则完成一条玩家可理解、可操作、可复测的首局切片。
 
-- 平台：微信小游戏
-- 客户端：`Cocos Creator 3.x + TypeScript`
-- 规则真理：`src/sim/`
-- 当前目标：在已跑通玩法闭环与 UI 壳的基础上，先完成 UI 架构解耦收口，再进入美术资源设计与补充，最后补游戏引导。
+## 当前模块
 
-## 当前版本范围
+- 模块：`PLAYABLE-CORE-01`
+- 标题：首局 10–15 分钟可玩切片
+- 状态：`ready`
 
-已纳入当前版本：
+### 目标
 
-- 单局按月推进的经营闭环
-- 城市建设、区域铺线、科技研发、公司经营、固定灾害轴、终局判定
-- `src/sim/` 规则闭环、`src/modules/` 编排层、`client/cocos/` 客户端壳层
-- 微信小游戏构建路径、客户端聚合验证、真机冒烟路径
+让没有阅读设计文档的玩家，在目标手机尺寸上完成开局、建设、推月、理解资源变化、处理一次压力反馈，并知道下一步目标。
 
-当前不作为 UI 壳模块阻塞项：
+### 输入
 
-- 最终美术资源定稿
-- 真正接入微信激励广告 SDK
-- 大规模数值精调
-- 对含糊设计数据的逐项精磨
+- `DEVELOPMENT-STRATEGY.md`
+- `PLAYTEST-PLAN.md`
+- `gdd/00-vision.md`、`gdd/01-core-loop.md`
+- `ui/00-screen-map.md`、`ui/art-direction.md`
+- 现有 `src/sim/`、城市页 Cocos 实现与教学配置
 
-## 当前阶段
+### 输出 / API
 
-- 阶段：模块交付制推进
-- 当前模块：`UI-REBUILD-FOUNDATION-01`
-- 模块标题：UI 架构瘦身与解耦基础
-- 状态：`done`
-- 开始时间：2026-07-06
+- 一条基于现有规则的短开发验收路线，不另造结算规则。
+- 城市首屏和必要弹层在目标尺寸下清晰、无重叠/截断。
+- 建设与推月前后能展示“动作 → 资源变化 → 原因 → 下一步”。
+- 一份按 `PLAYTEST-PLAN.md` 记录的实际试玩结果。
 
-## 当前模块完成定义
+### 范围
 
-### `UI-REBUILD-FOUNDATION-01` UI 架构瘦身与解耦基础
+- 城市首屏、建设选择、下一月、顶层资源、首次压力反馈、短目标提示。
+- 只修通这条路线直接涉及的 controller、view model、panel、布局和配置。
 
-目标：冻结旧 `CityHudPanel` 单体增长路径，建立 `ScreenHost` / `ScreenPanel` 分层与公共 UI 控件基础，让新增屏幕 UI、按钮和展示字段只修改对应 screen 目录或 display builder，不再牵动全局 HUD 单体。
+### 不做
 
-输入：
+- 不扩新系统、全图内容、超级水电、随机事件、IAP 或批量美术。
+- 不同时重做 Company、Tech、Region、World 全部页面。
+- 不以新增 token、manifest、专项 CLI 或截图测试代替实际点击验收。
+- 不改 GDD 锁定规则；发现规则冲突时停下说明。
 
-- 当前 Cocos `GameRoot` / `CityHudPanel` / `hudLayout` / `uiShellStageSpec`
-- 当前 `clientHudDisplay` / HUD controller / screen module 输出
+### 验收
 
-输出：
-
-- `CityHudPanel` 降级为启动、导航、城市视觉底层和全局壳宿主。
-- Company、Tech、RunResult、Event、World、Region、City 迁移为独立 `ScreenPanel`。
-- 屏幕按钮通过 screen action/viewModel/panel 分层组织，不再在 `CityHudPanel` 手写堆叠。
-- `clientHudDisplay` 降级为 display registry 入口，各屏展示 builder 按目录拆分。
-- `uiShellStageSpec` 保留为壳层 slot/token manifest，不承载屏幕行为。
-
-不做：
-
-- 不新增玩法。
-- 不调数值。
-- 不产最终美术资源。
-- 不做游戏引导。
-- 不接真实广告收益/IAP。
-
-验收：
-
+- 390×844 与 430×932 目标画面无重叠、截断；正文达到约 16sp 的可读效果；主要触控热区至少约 48×48dp；场景背景上的文字有稳定对比。
+- 实际完成一次：开局 → 建设 → 推月 → 查看变化 → 处理反馈。
+- 试玩者能复述当前目标、变化原因和下一步。
 - `npm run check:cocos-ts`
 - `npm run verify:client:fast`
-- `npm run build`
 - `npm test`
+- `npm run build`
 - `npm run lint:boundaries`
-
-## 当前工程状态
-
-| 区块 | 状态 |
-|------|------|
-| T45 P0 闭环 | done |
-| T48-T50 客户端装配与开发 HUD | done |
-| T51 真机构建与冒烟 | done |
-| Demo 七条核心试玩路线 | done |
-| UI-PREFAB-01 城市页样张 | done |
-| BALANCE-PLAYTEST-01 数值与节奏 | done |
-| UX-GUIDANCE-01 经营压力、提示与反馈 | done |
-| MONETIZATION-WECHAT-01 微信激励广告与商业化链路 | done |
-| WECHAT-RELEASE-01 微信包阶段收口与真机验收 | done |
-| PLAYTEST-UI-01 试玩可交付 UI 首屏 | done |
-| UI-SHELL-LONG-01 成品级 UI 架构壳 | done |
-| UI-REBUILD-FOUNDATION-01 UI 架构瘦身与解耦基础 | done |
-
-## 模块队列
-
-| 模块 | 状态 | 切换条件 |
-|------|------|----------|
-| `UI-SHELL-LONG-01` 成品级 UI 架构壳 | done | 验收通过后进入 UI 美术资源设计与补充 |
-| `UI-REBUILD-FOUNDATION-01` UI 架构瘦身与解耦基础 | done | 验收通过后恢复游戏实现与资源补充 |
-| UI 美术资源设计与补充 | ready | UI 壳稳定后启动，需要用户审美术方向与资源质量 |
-| 游戏引导模块 | pending | UI 壳与主要美术资源稳定后启动 |
 
 ## 下一步
 
-基于已解耦的 screen panel 和 display builder 恢复游戏实现推进；新增 UI 只进入对应 screen 目录、HUD controller 或 display builder，避免回到 `CityHudPanel` 单体补丁路径。
+`PLAYABLE-CORE-01` 通过后进入 `CORE-DECISION-PLAYTEST-01`：进行至少 3 次独立试玩，只收敛建设取舍、推月反馈和短中期目标；未通过前继续修首局切片，不切换到美术批量生产或新系统。

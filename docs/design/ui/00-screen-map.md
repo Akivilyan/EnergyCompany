@@ -117,15 +117,9 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 ---
 
-## 8. Playable v0 暴露建议（见 engineering/vertical-slice-v0.md）
+## 8. 当前切片暴露原则
 
-| 屏幕/入口 | v0 建议 |
-|-----------|---------|
-| `screen_new_game_doctrine` | UI 可先仅 **tech** + **simple**；教学入口建议保留 |
-| `screen_world_map` / `screen_region` | 按战役进度逐步解锁；可简化美术 |
-| `screen_tech_tree` | 必须（tech 方针） |
-| `modal_ad_reward_pick` | 可占位；IAP 商店可藏 |
-| `overlay_onboarding` | 教学路径建议保留 |
+当前开发只暴露完成看板可玩路线所需的屏幕与入口。未进入当前路线的 World、Region、Tech、商业化和战略工程能力可以保留代码，但不得占用首屏信息层级或被当作当前交付阻塞项。具体范围以 `engineering/PROJECT-TASK-BOARD.md` 为准。
 
 ---
 
