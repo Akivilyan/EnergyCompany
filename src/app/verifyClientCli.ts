@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 日常客户端验收（build + 预检 + T50 HUD + T49 存档恢复），无需打开 Cocos。
+ * 客户端聚合验收（预检 + 可玩路线 + 存档恢复 + 微信包新鲜度），无需打开 Cocos。
  *
  * 用法：
  *   npm run verify:client

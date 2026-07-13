@@ -43,8 +43,8 @@ export function createHudButton(
   label.color = new Color(255, 255, 255, 255);
   label.horizontalAlign = HorizontalTextAlignment.CENTER;
   label.verticalAlign = VerticalTextAlignment.CENTER;
-  label.overflow = Overflow.SHRINK;
-  label.enableWrapText = false;
+  label.overflow = Overflow.CLAMP;
+  label.enableWrapText = true;
   label.string = t(messageKey);
 
   node.on(Node.EventType.TOUCH_END, (_event: EventTouch) => handler());

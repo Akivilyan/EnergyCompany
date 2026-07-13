@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Daily client check: Cocos project preflight + HUD smoke, without persistence
+ * Daily client check: Cocos project preflight + playable-route smoke, without persistence
  * resume or WeChat package freshness checks.
  *
  * Usage:

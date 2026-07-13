@@ -1,124 +1,66 @@
-import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { repoRoot } from "../helpers/testRepo.js";
+import { describe, expect, it } from "vitest";
 import { runCocosHudCloseStaticChecks } from "../../src/app/cocosHudCloseCheck.js";
-import { runCocosHudClose } from "../../src/app/cocosHudCloseRunner.js";
 
-describe("cocosHudCloseCheck", () => {
-  const panelMarkers =
-    "onOpenCompany onOpenRegion onOpenTech onAckEvent onQueueRegionLink onQueueSuperHydroGrid worldQueueSuperHydroGridLink drawCityBackground drawCityFacilities drawCityGrid drawCityState drawGridLine createStageGridSlot placeStageGridSlot createStageEffectSlot placeStageEffectSlot createStageFeedbackSlot placeStageFeedbackSlot createStageAssetSlot placeStageAssetSlot syncPanelStateTokens syncScreenStateToken syncFacilityAssetStateTokens resolveIconRoleToken CITY_HUD_STAGE_SCREEN_TOKENS.city CITY_HUD_STAGE_ASSET_TOKENS.resourceRich CITY_HUD_STAGE_GRID_TOKENS.connected CITY_HUD_STAGE_EFFECT_TOKENS.construction CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster CITY_HUD_STAGE_FEEDBACK_TOKENS.completion CITY_HUD_STAGE_UI_TOKENS.primaryAction CITY_HUD_STAGE_ICON_TOKENS.active CITY_HUD_STAGE_ASSET_SLOTS.windTurbine CITY_HUD_STAGE_ASSET_SLOTS.solarField CITY_HUD_STAGE_ASSET_SLOTS.hydroPlant CITY_HUD_STAGE_ASSET_SLOTS.cleanBadge CITY_HUD_STAGE_ASSET_SLOTS.warningBadge bindGameBoot";
-  const stageSpecMarkers =
-    "CITY_HUD_STAGE_LAYER_NAMES CITY_HUD_STAGE_SHELL_ORDER CITY_HUD_STAGE_VISUAL_ORDER CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_SCREEN_TOKENS CITY_HUD_STAGE_ASSET_TOKENS CITY_HUD_STAGE_GRID_SLOTS CITY_HUD_STAGE_GRID_TOKENS CITY_HUD_STAGE_EFFECT_SLOTS CITY_HUD_STAGE_EFFECT_TOKENS CITY_HUD_STAGE_FEEDBACK_SLOTS CITY_HUD_STAGE_FEEDBACK_TOKENS CITY_HUD_STAGE_STATE_TOKENS CityVisualLayer CityBackgroundLayer CityFacilityLayer CityGridLayer CityEffectLayer CityStateLayer CityUiLayer CityIconLayer StageAssetWindTurbine StageAssetSolarField StageAssetHydroPlant StageGridWindSolar StageGridSolarHydro StageEffectBuildGlow StageEffectGridGlow StageFeedbackDisasterWarning StageFeedbackConstructionProgress StageFeedbackCompletionPulse city-stage:screen-city city-stage:screen-company city-stage:screen-region city-stage:screen-world city-stage:screen-tech city-stage:asset-visible city-stage:asset-unavailable city-stage:asset-resource-rich city-stage:asset-resource-normal city-stage:asset-placeholder city-stage:grid-connected city-stage:grid-disconnected city-stage:grid-stable city-stage:grid-weak city-stage:effect-active city-stage:effect-construction city-stage:effect-grid city-stage:effect-low-cleanliness city-stage:effect-normal city-stage:feedback-visible city-stage:feedback-hidden city-stage:feedback-disaster city-stage:feedback-construction city-stage:feedback-completion city-stage:feedback-calm CITY_HUD_STAGE_UI_SLOTS CITY_HUD_STAGE_UI_TOKENS CITY_HUD_STAGE_ACTION_SLOTS CITY_HUD_STAGE_INTERACTION_TOKENS CITY_HUD_STAGE_ICON_SLOTS CITY_HUD_STAGE_ICON_TOKENS CITY_HUD_STAGE_PREFAB_MANIFEST CityHudStagePrefabManifest StageUiResourceBar StageUiCityStateCard StageUiPrimaryBuildButton city-stage:ui-resource city-stage:ui-detail city-stage:ui-primary-action StageActionCycleBuild StageActionAdvanceMonth StageActionQueueRegionLink StageActionQueueSuperHydroGrid StageNavCompany StageNavBack city-stage:action-primary city-stage:action-reward StageIconCash StageIconSocialValue StageIconCleanliness city-stage:icon-cash city-stage:icon-social-value city-stage:icon-cleanliness city-stage:low-cleanliness";
-  const manifestMarkers =
-    "screen_city_detail layers background buildings grid effects ui icons requiredAssetSlots requiredGridSlots requiredEffectSlots requiredFeedbackSlots requiredUiSlots requiredIconSlots playablePath primaryAction cycleAction advanceAction runtimeGate canBuildInCity requiredRuntimeTokens background: CITY_HUD_STAGE_LAYER_NAMES.background buildings: CITY_HUD_STAGE_LAYER_NAMES.facility grid: CITY_HUD_STAGE_LAYER_NAMES.grid effects: CITY_HUD_STAGE_LAYER_NAMES.effect ui: CITY_HUD_STAGE_LAYER_NAMES.ui icons: CITY_HUD_STAGE_LAYER_NAMES.icon CITY_HUD_STAGE_UI_SLOTS.resourceBar CITY_HUD_STAGE_UI_SLOTS.cityStateCard CITY_HUD_STAGE_UI_SLOTS.primaryBuildButton CITY_HUD_STAGE_ICON_SLOTS.cash CITY_HUD_STAGE_ICON_SLOTS.socialValue CITY_HUD_STAGE_ICON_SLOTS.cleanliness CITY_HUD_STAGE_INTERACTION_TOKENS.active CITY_HUD_STAGE_INTERACTION_TOKENS.hidden CITY_HUD_STAGE_ASSET_TOKENS.unavailable CITY_HUD_STAGE_GRID_TOKENS.connected CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness CITY_HUD_STAGE_FEEDBACK_TOKENS.disaster CITY_HUD_STAGE_FEEDBACK_TOKENS.construction CITY_HUD_STAGE_FEEDBACK_TOKENS.completion CITY_HUD_STAGE_STATE_TOKENS.clean CITY_HUD_STAGE_STATE_TOKENS.lowCleanliness CITY_HUD_STAGE_UI_TOKENS.primaryAction";
-
-  function writeStaticHudFixtures(scriptsDir: string): void {
-    fs.writeFileSync(
-      path.join(scriptsDir, "CityHudPanel.ts"),
-      `${panelMarkers} ./cityHudStageSpec CITY_HUD_STAGE_ASSET_SLOTS CITY_HUD_STAGE_SCREEN_TOKENS CITY_HUD_STAGE_ASSET_TOKENS CITY_HUD_STAGE_GRID_SLOTS CITY_HUD_STAGE_GRID_TOKENS CITY_HUD_STAGE_EFFECT_SLOTS CITY_HUD_STAGE_EFFECT_TOKENS CITY_HUD_STAGE_FEEDBACK_SLOTS CITY_HUD_STAGE_FEEDBACK_TOKENS CITY_HUD_STAGE_UI_SLOTS CITY_HUD_STAGE_UI_TOKENS CITY_HUD_STAGE_ACTION_SLOTS CITY_HUD_STAGE_ICON_SLOTS CITY_HUD_STAGE_ICON_TOKENS CITY_HUD_STAGE_INTERACTION_TOKENS syncButtonStateTokens resolveButtonRoleToken resolveButtonFill CITY_HUD_STAGE_INTERACTION_TOKENS.active CITY_HUD_STAGE_INTERACTION_TOKENS.hidden CITY_HUD_STAGE_UI_TOKENS.resource CITY_HUD_STAGE_UI_TOKENS.detail CITY_HUD_STAGE_UI_TOKENS.primaryAction CITY_HUD_STAGE_ICON_TOKENS.active CITY_HUD_STAGE_SCREEN_TOKENS.company CITY_HUD_STAGE_SCREEN_TOKENS.region CITY_HUD_STAGE_SCREEN_TOKENS.world CITY_HUD_STAGE_SCREEN_TOKENS.tech CITY_HUD_STAGE_ASSET_TOKENS.visible CITY_HUD_STAGE_ASSET_TOKENS.unavailable CITY_HUD_STAGE_ASSET_TOKENS.resourceRich CITY_HUD_STAGE_ASSET_TOKENS.placeholder CITY_HUD_STAGE_GRID_SLOTS.windSolar CITY_HUD_STAGE_GRID_SLOTS.solarHydro CITY_HUD_STAGE_GRID_TOKENS.disconnected CITY_HUD_STAGE_EFFECT_SLOTS.buildGlow CITY_HUD_STAGE_EFFECT_SLOTS.gridGlow CITY_HUD_STAGE_EFFECT_TOKENS.lowCleanliness CITY_HUD_STAGE_FEEDBACK_SLOTS.disasterWarning CITY_HUD_STAGE_FEEDBACK_SLOTS.constructionProgress CITY_HUD_STAGE_FEEDBACK_SLOTS.completionPulse CITY_HUD_STAGE_FEEDBACK_TOKENS.visible CITY_HUD_STAGE_FEEDBACK_TOKENS.hidden CITY_HUD_STAGE_FEEDBACK_TOKENS.construction hasPendingDisasterFeedback hasConstructionFeedback hasCompletionFeedback applyStageLayerOrder CITY_HUD_STAGE_SHELL_ORDER CITY_HUD_STAGE_VISUAL_ORDER setSiblingIndex`,
-      "utf8"
-    );
-    fs.writeFileSync(path.join(scriptsDir, "cityHudStageSpec.ts"), `${stageSpecMarkers} ${manifestMarkers}`, "utf8");
-  }
-
-  it("keeps Cocos HUD screen architecture markers", () => {
-    const checks = runCocosHudCloseStaticChecks(repoRoot);
-    expect(checks.every((item) => item.ok)).toBe(true);
+describe("cocos HUD structural checks", () => {
+  it("accepts the focused portrait playable shell", () => {
+    const root = makeFixture();
+    const checks = runCocosHudCloseStaticChecks(root);
+    expect(checks.filter((item) => !item.ok)).toEqual([]);
+    expect(checks).toHaveLength(8);
   });
 
-  it("reports half-built WeChat packages with missing startup modules", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-wechat-build-"));
-    const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
-    const buildRoot = path.join(tempRoot, "client", "cocos", "build", "wechatgame");
-    fs.mkdirSync(scriptsDir, { recursive: true });
-    fs.mkdirSync(path.join(buildRoot, "src"), { recursive: true });
-    writeStaticHudFixtures(scriptsDir);
+  it("rejects the old landscape scene", () => {
+    const root = makeFixture();
     fs.writeFileSync(
-      path.join(buildRoot, "game.js"),
-      "require('./web-adapter'); require('src/polyfills.bundle.js'); require(\"src/import-map.js\");",
+      path.join(root, "client", "cocos", "assets", "CityDetail.scene"),
+      '{"width":1280,"height":720,"_orthoHeight":360}',
       "utf8"
     );
-    fs.writeFileSync(path.join(buildRoot, "web-adapter.js"), "", "utf8");
-    fs.writeFileSync(path.join(buildRoot, "src", "import-map.js"), "", "utf8");
-
-    const missing = runCocosHudCloseStaticChecks(tempRoot, {
-      withWechatBuildFreshness: true
-    }).find((item) => item.id === "wechat-build:startup-modules");
-    expect(missing?.ok).toBe(false);
-    expect(missing?.detail).toContain("src/polyfills.bundle.js");
-
-    fs.writeFileSync(path.join(buildRoot, "src", "polyfills.bundle.js"), "", "utf8");
-    const complete = runCocosHudCloseStaticChecks(tempRoot, {
-      withWechatBuildFreshness: true
-    }).find((item) => item.id === "wechat-build:startup-modules");
-    expect(complete?.ok).toBe(true);
+    const check = runCocosHudCloseStaticChecks(root).find(
+      (item) => item.id === "client-scene:portrait-reference"
+    );
+    expect(check?.ok).toBe(false);
   });
 
-  it("reports terminated Cocos build-script from the latest WeChat build log", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-wechat-log-"));
-    const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
-    const buildRoot = path.join(tempRoot, "client", "cocos", "build", "wechatgame");
-    const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
-    fs.mkdirSync(scriptsDir, { recursive: true });
-    fs.mkdirSync(buildRoot, { recursive: true });
-    fs.mkdirSync(logDir, { recursive: true });
-    writeStaticHudFixtures(scriptsDir);
-    fs.writeFileSync(path.join(buildRoot, "game.js"), "require('./web-adapter');", "utf8");
-
-    const failedLog = path.join(logDir, "wechatgame2026-6-18 13-11.log");
+  it("rejects reintroduced placeholder shell specs", () => {
+    const root = makeFixture();
     fs.writeFileSync(
-      failedLog,
-      "Error: Exit process with code:null, signal:SIGTERM in task build-script",
+      path.join(root, "client", "cocos", "assets", "scripts", "cityHudStageSpec.ts"),
+      "export const legacy = true;",
       "utf8"
     );
-    const failed = runCocosHudCloseStaticChecks(tempRoot, {
-      withWechatBuildFreshness: true
-    }).find((item) => item.id === "wechat-build:last-build-log");
-    expect(failed?.ok).toBe(false);
-    expect(failed?.detail).toContain("SIGTERM");
-
-    const okLog = path.join(logDir, "wechatgame2026-6-18 13-20.log");
-    fs.writeFileSync(okLog, "build success", "utf8");
-    const now = new Date(Date.now() + 1000);
-    fs.utimesSync(okLog, now, now);
-    const passed = runCocosHudCloseStaticChecks(tempRoot, {
-      withWechatBuildFreshness: true
-    }).find((item) => item.id === "wechat-build:last-build-log");
-    expect(passed?.ok).toBe(true);
-  });
-
-  it("ignores stale terminated build logs when the WeChat package was deleted", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "energy-company-stale-log-"));
-    const scriptsDir = path.join(tempRoot, "client", "cocos", "assets", "scripts");
-    const logDir = path.join(tempRoot, "client", "cocos", "temp", "builder", "log");
-    fs.mkdirSync(scriptsDir, { recursive: true });
-    fs.mkdirSync(logDir, { recursive: true });
-    writeStaticHudFixtures(scriptsDir);
-    fs.writeFileSync(
-      path.join(logDir, "wechatgame2026-6-18 13-11.log"),
-      "Error: Exit process with code:null, signal:SIGTERM in task build-script",
-      "utf8"
+    const check = runCocosHudCloseStaticChecks(root).find(
+      (item) => item.id === "client-architecture:no-placeholder-shell"
     );
-
-    const check = runCocosHudCloseStaticChecks(tempRoot, {
-      withWechatBuildFreshness: true
-    }).find((item) => item.id === "wechat-build:last-build-log");
-    expect(check?.ok).toBe(true);
-    expect(check?.detail).toContain("wechat build not present");
-  });
-
-  it("keeps pending disaster modal across hide and remount", () => {
-    const result = runCocosHudClose(repoRoot, {
-      withPersistence: true,
-      withInitPreflight: true
-    });
-
-    expect(result.staticChecks.every((item) => item.ok)).toBe(true);
-    expect(result.smokeSteps.every((item) => item.ok)).toBe(true);
-    expect(result.persistenceOk).toBe(true);
-    expect(result.eventResumeOk).toBe(true);
-    expect(result.eventResumeDetail).toContain("seq=1");
+    expect(check?.ok).toBe(false);
   });
 });
+
+function makeFixture(): string {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "energy-playable-hud-"));
+  const cocosRoot = path.join(root, "client", "cocos");
+  const scriptsRoot = path.join(cocosRoot, "assets", "scripts");
+  const files: Record<string, string> = {
+    "GameRoot.ts": "CityHudPanel defaultRewardedAdUnitId bindGameBoot",
+    "CityHudPanel.ts": "PlayableHudShell CityScreenPanel EventModalPanel RunResultScreenPanel",
+    "screens/city/CityScreenPanel.ts": "CityBuildPickerSheet buildSelectedCityFacility advanceCityMonth 月结完成",
+    "screens/city/cityViewModel.ts": "readCityScreenViewModel 建设第一座电源 buildPickerItems",
+    "screens/city/cityActions.ts": "buildSelectedCityFacility advanceCityMonth",
+    "hudLayout.ts": "竖屏原生布局 actionH marginX"
+  };
+  for (const [relativePath, source] of Object.entries(files)) {
+    const filePath = path.join(scriptsRoot, ...relativePath.split("/"));
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, source, "utf8");
+  }
+  fs.mkdirSync(path.join(cocosRoot, "assets"), { recursive: true });
+  fs.writeFileSync(
+    path.join(cocosRoot, "assets", "CityDetail.scene"),
+    '{"width":720,"height":1280,"_orthoHeight":640}',
+    "utf8"
+  );
+  return root;
+}

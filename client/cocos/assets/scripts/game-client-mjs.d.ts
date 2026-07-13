@@ -39,6 +39,7 @@ declare module "*.mjs" {
   export function cityHudCycleBuildCandidate(...args: any[]): any;
   export function getCityHudBuildSelectionSnapshot(...args: any[]): any;
   export function clientNavBack(...args: any[]): any;
+  export function clientNavOpenCity(...args: any[]): any;
   export function clientNavOpenCompany(...args: any[]): any;
   export function clientNavOpenRegion(...args: any[]): any;
   export function clientNavOpenWorldMap(...args: any[]): any;
