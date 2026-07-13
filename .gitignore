@@ -9,6 +9,8 @@ node_modules/
 dist/
 coverage/
 playtest-lab/output/
+.playwright-cli/
+output/playwright/
 *.log
 npm-debug.log*
 *.tsbuildinfo
