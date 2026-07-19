@@ -9,7 +9,8 @@
 | `product-prototype-design-brief.md` | 当前基准 | 产品原型默认短上下文、视觉与交互底线、资产生产顺序 |
 | `art-direction.md` | 当前基准 | UI 美术、图标、建筑、场景层级、资产拆分与音频合同 |
 | `assets/icons/icon-manifest-v2.md` | 图标阶段完成 | 24 枚 128px 轻量运行时候选、命名、语义、尺寸预算与保留稿边界 |
-| `assets/buildings/building-visual-contract-v1.md` | 待评审 | 真实设施视觉清单、统一镜头 / 光照 / 占地 / 锚点合同与火电单设施对比稿 |
+| `assets/buildings/building-visual-contract-v1.md` | 代表资产待评审 | 真实设施视觉清单、A′ / L3 镜头光照、占地 / 锚点合同与代表组验收记录 |
+| `assets/buildings/representative-v1/README.md` | 代表资产待评审 | 风电·I、光伏·I、火电·I 的 512px 母图、独立阴影、256px 缩略图与清单 |
 | `city-flow-gameplay-contract.md` | 当前玩法合同 | 城市建设、推月、灾害的玩家可见事实与规则分歧 |
 | `construction-flow.md` | 当前流程合同 | 点空位后的建设流程与状态 |
 | `month-settlement-flow.md` | 当前流程合同 | 下一月后的常态结算、关键反馈队列与返回态 |

@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "camera": "A-prime: 38deg high three-quarter, gentle weak perspective",
+  "lighting": "L3: near-overhead noon, sky fill",
+  "masterCanvas": [
+    512,
+    512
+  ],
+  "sharedAnchorPx": [
+    256,
+    468
+  ],
+  "items": [
+    {
+      "key": "wind-tier1",
+      "label": "WIND I",
+      "source": "source/building-wind-tier1-alpha-source-v1.png",
+      "master": "master/building-wind-tier1-master-v1.png",
+      "shadow": "shadow/building-wind-tier1-shadow-v1.png",
+      "thumbnail": "thumbnail/building-wind-tier1-thumbnail-v1.png",
+      "masterSize": [
+        512,
+        512
+      ],
+      "anchorPx": [
+        256,
+        468
+      ],
+      "anchorNormalized": [
+        0.5,
+        0.9141
+      ],
+      "contentBBox": [
+        145,
+        12,
+        368,
+        468
+      ],
+      "thumbnailSize": [
+        256,
+        256
+      ],
+      "thumbnailAnchorPx": [
+        128,
+        234
+      ],
+      "thumbnailContentBBox": [
+        76,
+        23,
+        180,
+        240
+      ]
+    },
+    {
+      "key": "solar-tier1",
+      "label": "SOLAR I",
+      "source": "source/building-solar-tier1-alpha-source-v1.png",
+      "master": "master/building-solar-tier1-master-v1.png",
+      "shadow": "shadow/building-solar-tier1-shadow-v1.png",
+      "thumbnail": "thumbnail/building-solar-tier1-thumbnail-v1.png",
+      "masterSize": [
+        512,
+        512
+      ],
+      "anchorPx": [
+        256,
+        468
+      ],
+      "anchorNormalized": [
+        0.5,
+        0.9141
+      ],
+      "contentBBox": [
+        115,
+        130,
+        397,
+        468
+      ],
+      "thumbnailSize": [
+        256,
+        256
+      ],
+      "thumbnailAnchorPx": [
+        128,
+        234
+      ],
+      "thumbnailContentBBox": [
+        40,
+        23,
+        216,
+        244
+      ]
+    },
+    {
+      "key": "thermal-tier1",
+      "label": "THERMAL I",
+      "source": "source/building-thermal-tier1-alpha-source-v1.png",
+      "master": "master/building-thermal-tier1-master-v1.png",
+      "shadow": "shadow/building-thermal-tier1-shadow-v1.png",
+      "thumbnail": "thumbnail/building-thermal-tier1-thumbnail-v1.png",
+      "masterSize": [
+        512,
+        512
+      ],
+      "anchorPx": [
+        256,
+        468
+      ],
+      "anchorNormalized": [
+        0.5,
+        0.9141
+      ],
+      "contentBBox": [
+        48,
+        94,
+        465,
+        468
+      ],
+      "thumbnailSize": [
+        256,
+        256
+      ],
+      "thumbnailAnchorPx": [
+        128,
+        234
+      ],
+      "thumbnailContentBBox": [
+        23,
+        45,
+        234,
+        243
+      ]
+    }
+  ]
+}
