@@ -1,116 +1,54 @@
 # 公司管理界面
 
-## 1. 屏幕 ID
+> 状态：待重设计；本文只保留页面目的、玩家可见数据与业务行为，不作为布局、组件或视觉基准。
 
-`screen_company`；子模态 `modal_loan_apply`、`modal_ad_reward_pick`。
+## 1. 屏幕与目的
 
-## 2. 目的
+- 屏幕 ID：`screen_company`。
+- 子流程：贷款申请、公司经验（底层社会价值）明细，以及产品确认保留的其他公司经营操作。
+- 提供经营快照、近月现金流、公司等级进度和资金压力处理入口。
+- 本屏不提供 `下一月`；关闭后返回进入前上下文。
 
-大理石式 **经营快照 + 近月流水**；借贷、岗位、激励广告、社会价值明细入口。
+## 2. 核心信息
 
-## 3. 布局（线框）
+| 信息 | 玩家需要理解的内容 |
+|------|--------------------|
+| 公司摘要 | 当前资金、公司等级、公司经验 `EXP`、等级进度 |
+| 上月经营 | 收入、运维、燃料、还贷与净现金流 |
+| 近月趋势 | 最近若干月现金流变化；具体图表形式待重设计 |
+| 城市概况 | 各城市的关键经营差异，不复制城市详情页 |
+| 贷款 | 当前贷款、可申请档位、解锁条件与偿还压力 |
+| 公司经验 | `socialValueCurrent` 当前值、下一等级门槛及按城市 / 来源拆分的构成；经验可波动，已获得等级不回退 |
+| 激励能力 | 仅在最终产品确认保留时显示剩余次数、类型和可用目标 |
 
-```text
-┌──────────────────────────────────────────────┐
-│ [←返回]  公司经营          资金 | SV | 年月   │
-├──────────────────────────────────────────────┤
-│ 摘要: 等级 I→II进度 | 上月净现金流              │
-├──────────────┬───────────────────────────────┤
-│ Tab: 概览    │  Tab: 社会价值明细 → 子页滚动    │
-├──────────────┴───────────────────────────────┤
-│ [上月收支条形图/表]  收入|建设|研发|运维|原料|贷 │
-│ [近6月简表]                                   │
-│ [分城概况列表]                                │
-├──────────────────────────────────────────────┤
-│ 借贷: 当前贷款 / [申请贷款]                   │
-│ 岗位: CFO [baseline/已购]  PE [标准/已购]      │
-│ 激励: 剩余 N/10  [资金][秒完工][秒研发]        │
-└──────────────────────────────────────────────┘
-```
+## 3. 行为合同
 
-## 4. 组件树
-
-- `CompanyScreen`
-  - `TopBar` + `BtnBack`
-  - `SummaryCard`（level, net_cashflow_last_month）
-  - `TabBar`：`Overview` | `SocialValueDetail`
-  - `OverviewPanel`
-    - `LastMonthBreakdown`
-    - `RecentSixMonthsTable`
-    - `PerCityTable`
-    - `LoanSection` → `BtnApplyLoan` → `modal_loan_apply`
-    - `RolesSection`（CFO/PE 卡 + 购买入口）
-    - `RewardedAdsSection`（`AdsRemainingLabel` + 三按钮）
-  - `SocialValueDetailPanel`（绑定 T17 字段）
-  - `ModalLoanApply`（档位列表、并发提示）
-  - `ModalAdRewardPick`（类型选择 → 可选目标列表）
-
-## 5. 数据绑定
-
-| 组件 | 字段 |
-|------|------|
-| 摘要 | `funds`, `company_level`, `social_value_current`, `monthly_net_cashflow` |
-| 借贷 | `active_loan`, `loan_tiers_unlocked` |
-| 岗位 | `role_state.cfo`, `role_state.pe` |
-| 激励 | `ads_remaining` |
-| SV 明细 | `social_value_breakdown_by_city` |
-
-## 6. 交互表
-
-| 控件 | 操作 | 结果 |
+| 动作 | 条件 | 结果 |
 |------|------|------|
-| `BtnApplyLoan` | 点击 | 打开 `modal_loan_apply`；已有贷款则灰显+说明 |
-| 贷款档位行 | 确认 | `apply_loan` |
-| 激励按钮 | 点击 | `ads_remaining>0` → `modal_ad_reward_pick`；否则灰显 |
-| `modal_ad_reward_pick` | 选类型+目标 | 播激励视频 → `claim_ad_reward` |
-| 岗位购买 | 点击 | `purchase_iap`（商店流） |
-| `Tab SocialValue` | 切换 | 滚动明细表 |
+| 查看经营明细 | 有历史结算 | 展示近月现金流与可追溯明细 |
+| 申请贷款 | 无活动贷款且档位已解锁 | 进入贷款确认并执行 `apply_loan` |
+| 申请贷款 | 已有活动贷款 | 保留当前贷款信息并解释不可重复申请 |
+| 查看公司经验 | 任意 | 展示 `social_value_breakdown_by_city` 等真实构成 |
+| 领取激励 | 次数、目标和平台能力均可用 | 经平台流程后执行对应奖励动作 |
 
-## 7. 异常态
+## 4. 必须覆盖的状态
 
-| 场景 | UI |
-|------|-----|
-| 贷款已存在 | 申请按钮灰显「请先还清当前贷款」 |
-| `ads_remaining=0` | 三激励入口灰显 |
-| 秒完工无在建 | 类型不可选 + 说明 |
-| 教学 `onb_06` 前 | 公司入口由遮罩控制（T35a） |
+- 无历史现金流：显示新公司空态，不生成虚假趋势。
+- 已有活动贷款：贷款申请不可用，并显示当前贷款与后续压力。
+- 贷款档位未解锁：展示公司等级门槛。
+- 激励次数耗尽、无可加速目标或平台不可用：入口禁用并解释原因。
+- 月结中或终局：按全局输入规则禁用会改变状态的操作。
 
-## 7.1 壳层契约（T45-13）
+## 5. 设计边界
 
-`screenCompany` 最小壳层已提供：
+- 公司页可以使用完整管理面板，但不能照搬旧移动 App 仪表盘线框。
+- 首层只回答“现在经营得怎样、为什么变化、能采取什么动作”；更细流水按需展开。
+- 贷款、公司经验明细和广告不应同时争夺主操作层级。
+- 公司经验首层固定为 `公司 Lv` + 当前等级罗马数字图标 + `current / nextThreshold EXP` 条；数值直接写入条内，不再另列“距升级”。
+- 具体导航、标签页数量、图表形式和卡片布局等待正式页面设计确定。
 
-- `getSnapshot()`：`funds/companyLevel/socialValue/runResult/adsRemaining`、当前贷款、可申请贷款档位（含 `unlockLevel/unlocked`）。
-- `getRecentCashflows(limit)`：按近月结算报告输出 `income/opex/fuel/loanPaid/netCashflow`，用于“近月流水”列表。
-- `applyLoan(loanId)`：调用 `apply_loan` 并返回 `before/after/result/uiErrorCode/uiCopy`。
-- `claimCashByAd()`：经 `AdRewardService` 播激励广告后调用 `claim_ad_reward(cash)`；默认 stub 完成以保持 v0 兼容。
+## 6. 回查
 
-贷款动作错误码映射（`uiErrorCode -> messageKey/actionKey`）：
-
-| `uiErrorCode` | `messageKey` | `actionKey` |
-|---|---|---|
-| `loan_not_found` | `company.error.loan_not_found` | `company.action.refresh_loan_tiers` |
-| `loan_tier_locked` | `company.error.loan_tier_locked` | `company.action.level_up_first` |
-| `loan_already_active` | `company.error.loan_already_active` | `company.action.wait_or_repay` |
-| `action_invalid` | `company.error.action_invalid` | `company.action.return_to_playable` |
-| `action_failed` | `company.error.action_failed` | `company.action.retry` |
-
-激励广告动作错误码映射：
-
-| `uiErrorCode` | `messageKey` | `actionKey` |
-|---|---|---|
-| `ad_not_completed` | `company.error.ad_not_completed` | `company.action.retry_ad` |
-| `ad_provider_failed` | `company.error.ad_provider_failed` | `company.action.retry_ad` |
-| `ads_exhausted` | `company.error.ads_exhausted` | `company.action.close_ad_panel` |
-
-## 8. 导航
-
-`back_screen` → 推月前上下文。无 `下一月`。
-
-## 9. 微信小游戏
-
-- 长表 **纵向滚动**；固定顶栏与 Tab。
-- 激励视频回调前按钮 loading，防连点。
-
-## 10. 相关文档
-
-- Feature：[company-management](../features/company-management.md)、[monetization](../features/monetization.md)、[social-value-settlement](../features/social-value-settlement.md)
+- 玩法规则：[`../features/company-management.md`](../features/company-management.md)、[`../features/monetization.md`](../features/monetization.md)、[`../features/social-value-settlement.md`](../features/social-value-settlement.md)
+- 页面层级：[`00-screen-map.md`](./00-screen-map.md)
+- 视觉规则：[`art-direction.md`](./art-direction.md)

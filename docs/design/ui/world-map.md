@@ -1,90 +1,50 @@
 # 全国大地图
 
-## 1. 屏幕 ID
+> 状态：待重设计；本文只保留页面目的、玩法输入与行为边界，不作为布局、组件或视觉基准。
 
-`screen_world_map`
+## 1. 屏幕与目的
 
-## 2. 目的
+- 屏幕 ID：`screen_world_map`。
+- 展示全国 **2 都 + 8 省** 的宏观关系，用于选择区域 / 都城、查看解锁与联通状态，并进入跨区主干和战略工程流程。
+- 本屏不提供 `下一月`；时间只在城市页推进。
 
-全国 **2 都 + 8 省** 宏观布局：选区/选都、查看解锁与联通、发起 **跨区主干** 与 **战略工程** 入口。
+## 2. 玩家可见对象
 
-## 3. 布局（线框）
+- 省节点 `MAP-xx`：已解锁时进入 `screen_region`，未解锁时可查看解锁条件。
+- 都城节点 `MET-A/B`：已解锁时直达对应 `screen_city_detail`。
+- 跨区主干：显示未建、施工中、已联通状态；只有满足科技与资金条件时才能确认建设。
+- 战略水电槽位：显示锁定、可建、施工中、已占用状态。
 
-```text
-┌──────────────────────────────────────────────┐
-│ TopBar: 资金 | 社会价值 | 年月              │
-├──────────────────────────────────────────────┤
-│ 图例: 省(区) | 都 | 已解锁 | 灰显 | 施工中    │
-├──────────────────────────────────────────────┤
-│                                              │
-│    [MET-A]····主干施工中····[MAP-03]         │
-│         \              /                     │
-│      [MAP-01]───[MAP-02]  (灰)               │
-│              \                               │
-│           [超级水电槽 ★]                      │
-│                                              │
-├──────────────────────────────────────────────┤
-│ [事件]  [科技]  [公司]     [返回城市]（若有）  │
-└──────────────────────────────────────────────┘
-```
+## 3. 数据输入
 
-- 节点：**省** `MAP-xx`、**都** `MET-A/B`；未解锁 **灰显不可点**。
-- 点击省 → `screen_region`；点击都 → 直达 `screen_city_detail`。
-- **无** `下一月` 主按钮。
+| 信息 | 数据 | 刷新时机 |
+|------|------|----------|
+| 区域 / 都城解锁 | `unlock_company_level`, `company_level` | 进入屏、公司升级后 |
+| 跨区主干 | `backbone_links`, `grid_link_queue` | 月结、下达建链后 |
+| 战略水电槽位 | `super_hydro_slots` | 科技解锁、完工后 |
+| 联通摘要 | 月结后的供能 / 联通结果 | 月结后 |
 
-## 4. 组件树
+## 4. 行为合同
 
-- `WorldMapScreen`
-  - `TopBar`（共享 HUD）
-  - `MapLegend`
-  - `NationalMapCanvas`
-    - `RegionNode`（type=province | capital）
-    - `BackboneLinkLayer`
-    - `SuperHydroSlotMarker`
-  - `BackboneBuildBar`（条件：选中跨区端点）
-  - `SuperHydroEntryCard`（条件：槽位可建）
-  - `NodeDetailSheet`（点击灰显节点：解锁条件只读）
-  - `BottomNav`（事件/科技/公司；可选「回当前城」）
-  - `ToastHost`
+| 对象 / 动作 | 条件 | 结果 |
+|-------------|------|------|
+| 点击已解锁省节点 | 节点可用 | 进入 `screen_region` |
+| 点击已解锁都城 | 节点可用 | 进入对应 `screen_city_detail` |
+| 点击未解锁节点 | 节点锁定 | 显示门槛说明，不把节点做成无响应死区 |
+| 确认跨区主干 | 科技、资金与端点合法 | `queue_grid_link` |
+| 点击战略水电槽位 | 槽位空且科技合法 | 进入战略工程确认流 |
+| 返回当前城市 | 存在 `current_city_id` | 回到该城市；具体入口位置待页面重设计 |
 
-## 5. 数据绑定
+## 5. 状态与交互底线
 
-| 组件 | 数据 | 刷新 |
-|------|------|------|
-| `RegionNode` 态 | `unlock_company_level`, `company_level` | 进入屏、M10 |
-| `BackboneLinkLayer` | `backbone_links`, `grid_link_queue` | M2、建链后 |
-| `SuperHydroSlotMarker` | `super_hydro_slots` | 科技点亮、完工 |
-| 联通摘要（可选角标） | M4 缓存 | 月结后 |
+- 教学或公司 I 级阶段可隐藏大地图入口，仅暴露当前可玩路线需要的节点。
+- 未解锁节点必须同时使用形状、明度和锁定信息，不只依赖灰色。
+- 地图默认可看清整体关系；若支持缩放与拖动，点选和拖拽手势必须分离。
+- 节点可见图形可以较小，但触控热区至少约 48×48dp。
+- 世界地图强调战略分布、区域入口和整体进度，不复用城市级建筑密度。
 
-## 6. 交互表
+## 6. 回查
 
-| 控件 | 操作 | 条件 | 结果 |
-|------|------|------|------|
-| `RegionNode` 省 | 点击 | 已解锁 | `screen_region` |
-| `RegionNode` 都 | 点击 | 已解锁 | `screen_city_detail`（该都） |
-| `RegionNode` | 点击 | 未解锁 | `NodeDetailSheet`（门槛说明） |
-| `BackboneBuildBar` 确认 | 点击 | 科技/资金 OK | `queue_grid_link`（主干） |
-| `SuperHydroEntryCard` | 点击 | 槽位空、科技 OK | 战略工程确认流（T20 细化） |
-| `BtnBackCity` | 点击 | 有 `current_city_id` | 回该城 city 屏 |
-
-## 7. 空态 / 锁定态 / 异常态
-
-| 态 | 表现 |
-|----|------|
-| I 级 / 教学局 | 仅 `CITY-START` 相关节点亮；其余灰显；教学可 **隐藏** 大地图入口 |
-| 主干科技未解锁 | 主干线不可选；提示 `tech_locked` |
-| 战略槽满 | `SuperHydroEntryCard` 灰显 `slot_limit_reached` |
-
-## 8. 导航
-
-见 [00-screen-map](./00-screen-map.md) §2。从 city/region 顶栏「世界地图」进入。
-
-## 9. 微信小游戏
-
-- 全国图默认 **缩小全览**；双指缩放；重要节点最小点击热区。
-- 灰显节点仍可点查看解锁条件（避免玩家以为死区）。
-
-## 10. 相关文档
-
-- Feature：[world-map](../features/world-map.md)、[grid-network](../features/grid-network.md)
-- GDD：[05-map](../gdd/05-map-and-slots.md)、[06-grid](../gdd/06-grid.md)
+- 页面层级与返回路径：[`00-screen-map.md`](./00-screen-map.md)
+- 玩法规则：[`../features/world-map.md`](../features/world-map.md)、[`../features/grid-network.md`](../features/grid-network.md)
+- 场景层级与视觉合同：[`art-direction.md`](./art-direction.md)

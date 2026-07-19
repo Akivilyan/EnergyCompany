@@ -6,9 +6,9 @@
 
 | ID | 触发 | 内容 | 按钮 |
 |----|------|------|------|
-| `modal_company_level_up` | M10 升级 | 新等级、解锁摘要（区域/科技） | 知道了 |
-| `modal_event_fullscreen` | 灾害 / 显著政策 | 见 [events](./events.md) | 知道了 |
-| `modal_mega_project_complete` | 超大水电/核电完工 | 工程名、影响摘要 | 知道了 |
+| `modal_company_level_up` | M10 升级 | 新等级、解锁摘要（区域/科技） | 确认 A |
+| `modal_event_fullscreen` | 灾害 / 显著政策 | 见 [events](./events.md) | 确认 A |
+| `modal_mega_project_complete` | 超大水电/核电完工 | 工程名、影响摘要 | 确认 A |
 
 **排队**：非终局月份同月 `modal_company_level_up` 优先，其后为新灾害 / 显著事件与重大工程；终局只保留与胜负直接相关的一张因果反馈，再进入结果页。完整规则见 [month-settlement-flow](./month-settlement-flow.md)。
 
@@ -22,7 +22,7 @@
 
 ## 3. 组件规范
 
-- **全屏**：保留城市轮廓并轻降饱和；底部使用稳定乳白 / 浅冰蓝玻璃承载影响信息，不使用长期纯黑重遮罩。插画区可选，无图时使用场景裁切与事件符号。
+- **阻断反馈**：城市背景保持正常色彩与光照；底部使用稳定乳白 / 浅冰蓝玻璃承载影响信息，不使用全局降饱和、纯黑重遮罩或事件专属场景变体。
 - **内提示**：不阻断点击；同月最多显示一条合并 `inline_month_receipt`；与 `overlay_onboarding` 并存时让位给遮罩。
 
 ## 4. 明确不做

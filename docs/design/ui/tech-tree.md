@@ -1,84 +1,53 @@
 # 科技树界面
 
-## 1. 屏幕 ID
+> 状态：待重设计；本文只保留页面目的、玩家可见状态与业务行为，不作为布局、组件或视觉基准。
 
-`screen_tech_tree`
+## 1. 屏幕与目的
 
-## 2. 目的
+- 屏幕 ID：`screen_tech_tree`。
+- 浏览科技关系、理解前置与收益、开始或取消研发，并持续看见唯一在研项目。
+- 科技完成使用节点与轻量反馈，不强制弹出全屏确认。
+- 本屏不提供 `下一月`；关闭后返回进入前上下文。
 
-浏览/研发科技节点；展示 **单队列** 在研状态；点亮反馈 **不用全屏弹窗**。
+## 2. 核心信息
 
-## 3. 布局（线框）
+| 信息 | 玩家需要理解的内容 |
+|------|--------------------|
+| 科技类别 | 发电、储能、电网、经营等真实科技分组 |
+| 节点状态 | locked / available / researching / completed |
+| 节点后果 | 费用、工期、前置、解锁内容与可见收益 |
+| 研发队列 | 当前唯一在研项目、剩余时间与可执行动作 |
+| 科技点 | 与资金、电力、公司 `EXP` 不同的实体芯片图标与数量 |
 
-```text
-┌──────────────────────────────────────────────┐
-│ [←返回]  科技树     资金 | SV | 方针lit余:12  │
-├──────────────────────────────────────────────┤
-│ [风][光][火][水][核][电网][经营]  ← 分页 Tab   │
-├──────────────────────────────────────────────┤
-│     (o)--(o)--[● researching 2月]--(lit)     │
-│      \    locked    unlocked                  │
-│                                              │
-│ 选中节点侧栏: 费用|工期|前置| [开研][取消]      │
-└──────────────────────────────────────────────┘
-```
+## 3. 行为合同
 
-## 4. 组件树
-
-- `TechTreeScreen`
-  - `TopBar` + `DoctrineLitBudgetLabel`
-  - `TechCategoryTabs`
-  - `TechGraphViewport`（缩放/拖曳）
-    - `TechNode`（locked/unlocked/researching/lit）
-    - `TechEdge`
-  - `TechDetailDrawer`（选中节点）
-    - `BtnStartResearch` / `BtnCancelResearch`
-  - `ResearchQueueBadge`（唯一在研摘要）
-
-## 5. 交互表
-
-| 控件 | 条件 | 结果 |
+| 动作 | 条件 | 结果 |
 |------|------|------|
-| `TechNode` unlocked | 点击 | 打开 Drawer |
-| `BtnStartResearch` | 无在研、预算 OK | `start_research` |
-| `BtnCancelResearch` | researching | `cancel_research` + 确认 |
-| 入口 | `company_level < II` | 全局入口隐藏（I 级） |
+| 选择科技节点 | 任意可见节点 | 显示真实前置、费用、工期和收益 |
+| 开始研发 | 节点可研究、无其他在研、资源满足 | `start_research` |
+| 取消研发 | 节点正在研究且规则允许 | 进入取消确认并执行 `cancel_research` |
+| 查看锁定节点 | 节点未解锁 | 解释公司等级、前置科技或其他真实门槛 |
+| 研发完成 | 月结推进完成 | 节点更新为 completed，并在城市页提供轻量完成提示 |
+| 研发加速 | 产品与平台确认保留且存在在研项目 | 经平台流程后执行加速动作 |
 
-## 6. 反馈（非弹窗）
+## 4. 必须覆盖的状态
 
-| 事件 | UI |
-|------|-----|
-| 当月 M3 点亮 | 节点变 `lit` + 城市屏 `InlineHintStrip` |
-| 研发中 | 节点脉冲 + `ResearchQueueBadge` |
+- 科技入口未开放：说明公司等级门槛，不展示空科技树。
+- 资金或科技点不足：保留节点后果与缺口，禁用开始研发。
+- 已有在研项目：其他研究入口不可用，并明确当前队列。
+- 状态在月结后发生变化：刷新节点，不依赖底层错误字符串维持旧画面。
+- 教学或结算阻断：按全局输入规则限制动作。
+- 激励不可用或没有在研目标：加速入口不出现或禁用并解释原因。
 
-## 7. 异常态（错误码与文案键）
+## 5. 设计边界
 
-`screenTechTree` 壳层统一返回 `uiErrorCode + uiCopy`（`messageKey/actionKey`），UI 不再依赖底层错误文案字符串判断。
+- 科技关系应一眼看懂，不默认采用单根超长交叉树；分页、分区或分层方式等待正式设计验证。
+- 选中节点的详情渐进披露，不能遮住玩家理解前置路径所需的核心关系。
+- 科技点图标遵循 `art-direction.md` 的正式图标合同，并在科技页资源区、节点和月报中保持同一语义；不常驻城市 HUD。
+- 具体图形布局、分类导航、缩放方式和详情承载层等待正式页面设计确定。
 
-| `uiErrorCode` | `messageKey` | `actionKey` | 建议交互 |
-|---|---|---|---|
-| `tech_locked` | `tech_tree.error.tech_locked` | `tech_tree.action.go_company_upgrade` | 提示“公司 II 级起开放”，保留返回按钮 |
-| `insufficient_funds` | `tech_tree.error.insufficient_funds` | `tech_tree.action.go_finance` | Drawer 内提示资金不足，保留开研按钮灰显 |
-| `research_queue_full` | `tech_tree.error.research_queue_full` | `tech_tree.action.cancel_or_wait` | 显示在研占位，给“取消/等待”二选一 |
-| `research_not_found` | `tech_tree.error.research_not_found` | `tech_tree.action.refresh_list` | 提示状态已变化，刷新当前列表 |
-| `no_active_research` | `tech_tree.error.no_active_research` | `tech_tree.action.start_research_first` | 广告加速前置提示：先有在研项目 |
-| `ad_not_completed` | `tech_tree.error.ad_not_completed` | `tech_tree.action.retry_ad` | 激励未看完，不扣次数不发奖 |
-| `ad_provider_failed` | `tech_tree.error.ad_provider_failed` | `tech_tree.action.retry_ad` | SDK/网络失败，不扣次数 |
-| `action_blocked` | `tech_tree.error.action_blocked` | `tech_tree.action.follow_tutorial` | 教学阶段拦截，按引导步骤继续 |
-| `action_invalid` | `tech_tree.error.action_invalid` | `tech_tree.action.retry_after_settle` | 结算拍或 payload 异常，建议稍后重试 |
-| `action_failed` | `tech_tree.error.action_failed` | `tech_tree.action.retry` | 未归类兜底错误，提示重试 |
+## 6. 回查
 
-`speedupResearchByAd()` 经 `AdRewardService` 播激励广告后调用 `claim_ad_reward(speedup)`；默认 stub 完成以保持 v0 兼容。
-
-## 8. 导航
-
-`back_screen`；教学 `onb_07` 强制打开本屏一次。
-
-## 9. 微信小游戏
-
-- 图过大时 **分页** 减负载；节点热区 ≥ 44pt。
-- Drawer 从底滑出，不遮挡图中心路径。
-
-## 10. 相关文档
-
-- Feature：[tech-tree](../features/tech-tree.md)
+- 玩法规则：[`../features/tech-tree.md`](../features/tech-tree.md)
+- 页面层级：[`00-screen-map.md`](./00-screen-map.md)
+- 图标与视觉规则：[`art-direction.md`](./art-direction.md)

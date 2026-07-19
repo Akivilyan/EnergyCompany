@@ -1,39 +1,32 @@
 # 终局结果界面
 
-## 1. 屏幕 ID
+> 状态：待重设计；本文只保留终局信息与行为合同，不作为布局、组件或视觉基准。
 
-`screen_run_result`
+## 1. 屏幕与目的
 
-## 2. 目的
+- 屏幕 ID：`screen_run_result`。
+- 展示 `victory` 或 `bankrupt` 的终局原因、关键经营结果和下一步入口。
+- 进入结果态后不可继续执行当前局的建设、研发、推月等运行态命令。
 
-展示 `victory/bankrupt` 终局快照，并明确进入结果态后不可继续执行运行态命令。
+## 2. 玩家可见信息
 
-## 3. 壳层契约（T45-13）
+| 信息 | 目的 |
+|------|------|
+| 结果类型 | 明确通关或破产，不只依赖颜色 |
+| 终局原因 | 说明导致结果的关键条件或最近一次重大影响 |
+| 基础快照 | 月份、资金、公司等级、社会价值 |
+| 灾害进度 | 已触发灾害数量、最终灾害是否完成 |
+| 终局目标 | 都城联通、供能缺口、战略工程等真实完成情况 |
 
-`screenRunResult` 最小壳层接口：
+## 3. 行为合同
 
-- `getSnapshot(): RunResultSnapshot | null`
-  - 非结果态返回 `null`
-  - 结果态返回：
-    - `month`
-    - `runResult`（`victory` / `bankrupt`）
-    - `funds`
-    - `companyLevel`
-    - `socialValue`
-    - `disastersTriggeredCount`
-    - `finalDisasterTriggered`
-    - `terminalRoute`
-      - `metBUnlocked`
-      - `metBConnected`
-      - `metBSupplyGapMw`
-      - `superHydroFinishedSlots`
-      - `superHydroConnectedOutputMw`
-      - `superHydroTotalOutputMw`
-    - `canRunPlayableCommands=false`
+- 结果页只读；所有运行态操作不可用。
+- 提供“重新开始”和“返回主菜单”等终局导航，具体按钮样式与排版待重设计。
+- 破产页必须解释主要失败原因；胜利页必须解释达成了哪些关键目标。
+- 若由灾害或重大现金冲击直接触发终局，先保留一条清晰因果，再进入结果总结。
 
-## 4. 交互约束
+## 4. 回查
 
-- 进入 `run_result` 后，`dispatch` 必须拒绝运行态命令（返回 `invalid_phase`）。
-- `sim:result-loop` 冒烟要求覆盖：
-  - victory 分支：触发最终灾害并达目标月后进入 `run_result`
-  - bankrupt 分支：连续负资金达阈值后进入 `run_result`
+- 顶层状态与导航：[`00-screen-map.md`](./00-screen-map.md)
+- 终局结算与关键反馈：[`month-settlement-flow.md`](./month-settlement-flow.md)
+- 规则状态：[`../features/00-game-state.md`](../features/00-game-state.md)

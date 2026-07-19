@@ -1,6 +1,6 @@
 # 屏幕地图
 
-全项目 **屏幕 ID** 注册表：层级、入口/出口、对应 Feature、与顶层状态机关系。线框与组件树在各屏 UI 任务（T27–T35a）中展开。
+全项目 **屏幕 ID** 注册表：只维护层级、入口 / 出口、对应 Feature 与顶层状态机关系；具体布局以已评审页面为准。
 
 ---
 
@@ -42,7 +42,7 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 | 屏幕 ID | 名称 | 进入 | 出口 | 解锁 | Feature |
 |---------|------|------|------|------|---------|
-| `screen_tech_tree` | 科技树 | 顶栏/底栏按钮；`open_screen` | `back_screen` → 上下文 | 公司 **≥ II**；I 级无入口 | [tech-tree](../features/tech-tree.md) |
+| `screen_tech_tree` | 科技树 | 上下文入口；`open_screen` | `back_screen` → 上下文 | 公司 **≥ II**；I 级无入口 | [tech-tree](../features/tech-tree.md) |
 | `screen_company` | 公司管理 | 同上 | `back_screen` | 教学步 `onb_06` 前 **遮罩锁** | [company-management](../features/company-management.md)、[monetization](../features/monetization.md) |
 
 任意可操作月可进入（除教学白名单限制）；**不推进时间**。
@@ -62,22 +62,21 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 ## 5. 叠加层 / 模态（非独立导航栈）
 
-| 叠加 ID | 类型 | 触发 | 阻塞 | UI 任务 | Feature |
-|---------|------|------|------|---------|---------|
-| `overlay_settling` | 全屏轻遮罩 | `next_month` | 是 | T26 通用 | 00-game-state |
-| `inline_month_receipt` | 非阻断速报 | 月结完成 | 否 | PRODUCT-PROTOTYPE-01 | 00-game-state |
-| `overlay_onboarding` | 引导遮罩 | 教学局步骤 | 是（白名单点击） | T35a | [onboarding](../features/onboarding.md) |
-| `modal_build_list` | 模态 | 城市空位 | 否 | T30 | construction |
-| `modal_build_confirm` | 模态 | 建造列表选设施 | 否 | T30 | construction |
-| `panel_construction_queue` | 侧栏/底 sheet | 城市·在建 | 否 | T30 | construction |
-| `panel_events` | 底部 sheet | 城市·事件按钮 | 否 | T32 | [events](../features/events.md) |
-| `modal_event_fullscreen` | 全屏 | 灾害/显著政策 | 只读确认 | T32 | events |
-| `modal_loan_apply` | 模态 | 公司·借贷 | 否 | T29 | company-management |
-| `modal_ad_reward_pick` | 模态 | 公司·激励 | 否 | T29 | monetization |
-| `modal_skip_onboarding` | 确认框 | 引导·跳过 | 是 | T35a | onboarding |
-| `modal_company_level_up` | 全屏 | M10 升级 | 只读 | T34 | social-value-settlement |
-| `overlay_codex` | 全屏/大页 | 帮助 **?** | 否 | T35a | onboarding |
-| `toast_supply_100` 等 | Toast | M4/M3 条件 | 否 | T34 | 01-core-loop |
+| 叠加 ID | 类型 | 触发 | 阻塞 | Feature |
+|---------|------|------|------|---------|
+| `overlay_settling` | 全屏轻遮罩 | `next_month` | 是 | 00-game-state |
+| `inline_month_receipt` | 非阻断速报 | 月结完成 | 否 | 00-game-state |
+| `overlay_onboarding` | 引导遮罩 | 教学局步骤 | 是（白名单点击） | [onboarding](../features/onboarding.md) |
+| `modal_build_list` | 模态 / sheet | 城市空位 | 否 | construction |
+| `modal_build_confirm` | 模态 / sheet | 建造列表选设施 | 否 | construction |
+| `panel_construction_queue` | 侧栏 / sheet | 城市·在建 | 否 | construction |
+| `panel_events` | 底部 sheet | 城市·事件入口 | 否 | [events](../features/events.md) |
+| `modal_event_fullscreen` | 阻断反馈 | 灾害 / 显著政策 | 只读确认 | events |
+| `modal_loan_apply` | 模态 | 公司·借贷 | 否 | company-management |
+| `modal_ad_reward_pick` | 模态 | 公司·激励 | 否 | monetization |
+| `modal_skip_onboarding` | 确认框 | 引导·跳过 | 是 | onboarding |
+| `modal_company_level_up` | 阻断反馈 | 公司升级 | 只读 | social-value-settlement |
+| `toast_supply_100` 等 | Toast | 月结条件 | 否 | 01-core-loop |
 
 `overlay_settling`、`inline_month_receipt` 与关键反馈排队的正式交互见 [month-settlement-flow](./month-settlement-flow.md)。
 
@@ -106,17 +105,18 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 ---
 
-## 7. 常驻入口（多屏共享）
+## 7. 共享导航语义
 
-| 控件 ID | 出现屏幕 | 目标 |
-|---------|----------|------|
-| `btn_next_month` | **仅** `screen_city_detail` | `next_month` |
-| `btn_tech_tree` | city、region、world、company（可选） | `screen_tech_tree` |
-| `btn_company` | 同上 | `screen_company` |
-| `btn_world_map` | city、region | `screen_world_map` |
-| `btn_events` | city（主）；region/world（摘要） | `panel_events` |
-| `btn_help` | city | `overlay_codex` |
-| `hud_funds_sv_month` | city、region、world、tech、company | 只读 |
+| 语义 | 可用范围 | 目标 |
+|------|----------|------|
+| 下一月 | **仅** `screen_city_detail` | `next_month` |
+| 科技 | 已解锁且非阻断态 | `screen_tech_tree` |
+| 公司 | 已开放且非阻断态 | `screen_company` |
+| 世界地图 | city、region | `screen_world_map` |
+| 事件 | city 为主；其他层级是否提供摘要待设计 | `panel_events` |
+| 资源摘要 | 按页面任务决定，不能因此形成所有页面相同的常驻工具栏 | 只读 |
+
+具体入口数量、位置和图形不在本文件固定；场景页不得由这些语义反推出旧式底部导航。
 
 ---
 
@@ -130,4 +130,4 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 - GDD：[核心循环与时间](../gdd/01-core-loop.md)、[新手引导](../gdd/10-onboarding.md)
 - Feature：[索引](../features/README.md)、[00-game-state](../features/00-game-state.md)
-- UI 子任务：T27 region、T28 world、T29 company、T30 construction、T31 tech、T32 events、T34 milestones、T35a onboarding
+- UI 当前基准与文档状态：[`README.md`](./README.md)、[`product-prototype-design-brief.md`](./product-prototype-design-brief.md)

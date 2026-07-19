@@ -1,103 +1,42 @@
 # 新手引导 UI
 
-## 1. 叠加 ID
+> 状态：待重设计；本文只保留通用引导行为，不固定旧页面锚点、步骤数量、线框或客户端壳层。
 
-- `overlay_onboarding`（教学局强制链）
-- `modal_skip_onboarding`
-- `overlay_codex`（图鉴，非强制）
+## 1. 目的与边界
 
-方针屏 UI 归属 `screen_new_game_doctrine`（教学卡 ✓ / 推荐高亮）。
+- 引导用于帮助玩家完成首局关键流程，不承担完整图鉴或帮助系统职责。
+- 正式步骤必须跟随最终页面与真实可操作流程生成，不能沿用旧客户端节点名反推新界面。
+- 每一步只突出一个目标和一个动作；非必要说明延后到玩家实际遇到对应状态时。
+- 引导可以跳过；跳过后不得破坏存档、玩法解锁或正常操作。
 
-## 2. 遮罩线框
+## 2. 通用交互合同
 
-```text
-┌──────────────────────────────────────────────┐
-│ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
-│ ░░░░░░░  [高亮挖洞: 下一月按钮]  ░░░░░░░░░░░ │
-│ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
-│  ┌─────────────────────────────────────┐   │
-│  │ 步骤 3/7  点击「下一月」推进时间      │   │
-│  │ 👆 手指动画                          │   │
-│  │ [跳过引导]                           │   │
-│  └─────────────────────────────────────┘   │
-└──────────────────────────────────────────────┘
-```
-
-## 3. 组件树
-
-- `OnboardingOverlay`
-  - `DimLayer`（挖洞 mask 跟随 `highlight_target`）
-  - `FingerHint`
-  - `StepCard`（文案、步骤条 `current/total`）
-  - `BtnSkip` → `modal_skip_onboarding`
-- `SkipConfirmModal`（二次确认）
-- `CodexOverlay`（分页 Tab，只读）
-
-## 4. 交互表
-
-| 控件 | 结果 |
+| 情况 | 行为 |
 |------|------|
-| 挖洞外点击 | **穿透拦截**（无反应） |
-| 挖洞内点击 | 正常控件 + 可能 `advance_onboarding` |
-| `BtnSkip` | 打开 `modal_skip_onboarding` |
-| 确认跳过 | `skip_onboarding` |
-| 大事件弹窗显示中 | 隐藏 `OnboardingOverlay` 直至关闭 |
+| 当前目标可操作 | 高亮目标并扩大有效热区；目标内输入正常传递 |
+| 点击目标外区域 | 在强制步骤中拦截；非强制步骤允许关闭提示 |
+| 目标暂时不存在 | 不显示悬空指示，等待页面进入合法状态或使用文字兜底 |
+| 阻断式事件出现 | 暂停并隐藏引导；事件确认后重新解析当前目标 |
+| 页面或状态变化 | 重新绑定语义目标，不沿用旧坐标 |
+| 玩家选择跳过 | 二次确认后结束强制引导并恢复完整输入 |
 
-## 5. `highlight_target` 示例（配置）
+## 3. 目标与承载规则
 
-| step_id | target |
-|---------|--------|
-| `onb_02_build` | 第一个空 `BuildSlot` |
-| `onb_03_next_month` | `BtnNextMonth` |
-| `onb_06_company` | `BtnCompany`（本步前入口灰显） |
-| `onb_07_tech_ii` | `BtnTechTree` |
+- 引导目标使用稳定的语义 ID，由当前页面提供锚点和可操作状态；不在文档中固定坐标。
+- 高亮挖洞必须覆盖完整触控区，并额外保留约 8dp 容错。
+- 提示卡优先放在不遮挡目标和主要反馈的位置；位置随目标调整，不固定在同一屏幕边缘。
+- 高亮同时使用轮廓、亮度或轻动画，不只依赖颜色。
+- 动画只帮助定位目标；支持减弱动态时改为静态描边与箭头。
 
-## 6. 方针屏
+## 4. 内容规则
 
-| 元素 | 态 |
-|------|-----|
-| 教学卡 | `tutorial_doctrine_cleared` → 角标 ✓ |
-| 首访 | 教学卡描边/「新玩家由此开始」 |
-| 四方针 | 无遮罩 |
+- 文案先说玩家动作，再补一句结果，例如“点击空位开始建设”。
+- 不展示内部结算阶段、错误码、客户端节点名或尚未接入的系统。
+- 同一概念首次出现时解释一次；后续只在玩家失败或遗忘时提供轻提示。
+- 正式首局步骤必须在产品原型点击流程通过后单独评审。
 
-## 6.1 壳层契约（T45-14）
+## 5. 回查
 
-`screenOnboarding` 最小壳层已提供：
-
-- `getSnapshot()`：`isTutorialRun/currentStepId/stepsDone/skipped/cleared/playableSubPhase`
-- `advanceStep()`：封装 `advance_onboarding`，返回 `before/after/result/uiErrorCode/uiCopy`
-- `skipAll()`：封装 `skip_onboarding`，返回同结构
-
-教学最小链路（当前实现）：
-
-1. tutorial 开局：`isTutorialRun=true`，`currentStepId=onb_01_welcome`，`playableSubPhase=blocked`
-2. 连续 7 次 `advance_onboarding`：步进到 `onb_done` 并写 `tutorialDoctrineCleared=true`
-3. `skip_onboarding`：直接到 `onb_done`，并写 `onboardingSkipped=true`（不写 cleared）
-
-错误码映射：
-
-| `uiErrorCode` | `messageKey` | `actionKey` |
-|---|---|---|
-| `not_tutorial_run` | `onboarding.error.not_tutorial_run` | `onboarding.action.start_tutorial_run` |
-| `action_blocked` | `onboarding.error.action_blocked` | `onboarding.action.follow_current_step` |
-| `action_invalid` | `onboarding.error.action_invalid` | `onboarding.action.retry` |
-| `action_failed` | `onboarding.error.action_failed` | `onboarding.action.retry` |
-
-## 6.2 图鉴壳层契约（T45-P1-01）
-
-`overlay_codex` 的 v0 简版已提供 `screenCodex` 只读壳层：
-
-- `getSnapshot(activePageId?)`：读取当前图鉴上下文与页面列表（`codex_core/codex_ads`）
-- `openPage(pageId)`：按页签读取，不存在返回 `not_found`
-- `tryOpenPage(pageId)`：失败时映射 `page_not_found -> codex.error.page_not_found`
-
-详细字段见 [codex](./codex.md)。
-
-## 7. 微信小游戏
-
-- 挖洞区域 **扩大热区** 8px。
-- 步骤卡固定底部，不挡 `下一月`。
-
-## 8. 相关文档
-
-- Feature：[onboarding](../features/onboarding.md)
+- 首局目标与关键流程：[`product-prototype-design-brief.md`](./product-prototype-design-brief.md)
+- 页面层级：[`00-screen-map.md`](./00-screen-map.md)
+- 玩法规则：[`../features/onboarding.md`](../features/onboarding.md)
