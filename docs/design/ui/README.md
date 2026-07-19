@@ -8,6 +8,7 @@
 |------|------|----------|
 | `product-prototype-design-brief.md` | 当前基准 | 产品原型默认短上下文、视觉与交互底线、资产生产顺序 |
 | `art-direction.md` | 当前基准 | UI 美术、图标、建筑、场景层级、资产拆分与音频合同 |
+| `assets/icons/icon-manifest-v2.md` | 图标阶段完成 | 24 枚 128px 轻量运行时候选、命名、语义、尺寸预算与保留稿边界 |
 | `city-flow-gameplay-contract.md` | 当前玩法合同 | 城市建设、推月、灾害的玩家可见事实与规则分歧 |
 | `construction-flow.md` | 当前流程合同 | 点空位后的建设流程与状态 |
 | `month-settlement-flow.md` | 当前流程合同 | 下一月后的常态结算、关键反馈队列与返回态 |
