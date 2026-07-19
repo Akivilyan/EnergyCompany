@@ -1,6 +1,6 @@
 # 建筑视觉合同 v1
 
-> 状态：镜头、光照与代表设施同场景稿已确认；风电·I、光伏·I、火电·I 的 512px 透明母图、独立阴影与 256px 缩略图已形成 v1 资产包，待整体评审。正式组合为 A′ 高机位弱透视 + L3 近顶部正午主光；不生产其它最终建筑素材。
+> 状态：已确认并锁定。镜头、光照、代表设施同场景稿，以及风电·I、光伏·I、火电·I 的 512px 透明母图、独立阴影与 256px 缩略图均完成收口。正式组合为 A′ 高机位弱透视 + L3 近顶部正午主光；不生产其它最终建筑素材。
 >
 > 视觉基准：`city-scene-first-glass-direction-v4.png`、`city-build-flow-hifi-v1.png`。玩法真理源：`facilities_slice.json`、`facility-and-grid.md`、`construction.md`。
 >
@@ -176,3 +176,4 @@ A′ 以 A 的高机位为基础，并加入轻微弱透视作为正式镜头族
 - 缩略图：每栋各一张 256×256 RGBA，由同一母图裁切与缩放，保持相同镜头、光照和配色身份；共同锚点 `(128, 234)`。
 - QA 预览：[`building-representative-master-preview-v1.png`](representative-v1/preview/building-representative-master-preview-v1.png) 与 [`building-representative-thumbnail-preview-v1.png`](representative-v1/preview/building-representative-thumbnail-preview-v1.png)。三者未被各自等高缩放，H4 / H3 与占地宽度关系保持可读。
 - 边界：高分辨率源图只作设计追溯，不进入运行时；本包未接入 Cocos，未制作水电、核电、超级水电或任何玩法不存在的建筑。
+- 收口判断：三栋设施在共同锚点下通过轮廓、体量与配色复合辨识，256px 缩略图保持场景资产身份；390×844 / 430×932 的实际点按、遮挡和选中反馈留到后续城市场景垂直切片验证，不以资产预览代替玩家流程验收。
