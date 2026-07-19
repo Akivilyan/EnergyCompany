@@ -10,7 +10,7 @@
 | `modal_event_fullscreen` | 灾害 / 显著政策 | 见 [events](./events.md) | 知道了 |
 | `modal_mega_project_complete` | 超大水电/核电完工 | 工程名、影响摘要 | 知道了 |
 
-**排队**：同月 `modal_company_level_up` **优先**；其余次月或队列。
+**排队**：非终局月份同月 `modal_company_level_up` 优先，其后为新灾害 / 显著事件与重大工程；终局只保留与胜负直接相关的一张因果反馈，再进入结果页。完整规则见 [month-settlement-flow](./month-settlement-flow.md)。
 
 ## 2. 界面内提示（不弹窗）
 
@@ -18,12 +18,12 @@
 |----|------|----------|------|
 | `toast_tech_lit` | M3 点亮 | `screen_city_detail` `InlineHintStrip` | 条带 + 节点名，3s 可关 |
 | `badge_supply_100` | 城 `supply_ratio>=1` | `SupplyBar` | 绿色满条/角标「100%」 |
-| `toast_construction_done` | 设施完工（可选） | 城市屏 | 轻 Toast，非必须 |
+| `toast_construction_done` | 设施完工 | 城市场景对象 + `inline_month_receipt` | 对象短脉冲 + 合并速报，可追溯 |
 
 ## 3. 组件规范
 
-- **全屏**：暗背景 60%；插画区 **可选**（无图时纯文案，T41 前可全文案）。
-- **内提示**：不阻断点击；与 `overlay_onboarding` 并存时 **内提示让位** 给遮罩。
+- **全屏**：保留城市轮廓并轻降饱和；底部使用稳定乳白 / 浅冰蓝玻璃承载影响信息，不使用长期纯黑重遮罩。插画区可选，无图时使用场景裁切与事件符号。
+- **内提示**：不阻断点击；同月最多显示一条合并 `inline_month_receipt`；与 `overlay_onboarding` 并存时让位给遮罩。
 
 ## 4. 明确不做
 

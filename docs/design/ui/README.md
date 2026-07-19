@@ -6,12 +6,15 @@
 
 | 文档 | 对应内容 |
 |------|----------|
+| `product-prototype-design-brief.md` | 产品原型默认短上下文、v4 视觉与交互底线 |
+| `city-flow-gameplay-contract.md` | 城市建设、推月、灾害的精炼玩法合同与规则分歧 |
 | `art-direction.md` | UI 美术、场景状态、资产拆分与音频方向 |
 | `00-screen-map.md` | 全屏地图与导航关系 |
 | `region-main.md` | 区域主界面 |
 | `world-map.md` | 全国大地图 |
 | `company.md` | 公司屏与相关模态 |
 | `construction-flow.md` | 城市建造流程 |
+| `month-settlement-flow.md` | 下一月后的常态结算、关键反馈队列与返回态 |
 | `tech-tree.md` | 科技树界面 |
 | `events.md` | 事件面板与弹窗 |
 | `milestones.md` | 关键节点反馈 |

@@ -65,6 +65,7 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 | 叠加 ID | 类型 | 触发 | 阻塞 | UI 任务 | Feature |
 |---------|------|------|------|---------|---------|
 | `overlay_settling` | 全屏轻遮罩 | `next_month` | 是 | T26 通用 | 00-game-state |
+| `inline_month_receipt` | 非阻断速报 | 月结完成 | 否 | PRODUCT-PROTOTYPE-01 | 00-game-state |
 | `overlay_onboarding` | 引导遮罩 | 教学局步骤 | 是（白名单点击） | T35a | [onboarding](../features/onboarding.md) |
 | `modal_build_list` | 模态 | 城市空位 | 否 | T30 | construction |
 | `modal_build_confirm` | 模态 | 建造列表选设施 | 否 | T30 | construction |
@@ -77,6 +78,8 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 | `modal_company_level_up` | 全屏 | M10 升级 | 只读 | T34 | social-value-settlement |
 | `overlay_codex` | 全屏/大页 | 帮助 **?** | 否 | T35a | onboarding |
 | `toast_supply_100` 等 | Toast | M4/M3 条件 | 否 | T34 | 01-core-loop |
+
+`overlay_settling`、`inline_month_receipt` 与关键反馈排队的正式交互见 [month-settlement-flow](./month-settlement-flow.md)。
 
 教学局：`overlay_onboarding` 优先级低于 `modal_event_fullscreen`（大事件先播，引导暂停）。
 

@@ -1,120 +1,122 @@
-# 事件面板与弹窗
+# 事件面板与灾害反馈
 
-## 1. 屏幕与叠加 ID
+> 事件如何进入月结反馈队列见 `month-settlement-flow.md`；玩法字段与当前灾害轴见 `city-flow-gameplay-contract.md`。
+>
+> 高保真基准：[`concepts/city-month-event-flow-hifi-v2.png`](./concepts/city-month-event-flow-hifi-v2.png) 右侧（考核灾害 I / 正常场景 + 纯 UI 数值警示）。
 
-- `panel_events`（城市/区域/地图底栏入口）
-- `modal_event_fullscreen`（灾害 / 显著政策市场）
+## 1. 目的与入口
 
-## 2. 目的
+- `panel_events`：从城市场景边缘的风险图标打开，用于查看即将到来、进行中与已结束事件。
+- `modal_event_fullscreen`：新灾害或显著事件触发后的只读反馈；不提供虚假分支选择。
+- 当前第一轮高保真只使用已接线的固定灾害；policy / market 使用组件变体预留，不作为首轮样张内容。
+- 正式事件图标使用珊瑚警示三角/天气符号，不沿用 v4 中无功能含义的叶片或人物占位图标。
 
-查看 scheduled/active/expired 事件；大事件 **全屏只读确认**（不阻塞结算管道完成后操作）。
+## 2. 场景入口状态
 
-## 3. 面板线框（`panel_events`）
-
-```text
-┌─ 事件 ──────────────── [×] ─┐
-│ 即将到来                    │
-│  · 寒潮预警  还有 3 月       │
-│ 进行中 (2/3 槽)             │
-│  · 燃料涨价  剩 2 月         │
-│ 已结束                      │
-│  · …                        │
-└─────────────────────────────┘
-```
-
-**形态**：底部 **半屏 sheet**（T26 open question 定稿为此）。
-
-## 4. 全屏弹窗线框
-
-```text
-┌──────────────────────────────────────────────┐
-│           [插画区 - 可选]                     │
-│           灾害 / 政策标题                     │
-│           摘要 · 影响说明（只读）              │
-│                                              │
-│              [ 知道了 ]                       │
-└──────────────────────────────────────────────┘
-```
-
-- **灾害**：一律全屏。
-- **政策/市场**：仅「显著干预」时全屏；其余面板内展示。
-- 同月与公司升级弹窗：**先升级**（T34），事件排队。
-
-## 5. 组件树
-
-- `EventPanelSheet`
-  - `EventSection` × 3（upcoming / active / expired）
-  - `EventRow`（icon, title, countdown, intensity）
-- `EventFullscreenModal`
-  - `EventArt`（可选）
-  - `EventCopy`
-  - `BtnAcknowledge`（只读，不关游戏逻辑）
-
-## 6. 交互表
-
-| 控件 | 结果 |
+| 状态 | 表现 |
 |------|------|
-| `BtnEvents` |  toggle `panel_events` |
-| `EventRow` active | 展开 debuff 摘要 |
-| `BtnAcknowledge` | 关闭弹窗；标记 M12 已展示 |
-| 结算中 | 面板不可打开新操作；已排队弹窗 M12 后显示 |
+| 无压力 | 低亮度边缘图标，不显示角标 |
+| 进入预警窗 | 暖橙倒计时点；短文本“寒潮 3月”仅在首次进入窗口时 peek |
+| 新事件未读 | 珊瑚三角 + 白描边 + 1 次短脉冲；不持续闪烁 |
+| 事件进行中 | 稳定珊瑚底点 + 剩余月数；颜色同时有图形与文字冗余 |
 
-## 7. 与引导优先级
+入口热区至少 48×48dp，不与 `下一月` 主按钮争夺同等光效。
 
-`modal_event_fullscreen` > `overlay_onboarding`（引导暂停）。
+## 3. 事件面板
 
-## 7.1 壳层错误码与文案键
+- 形态：底部约 58% 高度的稳定玻璃 sheet；可上拉查看历史，但默认不占满屏。
+- 默认展开“进行中”；即将到来只显示处于预警窗的事件，远期灾害折叠为战役轴刻度。
+- 已结束默认折叠，避免历史淹没当前压力。
 
-`screenEventsPanel` 返回 `uiErrorCode + uiCopy(messageKey/actionKey)`，UI 按键取文案，不解析底层字符串。
+```text
+┌──────────────────────────────────┐
+│ 事件与考核                 [×]   │
+│ 战役轴   1/4         下场还有 3月 │
+│                                  │
+│ 进行中  1/3                      │
+│ [寒潮] 收入 -8% · 剩 6月    [⌄]  │
+│   即时损失 -N · 建设/研发影响…    │
+│                                  │
+│ 即将到来                         │
+│ [洪水预警] 第41月 · 还有 3月      │
+│                                  │
+│ 已结束 (1)                  [>]  │
+└──────────────────────────────────┘
+```
 
-| `uiErrorCode` | `messageKey` | `actionKey` | 建议交互 |
-|---|---|---|---|
-| `event_not_found` | `events_panel.error.event_not_found` | `events_panel.action.refresh_list` | 提示事件 ID 不存在，刷新面板 |
-| `event_not_active` | `events_panel.error.event_not_active` | `events_panel.action.refresh_list` | 该事件尚未触发或已结束，刷新面板 |
-| `no_pending_modal` | `events_panel.error.no_pending_modal` | `events_panel.action.close_panel` | 无待确认弹窗，允许关闭 |
-| `action_failed` | `events_panel.error.action_failed` | `events_panel.action.retry` | 兜底错误，提示重试 |
+事件行首层只显示名称、最关键影响和剩余月数；展开后再显示最终即时罚款、所有已生效持续效果与风险准备金减免。
 
-## 7.2 全屏弹窗内容键契约
+## 4. 新灾害全屏反馈
 
-`screenEventsPanel.getPendingFullscreenModal()` 返回待确认事件与文案键，UI 通过 key 拉取标题/摘要/影响文案。
+### 4.1 布局
 
-| 字段 | 规则 | 示例 |
-|---|---|---|
-| `titleKey` | `events.modal.{event_id}.title` | `events.modal.disaster_exam_1.title` |
-| `summaryKey` | `events.modal.{event_id}.summary` | `events.modal.disaster_exam_1.summary` |
-| `impactKey` | `events.modal.{event_id}.impact` | `events.modal.disaster_exam_1.impact` |
-| `acknowledgeButtonKey` | 普通灾害：`events.modal.action.acknowledge`；最终灾害：`events.modal.action.acknowledge_final` | `events.modal.action.acknowledge_final` |
+- 背景继续使用正常城市画面，不切换雨雪、洪水、雾霾、灾害插画、全局罩色或受灾建筑。
+- 下半屏使用乳白玻璃信息面；即时资金影响使用浅珊瑚红承载卡，持续倍率使用浅暖黄承载卡。
+- 390×844 下正文仍约 16sp；主按钮高度至少 56dp，并位于底部安全区内。
 
-说明：
+```text
+┌──────────────────────────────────┐
+│                                  │
+│          [正常城市场景]           │
+│                                  │
+├──────────────────────────────────┤
+│ 考核灾害 I · 寒潮来临             │
+│ 收入与建设节奏承压                │
+│                                  │
+│ 立即影响   资金 -N                │
+│ 持续压力   收入 -8% · 剩 8月      │
+│             其它已生效影响…        │
+│                                  │
+│ 回城后可从事件入口持续查看         │
+│                                  │
+│          [ 返回城市 ]             │
+└──────────────────────────────────┘
+```
 
-- 当 `pendingFullscreen` 为空时，壳层返回 `null`，UI 不展示全屏事件弹窗。
-- 事件文案 key 统一按配置中的 `event_id` 生成，不依赖硬编码映射表。
+### 4.2 内容顺序
 
-## 7.3 多场叠加与优先级契约
+1. 事件名与一句叙事摘要。
+2. 本月已经发生的即时资金结果，展示难度/科技修正后的最终值。
+3. 确实参与结算的持续效果与剩余月份。
+4. 返回后的查看位置或应对方向；不生成新的规则任务。
 
-`screenEventsPanel.getSnapshot()` 在 `active` 基础上提供分槽展示与确认队列，避免多场事件同月时 UI 自行重排。
+当前模拟尚未实际应用建设/研发时长倍率时，全屏稿不得把配置倍率写成已经生效的惩罚；只展示业务层确认生效的效果。
 
-| 字段 | 说明 |
-|---|---|
-| `activeSlotLimit` | 固定为 `3`，对应面板“进行中 (x/3 槽)”文案 |
-| `visibleActive` | 当前月可视槽位内事件（最多 3 条） |
-| `hiddenActive` | 超出槽位的事件（折叠/“更多”） |
-| `activeOverflowCount` | `hiddenActive.length`，用于角标与提示 |
-| `pendingFullscreenQueue` | 待确认全屏弹窗队列，`pendingFullscreen` 取首项 |
+### 4.3 按钮与排队
 
-排序优先级（高 -> 低）：
+- 无后续阻断反馈：`返回城市`。
+- 后面仍有反馈：`继续`。
+- 最终灾害后进入结果页：`查看结果`。
+- 按钮只确认已读；关闭不会撤销事件，也不阻塞已经完成的月结。
 
-1. 最终灾害优先（`isFinal=true`）
-2. `examTier` 高优先
-3. `triggerMonth` 早优先
-4. `seq` 小优先（兜底稳定排序）
+## 5. 返回城市后的反馈
 
-## 8. 微信小游戏
+- 事件入口保持 active 状态并显示剩余月数。
+- 资源栏下方 `MonthReceipt` 首条显示主压力，例如“寒潮：收入 -8% · 剩 8月”。
+- 场景天气、灯光、建筑和地形保持常态；所有压力只在稳定 UI 承载层上表达。
+- 玩家可直接继续建设、研发、借贷或推月；事件不制造没有规则依据的强制任务。
 
-- 全屏弹窗 **单按钮** 大热区；插画可静态图压缩。
-- 面板列表虚拟滚动（事件多时）。
+## 6. 多事件与历史
 
-## 9. 相关文档
+- 同时只展示 3 条 active；排序由业务层提供：最终灾害 → 高 exam tier → 早触发 → seq。
+- 全屏确认一次一张；新事件不得覆盖尚未确认的上一张。
+- 同类轻通知可以合并，但新灾害不能被普通完成 Toast 顶走。
+- 已确认的事件仍保留在进行中列表，直到结束；结束后移入历史。
 
-- Feature：[events](../features/events.md)
-- UI：[milestones](./milestones.md)
+## 7. 异常与恢复
+
+| 场景 | 处理 |
+|------|------|
+| 无待确认事件 | 不打开空全屏页；保持事件面板或返回城市 |
+| 事件已结束 | 刷新快照并移入历史，不显示过期影响 |
+| 多事件队列 | 当前按钮文案“继续”，按业务顺序展示下一张 |
+| 文案/图标缺失 | 使用通用警示图标与运行时数值；不生成灾害场景替代图 |
+| 结算回滚 | 不标记已读，不展示事件已生效 |
+
+## 8. 原型验收
+
+- 玩家在全屏页 3 秒内能说出：发生什么、损失多少、持续多久、去哪里复查。
+- 事件页只有一个主按钮，且不会被理解为策略选项。
+- 返回城市后仍能看见持续压力，不依赖记忆弹窗内容。
+- 风险不只靠红色；警示形状、短文本与剩余月数同时存在。
+- 390×844 与 430×932 中正常场景、影响区、主按钮无截断，正文无需滚动即可读完首层影响。
