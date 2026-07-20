@@ -1,7 +1,0 @@
-[
-  { "company_level": 1, "reward_cash": 5 },
-  { "company_level": 2, "reward_cash": 9 },
-  { "company_level": 3, "reward_cash": 15 },
-  { "company_level": 4, "reward_cash": 22 },
-  { "company_level": 5, "reward_cash": 32 }
-]

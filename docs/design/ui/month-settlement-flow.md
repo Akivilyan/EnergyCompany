@@ -1,6 +1,6 @@
 # 下一月后的结算反馈流程
 
-> 设计输入：`product-prototype-design-brief.md`、`city-flow-gameplay-contract.md`。本文定义玩家如何理解月结，不把 M1–M14 技术管道直接可视化。
+> 设计输入：`city-playable-slice-design-brief.md`、`city-flow-gameplay-contract.md`。本文定义玩家如何理解月结，不把 M1–M14 技术管道直接可视化。
 >
 > 高保真基准：[`concepts/city-month-event-flow-hifi-v2.png`](./concepts/city-month-event-flow-hifi-v2.png)（普通月结反馈 / 纯 UI 灾害警示）。
 

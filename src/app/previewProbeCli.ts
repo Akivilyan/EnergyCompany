@@ -15,7 +15,7 @@ if (!result.ok) {
   console.error(`preview-probe FAIL: ${result.url}`);
   console.error(`  reason: ${result.reason}`);
   console.error("  hint: open client/cocos in Cocos Creator 3.8.8, wait for Quick Compile, then click Play");
-  console.error("  hint: run npm run verify:client for logic without the editor");
+  console.error("  hint: run npm run build:client before opening the editor");
   process.exit(1);
 }
 

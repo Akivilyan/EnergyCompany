@@ -5,9 +5,9 @@ import {
 import {
   DEFAULT_CLIENT_RUN_SLOT,
   persistClientRun,
-  type ClientPersistResult,
-  type ClientPlayPersistence
+  type ClientPersistResult
 } from "./clientPersistence.js";
+import type { RunPersistence } from "../modules/runPersistence.js";
 
 export interface ClientAutoSaveOnHideOptions {
   slotId?: string;
@@ -22,7 +22,7 @@ export interface ClientAutoSaveBinding {
 }
 
 export function bindClientAutoSaveOnHide(
-  play: ClientPlayPersistence,
+  persistence: RunPersistence,
   options: ClientAutoSaveOnHideOptions = {}
 ): ClientAutoSaveBinding {
   const slotId = options.slotId ?? DEFAULT_CLIENT_RUN_SLOT;
@@ -32,7 +32,7 @@ export function bindClientAutoSaveOnHide(
   }
 
   const handler = () => {
-    const result = persistClientRun(play, slotId);
+    const result = persistClientRun(persistence, slotId);
     options.onPersist?.(result);
   };
   lifecycle.onHide(handler);

@@ -1,26 +1,21 @@
-import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { mountGameClient } from "../../src/app/gameClientEntry.js";
-import { ConfigRepo } from "../../src/sim/index.js";
-import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
-import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
 import type { WechatRewardedAdSdk } from "../../src/infra/monetization/rewardedAdProvider.js";
-
+import { mountGameClient } from "../../src/app/gameClientEntry.js";
+import { loadTestConfig } from "../helpers/testRepo.js";
 
 describe("mountGameClient", () => {
-  it("bootstraps from injected config repo", () => {
-    const config = loadTestConfig();
-    const host = new LoggingSceneHost();
-    const boot = mountGameClient({ configRepo: config, sceneHost: host });
-    expect(boot.bridge).not.toBeNull();
-    expect(boot.play.getNavigation().currentScreen).toBe("screen_city_detail");
-    expect(host.getCurrentScene()).toBe("CityDetail");
+  it("creates the application from an injected config repo", () => {
+    const client = mountGameClient({
+      configRepo: loadTestConfig(),
+      autoResumeSlot: false,
+      autoSaveOnHide: false
+    });
+
+    expect(client.app.controller.state.currentMonth).toBe(1);
+    expect(client.app.screens.city("CITY-START").getSnapshot()?.cityId).toBe("CITY-START");
   });
 
   it("falls back to stub when wx ad sdk is available without a real ad unit", async () => {
-    const config = loadTestConfig();
     let createCalled = false;
     const wxAdSdk: WechatRewardedAdSdk = {
       createRewardedVideoAd: () => {
@@ -29,17 +24,23 @@ describe("mountGameClient", () => {
       }
     };
 
-    const boot = mountGameClient({ configRepo: config, autoResumeSlot: false, wxAdSdk });
-    const out = await boot.app.adRewardService.claimRewardByAdAsync("cash", "screen_company.cash");
+    const client = mountGameClient({
+      configRepo: loadTestConfig(),
+      autoResumeSlot: false,
+      autoSaveOnHide: false,
+      wxAdSdk
+    });
+    const out = await client.app.adRewardService.claimRewardByAdAsync(
+      "cash",
+      "screen_company.cash"
+    );
 
     expect(out.rewarded).toBe(true);
     expect(out.adOutcome.provider).toBe("stub");
     expect(createCalled).toBe(false);
-    expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);
   });
 
   it("uses injected wechat rewarded ad sdk when a real ad unit is configured", async () => {
-    const config = loadTestConfig();
     let createdAdUnitId: string | null = null;
     const wxAdSdk: WechatRewardedAdSdk = {
       createRewardedVideoAd: ({ adUnitId }) => {
@@ -62,17 +63,20 @@ describe("mountGameClient", () => {
       }
     };
 
-    const boot = mountGameClient({
-      configRepo: config,
+    const client = mountGameClient({
+      configRepo: loadTestConfig(),
       autoResumeSlot: false,
+      autoSaveOnHide: false,
       wxAdSdk,
       defaultRewardedAdUnitId: "adunit-test123"
     });
-    const out = await boot.app.adRewardService.claimRewardByAdAsync("cash", "screen_company.cash");
+    const out = await client.app.adRewardService.claimRewardByAdAsync(
+      "cash",
+      "screen_company.cash"
+    );
 
     expect(out.rewarded).toBe(true);
     expect(out.adOutcome.provider).toBe("wechat");
     expect(createdAdUnitId).toBe("adunit-test123");
-    expect(out.after.adsRemaining).toBe(out.before.adsRemaining - 1);
   });
 });

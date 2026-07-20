@@ -1,7 +1,0 @@
-{
-  "doctrine_id": "tech",
-  "meta_level": 1,
-  "research_cost_pct": 80,
-  "research_months_reduction": 1,
-  "notes": "L1 per gdd/11; L2-L3 not used in v0 UI"
-}

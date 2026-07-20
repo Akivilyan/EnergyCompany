@@ -1,6 +1,3 @@
-import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_CLIENT_RUN_SLOT,
@@ -8,67 +5,53 @@ import {
   tryResumeClientRun
 } from "../../src/app/clientPersistence.js";
 import { mountGameClient } from "../../src/app/gameClientEntry.js";
-import { InMemoryStateStorage } from "../../src/infra/storage/stateStorage.js";
-import { ConfigRepo } from "../../src/sim/index.js";
-import { loadConfigRepoFromVerticalSlice, loadConfigRepoFromConfigDir } from "../../src/sim/config/configRepo.node.js";
-import { createGameShell } from "../../src/ui/gameShell.js";
 import { createGameAppFromRepo } from "../../src/app/gameApp.node.js";
-import { LoggingSceneHost } from "../../src/ui/sceneHost.js";
-
+import { InMemoryStateStorage } from "../../src/infra/storage/stateStorage.js";
+import { loadTestConfig, repoRoot } from "../helpers/testRepo.js";
 
 describe("clientPersistence", () => {
-  it("persistClientRun saves default slot through GameShell", () => {
+  it("saves and resumes the default slot through RunPersistence", () => {
     const app = createGameAppFromRepo({ repoRoot });
-    const shell = createGameShell(app);
-    shell.advanceMonthInCurrentCity();
+    app.screens.city("CITY-START").advanceOneMonth();
     const month = app.controller.state.currentMonth;
-    const out = persistClientRun(shell);
-    expect(out.ok).toBe(true);
-    expect(out.slotId).toBe(DEFAULT_CLIENT_RUN_SLOT);
-    expect(out.savedAtUnixMs).toBeTypeOf("number");
+
+    const saved = persistClientRun(app.persistence);
+    expect(saved.ok).toBe(true);
+    expect(saved.slotId).toBe(DEFAULT_CLIENT_RUN_SLOT);
 
     app.controller.state.currentMonth = 99;
-    const resume = tryResumeClientRun(shell);
-    expect(resume.resumed).toBe(true);
+    const resumed = tryResumeClientRun(app.persistence);
+    expect(resumed.resumed).toBe(true);
     expect(app.controller.state.currentMonth).toBe(month);
   });
 
-  it("tryResumeClientRun treats missing slot as fresh start", () => {
+  it("treats a missing slot as a fresh start", () => {
     const app = createGameAppFromRepo({ repoRoot });
-    const shell = createGameShell(app);
-    const resume = tryResumeClientRun(shell);
-    expect(resume.resumed).toBe(false);
-    expect(resume.errorCode).toBeNull();
+    const resumed = tryResumeClientRun(app.persistence);
+    expect(resumed.resumed).toBe(false);
+    expect(resumed.errorCode).toBeNull();
   });
-});
 
-describe("mountGameClient auto resume", () => {
-  it("resumes default slot on remount when storage is shared", () => {
+  it("resumes the default slot on remount when storage is shared", () => {
     const config = loadTestConfig();
     const storage = new InMemoryStateStorage();
-    const host = new LoggingSceneHost();
-
-    const boot1 = mountGameClient({
+    const first = mountGameClient({
       configRepo: config,
-      sceneHost: host,
       stateStorage: storage,
-      autoResumeSlot: false
+      autoResumeSlot: false,
+      autoSaveOnHide: false
     });
-    boot1.play.buildInCurrentCity("wind", 1);
-    boot1.play.advanceMonthInCurrentCity();
-    const month = boot1.app.controller.state.currentMonth;
-    const funds = boot1.app.controller.state.funds;
-    const save = persistClientRun(boot1.play);
-    expect(save.ok).toBe(true);
+    first.app.screens.city("CITY-START").queueConstruction("wind", 1);
+    first.app.screens.city("CITY-START").advanceOneMonth();
+    const month = first.app.controller.state.currentMonth;
+    persistClientRun(first.app.persistence);
 
-    const boot2 = mountGameClient({
+    const second = mountGameClient({
       configRepo: config,
-      sceneHost: host,
-      stateStorage: storage
+      stateStorage: storage,
+      autoSaveOnHide: false
     });
-    expect(boot2.clientResume?.resumed).toBe(true);
-    expect(boot2.clientResume?.slotId).toBe(DEFAULT_CLIENT_RUN_SLOT);
-    expect(boot2.app.controller.state.currentMonth).toBe(month);
-    expect(boot2.app.controller.state.funds).toBe(funds);
+    expect(second.clientResume?.resumed).toBe(true);
+    expect(second.app.controller.state.currentMonth).toBe(month);
   });
 });

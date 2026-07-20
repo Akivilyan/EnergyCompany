@@ -6,12 +6,12 @@
 
 | 文档 | 状态 | 对应内容 |
 |------|------|----------|
-| `product-prototype-design-brief.md` | 当前基准 | 产品原型默认短上下文、视觉与交互底线、资产生产顺序 |
+| `city-playable-slice-design-brief.md` | 当前基准 | 首个正式城市切片的路线、信息、视觉和范围边界 |
 | `art-direction.md` | 当前基准 | UI 美术、图标、建筑、场景层级、资产拆分与音频合同 |
 | `assets/icons/icon-manifest-v2.md` | 图标阶段完成 | 24 枚 128px 轻量运行时候选、命名、语义、尺寸预算与保留稿边界 |
 | `assets/buildings/building-visual-contract-v1.md` | 已确认 | 真实设施视觉清单、A′ / L3 镜头光照、占地 / 锚点合同与代表组验收记录 |
 | `assets/buildings/representative-v1/README.md` | 已确认 | 风电·I、光伏·I、火电·I 的 512px 母图、独立阴影、256px 缩略图与清单 |
-| `prototypes/city-first-wind-v1/README.md` | 浏览器竖切已验证 | 无 Cocos 的城市建设位 → 候选 → 确认 → 推月 → 完工可点击原型与双尺寸验收入口 |
+| `../prototypes/city-first-wind-v1/README.md` | 历史设计证据 | 无 Cocos 的城市建设位 → 候选 → 确认 → 推月 → 完工双尺寸设计验证；不再扩展 |
 | `city-flow-gameplay-contract.md` | 当前玩法合同 | 城市建设、推月、灾害的玩家可见事实与规则分歧 |
 | `construction-flow.md` | 当前流程合同 | 点空位后的建设流程与状态 |
 | `month-settlement-flow.md` | 当前流程合同 | 下一月后的常态结算、关键反馈队列与返回态 |
@@ -31,3 +31,4 @@
 - 组件命名、屏幕 ID 与 Feature 对齐
 - 正式 UI / Prefab 批次的视觉与音频基调以 `art-direction.md` 为准
 - 标记为“待重设计 / 行为合同”的文档只提供玩法输入，不得用其中历史布局反推正式页面
+- 当前只设计并实现任务看板指定的切片；后续页面合同不构成当前交付范围

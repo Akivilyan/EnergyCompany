@@ -37,6 +37,6 @@
 
 ## 5. 回查
 
-- 首局目标与关键流程：[`product-prototype-design-brief.md`](./product-prototype-design-brief.md)
+- 首局目标与关键流程：[`city-playable-slice-design-brief.md`](./city-playable-slice-design-brief.md)
 - 页面层级：[`00-screen-map.md`](./00-screen-map.md)
 - 玩法规则：[`../features/onboarding.md`](../features/onboarding.md)

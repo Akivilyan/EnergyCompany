@@ -7,7 +7,8 @@
 - 微信小游戏：`Cocos Creator 3.x + TypeScript` 客户端，`src/sim/` 是纯 TS 规则真理源。
 - `src/sim/` 禁止依赖 `cc.*`、存档、平台 SDK、UI 状态。
 - `src/modules/` 做业务编排，不复制结算公式。
-- `src/ui/` / `client/cocos/` 不直接改 `GameState`。
+- `src/app/` 只做装配、客户端挂载、存档与生命周期，不承载 HUD 页面业务。
+- `client/cocos/` 不直接改 `GameState`，只通过 `src/modules/` 提交玩家意图并读取快照。
 - `config` 只读查询，不承载业务流程判断。
 
 ## 模块交付
@@ -60,8 +61,8 @@
 | 类型、入口装配、编译风险高 | `npm run build` |
 | 层间引用或边界 | `npm run lint:boundaries` |
 | `docs/design/data/vertical-slice-v0/` | `npm run build:client` |
-| `client/cocos/`、HUD、客户端脚本 | `npm run verify:client:fast` |
-| 客户端阶段收口 / 真机前置 / 微信包排障 | `npm run verify:client` |
+| `client/cocos/`、客户端入口、同步脚本 | `npm run build:client`、`npm run build`、`npm run lint:boundaries` |
+| 正式 Cocos 玩家切片 | 上述命令 + Cocos 目标尺寸截图与真实点击路线 |
 | 预览页探测 | `npm run check:cocos-preview` |
 | 仅文档 / 看板 / 规则 | 说明无需跑测试 |
 
@@ -71,7 +72,7 @@
 ## Windows / Codex
 
 - PowerShell 读中文 Markdown 必须显式 `-Encoding UTF8`。
-- 普通沙箱里 `npm test`、`npm run build:client`、`npm run verify:client:fast`、`npm run verify:client`、`tsx`、`vitest`、`vite`、`esbuild` 可能因 `spawn EPERM` 失败；遇到该类错误直接 `require_escalated` 重跑。
+- 普通沙箱里 `npm test`、`npm run build:client`、`tsx`、`vitest`、`vite`、`esbuild` 可能因 `spawn EPERM` 失败；遇到该类错误直接 `require_escalated` 重跑。
 - `npm run build` 当前走 `tsc`，通常不需要提权。
 
 ## 回复

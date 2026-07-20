@@ -7,7 +7,7 @@
 - 功能 / 资源图标统一交付 128×128 RGBA PNG；适用于约 40—64px 的 HUD、按钮和状态显示。
 - 32 / 48 / 64px 文件只放在 `preview/runtime-v1/` 做缩小辨识验收，不作为三套运行时资源导入。
 - 当前 24 枚运行时 PNG 合计约 254KB，图标阶段预算上限为 512KB；后续新增图标必须由已确认页面或玩法语义驱动。
-- 选中、禁用、按下等纯交互状态优先由描边、颜色、遮罩和小状态叠加实现，不复制整张 PNG；只有科技点现有三态和清洁供能两种语义状态保留独立文件。
+- 选中、禁用、按下等纯交互状态优先由描边、颜色、遮罩和小状态叠加实现，不复制整张 PNG；只有科技节点现有三态和清洁供能两种语义状态保留独立文件。
 - 128px 图标约占 64KB 解码 RGBA 内存；不得把 `source/` 中千像素设计源当作运行时纹理。
 - 图标可在后续 Cocos 阶段合入 512 / 1024px 图集；UI 图标默认不预生成 Mipmap，除非真机验证证明需要。
 
@@ -52,13 +52,15 @@
 | `runtime/level/icon-level-04-orange-v1.png` | 等级 IV，橙 |
 | `runtime/level/icon-level-05-red-v1.png` | 等级 V，红 |
 
-### 科技点
+### 科技节点
 
 | 文件 | 锁定语义 |
 |------|----------|
-| `runtime/tech-point/icon-tech-point-normal-v1.png` | 科技点常态 |
-| `runtime/tech-point/icon-tech-point-selected-v1.png` | 科技点选中态 |
-| `runtime/tech-point/icon-tech-point-locked-v1.png` | 科技点锁定态 |
+| `runtime/tech-point/icon-tech-point-normal-v1.png` | 科技节点常态 |
+| `runtime/tech-point/icon-tech-point-selected-v1.png` | 科技节点选中态 |
+| `runtime/tech-point/icon-tech-point-locked-v1.png` | 科技节点锁定态 |
+
+文件名保留历史 `tech-point` 以维持资产引用；玩家语义是科技节点状态，不是独立可消费货币。
 
 ### 清洁供能
 

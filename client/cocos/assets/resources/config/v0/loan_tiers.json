@@ -1,7 +1,0 @@
-[
-  { "loan_id": "loan_1", "unlock_level": 1, "principal": 30, "terms": 12, "total_interest": 3, "monthly_payment_approx": 3 },
-  { "loan_id": "loan_2", "unlock_level": 2, "principal": 80, "terms": 18, "total_interest": 9, "monthly_payment_approx": 5 },
-  { "loan_id": "loan_3", "unlock_level": 3, "principal": 200, "terms": 24, "total_interest": 24, "monthly_payment_approx": 9 },
-  { "loan_id": "loan_4", "unlock_level": 4, "principal": 500, "terms": 30, "total_interest": 50, "monthly_payment_approx": 18 },
-  { "loan_id": "loan_5", "unlock_level": 5, "principal": 1200, "terms": 36, "total_interest": 108, "monthly_payment_approx": 36 }
-]

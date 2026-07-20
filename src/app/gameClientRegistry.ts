@@ -1,39 +1,39 @@
-import type { GameBootstrap } from "./gameBootstrap.js";
+import type { GameClient } from "./gameClientEntry.js";
 
-type GameClientMountListener = (boot: GameBootstrap) => void;
+type GameClientMountListener = (client: GameClient) => void;
 
-let mountedBoot: GameBootstrap | null = null;
+let mountedClient: GameClient | null = null;
 const mountListeners = new Set<GameClientMountListener>();
 
-export function getMountedGameClient(): GameBootstrap | null {
-  return mountedBoot;
+export function getMountedGameClient(): GameClient | null {
+  return mountedClient;
 }
 
-export function requireMountedGameClient(): GameBootstrap {
-  if (!mountedBoot) {
+export function requireMountedGameClient(): GameClient {
+  if (!mountedClient) {
     throw new Error("GameClient is not mounted yet");
   }
-  return mountedBoot;
+  return mountedClient;
 }
 
 export function onGameClientMounted(listener: GameClientMountListener): () => void {
   mountListeners.add(listener);
-  if (mountedBoot) {
-    listener(mountedBoot);
+  if (mountedClient) {
+    listener(mountedClient);
   }
   return () => {
     mountListeners.delete(listener);
   };
 }
 
-export function setMountedGameClient(boot: GameBootstrap | null): void {
-  mountedBoot = boot;
-  if (!boot) return;
+export function setMountedGameClient(client: GameClient | null): void {
+  mountedClient = client;
+  if (!client) return;
   for (const listener of mountListeners) {
-    listener(boot);
+    listener(client);
   }
 }
 
 export function clearMountedGameClient(): void {
-  mountedBoot = null;
+  mountedClient = null;
 }

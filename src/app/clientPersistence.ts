@@ -1,4 +1,4 @@
-import type { PersistenceActionResult } from "../ui/gameShell.js";
+import type { RunPersistence } from "../modules/runPersistence.js";
 
 export const DEFAULT_CLIENT_RUN_SLOT = "slot-main";
 
@@ -16,44 +16,38 @@ export interface ClientPersistResult {
   savedAtUnixMs?: number;
 }
 
-export interface ClientPlayPersistence {
-  saveSlot(slotId: string): PersistenceActionResult;
-  loadSlot(slotId: string): PersistenceActionResult;
-}
-
 export function tryResumeClientRun(
-  play: ClientPlayPersistence,
+  persistence: RunPersistence,
   slotId: string = DEFAULT_CLIENT_RUN_SLOT
 ): ClientResumeResult {
-  const load = play.loadSlot(slotId);
+  const load = persistence.load(slotId);
   if (load.ok) {
     return {
       slotId,
       resumed: true,
       errorCode: null,
-      savedAtUnixMs: load.savedAtUnixMs
+      savedAtUnixMs: load.value.envelope.savedAtUnixMs
     };
   }
-  if (load.errorCode === "not_found") {
+  if (load.error === "not_found") {
     return { slotId, resumed: false, errorCode: null };
   }
   return {
     slotId,
     resumed: false,
-    errorCode: load.errorCode,
-    savedAtUnixMs: load.savedAtUnixMs
+    errorCode: load.error
   };
 }
 
 export function persistClientRun(
-  play: ClientPlayPersistence,
+  persistence: RunPersistence,
   slotId: string = DEFAULT_CLIENT_RUN_SLOT
 ): ClientPersistResult {
-  const save = play.saveSlot(slotId);
+  const save = persistence.save(slotId);
   return {
     slotId,
     ok: save.ok,
-    errorCode: save.errorCode,
-    savedAtUnixMs: save.savedAtUnixMs
+    errorCode: save.ok ? null : save.error,
+    savedAtUnixMs: save.ok ? save.value.envelope.savedAtUnixMs : undefined
   };
 }

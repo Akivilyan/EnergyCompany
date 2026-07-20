@@ -9,14 +9,14 @@ import {
   type WechatRewardedAdSdk
 } from "../infra/monetization/rewardedAdProvider.js";
 import type { ConfigRepo } from "../sim/index.js";
-import type { SceneHost } from "../ui/sceneHost.js";
 import { bindClientAutoSaveOnHide } from "./clientLifecycle.js";
+import type { ClientAutoSaveBinding } from "./clientLifecycle.js";
 import {
   DEFAULT_CLIENT_RUN_SLOT,
   tryResumeClientRun,
   type ClientResumeResult
 } from "./clientPersistence.js";
-import { createGameBootstrap, type GameBootstrap } from "./gameBootstrap.js";
+import { createGameApp, type GameAppContext } from "./gameApp.js";
 
 export type { ClientResumeResult } from "./clientPersistence.js";
 export type { ClientAutoSaveBinding } from "./clientLifecycle.js";
@@ -25,7 +25,6 @@ export { DEFAULT_CLIENT_RUN_SLOT, persistClientRun, tryResumeClientRun } from ".
 
 export interface GameClientMountOptions {
   configRepo: ConfigRepo;
-  sceneHost?: SceneHost;
   /** 默认微信 wx 本地存储；Node 冒烟无 wx 时回退内存。 */
   stateStorage?: StateStorage;
   /** 挂载后自动读档；默认 `slot-main`；传 `false` 关闭。 */
@@ -41,6 +40,12 @@ export interface GameClientMountOptions {
   /** 真实微信激励广告位；未配置真实 adunit 时回退 stub，避免真机冒烟被占位 ID 卡住。 */
   rewardedAdUnitIds?: Partial<Record<RewardedAdType, string>>;
   defaultRewardedAdUnitId?: string;
+}
+
+export interface GameClient {
+  app: GameAppContext;
+  clientResume?: ClientResumeResult;
+  clientAutoSave?: ClientAutoSaveBinding;
 }
 
 function isWechatAdUnitId(value: string | undefined): value is string {
@@ -71,29 +76,29 @@ function resolveClientAdProvider(options: GameClientMountOptions): RewardedAdPro
 }
 
 /** Cocos / 小游戏侧挂载入口：注入已加载的 ConfigRepo，避免引擎环境读盘。 */
-export function mountGameClient(options: GameClientMountOptions): GameBootstrap {
-  const boot = createGameBootstrap({
+export function mountGameClient(options: GameClientMountOptions): GameClient {
+  const app = createGameApp({
     configRepo: options.configRepo,
-    sceneHost: options.sceneHost,
     stateStorage: createClientStateStorage(options.stateStorage),
     adProvider: resolveClientAdProvider(options)
   });
+  const client: GameClient = { app };
   const resumeSlot =
     options.autoResumeSlot === false
       ? null
       : (options.autoResumeSlot ?? DEFAULT_CLIENT_RUN_SLOT);
   if (resumeSlot) {
-    boot.clientResume = tryResumeClientRun(boot.play, resumeSlot);
+    client.clientResume = tryResumeClientRun(app.persistence, resumeSlot);
   }
   const saveSlot =
     options.autoSaveOnHide === false
       ? null
       : (options.autoSaveOnHide ?? DEFAULT_CLIENT_RUN_SLOT);
   if (saveSlot) {
-    boot.clientAutoSave = bindClientAutoSaveOnHide(boot.play, {
+    client.clientAutoSave = bindClientAutoSaveOnHide(app.persistence, {
       slotId: saveSlot,
       lifecycle: options.wxLifecycle
     });
   }
-  return boot;
+  return client;
 }

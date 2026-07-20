@@ -130,4 +130,4 @@ screen_city_detail ──全局──→ screen_tech_tree | screen_company
 
 - GDD：[核心循环与时间](../gdd/01-core-loop.md)、[新手引导](../gdd/10-onboarding.md)
 - Feature：[索引](../features/README.md)、[00-game-state](../features/00-game-state.md)
-- UI 当前基准与文档状态：[`README.md`](./README.md)、[`product-prototype-design-brief.md`](./product-prototype-design-brief.md)
+- UI 当前基准与文档状态：[`README.md`](./README.md)、[`city-playable-slice-design-brief.md`](./city-playable-slice-design-brief.md)

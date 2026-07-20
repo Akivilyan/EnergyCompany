@@ -1,6 +1,6 @@
 # 建设流程（城市屏）
 
-> 设计输入：`product-prototype-design-brief.md`、`city-flow-gameplay-contract.md`。本文只定义玩家可见流程、组件状态和交接输出，不重复建设公式。
+> 设计输入：`city-playable-slice-design-brief.md`、`city-flow-gameplay-contract.md`。本文只定义玩家可见流程、组件状态和交接输出，不重复建设公式。
 >
 > 高保真基准：[`concepts/city-build-flow-hifi-v1.png`](./concepts/city-build-flow-hifi-v1.png)（选择设施 / 确认建设）。
 
