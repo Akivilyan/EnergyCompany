@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#55c7eb" />
+    <title>EnergyCompany · 城市建设垂直切片</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="lab-shell">
+      <aside class="lab-panel" aria-label="原型控制台">
+        <p class="eyebrow">PRODUCT-PROTOTYPE-01</p>
+        <h1>首栋设施闭环</h1>
+        <p>浏览器内验证建设位、候选比较、扣款、施工推进与完工反馈，不依赖 Cocos。</p>
+        <div class="lab-controls" role="group" aria-label="预览尺寸">
+          <button type="button" data-frame="390">390 × 844</button>
+          <button type="button" data-frame="430">430 × 932</button>
+          <button type="button" data-action="reset">重置流程</button>
+        </div>
+        <ol class="flow-list">
+          <li>点场景中的发光空位</li>
+          <li>比较设施并继续</li>
+          <li>确认扣款与工期</li>
+          <li>推进月份直到完工</li>
+        </ol>
+        <section class="asset-ruler" aria-label="代表建筑尺度检查">
+          <h2>共同锚点尺度</h2>
+          <div class="asset-line">
+            <figure><img src="/docs/design/ui/assets/buildings/representative-v1/master/building-wind-tier1-master-v1.png" alt="风电一级" /><figcaption>风电·I</figcaption></figure>
+            <figure><img src="/docs/design/ui/assets/buildings/representative-v1/master/building-solar-tier1-master-v1.png" alt="光伏一级" /><figcaption>光伏·I</figcaption></figure>
+            <figure><img src="/docs/design/ui/assets/buildings/representative-v1/master/building-thermal-tier1-master-v1.png" alt="火电一级" /><figcaption>火电·I</figcaption></figure>
+          </div>
+        </section>
+      </aside>
+
+      <section class="phone-stage" aria-label="手机原型预览">
+        <div class="phone" data-testid="prototype-phone">
+          <div class="game" id="game-root">
+            <header class="top-hud" aria-label="城市状态">
+              <div class="top-hud-main">
+                <div class="resource-cell">
+                  <img src="/docs/design/ui/assets/icons/runtime/resources/icon-funds-v1.png" alt="" />
+                  <span><strong data-testid="funds-value">203</strong><small data-testid="funds-delta"></small></span>
+                </div>
+                <div class="resource-cell">
+                  <img src="/docs/design/ui/assets/icons/runtime/common/icon-turn-income-v1.png" alt="" />
+                  <span><strong>+38</strong><small>/ 回合</small></span>
+                </div>
+                <div class="resource-cell">
+                  <img src="/docs/design/ui/assets/icons/runtime/common/icon-calendar-v1.png" alt="" />
+                  <span><strong>第 <b data-testid="month-value">1</b> 月</strong></span>
+                </div>
+              </div>
+              <div class="supply-row">
+                <img src="/docs/design/ui/assets/icons/runtime/resources/icon-energy-v1.png" alt="" />
+                <span>城市供能</span>
+                <div class="supply-track" aria-hidden="true"><i data-testid="supply-bar"></i></div>
+                <strong data-testid="supply-value">0%</strong>
+              </div>
+            </header>
+
+            <section class="month-receipt" data-testid="month-receipt" aria-live="polite" hidden>
+              <div><strong data-testid="receipt-title">第 1 月速报</strong><span data-testid="receipt-copy"></span></div>
+              <button type="button" data-action="close-receipt" aria-label="关闭月度速报">×</button>
+            </section>
+
+            <section class="city-scene" aria-label="起始城建设场景">
+              <div class="skyline" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              <div class="island island-back" aria-hidden="true"></div>
+              <div class="island island-main" aria-hidden="true"></div>
+              <div class="road road-a" aria-hidden="true"></div>
+              <div class="road road-b" aria-hidden="true"></div>
+              <div class="grid-line" aria-hidden="true"></div>
+
+              <span class="tree tree-1" aria-hidden="true"></span>
+              <span class="tree tree-2" aria-hidden="true"></span>
+              <span class="tree tree-3" aria-hidden="true"></span>
+              <span class="tree tree-4" aria-hidden="true"></span>
+
+              <span class="build-slot decorative slot-2" aria-hidden="true">+</span>
+              <span class="build-slot decorative slot-3" aria-hidden="true">+</span>
+              <span class="build-slot decorative slot-4" aria-hidden="true">+</span>
+              <span class="build-slot decorative slot-5" aria-hidden="true">+</span>
+              <span class="build-slot decorative slot-6" aria-hidden="true">+</span>
+              <span class="build-slot decorative slot-7" aria-hidden="true">+</span>
+
+              <button class="build-slot primary" type="button" data-testid="build-slot-primary" data-action="select-slot" aria-label="选择空建设位">
+                <span class="slot-plus">+</span>
+                <img class="slot-building" data-testid="slot-building" alt="" hidden />
+                <span class="construction-marker" data-testid="construction-marker" hidden>
+                  <img src="/docs/design/ui/assets/icons/runtime/action-state/icon-build-v1.png" alt="" />
+                  <b data-testid="months-left">2月</b>
+                </span>
+              </button>
+            </section>
+
+            <button class="next-month" type="button" data-testid="next-month" data-action="next-month">
+              <span>→</span> 下一月
+            </button>
+
+            <div class="settling-overlay" data-testid="settling-overlay" hidden>
+              <div class="settling-card">
+                <strong>推进月份</strong>
+                <span>项目推进</span><i></i><span>供能重算</span><i></i><span>经营结算</span>
+              </div>
+            </div>
+
+            <section class="context-sheet" data-testid="build-sheet" aria-label="建设设施" hidden>
+              <div class="sheet-handle" aria-hidden="true"></div>
+              <div class="sheet-heading">
+                <button class="sheet-back" type="button" data-action="back" aria-label="返回" hidden>←</button>
+                <div><p data-testid="sheet-kicker">在这里建设</p><h2 data-testid="sheet-title">选择设施</h2></div>
+                <button class="sheet-close" type="button" data-action="close-sheet" aria-label="关闭建设面板">×</button>
+              </div>
+
+              <div class="candidate-view" data-testid="candidate-view">
+                <p class="queue-copy">在建 0/3 · 选择一项查看真实后果</p>
+                <div class="candidate-track" role="listbox" aria-label="设施候选">
+                  <button type="button" data-testid="candidate-wind" data-candidate="wind" role="option">
+                    <img src="/docs/design/ui/assets/buildings/representative-v1/thumbnail/building-wind-tier1-thumbnail-v1.png" alt="" /><span>风电·I</span>
+                  </button>
+                  <button type="button" data-testid="candidate-solar" data-candidate="solar" role="option">
+                    <img src="/docs/design/ui/assets/buildings/representative-v1/thumbnail/building-solar-tier1-thumbnail-v1.png" alt="" /><span>光伏·I</span>
+                  </button>
+                  <button type="button" data-testid="candidate-thermal" data-candidate="thermal" role="option">
+                    <img src="/docs/design/ui/assets/buildings/representative-v1/thumbnail/building-thermal-tier1-thumbnail-v1.png" alt="" /><span>火电·I</span>
+                  </button>
+                </div>
+                <div class="candidate-details">
+                  <div><span>预计补充</span><strong data-testid="detail-output">42MW</strong></div>
+                  <div><span>工期</span><strong data-testid="detail-months">2月</strong></div>
+                  <div><span>确认后扣</span><strong data-testid="detail-cost">12</strong></div>
+                  <div><span>每月运维</span><strong data-testid="detail-opex">1</strong></div>
+                </div>
+                <button class="primary-action" type="button" data-testid="continue-build" data-action="continue">继续：风电·I</button>
+              </div>
+
+              <div class="confirm-view" data-testid="confirm-view" hidden>
+                <div class="impact-list">
+                  <div><span>资金</span><strong data-testid="confirm-funds">203 → 191</strong></div>
+                  <div><span>在建队列</span><strong>0/3 → 1/3</strong></div>
+                  <div><span>可见结果</span><strong data-testid="confirm-months">施工 2 个月</strong></div>
+                </div>
+                <p class="completion-copy" data-testid="completion-copy">完成后预计补充 42MW · 月运维 1</p>
+                <button class="primary-action" type="button" data-testid="confirm-build" data-action="confirm">确认建设 · 扣 12</button>
+              </div>
+            </section>
+
+            <div class="safe-area" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

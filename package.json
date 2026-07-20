@@ -39,6 +39,8 @@
     "sim:cocos-init-spike": "tsx src/app/cocosInitSpikeCli.ts",
     "sim:client-sync-spike": "tsx src/app/clientSyncSpikeCli.ts",
     "sim:cocos-hud-close": "tsx src/app/cocosHudCloseSpikeCli.ts",
+    "prototype:city": "node scripts/design/serve-city-prototype.mjs",
+    "prototype:city:check": "node scripts/design/check-city-prototype.mjs",
     "verify:client": "tsx src/app/verifyClientCli.ts",
     "verify:client:fast": "tsx src/app/verifyClientFastCli.ts",
     "check:cocos-ts": "tsc -p client/cocos/tsconfig.json --noEmit",
