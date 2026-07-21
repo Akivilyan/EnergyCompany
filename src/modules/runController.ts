@@ -1,5 +1,6 @@
 import {
   ConfigRepo,
+  calculateRecurringCashflow,
   createInitialState,
   dispatch,
   settleNextMonth,
@@ -31,13 +32,37 @@ export interface CitySnapshot {
   month: number;
   funds: number;
   socialValue: number;
+  companyLevel: number;
   runResult: GameState["runResult"];
   localSupplyMw: number;
   effectiveSupplyMw: number;
   netImportMw: number;
   supplyRatio: number;
+  demandMw: number;
+  cityFullyEcoSupply: boolean;
+  recurringFundsDeltaEstimate: number;
   facilityCountInCity: number;
   constructionQueueInCity: number;
+  facilities: CityFacilitySnapshot[];
+  constructionProjects: CityConstructionProjectSnapshot[];
+}
+
+export interface CityFacilitySnapshot {
+  id: string;
+  slotId: string;
+  facilityId: string;
+  tier: number;
+  outputMw: number;
+  monthlyOpex: number;
+  isEco: boolean;
+}
+
+export interface CityConstructionProjectSnapshot {
+  id: string;
+  slotId: string;
+  facilityId: string;
+  tier: number;
+  monthsRemaining: number;
 }
 
 export interface BuildAndAdvanceOutput {
@@ -132,30 +157,53 @@ export class RunController {
   getCitySnapshot(cityId: string): CitySnapshot | null {
     const city = this.state.cities[cityId];
     if (!city) return null;
-    let facilityCountInCity = 0;
-    for (const fac of Object.values(this.state.facilities)) {
-      if (fac.cityId === cityId) {
-        facilityCountInCity += 1;
-      }
-    }
-    let constructionQueueInCity = 0;
-    for (const item of this.state.constructionQueue) {
-      if (item.cityId === cityId) {
-        constructionQueueInCity += 1;
-      }
-    }
+    const facilities = Object.values(this.state.facilities)
+      .filter((facility) => facility.cityId === cityId)
+      .map((facility, index) => ({
+        id: facility.id,
+        slotId: facility.slotId ?? `slot-${index + 1}`,
+        facilityId: facility.facilityId,
+        tier: facility.tier,
+        outputMw: facility.outputMw,
+        monthlyOpex: facility.monthlyOpex,
+        isEco: facility.isEco ?? true
+      }));
+    const occupiedByFacilities = new Set(facilities.map((facility) => facility.slotId));
+    const constructionProjects = this.state.constructionQueue
+      .filter((item) => item.cityId === cityId)
+      .map((item, index) => {
+        let slotId = item.slotId ?? `slot-${facilities.length + index + 1}`;
+        while (occupiedByFacilities.has(slotId)) {
+          slotId = `slot-${Number(slotId.replace("slot-", "")) + 1}`;
+        }
+        occupiedByFacilities.add(slotId);
+        return {
+          id: item.id,
+          slotId,
+          facilityId: item.facilityId,
+          tier: item.tier,
+          monthsRemaining: item.monthsRemaining
+        };
+      });
+    const recurring = calculateRecurringCashflow(this.state, this.config);
     return {
       cityId,
       month: this.state.currentMonth,
       funds: this.state.funds,
       socialValue: this.state.socialValueCurrent,
+      companyLevel: this.state.companyLevel,
       runResult: this.state.runResult,
       localSupplyMw: city.localSupplyMw,
       effectiveSupplyMw: city.effectiveSupplyMw,
       netImportMw: city.netImportMw,
       supplyRatio: city.supplyRatio,
-      facilityCountInCity,
-      constructionQueueInCity
+      demandMw: city.demandMw,
+      cityFullyEcoSupply: city.cityFullyEcoSupply,
+      recurringFundsDeltaEstimate: recurring.net,
+      facilityCountInCity: facilities.length,
+      constructionQueueInCity: constructionProjects.length,
+      facilities,
+      constructionProjects
     };
   }
 

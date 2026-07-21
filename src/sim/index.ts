@@ -10,13 +10,22 @@ export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
 export {
   getConstructionBuildCost,
+  getFacilityBuildTierMax,
+  getFacilityTierSpec,
   getGridLinkBuildCost,
   getGridLinkLossMw,
   getLoanTierLevelBonus,
+  getMonthlyOperatingCost,
   getResearchCost,
   getResearchMonths
 } from "./core/technologyEffects.js";
 export { settleNextMonth } from "./core/settleNextMonth.js";
+export {
+  calculateRecurringCashflow,
+  getCityResourceMultiplier,
+  getFacilityEffectiveOutputMw,
+  type RecurringCashflowEstimate
+} from "./core/cityEconomy.js";
 export { serializeState, deserializeState } from "./core/serialization.js";
 export type { GameState, RunResult } from "./types/gameState.js";
 export type { Command } from "./types/commands.js";

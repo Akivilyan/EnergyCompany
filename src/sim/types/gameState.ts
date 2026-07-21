@@ -41,6 +41,7 @@ export interface ConstructionQueueItem {
   tier: number;
   monthsRemaining: number;
   installmentRemaining: number;
+  slotId?: string;
 }
 
 export interface FacilityRuntime {
@@ -52,6 +53,7 @@ export interface FacilityRuntime {
   monthlyOpex: number;
   monthlyFuel: number;
   isEco?: boolean;
+  slotId?: string;
 }
 
 export interface CityRuntime {

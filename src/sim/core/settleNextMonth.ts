@@ -14,10 +14,10 @@ import {
   getFacilityTierSpec,
   getEcoCitySocialValue,
   getGridLinkLossMw,
-  getMonthlyOperatingCost,
   hasStorageOutputBoost,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
+import { calculateRecurringCashflow, getCityResourceMultiplier } from "./cityEconomy.js";
 
 export interface SettleOutput {
   state: GameState;
@@ -183,24 +183,6 @@ function syncGridLinkLosses(state: GameState, config: ConfigRepo): void {
   }
 }
 
-function getCityResourceMultiplier(
-  config: ConfigRepo,
-  cityId: string,
-  facilityId: string
-): number {
-  const city = config.getCity(cityId);
-  if (!city) return 1;
-  const resource =
-    facilityId === "wind"
-      ? city.wind_resource
-      : facilityId === "solar"
-        ? city.solar_resource
-        : facilityId === "hydro"
-          ? city.hydro_resource
-          : undefined;
-  return resource === "rich" ? 2 : 1;
-}
-
 function recalcSupply(state: GameState, config: ConfigRepo): void {
   const hasStorageBoost = hasStorageOutputBoost(state);
   const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
@@ -318,7 +300,8 @@ function runM1(state: GameState, config: ConfigRepo): SettlementStepReport {
         outputMw: facilitySpec.outputMw,
         monthlyOpex: facilitySpec.monthlyOpex,
         monthlyFuel: facilitySpec.monthlyFuel,
-        isEco: getFacilityEcoStatus(state, config, item.facilityId)
+        isEco: getFacilityEcoStatus(state, config, item.facilityId),
+        slotId: item.slotId
       };
       completed.push(id);
     }
@@ -394,31 +377,29 @@ export function settleNextMonth(
     })
   );
 
+  const recurringCashflow = calculateRecurringCashflow(next, config);
   const incomeMult = aggregateIncomeMult(next);
-  let grossIncome = 0;
-  for (const city of Object.values(next.cities)) {
-    grossIncome += Math.floor(city.demandMw * city.supplyRatio * next.incomePricePerMw);
-  }
-  const netIncome = Math.floor((grossIncome * incomeMult.num) / incomeMult.den);
-  next.funds += netIncome;
+  next.funds += recurringCashflow.income;
   steps.push(
-    step("M5_income_settlement", `income=${netIncome}`, {
-      income: netIncome,
-      gross_income: grossIncome,
+    step("M5_income_settlement", `income=${recurringCashflow.income}`, {
+      income: recurringCashflow.income,
+      gross_income: recurringCashflow.grossIncome,
       income_mult_num: incomeMult.num,
       income_mult_den: incomeMult.den
     })
   );
 
-  let opex = 0;
-  let fuel = 0;
-  for (const fac of Object.values(next.facilities)) {
-    opex += getMonthlyOperatingCost(next, config, fac.monthlyOpex, fac.facilityId);
-    fuel += fac.monthlyFuel;
-  }
-  next.funds -= opex + fuel;
-  steps.push(step("M6_opex_settlement", `opex=${opex}`, { opex }));
-  steps.push(step("M7_fuel_settlement", `fuel=${fuel}`, { fuel }));
+  next.funds -= recurringCashflow.opex + recurringCashflow.fuel;
+  steps.push(
+    step("M6_opex_settlement", `opex=${recurringCashflow.opex}`, {
+      opex: recurringCashflow.opex
+    })
+  );
+  steps.push(
+    step("M7_fuel_settlement", `fuel=${recurringCashflow.fuel}`, {
+      fuel: recurringCashflow.fuel
+    })
+  );
 
   let loanPaid = 0;
   for (const loan of Object.values(next.loans)) {

@@ -77,6 +77,59 @@ function countCityFacility(
   return built;
 }
 
+function getOccupiedSlotIds(state: GameState, cityId: string): Set<string> {
+  const occupied = new Set<string>();
+  for (const facility of Object.values(state.facilities)) {
+    if (facility.cityId === cityId && facility.slotId) occupied.add(facility.slotId);
+  }
+  for (const item of state.constructionQueue) {
+    if (item.cityId === cityId && item.slotId) occupied.add(item.slotId);
+  }
+  return occupied;
+}
+
+function countOccupiedCitySlots(state: GameState, cityId: string): number {
+  return (
+    Object.values(state.facilities).filter((facility) => facility.cityId === cityId).length +
+    state.constructionQueue.filter((item) => item.cityId === cityId).length
+  );
+}
+
+function resolveConstructionSlotId(
+  state: GameState,
+  cityId: string,
+  buildSlotCount: number,
+  requestedSlotId?: string
+): SimResult<string> {
+  const occupied = getOccupiedSlotIds(state, cityId);
+  if (requestedSlotId) {
+    const match = /^slot-(\d+)$/.exec(requestedSlotId);
+    const index = match ? Number(match[1]) : 0;
+    if (index < 1 || index > buildSlotCount) {
+      return err("invalid_command_payload", "construction slot is outside city slot range", {
+        city_id: cityId,
+        slot_id: requestedSlotId,
+        build_slot_count: buildSlotCount
+      });
+    }
+    if (occupied.has(requestedSlotId)) {
+      return err("conflict_in_progress", "construction slot is occupied", {
+        city_id: cityId,
+        slot_id: requestedSlotId
+      });
+    }
+    return ok(requestedSlotId);
+  }
+  for (let index = 1; index <= buildSlotCount; index += 1) {
+    const slotId = `slot-${index}`;
+    if (!occupied.has(slotId)) return ok(slotId);
+  }
+  return err("conflict_in_progress", "city build slots full", {
+    city_id: cityId,
+    build_slot_count: buildSlotCount
+  });
+}
+
 function completeConstructionQueueItem(
   state: GameState,
   config: ConfigRepo,
@@ -104,7 +157,8 @@ function completeConstructionQueueItem(
     tier: facilitySpec.tier,
     outputMw: facilitySpec.outputMw,
     monthlyOpex: facilitySpec.monthlyOpex,
-    monthlyFuel: facilitySpec.monthlyFuel
+    monthlyFuel: facilitySpec.monthlyFuel,
+    slotId: item.slotId
   };
   state.constructionQueue.splice(index, 1);
   syncFacilityRuntimeTiers(state, config);
@@ -172,6 +226,19 @@ export function dispatch(
           region_id: city.region_id ?? "unknown"
         });
       }
+      if (countOccupiedCitySlots(next, command.cityId) >= city.build_slot_count) {
+        return err("conflict_in_progress", "city build slots full", {
+          city_id: command.cityId,
+          build_slot_count: city.build_slot_count
+        });
+      }
+      const slot = resolveConstructionSlotId(
+        next,
+        command.cityId,
+        city.build_slot_count,
+        command.slotId
+      );
+      if (!slot.ok) return slot;
       if (next.constructionQueue.length >= 3) {
         return err("conflict_in_progress", "global construction queue full");
       }
@@ -229,7 +296,8 @@ export function dispatch(
         facilityId: command.facilityId,
         tier: facilitySpec.tier,
         monthsRemaining: facilitySpec.buildMonths,
-        installmentRemaining: 0
+        installmentRemaining: 0,
+        slotId: slot.value
       });
       break;
     }

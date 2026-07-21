@@ -1,5 +1,11 @@
 export type Command =
-  | { type: "queue_construction"; cityId: string; facilityId: string; tier: number }
+  | {
+      type: "queue_construction";
+      cityId: string;
+      facilityId: string;
+      tier: number;
+      slotId?: string;
+    }
   | { type: "queue_grid_link"; fromCityId: string; toCityId: string; linkType: "region" | "trunk" }
   | { type: "cancel_grid_link"; linkId: string }
   | { type: "queue_super_hydro"; slotId: string }

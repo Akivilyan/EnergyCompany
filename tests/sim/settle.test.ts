@@ -1899,4 +1899,68 @@ describe("settleNextMonth", () => {
     expect(month.context?.phase).toBe("run_result");
     expect(month.context?.run_result).toBe("bankrupt");
   });
+
+  it("enforces city build slots and keeps slot identity", () => {
+    const config = loadTestConfig();
+    const city = config.bundle.cities.find((row) => row.city_id === "CITY-START");
+    if (!city) throw new Error("CITY-START missing");
+    city.build_slot_count = 1;
+    const state = createInitialState(config);
+
+    const first = dispatch(
+      state,
+      {
+        type: "queue_construction",
+        cityId: "CITY-START",
+        facilityId: "wind",
+        tier: 1,
+        slotId: "slot-1"
+      },
+      config,
+      defaultPorts
+    );
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.value.state.constructionQueue[0].slotId).toBe("slot-1");
+
+    const second = dispatch(
+      first.value.state,
+      { type: "queue_construction", cityId: "CITY-START", facilityId: "solar", tier: 1 },
+      config,
+      defaultPorts
+    );
+    expect(second.ok).toBe(false);
+    if (!second.ok) expect(second.message).toContain("slots full");
+  });
+
+  it("lets a facility supply power in the month it completes", () => {
+    const config = loadTestConfig();
+    const initial = createInitialState(config);
+    const build = dispatch(
+      initial,
+      {
+        type: "queue_construction",
+        cityId: "CITY-START",
+        facilityId: "wind",
+        tier: 1,
+        slotId: "slot-3"
+      },
+      config,
+      defaultPorts
+    );
+    expect(build.ok).toBe(true);
+    if (!build.ok) return;
+
+    const firstMonth = settleNextMonth(build.value.state, config, defaultPorts);
+    expect(firstMonth.ok).toBe(true);
+    if (!firstMonth.ok) return;
+    expect(firstMonth.value.state.cities["CITY-START"].effectiveSupplyMw).toBe(0);
+
+    const completionMonth = settleNextMonth(firstMonth.value.state, config, defaultPorts);
+    expect(completionMonth.ok).toBe(true);
+    if (!completionMonth.ok) return;
+    expect(completionMonth.value.state.constructionQueue).toHaveLength(0);
+    expect(completionMonth.value.state.facilities["fac-1"].slotId).toBe("slot-3");
+    expect(completionMonth.value.state.cities["CITY-START"].effectiveSupplyMw).toBeGreaterThan(0);
+  });
 });
