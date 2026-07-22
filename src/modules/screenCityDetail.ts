@@ -254,8 +254,8 @@ export class ScreenCityDetail {
       let disabledReasonKey: string | undefined;
       if (this.controller.state.phase !== "run_playable") disabledReasonKey = "settling";
       else if (occupied.has(slotId)) disabledReasonKey = "slot_occupied";
-      else if (snapshot.constructionQueueInCity >= 3) disabledReasonKey = "queue_full";
-      else if (snapshot.facilityCountInCity + snapshot.constructionQueueInCity >= cityConfig.build_slot_count) {
+      else if (snapshot.globalConstructionQueueActive >= snapshot.globalConstructionQueueMax) disabledReasonKey = "queue_full";
+      else if (snapshot.buildSlotsOccupied >= snapshot.buildSlotsMax) {
         disabledReasonKey = "slots_full";
       } else if (snapshot.funds < buildCost) disabledReasonKey = "insufficient_funds";
       return [{
@@ -282,10 +282,10 @@ export class ScreenCityDetail {
       value: {
         cityId: this.cityId,
         slotId,
-        queueActive: snapshot.constructionQueueInCity,
-        queueMax: 3,
-        buildSlotsOccupied: snapshot.facilityCountInCity + snapshot.constructionQueueInCity,
-        buildSlotsMax: cityConfig.build_slot_count,
+        queueActive: snapshot.globalConstructionQueueActive,
+        queueMax: snapshot.globalConstructionQueueMax,
+        buildSlotsOccupied: snapshot.buildSlotsOccupied,
+        buildSlotsMax: snapshot.buildSlotsMax,
         candidates
       }
     };

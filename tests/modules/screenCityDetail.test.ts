@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { RunController } from "../../src/modules/runController.js";
 import { createScreenCityDetail } from "../../src/modules/screenCityDetail.js";
+import { syncOperableCities } from "../../src/sim/core/settleNextMonth.js";
 
 
 describe("ScreenCityDetail", () => {
@@ -43,6 +44,40 @@ describe("ScreenCityDetail", () => {
     );
     expect(build.value.after.constructionProjects[0].slotId).toBe("slot-7");
     expect(build.value.after.funds).toBe(191);
+  });
+
+  it("uses one global three-project construction queue across cities", () => {
+    const controller = createTestController(repoRoot);
+    controller.state.companyLevel = 2;
+    syncOperableCities(controller.state, controller.config);
+    const start = createScreenCityDetail(controller, "CITY-START");
+    const city2 = createScreenCityDetail(controller, "CITY-MAP01-02");
+    const city3 = createScreenCityDetail(controller, "CITY-MAP01-03");
+
+    const first = start.queueConstruction("wind", 1, "slot-1");
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.value.result.ok).toBe(true);
+    expect(city2.getBuildChoice("slot-1")).toMatchObject({
+      ok: true,
+      value: { queueActive: 1, queueMax: 3, buildSlotsOccupied: 0, buildSlotsMax: 4 }
+    });
+    const second = city2.queueConstruction("solar", 1, "slot-1");
+    const third = city3.queueConstruction("thermal", 1, "slot-1");
+    expect(second.ok && second.value.result.ok).toBe(true);
+    expect(third.ok && third.value.result.ok).toBe(true);
+
+    const blocked = city2.getBuildChoice("slot-2");
+    expect(blocked).toMatchObject({ ok: true, value: { queueActive: 3, queueMax: 3 } });
+    if (!blocked.ok) return;
+    expect(blocked.value.candidates.every((candidate) => !candidate.enabled)).toBe(true);
+    expect(blocked.value.candidates.every((candidate) => candidate.disabledReasonKey === "queue_full")).toBe(true);
+    expect(city2.getSnapshot()).toMatchObject({
+      globalConstructionQueueActive: 3,
+      globalConstructionQueueMax: 3,
+      buildSlotsOccupied: 1,
+      buildSlotsMax: 4
+    });
   });
 
   it("returns monthly deltas for multi-step advance", () => {

@@ -74,6 +74,16 @@ export class CityPlayableRoot extends Component {
         openCompany: () => this.showCompany(true),
         openTech: () => this.showTech(),
         openRegion: () => this.showRegion(),
+        switchCity: (cityId) => {
+          const nextCityScreen = client.app.screens.city(cityId);
+          if (!nextCityScreen.getSnapshot()) {
+            this.overlays?.setToast("这座城市当前还不能经营");
+            this.render();
+            return;
+          }
+          this.cityView?.setCityScreen(nextCityScreen);
+          this.render();
+        },
         showToast: (message) => this.overlays!.setToast(message),
         clearToast: () => this.overlays!.clearToast(),
         clearReceipt: () => this.overlays!.clearReceipt(),
@@ -183,7 +193,7 @@ export class CityPlayableRoot extends Component {
 
     const snapshot = this.cityView.getSnapshot();
     if (!snapshot) {
-      this.renderFatal("CITY-START 不存在");
+      this.renderFatal("当前城市不存在");
       return;
     }
     this.cityView.render(snapshot, width, height);

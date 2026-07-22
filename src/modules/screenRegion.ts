@@ -20,6 +20,7 @@ import {
 export interface RegionCityItem {
   cityId: string;
   displayName: string;
+  buildSlotCount: number;
   unlockCompanyLevel: number;
   unlocked: boolean;
   operable: boolean;
@@ -130,6 +131,7 @@ export class ScreenRegion {
         return {
           cityId: city.city_id,
           displayName: city.display_name ?? city.city_id,
+          buildSlotCount: city.build_slot_count,
           unlockCompanyLevel: city.unlock_company_level,
           unlocked: this.controller.state.companyLevel >= city.unlock_company_level,
           operable: !!runtime,

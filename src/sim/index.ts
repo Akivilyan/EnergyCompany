@@ -8,6 +8,7 @@ export {
 export type { ConfigBundleInput } from "./config/configBundle.js";
 export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
+export { CONSTRUCTION_QUEUE_MAX } from "./core/dispatchInfrastructure.js";
 export {
   getConstructionBuildCost,
   getCitySocialValue,

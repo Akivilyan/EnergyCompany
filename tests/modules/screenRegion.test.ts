@@ -26,6 +26,24 @@ function prepareRegionalGrid(controller: RunController): void {
 }
 
 describe("ScreenRegion PLAYABLE-CORE-04", () => {
+  it("exposes all same-region level-II cities as operable navigation targets", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 2;
+    const screen = createScreenRegion(controller);
+
+    const advanced = screen.advanceMonths(1);
+    expect(advanced.failed).toBeNull();
+    expect(
+      screen.getSnapshot().cities
+        .filter((city) => city.operable)
+        .map((city) => [city.cityId, city.buildSlotCount])
+    ).toEqual([
+      ["CITY-MAP01-02", 4],
+      ["CITY-MAP01-03", 3],
+      ["CITY-START", 7]
+    ]);
+  });
+
   it("keeps the regional entry locked until company III and grid_regional are both ready", () => {
     const controller = createTestController();
     const screen = createScreenRegion(controller);

@@ -14,6 +14,7 @@ import {
 
 const GRID_LINK_COST = 8;
 const GRID_LINK_BUILD_MONTHS = 1;
+export const CONSTRUCTION_QUEUE_MAX = 3;
 
 function assertCityUnlocked(companyLevel: number, unlockLevel: number): SimResult<true> {
   if (companyLevel < unlockLevel) {
@@ -159,7 +160,12 @@ export function handleInfrastructureCommand(
       }
       const slot = resolveConstructionSlotId(state, command.cityId, city.build_slot_count, command.slotId);
       if (!slot.ok) return slot;
-      if (state.constructionQueue.length >= 3) return err("conflict_in_progress", "global construction queue full");
+      if (state.constructionQueue.length >= CONSTRUCTION_QUEUE_MAX) {
+        return err("conflict_in_progress", "global construction queue full", {
+          queue_active: state.constructionQueue.length,
+          queue_max: CONSTRUCTION_QUEUE_MAX
+        });
+      }
       if (facility.unlock_tech_id && !state.litTechIds.includes(facility.unlock_tech_id)) {
         return err("not_unlocked", "facility tech not lit", {
           city_id: command.cityId,

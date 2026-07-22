@@ -1,5 +1,6 @@
 import {
   ConfigRepo,
+  CONSTRUCTION_QUEUE_MAX,
   calculateRecurringCashflow,
   createInitialState,
   dispatch,
@@ -43,6 +44,10 @@ export interface CitySnapshot {
   recurringFundsDeltaEstimate: number;
   facilityCountInCity: number;
   constructionQueueInCity: number;
+  globalConstructionQueueActive: number;
+  globalConstructionQueueMax: number;
+  buildSlotsOccupied: number;
+  buildSlotsMax: number;
   facilities: CityFacilitySnapshot[];
   constructionProjects: CityConstructionProjectSnapshot[];
 }
@@ -186,6 +191,8 @@ export class RunController {
         };
       });
     const recurring = calculateRecurringCashflow(this.state, this.config);
+    const cityConfig = this.config.getCity(cityId);
+    const buildSlotsOccupied = facilities.length + constructionProjects.length;
     return {
       cityId,
       month: this.state.currentMonth,
@@ -202,6 +209,10 @@ export class RunController {
       recurringFundsDeltaEstimate: recurring.net,
       facilityCountInCity: facilities.length,
       constructionQueueInCity: constructionProjects.length,
+      globalConstructionQueueActive: this.state.constructionQueue.length,
+      globalConstructionQueueMax: CONSTRUCTION_QUEUE_MAX,
+      buildSlotsOccupied,
+      buildSlotsMax: cityConfig?.build_slot_count ?? buildSlotsOccupied,
       facilities,
       constructionProjects
     };

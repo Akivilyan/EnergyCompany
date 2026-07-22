@@ -2,7 +2,7 @@ import { Color, Graphics, Node, Sprite } from "cc";
 import type { FacilityId, SpriteCatalog } from "./PlayableAssets";
 import { BLUE_TEXT, CYAN, MUTED_TEXT, signed, UiFactory, WHITE } from "./UiFactory";
 
-type SheetMode = "closed" | "choose" | "confirm";
+type SheetMode = "closed" | "choose";
 
 const SLOT_POSITIONS = [
   [-108, 175],
@@ -24,6 +24,7 @@ export interface CityViewOptions {
   openCompany: () => void;
   openTech: () => void;
   openRegion: () => void;
+  switchCity: (cityId: string) => void;
   showToast: (message: string) => void;
   clearToast: () => void;
   clearReceipt: () => void;
@@ -35,13 +36,14 @@ export interface CityViewOptions {
 }
 
 export class CityView extends UiFactory {
-  private readonly cityScreen: any;
+  private cityScreen: any;
   private readonly techScreen: any;
   private readonly regionScreen: any;
   private readonly refresh: () => void;
   private readonly openCompany: () => void;
   private readonly openTech: () => void;
   private readonly openRegion: () => void;
+  private readonly switchCity: (cityId: string) => void;
   private readonly showToast: (message: string) => void;
   private readonly clearToast: () => void;
   private readonly clearReceipt: () => void;
@@ -63,6 +65,7 @@ export class CityView extends UiFactory {
     this.openCompany = options.openCompany;
     this.openTech = options.openTech;
     this.openRegion = options.openRegion;
+    this.switchCity = options.switchCity;
     this.showToast = options.showToast;
     this.clearToast = options.clearToast;
     this.clearReceipt = options.clearReceipt;
@@ -77,22 +80,28 @@ export class CityView extends UiFactory {
     return this.cityScreen.getSnapshot();
   }
 
+  setCityScreen(cityScreen: any): void {
+    this.cityScreen = cityScreen;
+    this.sheetMode = "closed";
+  }
+
   isSheetClosed(): boolean {
     return this.sheetMode === "closed";
   }
 
   render(snapshot: any, width: number, height: number): void {
-    this.drawCityBackdrop(width, height);
+    this.drawCityBackdrop(snapshot, width, height);
     this.drawHud(snapshot, width, height);
     this.drawCityField(snapshot, width, height);
     if (this.sheetMode !== "closed") this.drawBuildSheet(snapshot, width, height);
     else {
+      this.drawCapacityStatus(snapshot, width, height);
       this.drawCityEntries(snapshot, height);
       this.drawNextMonthButton(width, height);
     }
   }
 
-  private drawCityBackdrop(width: number, height: number): void {
+  private drawCityBackdrop(snapshot: any, width: number, height: number): void {
     const backdrop = this.layer("CityBackdrop", this.node, width, height, 0, 0);
     const g = backdrop.addComponent(Graphics);
     g.fillColor = new Color(75, 193, 241, 255);
@@ -130,8 +139,56 @@ export class CityView extends UiFactory {
     g.bezierCurveTo(-35, 72, 65, -30, 145, -78);
     g.stroke();
 
-    this.paintRounded(backdrop, -96, 250, 166, 36, 16, new Color(241, 252, 255, 216), new Color(255, 255, 255, 235), 1);
-    this.addLabel(backdrop, "澄湾能源城", -96, 250, 148, 24, 18, BLUE_TEXT, true);
+    this.drawCitySelector(backdrop, snapshot, width);
+  }
+
+  private drawCitySelector(parent: Node, snapshot: any, width: number): void {
+    const region = this.regionScreen.getSnapshot();
+    const cities = region.cities.filter((city: any) => city.operable);
+    const currentIndex = Math.max(0, cities.findIndex((city: any) => city.cityId === snapshot.cityId));
+    const current = cities[currentIndex];
+    const selectorWidth = Math.min(width - 34, 340);
+    const selector = this.layer("CitySelector", parent, selectorWidth, 48, 0, 250);
+    this.paintRounded(selector, 0, 0, selectorWidth, 46, 18, new Color(241, 252, 255, 232), new Color(255, 255, 255, 245), 2);
+    const name = this.cityDisplayName(snapshot.cityId, current?.displayName);
+    this.addLabel(
+      selector,
+      cities.length > 1 ? `${name}  ·  ${currentIndex + 1}/${cities.length}` : name,
+      0,
+      0,
+      selectorWidth - (cities.length > 1 ? 104 : 20),
+      28,
+      17,
+      BLUE_TEXT,
+      true
+    );
+    if (cities.length <= 1) return;
+    const arrowX = selectorWidth / 2 - 26;
+    this.makeTextButton(selector, "‹", -arrowX, 0, 48, 48, new Color(220, 244, 248, 250), BLUE_TEXT, () => {
+      this.switchRelativeCity(cities, currentIndex, -1);
+    }, 29);
+    this.makeTextButton(selector, "›", arrowX, 0, 48, 48, new Color(220, 244, 248, 250), BLUE_TEXT, () => {
+      this.switchRelativeCity(cities, currentIndex, 1);
+    }, 29);
+  }
+
+  private switchRelativeCity(cities: any[], currentIndex: number, offset: number): void {
+    if (cities.length <= 1 || this.isSettling()) return;
+    const nextIndex = (currentIndex + offset + cities.length) % cities.length;
+    const next = cities[nextIndex];
+    if (!next) return;
+    this.sheetMode = "closed";
+    this.clearToast();
+    this.clearReceipt();
+    this.switchCity(next.cityId);
+    console.warn(`[PLAYABLE-CORE-04] city switched ${next.cityId}`);
+  }
+
+  private cityDisplayName(cityId: string, fallback?: string): string {
+    if (cityId === "CITY-START") return "澄湾能源城";
+    if (cityId === "CITY-MAP01-02") return "晴湾光伏城";
+    if (cityId === "CITY-MAP01-03") return "青岚风电城";
+    return fallback?.replace(/（.*）/, "") ?? cityId;
   }
 
   private drawHud(snapshot: any, width: number, height: number): void {
@@ -160,7 +217,9 @@ export class CityView extends UiFactory {
     for (const facility of snapshot.facilities) occupied.set(facility.slotId, { ...facility, kind: "facility" });
     for (const project of snapshot.constructionProjects) occupied.set(project.slotId, { ...project, kind: "project" });
 
-    SLOT_POSITIONS.forEach(([x, y], index) => {
+    const currentCity = this.regionScreen.getSnapshot().cities.find((city: any) => city.cityId === snapshot.cityId);
+    const slotCount = currentCity?.buildSlotCount ?? SLOT_POSITIONS.length;
+    SLOT_POSITIONS.slice(0, slotCount).forEach(([x, y], index) => {
       const slotId = `slot-${index + 1}`;
       const slot = this.layer(`BuildSlot-${index + 1}`, this.node, 76, 76, x, y);
       const content = occupied.get(slotId);
@@ -184,6 +243,20 @@ export class CityView extends UiFactory {
         this.addLabel(slot, content.tier > 1 ? `${this.levelRoman(content.tier)} · 运行` : "运行中", 0, -27, 56, 22, 14, WHITE, true);
       }
     });
+  }
+
+  private drawCapacityStatus(snapshot: any, width: number, height: number): void {
+    const y = -height / 2 + 158;
+    const gap = 8;
+    const chipWidth = (width - 46 - gap) / 2;
+    const queueFull = snapshot.globalConstructionQueueActive >= snapshot.globalConstructionQueueMax;
+    const slotsFull = snapshot.buildSlotsOccupied >= snapshot.buildSlotsMax;
+    const queue = this.layer("GlobalConstructionStatus", this.node, chipWidth, 40, -chipWidth / 2 - gap / 2, y);
+    const slots = this.layer("CityBuildSlotStatus", this.node, chipWidth, 40, chipWidth / 2 + gap / 2, y);
+    this.paintRounded(queue, 0, 0, chipWidth, 40, 14, queueFull ? new Color(255, 231, 190, 246) : new Color(239, 249, 251, 244), new Color(255, 255, 255, 245), 2);
+    this.paintRounded(slots, 0, 0, chipWidth, 40, 14, slotsFull ? new Color(255, 231, 190, 246) : new Color(239, 249, 251, 244), new Color(255, 255, 255, 245), 2);
+    this.addLabel(queue, `公司工程队 ${snapshot.globalConstructionQueueActive}/${snapshot.globalConstructionQueueMax}`, 0, 0, chipWidth - 12, 26, 15, queueFull ? new Color(145, 91, 15, 255) : BLUE_TEXT, true);
+    this.addLabel(slots, `本城建设位 ${snapshot.buildSlotsOccupied}/${snapshot.buildSlotsMax}`, 0, 0, chipWidth - 12, 26, 15, slotsFull ? new Color(145, 91, 15, 255) : BLUE_TEXT, true);
   }
 
   private openBuildSheet(slotId: string): void {
@@ -216,63 +289,41 @@ export class CityView extends UiFactory {
     const candidate = choice.value.candidates.find((item: any) => item.facilityId === this.selectedFacilityId);
     if (!candidate) return;
 
-    if (this.sheetMode === "choose") {
-      this.addLabel(sheet, "在这里建设", -108, localTop - 35, 158, 28, 22, BLUE_TEXT, false, 0);
-      this.addLabel(sheet, `在建 ${choice.value.queueActive}/${choice.value.queueMax} · 建设位 ${choice.value.buildSlotsOccupied}/${choice.value.buildSlotsMax}`, -36, localTop - 61, 260, 22, 15, MUTED_TEXT, false, 0);
-      this.makeTextButton(sheet, "×", 157, localTop - 38, 48, 48, new Color(223, 235, 246, 255), BLUE_TEXT, () => {
-        this.sheetMode = "closed";
-        this.refresh();
-      }, 25);
-      choice.value.candidates.forEach((item: any, index: number) => {
-        const facilityId = item.facilityId as FacilityId;
-        const x = -114 + index * 114;
-        const selected = facilityId === this.selectedFacilityId;
-        const card = this.layer(`Candidate-${facilityId}`, sheet, 104, 105, x, localTop - 121);
-        this.paintRounded(card, 0, 0, 102, 103, 17, selected ? new Color(211, 245, 252, 255) : new Color(250, 253, 255, 255), selected ? CYAN : new Color(175, 205, 220, 255), selected ? 3 : 1);
-        this.addSprite(card, this.thumbnailSprite(facilityId), 0, 15, 63, 63);
-        this.addLabel(card, this.facilityName(facilityId, item.tier), 0, -32, 96, 25, 16, BLUE_TEXT, true);
-        this.makeHitTarget(card, () => {
-          this.selectedFacilityId = facilityId;
-          this.refresh();
-          console.warn(`[PLAYABLE-CORE-01] candidate selected ${facilityId}`);
-        });
-      });
-      this.addLabel(sheet, `预计补充 ${candidate.effectiveOutputMw} MW   ·   工期 ${candidate.buildMonths}月`, 0, localTop - 194, width - 46, 24, 16, BLUE_TEXT, true);
-      this.addLabel(sheet, `确认后扣 ${candidate.buildCost}   ·   每月运维 ${candidate.monthlyOpex}`, 0, localTop - 221, width - 46, 24, 16, MUTED_TEXT, true);
-      const label = candidate.enabled ? `继续：${this.facilityName(this.selectedFacilityId, candidate.tier)}` : this.disabledReason(candidate.disabledReasonKey, snapshot.funds, candidate.buildCost);
-      this.makePrimaryButton(sheet, label, 0, -sheetHeight / 2 + 37, width - 44, 58, candidate.enabled, () => {
-        if (!candidate.enabled) return;
-        this.sheetMode = "confirm";
-        this.refresh();
-      });
-      return;
-    }
-
-    this.makeTextButton(sheet, "‹", -157, localTop - 44, 48, 48, new Color(223, 235, 246, 255), BLUE_TEXT, () => {
-      this.sheetMode = "choose";
+    this.addLabel(sheet, "选择能源设施", -98, localTop - 35, 184, 28, 22, BLUE_TEXT, false, 0);
+    this.makeTextButton(sheet, "×", 157, localTop - 38, 48, 48, new Color(223, 235, 246, 255), BLUE_TEXT, () => {
+      this.sheetMode = "closed";
       this.refresh();
-    }, 32);
-    this.addLabel(sheet, `确认建设：${this.facilityName(this.selectedFacilityId, candidate.tier)}`, 15, localTop - 44, width - 110, 32, 22, BLUE_TEXT, true);
-    const rows = [
-      ["资金", `${snapshot.funds}  →  ${snapshot.funds - candidate.buildCost}`],
-      ["在建队列", `${choice.value.queueActive}/${choice.value.queueMax}  →  ${choice.value.queueActive + 1}/${choice.value.queueMax}`],
-      ["施工", `${candidate.buildMonths} 个月`]
-    ];
-    rows.forEach(([key, value], index) => {
-      const y = localTop - 91 - index * 47;
-      this.paintRounded(sheet, 0, y, width - 54, 39, 12, new Color(225, 240, 247, 225));
-      this.addLabel(sheet, key, -112, y, 90, 28, 16, MUTED_TEXT, false, 0);
-      this.addLabel(sheet, value, 91, y, 138, 28, 18, BLUE_TEXT, false, 2);
+    }, 25);
+    choice.value.candidates.forEach((item: any, index: number) => {
+      const facilityId = item.facilityId as FacilityId;
+      const x = -114 + index * 114;
+      const selected = facilityId === this.selectedFacilityId;
+      const card = this.layer(`Candidate-${facilityId}`, sheet, 104, 105, x, localTop - 111);
+      this.paintRounded(card, 0, 0, 102, 103, 17, selected ? new Color(211, 245, 252, 255) : new Color(250, 253, 255, 255), selected ? CYAN : new Color(175, 205, 220, 255), selected ? 3 : 1);
+      this.addSprite(card, this.thumbnailSprite(facilityId), 0, 15, 63, 63);
+      this.addLabel(card, this.facilityName(facilityId, item.tier), 0, -32, 96, 25, 16, BLUE_TEXT, true);
+      this.makeHitTarget(card, () => {
+        this.selectedFacilityId = facilityId;
+        this.refresh();
+        console.warn(`[PLAYABLE-CORE-01] candidate selected ${facilityId}`);
+      });
     });
-    this.paintRounded(sheet, 0, localTop - 237, width - 54, 44, 13, new Color(232, 249, 246, 242));
-    this.addLabel(sheet, `完工当月即参与供能 · 预计 ${candidate.effectiveOutputMw} MW`, 0, localTop - 237, width - 70, 30, 16, BLUE_TEXT, true);
-    this.makePrimaryButton(sheet, `确认建设 · 扣 ${candidate.buildCost}`, 0, -sheetHeight / 2 + 37, width - 44, 58, candidate.enabled, () => this.confirmBuild(candidate));
+    const detail = this.layer("SelectedFacilityDetail", sheet, width - 44, 78, 0, localTop - 221);
+    this.paintRounded(detail, 0, 0, width - 44, 78, 16, new Color(226, 243, 248, 242));
+    this.addLabel(detail, `发电量  ${candidate.effectiveOutputMw} MW`, -86, 18, 150, 24, 16, BLUE_TEXT, false, 0);
+    this.addLabel(detail, `建设资金  ${candidate.buildCost}`, 86, 18, 150, 24, 16, BLUE_TEXT, false, 0);
+    this.addLabel(detail, `工期  ${candidate.buildMonths} 月`, -86, -18, 150, 24, 16, MUTED_TEXT, false, 0);
+    this.addLabel(detail, `每月运维  ${candidate.monthlyOpex}`, 86, -18, 150, 24, 16, MUTED_TEXT, false, 0);
+    const label = candidate.enabled
+      ? `开工：${this.facilityName(this.selectedFacilityId, candidate.tier)} · 扣 ${candidate.buildCost}`
+      : this.disabledReason(candidate.disabledReasonKey, snapshot.funds, candidate.buildCost, choice.value.queueActive, choice.value.queueMax);
+    this.makePrimaryButton(sheet, label, 0, -sheetHeight / 2 + 37, width - 44, 58, candidate.enabled, () => this.confirmBuild(candidate));
   }
 
   private confirmBuild(candidate: any): void {
     const result = this.cityScreen.queueConstruction(candidate.facilityId, candidate.tier, this.selectedSlotId);
     if (!result.ok || !result.value.result.ok) {
-      this.showToast("建设失败：请检查资金与建设队列");
+      this.showToast(this.buildFailureMessage(result, candidate));
       this.sheetMode = "choose";
       this.refresh();
       return;
@@ -382,11 +433,27 @@ export class CityView extends UiFactory {
     }, 0.34);
   }
 
-  private disabledReason(reason: string | undefined, funds: number, cost: number): string {
+  private disabledReason(reason: string | undefined, funds: number, cost: number, queueActive = 0, queueMax = 0): string {
     if (reason === "insufficient_funds") return `资金不足 · 还差 ${Math.max(0, cost - funds)}`;
-    if (reason === "queue_full") return "在建队列已满";
-    if (reason === "slot_occupied") return "这个建设位已占用";
-    if (reason === "slots_full") return "城市建设位已满";
+    if (reason === "queue_full") return `公司工程队已满 · ${queueActive}/${queueMax}`;
+    if (reason === "slot_occupied") return "本建设位已被占用";
+    if (reason === "slots_full") return "本城建设位已满";
     return "结算中";
+  }
+
+  private buildFailureMessage(action: any, candidate: any): string {
+    const result = action?.value?.result;
+    if (result?.error === "insufficient_funds") {
+      const snapshot = this.cityScreen.getSnapshot();
+      return `资金不足 · 还差 ${Math.max(0, candidate.buildCost - (snapshot?.funds ?? 0))}`;
+    }
+    if (result?.error === "conflict_in_progress" && result.message === "global construction queue full") {
+      return `公司工程队已满 · ${result.context?.queue_active ?? 3}/${result.context?.queue_max ?? 3}`;
+    }
+    if (result?.error === "conflict_in_progress" && result.message === "city build slots full") return "本城建设位已满";
+    if (result?.error === "conflict_in_progress") return "该设施当前不能重复建设";
+    if (result?.error === "not_unlocked") return "设施或科技尚未解锁";
+    if (result?.error === "invalid_command_payload") return "本建设位当前不可用";
+    return "建设失败，请稍后重试";
   }
 }
