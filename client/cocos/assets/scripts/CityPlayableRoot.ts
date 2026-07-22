@@ -27,7 +27,7 @@ const { ccclass } = _decorator;
 
 type FacilityId = "wind" | "solar" | "thermal";
 type SheetMode = "closed" | "choose" | "confirm";
-type ViewMode = "city" | "company";
+type ViewMode = "city" | "company" | "tech";
 
 interface SpriteCatalog {
   funds: SpriteFrame;
@@ -37,6 +37,9 @@ interface SpriteCatalog {
   turnIncome: SpriteFrame;
   build: SpriteFrame;
   confirm: SpriteFrame;
+  techNormal: SpriteFrame;
+  techSelected: SpriteFrame;
+  techLocked: SpriteFrame;
   clean: SpriteFrame;
   needsImprovement: SpriteFrame;
   windThumbnail: SpriteFrame;
@@ -90,6 +93,9 @@ async function loadSpriteCatalog(): Promise<SpriteCatalog> {
     turnIncome,
     build,
     confirm,
+    techNormal,
+    techSelected,
+    techLocked,
     clean,
     needsImprovement,
     windThumbnail,
@@ -106,6 +112,9 @@ async function loadSpriteCatalog(): Promise<SpriteCatalog> {
     loadSpriteFrame("art/icons/turn-income"),
     loadSpriteFrame("art/icons/build"),
     loadSpriteFrame("art/icons/confirm"),
+    loadSpriteFrame("art/icons/tech-normal"),
+    loadSpriteFrame("art/icons/tech-selected"),
+    loadSpriteFrame("art/icons/tech-locked"),
     loadSpriteFrame("art/icons/clean"),
     loadSpriteFrame("art/icons/needs-improvement"),
     loadSpriteFrame("art/buildings/wind-thumbnail"),
@@ -123,6 +132,9 @@ async function loadSpriteCatalog(): Promise<SpriteCatalog> {
     turnIncome,
     build,
     confirm,
+    techNormal,
+    techSelected,
+    techLocked,
     clean,
     needsImprovement,
     windThumbnail,
@@ -143,11 +155,13 @@ export class CityPlayableRoot extends Component {
   private client: any = null;
   private cityScreen: any = null;
   private companyScreen: any = null;
+  private techScreen: any = null;
   private sprites: SpriteCatalog | null = null;
   private viewMode: ViewMode = "city";
   private sheetMode: SheetMode = "closed";
   private selectedSlotId = "slot-5";
   private selectedFacilityId: FacilityId = "wind";
+  private selectedTechId = "thermal_2";
   private receipt: any = null;
   private levelUpDetail: any = null;
   private toast = "";
@@ -173,9 +187,10 @@ export class CityPlayableRoot extends Component {
       this.client = mountGameClient({ configRepo });
       this.cityScreen = this.client.app.screens.city("CITY-START");
       this.companyScreen = this.client.app.screens.company;
+      this.techScreen = this.client.app.screens.tech;
       this.render();
-      log("[PLAYABLE-CORE-02] ready: company growth and unlock slice");
-      console.warn("[PLAYABLE-CORE-02] ready");
+      log("[PLAYABLE-CORE-03] ready v2: technology research and visible effect slice");
+      console.warn("[PLAYABLE-CORE-03] ready v2");
     } catch (mountError) {
       const message = mountError instanceof Error ? mountError.message : String(mountError);
       logError("[PLAYABLE-CORE-01] mount failed", mountError);
@@ -205,6 +220,11 @@ export class CityPlayableRoot extends Component {
     }
     if (this.viewMode === "company") {
       this.drawCompanyPage(width, height);
+      return;
+    }
+    if (this.viewMode === "tech") {
+      this.drawTechPage(width, height);
+      if (this.toast) this.drawToast(this.toast, width, height);
       return;
     }
     this.drawCityBackdrop(width, height);
@@ -359,7 +379,17 @@ export class CityPlayableRoot extends Component {
         this.addLabel(slot, `${content.monthsRemaining}月`, 15, -23, 44, 26, 16, BLUE_TEXT, true);
       } else {
         this.paintRounded(slot, 0, -27, 58, 22, 11, new Color(33, 153, 133, 236));
-        this.addLabel(slot, "运行中", 0, -27, 56, 22, 14, WHITE, true);
+        this.addLabel(
+          slot,
+          content.tier > 1 ? `${this.levelRoman(content.tier)} · 运行` : "运行中",
+          0,
+          -27,
+          56,
+          22,
+          14,
+          WHITE,
+          true
+        );
       }
     });
   }
@@ -440,7 +470,7 @@ export class CityPlayableRoot extends Component {
           selected ? 3 : 1
         );
         this.addSprite(card, this.thumbnailSprite(facilityId), 0, 15, 63, 63);
-        this.addLabel(card, FACILITY_NAME[facilityId], 0, -32, 96, 25, 16, BLUE_TEXT, true);
+        this.addLabel(card, this.facilityName(facilityId, item.tier), 0, -32, 96, 25, 16, BLUE_TEXT, true);
         this.makeHitTarget(card, () => {
           this.selectedFacilityId = facilityId;
           this.render();
@@ -470,7 +500,7 @@ export class CityPlayableRoot extends Component {
         true
       );
       const label = candidate.enabled
-        ? `继续：${FACILITY_NAME[this.selectedFacilityId]}`
+        ? `继续：${this.facilityName(this.selectedFacilityId, candidate.tier)}`
         : this.disabledReason(candidate.disabledReasonKey, snapshot.funds, candidate.buildCost);
       this.makePrimaryButton(sheet, label, 0, -sheetHeight / 2 + 37, width - 44, 58, candidate.enabled, () => {
         if (!candidate.enabled) return;
@@ -486,7 +516,7 @@ export class CityPlayableRoot extends Component {
     }, 32);
     this.addLabel(
       sheet,
-      `确认建设：${FACILITY_NAME[this.selectedFacilityId]}`,
+      `确认建设：${this.facilityName(this.selectedFacilityId, candidate.tier)}`,
       15,
       localTop - 44,
       width - 110,
@@ -543,7 +573,7 @@ export class CityPlayableRoot extends Component {
       return;
     }
     this.sheetMode = "closed";
-    this.toast = `${FACILITY_NAME[this.selectedFacilityId]} 已开工 · ${candidate.buildMonths}月`;
+    this.toast = `${this.facilityName(this.selectedFacilityId, candidate.tier)} 已开工 · ${candidate.buildMonths}月`;
     this.render();
     const queuedProject = result.value.after.constructionProjects.find(
       (project: any) => project.facilityId === candidate.facilityId
@@ -574,9 +604,18 @@ export class CityPlayableRoot extends Component {
       17
     );
     const technologyUnlocked = snapshot.companyLevel >= 2;
+    const technology = this.techScreen.getSnapshot();
+    const thermal2 = technology.technologies.find((item: any) => item.techId === "thermal_2");
+    const techEntryLabel = technology.activeResearch
+      ? `科技 · ${technology.activeResearch.monthsRemaining}月`
+      : thermal2?.status === "lit"
+        ? "科技 · 火电II"
+        : technologyUnlocked
+          ? "科技 · 已开放"
+          : "科技 · II级";
     this.makeTextButton(
       this.node,
-      technologyUnlocked ? "科技 · 已开放" : "科技 · II级",
+      techEntryLabel,
       -59,
       y,
       92,
@@ -586,12 +625,17 @@ export class CityPlayableRoot extends Component {
         : new Color(207, 218, 224, 245),
       technologyUnlocked ? new Color(18, 112, 105, 255) : MUTED_TEXT,
       () => {
-        this.toast = technologyUnlocked
-          ? "科技研发入口已开放"
-          : "公司达到 II 级后开放科技研发";
+        if (technologyUnlocked) {
+          this.viewMode = "tech";
+          this.receipt = null;
+          this.toast = "";
+          this.selectedTechId = "thermal_2";
+        } else {
+          this.toast = "公司达到 II 级后开放科技研发";
+        }
         this.render();
         console.warn(
-          `[PLAYABLE-CORE-02] technology entry ${technologyUnlocked ? "unlocked" : "locked"}`
+          `[PLAYABLE-CORE-03] technology entry ${technologyUnlocked ? "opened" : "locked"}`
         );
       },
       14
@@ -718,6 +762,301 @@ export class CityPlayableRoot extends Component {
     );
   }
 
+  private drawTechPage(width: number, height: number): void {
+    const snapshot = this.techScreen.getSnapshot();
+    const selected = snapshot.technologies.find((item: any) => item.techId === this.selectedTechId);
+    const thermal2 = snapshot.technologies.find((item: any) => item.techId === "thermal_2");
+    const thermal3 = snapshot.technologies.find((item: any) => item.techId === "thermal_3");
+    const active = snapshot.activeResearch;
+    const top = height / 2;
+
+    this.paintRect(this.node, 0, 0, width, height, new Color(18, 104, 136, 255));
+    const backdrop = this.layer("TechBackdrop", this.node, width, height, 0, 0);
+    const g = backdrop.addComponent(Graphics);
+    g.fillColor = new Color(37, 161, 174, 255);
+    g.circle(-width * 0.45, top - 180, 210);
+    g.fill();
+    g.fillColor = new Color(36, 117, 168, 255);
+    g.circle(width * 0.48, -height * 0.33, 280);
+    g.fill();
+
+    this.makeTextButton(
+      this.node,
+      "‹",
+      -width / 2 + 42,
+      top - 43,
+      48,
+      48,
+      new Color(236, 248, 252, 248),
+      BLUE_TEXT,
+      () => this.returnToCityFromTech(),
+      31
+    );
+    this.addLabel(this.node, "科技研发", -38, top - 43, 150, 36, 25, WHITE, false, 0);
+    this.addLabel(this.node, `公司 ${this.levelRoman(snapshot.companyLevel)}`, width / 2 - 92, top - 43, 130, 28, 15, WHITE, false, 2);
+
+    const queue = this.layer("ResearchQueue", this.node, width - 32, 88, 0, top - 116);
+    this.paintRounded(queue, 0, 0, width - 32, 88, 20, new Color(242, 251, 253, 248), new Color(255, 255, 255, 255), 2);
+    this.addSprite(queue, this.sprites!.funds, -142, 20, 29, 29);
+    this.addLabel(queue, `${snapshot.funds}`, -111, 20, 70, 28, 18, BLUE_TEXT, false, 0);
+    this.addLabel(
+      queue,
+      active ? `单队列 · ${thermal2?.displayName ?? active.techId} 研发中` : "单队列空闲 · 0 / 1",
+      27,
+      20,
+      width - 134,
+      28,
+      17,
+      BLUE_TEXT,
+      false,
+      0
+    );
+    this.addLabel(
+      queue,
+      active ? `剩 ${active.monthsRemaining} 月 · 返回城市推进月份` : "选择节点后立即扣费，只能同时研发一项",
+      0,
+      -20,
+      width - 62,
+      25,
+      15,
+      MUTED_TEXT,
+      false,
+      0
+    );
+
+    const branch = this.layer("ThermalTechBranch", this.node, width - 32, 154, 0, top - 248);
+    this.paintRounded(branch, 0, 0, width - 32, 154, 20, new Color(234, 248, 250, 246));
+    this.addLabel(branch, "火电路线 · 本切片代表分支", 0, 58, width - 66, 25, 17, BLUE_TEXT, false, 0);
+    this.paintRect(branch, 0, -2, 232, 4, new Color(111, 188, 199, 180));
+    this.drawTechNode(branch, -116, -12, "火电·I", "lit", false, () => {});
+    this.drawTechNode(
+      branch,
+      0,
+      -12,
+      thermal2?.displayName ?? "火电·II",
+      thermal2?.status ?? "locked",
+      true,
+      () => {
+        this.selectedTechId = "thermal_2";
+        this.render();
+      }
+    );
+    this.drawTechNode(
+      branch,
+      116,
+      -12,
+      thermal3?.displayName ?? "火电·III",
+      thermal3?.status ?? "locked",
+      false,
+      () => {
+        this.selectedTechId = "thermal_3";
+        this.render();
+      }
+    );
+
+    const detail = this.layer("SelectedTechDetail", this.node, width - 32, 292, 0, top - 478);
+    this.paintRounded(detail, 0, 0, width - 32, 292, 22, new Color(245, 251, 255, 250), new Color(142, 232, 222, 255), 2);
+    if (selected) {
+      const preview = selected.facilityEffectPreview;
+      const statusText = selected.status === "lit"
+        ? "✓ 已点亮"
+        : selected.status === "researching"
+          ? "研发中"
+          : selected.status === "unlocked"
+            ? "可研发"
+            : `公司 ${this.levelRoman(selected.companyLevelMin)} 级或前置未满足`;
+      this.addLabel(detail, selected.displayName, 0, 111, width - 72, 34, 24, BLUE_TEXT, false, 0);
+      this.paintRounded(detail, 111, 111, 100, 30, 15, selected.status === "lit"
+        ? new Color(193, 242, 222, 255)
+        : selected.status === "researching"
+          ? new Color(255, 231, 163, 255)
+          : new Color(211, 238, 247, 255));
+      this.addLabel(detail, statusText, 111, 111, 92, 27, 14, BLUE_TEXT, true);
+      this.addLabel(
+        detail,
+        `立即扣 ${selected.researchCost} · 研发 ${selected.researchMonths} 月 · 不消耗科技点`,
+        0,
+        72,
+        width - 72,
+        26,
+        16,
+        MUTED_TEXT,
+        false,
+        0
+      );
+      this.paintRounded(detail, -84, 15, 144, 80, 16, new Color(233, 246, 252, 255));
+      this.paintRounded(detail, 84, 15, 144, 80, 16, new Color(232, 249, 244, 255));
+      this.addLabel(detail, "现有设施", -84, 36, 116, 23, 15, MUTED_TEXT, true);
+      this.addLabel(
+        detail,
+        preview ? `${this.levelRoman(preview.currentTier)}  →  ${this.levelRoman(preview.unlockedTier)}` : "等待前置",
+        -84,
+        6,
+        122,
+        32,
+        22,
+        BLUE_TEXT,
+        true
+      );
+      this.addLabel(detail, "设施供能", 84, 36, 116, 23, 15, MUTED_TEXT, true);
+      this.addLabel(
+        detail,
+        preview && preview.affectedFacilityCount > 0
+          ? `${preview.currentOutputMw} → ${preview.projectedOutputMw} MW`
+          : "新建设施开放 II 级",
+        84,
+        6,
+        132,
+        32,
+        18,
+        BLUE_TEXT,
+        true
+      );
+      this.addLabel(
+        detail,
+        preview && preview.affectedFacilityCount > 0
+          ? `已建 ${preview.affectedFacilityCount} 座火电自动升级 · 完成当月生效`
+          : "点亮后提高火电可建等级",
+        0,
+        -48,
+        width - 72,
+        27,
+        15,
+        BLUE_TEXT,
+        true
+      );
+      this.addLabel(
+        detail,
+        "M3 点亮  →  同步 tier  →  M4 重算供能",
+        0,
+        -84,
+        width - 72,
+        25,
+        15,
+        MUTED_TEXT,
+        true
+      );
+      if (selected.status === "researching" && active) {
+        this.makeTextButton(
+          detail,
+          `取消研发 · 全额退 ${selected.researchCost}`,
+          0,
+          -122,
+          width - 78,
+          48,
+          new Color(224, 237, 244, 255),
+          BLUE_TEXT,
+          () => this.cancelSelectedResearch(active.researchId),
+          16
+        );
+      }
+    }
+
+    const primaryLabel = selected?.status === "researching"
+      ? `返回城市 · 下一月完成 ${selected.displayName}`
+      : selected?.status === "lit"
+        ? "返回城市 · 查看火电 II 与供能变化"
+        : selected?.status === "unlocked"
+          ? `开始研发 · 扣 ${selected.researchCost}`
+          : "该节点尚未开放";
+    this.makePrimaryButton(
+      this.node,
+      primaryLabel,
+      0,
+      -height / 2 + 48,
+      width - 38,
+      58,
+      selected?.status === "unlocked" || selected?.status === "researching" || selected?.status === "lit",
+      () => {
+        if (selected?.status === "unlocked") this.startSelectedResearch(selected.techId);
+        else this.returnToCityFromTech();
+      }
+    );
+  }
+
+  private drawTechNode(
+    parent: Node,
+    x: number,
+    y: number,
+    label: string,
+    status: "locked" | "unlocked" | "researching" | "lit",
+    selected: boolean,
+    onTap: () => void
+  ): void {
+    const node = this.layer(`TechNode-${label}`, parent, 96, 104, x, y);
+    this.paintRounded(
+      node,
+      0,
+      0,
+      88,
+      98,
+      18,
+      selected ? new Color(220, 247, 248, 255) : new Color(246, 251, 252, 255),
+      selected ? CYAN : new Color(166, 205, 214, 255),
+      selected ? 3 : 1
+    );
+    const frame = status === "locked"
+      ? this.sprites!.techLocked
+      : selected || status === "researching"
+        ? this.sprites!.techSelected
+        : this.sprites!.techNormal;
+    this.addSprite(node, frame, 0, 16, 48, 48);
+    this.addLabel(node, label, 0, -21, 82, 22, 15, BLUE_TEXT, true);
+    this.addLabel(
+      node,
+      status === "lit" ? "已点亮" : status === "researching" ? "研发中" : status === "unlocked" ? "可研发" : "未开放",
+      0,
+      -42,
+      82,
+      20,
+      14,
+      status === "locked" ? MUTED_TEXT : new Color(18, 112, 105, 255),
+      true
+    );
+    this.makeHitTarget(node, onTap);
+  }
+
+  private startSelectedResearch(techId: string): void {
+    const action = this.techScreen.startResearch(techId);
+    if (!action.result.ok) {
+      this.toast = action.uiErrorCode === "insufficient_funds"
+        ? "资金不足，无法开始研发"
+        : "当前不能开始这项研发";
+      this.render();
+      return;
+    }
+    this.toast = "研发已开始 · 费用已扣除";
+    this.render();
+    console.warn(
+      `[PLAYABLE-CORE-03] research started tech=${techId} funds=${action.before.funds}->${action.after.funds} months=${action.after.activeResearch?.monthsRemaining ?? "missing"}`
+    );
+  }
+
+  private cancelSelectedResearch(researchId: string): void {
+    const action = this.techScreen.cancelResearch(researchId);
+    this.toast = action.result.ok ? "研发已取消 · 费用全额返还" : "取消研发失败";
+    this.render();
+    console.warn(
+      `[PLAYABLE-CORE-03] research cancel ok=${action.result.ok} funds=${action.before.funds}->${action.after.funds}`
+    );
+  }
+
+  private returnToCityFromTech(): void {
+    const snapshot = this.techScreen.getSnapshot();
+    const thermal2 = snapshot.technologies.find((item: any) => item.techId === "thermal_2");
+    this.viewMode = "city";
+    this.receipt = null;
+    this.toast = snapshot.activeResearch
+      ? `${thermal2?.displayName ?? "研发"}进行中 · 下一月完成`
+      : thermal2?.status === "lit"
+        ? "火电·II 已点亮并应用到现有设施"
+        : "";
+    this.render();
+    console.warn(
+      `[PLAYABLE-CORE-03] technology closed status=${thermal2?.status ?? "missing"} active=${snapshot.activeResearch?.monthsRemaining ?? 0}`
+    );
+  }
+
   private drawLevelUpModal(detail: any, width: number, height: number): void {
     const blocker = this.layer("CompanyLevelUpBlocker", this.node, width, height, 0, 0);
     this.paintRect(blocker, 0, 0, width, height, new Color(20, 63, 94, 128));
@@ -808,8 +1147,10 @@ export class CityPlayableRoot extends Component {
           this.levelUpDetail = result.value;
         }
         const completion = result.value.projectUpdates.find((update: any) => update.state === "completed");
+        const researchCompletion = result.value.research.completed[0];
+        const tierChange = result.value.research.facilityTierChanges[0];
         console.warn(
-          `[PLAYABLE-CORE-02] month ${result.value.monthTo} settled funds=${signed(result.value.delta.funds)} supply=${signed(result.value.delta.effectiveSupplyMw)} exp=${result.value.growth.expBefore}->${result.value.growth.expAfter} level=${result.value.growth.levelBefore}->${result.value.growth.levelAfter} completion=${completion?.facilityId ?? "none"}`
+          `[PLAYABLE-CORE-03] month ${result.value.monthTo} settled funds=${signed(result.value.delta.funds)} supply=${result.value.before.effectiveSupplyMw}->${result.value.after.effectiveSupplyMw} exp=${result.value.growth.expBefore}->${result.value.growth.expAfter} level=${result.value.growth.levelBefore}->${result.value.growth.levelAfter} construction=${completion?.facilityId ?? "none"} research=${researchCompletion?.techId ?? "none"} tier=${tierChange ? `${tierChange.tierBefore}->${tierChange.tierAfter}` : "none"}`
         );
       }
       this.render();
@@ -818,13 +1159,61 @@ export class CityPlayableRoot extends Component {
 
   private drawMonthReceipt(detail: any, width: number, height: number): void {
     const hudY = height / 2 - 82;
+    const completedResearch = detail.research.completed[0];
+    const tierChange = detail.research.facilityTierChanges[0];
+    if (completedResearch) {
+      const receipt = this.layer("TechnologyCompletionReceipt", this.node, width - 32, 176, 0, hudY - 160);
+      this.paintRounded(receipt, 0, 0, width - 32, 176, 20, new Color(243, 251, 255, 250), new Color(116, 235, 217, 255), 3);
+      this.addSprite(receipt, this.sprites!.techSelected, -142, 57, 42, 42);
+      this.addLabel(receipt, `第${detail.monthTo}月 · 科技完成`, 0, 60, 240, 29, 19, BLUE_TEXT, false, 0);
+      this.addLabel(receipt, `✓ ${completedResearch.displayName} 已点亮`, 8, 25, width - 90, 27, 18, new Color(18, 112, 105, 255), false, 0);
+      this.addLabel(
+        receipt,
+        tierChange
+          ? `现有火电 ${this.levelRoman(tierChange.tierBefore)} → ${this.levelRoman(tierChange.tierAfter)} · 设施 ${tierChange.outputMwBefore} → ${tierChange.outputMwAfter} MW`
+          : "科技效果已应用",
+        8,
+        -8,
+        width - 90,
+        26,
+        16,
+        BLUE_TEXT,
+        false,
+        0
+      );
+      this.addLabel(
+        receipt,
+        `城市供能 ${detail.before.effectiveSupplyMw} → ${detail.after.effectiveSupplyMw} MW (${signed(detail.delta.effectiveSupplyMw)})`,
+        8,
+        -38,
+        width - 90,
+        25,
+        16,
+        BLUE_TEXT,
+        false,
+        0
+      );
+      this.addLabel(
+        receipt,
+        `M3 点亮 → M4 供能重算 · 资金 ${signed(detail.delta.funds)}`,
+        8,
+        -67,
+        width - 90,
+        24,
+        14,
+        MUTED_TEXT,
+        false,
+        0
+      );
+      return;
+    }
     const receipt = this.layer("MonthReceipt", this.node, width - 32, 112, 0, hudY - 126);
     this.paintRounded(receipt, 0, 0, width - 32, 112, 19, new Color(243, 251, 255, 247), new Color(255, 255, 255, 255), 2);
     const update = detail.projectUpdates[0];
     const projectText = update
       ? update.state === "completed"
-        ? `${FACILITY_NAME[update.facilityId as FacilityId]} 已完工 · 当月供能生效`
-        : `${FACILITY_NAME[update.facilityId as FacilityId]} 施工中 · 剩 ${update.monthsLeft}月`
+        ? `${this.facilityName(update.facilityId as FacilityId, update.tier)} 已完工 · 当月供能生效`
+        : `${this.facilityName(update.facilityId as FacilityId, update.tier)} 施工中 · 剩 ${update.monthsLeft}月`
       : "经营稳定";
     this.addLabel(receipt, `第${detail.monthTo}月速报`, -62, 35, 132, 24, 17, BLUE_TEXT, false, 0);
     this.addLabel(receipt, projectText, 26, 8, width - 82, 24, 16, BLUE_TEXT, false, 0);
@@ -880,6 +1269,10 @@ export class CityPlayableRoot extends Component {
     if (reason === "slot_occupied") return "这个建设位已占用";
     if (reason === "slots_full") return "城市建设位已满";
     return "结算中";
+  }
+
+  private facilityName(facilityId: FacilityId, tier = 1): string {
+    return `${FACILITY_NAME[facilityId].split("·")[0]}·${this.levelRoman(tier)}`;
   }
 
   private thumbnailSprite(facilityId: FacilityId): SpriteFrame {

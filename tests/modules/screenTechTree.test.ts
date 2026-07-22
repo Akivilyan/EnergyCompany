@@ -9,6 +9,7 @@ import {
   type RewardedAdRequest
 } from "../../src/infra/monetization/rewardedAdProvider.js";
 import { RunController } from "../../src/modules/runController.js";
+import { createScreenCityDetail } from "../../src/modules/screenCityDetail.js";
 import { createScreenTechTree } from "../../src/modules/screenTechTree.js";
 
 class AsyncOnlyRewardedAdProvider implements RewardedAdProvider {
@@ -75,6 +76,59 @@ describe("ScreenTechTree", () => {
     const after = screen.getSnapshot();
     expect(after.activeResearch).toBeNull();
     expect(after.litTechIds).toContain("wind_2");
+  });
+
+  it("previews and applies thermal II to the existing city facility in one visible route", () => {
+    const controller = createTestController(repoRoot);
+    const city = createScreenCityDetail(controller, "CITY-START");
+    const queued = city.queueConstruction("thermal", 1, "slot-2");
+    expect(queued.ok).toBe(true);
+    if (!queued.ok) return;
+    expect(queued.value.result.ok).toBe(true);
+    expect(city.advanceMonths(3).failed).toBeNull();
+    expect(city.getSnapshot()?.companyLevel).toBe(2);
+
+    const tech = createScreenTechTree(controller);
+    const thermal2 = tech.getSnapshot().technologies.find((item) => item.techId === "thermal_2");
+    expect(thermal2?.status).toBe("unlocked");
+    expect(thermal2?.researchCost).toBe(36);
+    expect(thermal2?.researchMonths).toBe(1);
+    expect(thermal2?.facilityEffectPreview).toEqual({
+      facilityId: "thermal",
+      currentTier: 1,
+      unlockedTier: 2,
+      affectedFacilityCount: 1,
+      currentOutputMw: 220,
+      projectedOutputMw: 440
+    });
+
+    const start = tech.startResearch("thermal_2");
+    expect(start.result.ok).toBe(true);
+    expect(start.after.funds).toBe(start.before.funds - 36);
+    expect(start.after.activeResearch?.monthsRemaining).toBe(1);
+
+    const month = city.advanceOneMonth();
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.research.completed).toEqual([
+      { techId: "thermal_2", displayName: "火电·II" }
+    ]);
+    expect(month.value.research.activeAfter).toBeNull();
+    expect(month.value.research.facilityTierChanges).toEqual([
+      expect.objectContaining({
+        facilityId: "thermal",
+        tierBefore: 1,
+        tierAfter: 2,
+        outputMwBefore: 220,
+        outputMwAfter: 440
+      })
+    ]);
+    expect(month.value.after.effectiveSupplyMw).toBe(440);
+    expect(month.value.after.facilities[0]).toMatchObject({
+      facilityId: "thermal",
+      tier: 2,
+      outputMw: 440
+    });
   });
 
   it("maps speedup ad errors and success for UI", () => {

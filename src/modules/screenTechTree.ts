@@ -1,5 +1,10 @@
 import type { GameState, SimResult } from "../sim/index.js";
-import { getResearchCost, getResearchMonths } from "../sim/index.js";
+import {
+  getFacilityBuildTierMax,
+  getFacilityTierSpec,
+  getResearchCost,
+  getResearchMonths
+} from "../sim/index.js";
 import type { TechnologyTab } from "../sim/config/configRepo.js";
 import type { RewardedAdProvider } from "../infra/monetization/rewardedAdProvider.js";
 import {
@@ -107,6 +112,16 @@ export interface TechTreeNodeSnapshot {
   researchCost: number;
   researchMonths: number;
   effectSummary: string;
+  facilityEffectPreview: TechTreeFacilityEffectPreview | null;
+}
+
+export interface TechTreeFacilityEffectPreview {
+  facilityId: string;
+  currentTier: number;
+  unlockedTier: number;
+  affectedFacilityCount: number;
+  currentOutputMw: number;
+  projectedOutputMw: number;
 }
 
 export interface TechTreeActionOutput {
@@ -220,6 +235,36 @@ function formatTechEffectSummary(tech: {
   return tech.effect_type;
 }
 
+function buildFacilityEffectPreview(
+  state: GameState,
+  config: RunController["config"],
+  tech: {
+    effect_type: string;
+    effect_target: string;
+    effect_value: Record<string, unknown>;
+  }
+): TechTreeFacilityEffectPreview | null {
+  if (tech.effect_type !== "facility_tier") return null;
+  const unlockedTier = readNumberEffect(tech, "tier_max");
+  if (unlockedTier === null) return null;
+  const facilityId = tech.effect_target;
+  const affectedFacilities = Object.values(state.facilities).filter(
+    (facility) => facility.facilityId === facilityId
+  );
+  const currentTier = getFacilityBuildTierMax(state, config, facilityId);
+  const projectedSpec = getFacilityTierSpec(config, facilityId, unlockedTier);
+  return {
+    facilityId,
+    currentTier,
+    unlockedTier,
+    affectedFacilityCount: affectedFacilities.length,
+    currentOutputMw: affectedFacilities.reduce((total, facility) => total + facility.outputMw, 0),
+    projectedOutputMw: projectedSpec
+      ? projectedSpec.outputMw * affectedFacilities.length
+      : affectedFacilities.reduce((total, facility) => total + facility.outputMw, 0)
+  };
+}
+
 export class ScreenTechTree {
   private readonly adRewardService: AdRewardService;
 
@@ -259,7 +304,12 @@ export class ScreenTechTree {
           requiresLit: [...(tech.requires_lit ?? [])],
           researchCost: getResearchCost(this.controller.state, this.controller.config, tech.research_cost),
           researchMonths: getResearchMonths(this.controller.state, this.controller.config, tech.research_months),
-          effectSummary: formatTechEffectSummary(tech)
+          effectSummary: formatTechEffectSummary(tech),
+          facilityEffectPreview: buildFacilityEffectPreview(
+            this.controller.state,
+            this.controller.config,
+            tech
+          )
         };
       })
       .sort((a, b) => a.companyLevelMin - b.companyLevelMin || a.techId.localeCompare(b.techId));

@@ -84,6 +84,28 @@ export interface CityMonthlyAdvanceDetail {
     reachedThreshold: number | null;
     unlocked: CompanyUnlockItem[];
   };
+  research: {
+    activeBefore: CityResearchQueueSnapshot | null;
+    activeAfter: CityResearchQueueSnapshot | null;
+    completed: Array<{ techId: string; displayName: string }>;
+    facilityTierChanges: CityFacilityTierChange[];
+  };
+}
+
+export interface CityResearchQueueSnapshot {
+  researchId: string;
+  techId: string;
+  displayName: string;
+  monthsRemaining: number;
+}
+
+export interface CityFacilityTierChange {
+  facilityInstanceId: string;
+  facilityId: string;
+  tierBefore: number;
+  tierAfter: number;
+  outputMwBefore: number;
+  outputMwAfter: number;
 }
 
 export interface CityConstructionAction {
@@ -141,6 +163,27 @@ function buildProjectUpdates(before: CitySnapshot, after: CitySnapshot): CityPro
       state: "progress" as const,
       monthsLeft: current.monthsRemaining
     };
+  });
+}
+
+function buildFacilityTierChanges(
+  before: CitySnapshot,
+  after: CitySnapshot
+): CityFacilityTierChange[] {
+  const beforeById = new Map(before.facilities.map((facility) => [facility.id, facility]));
+  return after.facilities.flatMap((facility) => {
+    const previous = beforeById.get(facility.id);
+    if (!previous || (previous.tier === facility.tier && previous.outputMw === facility.outputMw)) {
+      return [];
+    }
+    return [{
+      facilityInstanceId: facility.id,
+      facilityId: facility.facilityId,
+      tierBefore: previous.tier,
+      tierAfter: facility.tier,
+      outputMwBefore: previous.outputMw,
+      outputMwAfter: facility.outputMw
+    }];
   });
 }
 
@@ -270,6 +313,8 @@ export class ScreenCityDetail {
   advanceOneMonth(): SimResult<CityMonthlyAdvanceDetail> {
     const before = this.getSnapshot();
     if (!before) return notFoundCity(this.cityId);
+    const activeResearchBefore = Object.values(this.controller.state.researches)[0] ?? null;
+    const litTechIdsBefore = new Set(this.controller.state.litTechIds);
     const settle = this.controller.runNextMonth();
     if (!settle.ok) return settle;
     const after = this.getSnapshot();
@@ -278,6 +323,23 @@ export class ScreenCityDetail {
     const unlocked = levelRows
       .filter((row) => row.level > before.companyLevel && row.level <= after.companyLevel)
       .flatMap((row) => row.newlyUnlocked);
+    const activeResearchAfter = Object.values(this.controller.state.researches)[0] ?? null;
+    const toResearchSnapshot = (
+      research: typeof activeResearchBefore
+    ): CityResearchQueueSnapshot | null => research
+      ? {
+          researchId: research.researchId,
+          techId: research.techId,
+          displayName: this.controller.config.getTechnology(research.techId)?.display_name ?? research.techId,
+          monthsRemaining: research.monthsRemaining
+        }
+      : null;
+    const completed = this.controller.state.litTechIds
+      .filter((techId) => !litTechIdsBefore.has(techId))
+      .map((techId) => ({
+        techId,
+        displayName: this.controller.config.getTechnology(techId)?.display_name ?? techId
+      }));
     return {
       ok: true,
       value: {
@@ -305,6 +367,12 @@ export class ScreenCityDetail {
           reachedThreshold:
             levelRows.find((row) => row.level === after.companyLevel)?.threshold ?? null,
           unlocked
+        },
+        research: {
+          activeBefore: toResearchSnapshot(activeResearchBefore),
+          activeAfter: toResearchSnapshot(activeResearchAfter),
+          completed,
+          facilityTierChanges: buildFacilityTierChanges(before, after)
         }
       }
     };
