@@ -19,9 +19,11 @@ export interface CityViewOptions {
   sprites: SpriteCatalog;
   cityScreen: any;
   techScreen: any;
+  regionScreen: any;
   refresh: () => void;
   openCompany: () => void;
   openTech: () => void;
+  openRegion: () => void;
   showToast: (message: string) => void;
   clearToast: () => void;
   clearReceipt: () => void;
@@ -35,9 +37,11 @@ export interface CityViewOptions {
 export class CityView extends UiFactory {
   private readonly cityScreen: any;
   private readonly techScreen: any;
+  private readonly regionScreen: any;
   private readonly refresh: () => void;
   private readonly openCompany: () => void;
   private readonly openTech: () => void;
+  private readonly openRegion: () => void;
   private readonly showToast: (message: string) => void;
   private readonly clearToast: () => void;
   private readonly clearReceipt: () => void;
@@ -54,9 +58,11 @@ export class CityView extends UiFactory {
     super(options.node, options.sprites);
     this.cityScreen = options.cityScreen;
     this.techScreen = options.techScreen;
+    this.regionScreen = options.regionScreen;
     this.refresh = options.refresh;
     this.openCompany = options.openCompany;
     this.openTech = options.openTech;
+    this.openRegion = options.openRegion;
     this.showToast = options.showToast;
     this.clearToast = options.clearToast;
     this.clearReceipt = options.clearReceipt;
@@ -279,17 +285,20 @@ export class CityView extends UiFactory {
   }
 
   private drawCityEntries(snapshot: any, height: number): void {
-    const y = -height / 2 + 48;
-    this.makeTextButton(this.node, "公司", -145, y, 70, 58, new Color(236, 247, 252, 248), BLUE_TEXT, () => {
+    const y = -height / 2 + 104;
+    this.makeTextButton(this.node, "公司", -122, y, 104, 48, new Color(236, 247, 252, 248), BLUE_TEXT, () => {
       this.openCompany();
       console.warn("[PLAYABLE-CORE-02] company entry opened");
-    }, 17);
+    }, 16);
     const technologyUnlocked = snapshot.companyLevel >= 2;
     const technology = this.techScreen.getSnapshot();
     const thermal2 = technology.technologies.find((item: any) => item.techId === "thermal_2");
+    const regionalTech = technology.technologies.find((item: any) => item.techId === "grid_regional");
     const techEntryLabel = technology.activeResearch
-      ? `科技 · ${technology.activeResearch.monthsRemaining}月`
-      : thermal2?.status === "lit"
+      ? `${technology.activeResearch.techId === "grid_regional" ? "电网" : "科技"} · ${technology.activeResearch.monthsRemaining}月`
+      : regionalTech?.status === "lit"
+        ? "科技 · 电网"
+        : thermal2?.status === "lit"
         ? "科技 · 火电II"
         : technologyUnlocked
           ? "科技 · 已开放"
@@ -297,10 +306,10 @@ export class CityView extends UiFactory {
     this.makeTextButton(
       this.node,
       techEntryLabel,
-      -59,
+      0,
       y,
-      92,
-      58,
+      104,
+      48,
       technologyUnlocked ? new Color(205, 247, 244, 250) : new Color(207, 218, 224, 245),
       technologyUnlocked ? new Color(18, 112, 105, 255) : MUTED_TEXT,
       () => {
@@ -313,10 +322,41 @@ export class CityView extends UiFactory {
       },
       14
     );
+    const region = this.regionScreen.getSnapshot();
+    const regionalLink = region.gridLinks.find((item: any) => item.linkType === "region");
+    const regionLabel = regionalLink?.status === "finished"
+      ? "区域 · 已并网"
+      : regionalLink?.status === "building"
+        ? "区域 · 施工中"
+        : region.canOpen
+          ? "区域 · 已开放"
+          : snapshot.companyLevel < 3
+            ? "区域 · III级"
+            : "区域 · 待研发";
+    this.makeTextButton(
+      this.node,
+      regionLabel,
+      122,
+      y,
+      104,
+      48,
+      region.canOpen ? new Color(205, 247, 244, 250) : new Color(207, 218, 224, 245),
+      region.canOpen ? new Color(18, 112, 105, 255) : MUTED_TEXT,
+      () => {
+        if (region.canOpen) {
+          this.openRegion();
+        } else {
+          this.showToast(region.entryGate === "company_level_3" ? "公司达到 III 级后开放区域电网研发" : "请先在科技页点亮区域电网");
+          this.refresh();
+        }
+        console.warn(`[PLAYABLE-CORE-04] region entry ${region.canOpen ? "opened" : region.entryGate}`);
+      },
+      14
+    );
   }
 
   private drawNextMonthButton(width: number, height: number): void {
-    this.makePrimaryButton(this.node, this.isSettling() ? "结算中…" : "下一月  →", width / 2 - 104, -height / 2 + 48, 178, 58, !this.isSettling(), () => this.advanceMonth());
+    this.makePrimaryButton(this.node, this.isSettling() ? "结算中…" : "下一月  →", 0, -height / 2 + 44, width - 38, 54, !this.isSettling(), () => this.advanceMonth());
   }
 
   private advanceMonth(): void {

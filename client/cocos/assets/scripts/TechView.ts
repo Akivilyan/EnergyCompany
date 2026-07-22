@@ -27,7 +27,8 @@ export class TechView extends UiFactory {
   }
 
   resetSelection(): void {
-    this.selectedTechId = "thermal_2";
+    const snapshot = this.techScreen.getSnapshot();
+    this.selectedTechId = snapshot.companyLevel >= 3 ? "grid_regional" : "thermal_2";
   }
 
   render(width: number, height: number): void {
@@ -35,7 +36,9 @@ export class TechView extends UiFactory {
     const selected = snapshot.technologies.find((item: any) => item.techId === this.selectedTechId);
     const thermal2 = snapshot.technologies.find((item: any) => item.techId === "thermal_2");
     const thermal3 = snapshot.technologies.find((item: any) => item.techId === "thermal_3");
+    const gridRegional = snapshot.technologies.find((item: any) => item.techId === "grid_regional");
     const active = snapshot.activeResearch;
+    const activeTech = snapshot.technologies.find((item: any) => item.techId === active?.techId);
     const top = height / 2;
 
     this.paintRect(this.node, 0, 0, width, height, new Color(18, 104, 136, 255));
@@ -69,7 +72,7 @@ export class TechView extends UiFactory {
     this.addLabel(queue, `${snapshot.funds}`, -111, 20, 70, 28, 18, BLUE_TEXT, false, 0);
     this.addLabel(
       queue,
-      active ? `单队列 · ${thermal2?.displayName ?? active.techId} 研发中` : "单队列空闲 · 0 / 1",
+      active ? `单队列 · ${activeTech?.displayName ?? active.techId} 研发中` : "单队列空闲 · 0 / 1",
       27,
       20,
       width - 134,
@@ -94,17 +97,30 @@ export class TechView extends UiFactory {
 
     const branch = this.layer("ThermalTechBranch", this.node, width - 32, 154, 0, top - 248);
     this.paintRounded(branch, 0, 0, width - 32, 154, 20, new Color(234, 248, 250, 246));
-    this.addLabel(branch, "火电路线 · 本切片代表分支", 0, 58, width - 66, 25, 17, BLUE_TEXT, false, 0);
-    this.paintRect(branch, 0, -2, 232, 4, new Color(111, 188, 199, 180));
-    this.drawTechNode(branch, -116, -12, "火电·I", "lit", false, () => {});
-    this.drawTechNode(branch, 0, -12, thermal2?.displayName ?? "火电·II", thermal2?.status ?? "locked", true, () => {
+    const gridSelected = this.selectedTechId === "grid_regional";
+    this.makeTextButton(branch, "发电技术", -88, 54, 152, 42, gridSelected ? new Color(224, 237, 244, 255) : new Color(205, 247, 244, 255), gridSelected ? MUTED_TEXT : new Color(18, 112, 105, 255), () => {
       this.selectedTechId = "thermal_2";
       this.refresh();
-    });
-    this.drawTechNode(branch, 116, -12, thermal3?.displayName ?? "火电·III", thermal3?.status ?? "locked", false, () => {
-      this.selectedTechId = "thermal_3";
+    }, 15);
+    this.makeTextButton(branch, "电网技术", 88, 54, 152, 42, gridSelected ? new Color(205, 247, 244, 255) : new Color(224, 237, 244, 255), gridSelected ? new Color(18, 112, 105, 255) : MUTED_TEXT, () => {
+      this.selectedTechId = "grid_regional";
       this.refresh();
-    });
+    }, 15);
+    if (gridSelected) {
+      this.paintRect(branch, 0, -21, 72, 4, new Color(111, 188, 199, 180));
+      this.drawTechNode(branch, 0, -25, gridRegional?.displayName ?? "区域电网", gridRegional?.status ?? "locked", true, () => {});
+    } else {
+      this.paintRect(branch, 0, -21, 232, 4, new Color(111, 188, 199, 180));
+      this.drawTechNode(branch, -116, -25, "火电·I", "lit", false, () => {});
+      this.drawTechNode(branch, 0, -25, thermal2?.displayName ?? "火电·II", thermal2?.status ?? "locked", true, () => {
+        this.selectedTechId = "thermal_2";
+        this.refresh();
+      });
+      this.drawTechNode(branch, 116, -25, thermal3?.displayName ?? "火电·III", thermal3?.status ?? "locked", false, () => {
+        this.selectedTechId = "thermal_3";
+        this.refresh();
+      });
+    }
 
     const detail = this.layer("SelectedTechDetail", this.node, width - 32, 292, 0, top - 478);
     this.paintRounded(detail, 0, 0, width - 32, 292, 22, new Color(245, 251, 255, 250), new Color(142, 232, 222, 255), 2);
@@ -117,7 +133,7 @@ export class TechView extends UiFactory {
           : selected.status === "unlocked"
             ? "可研发"
             : `公司 ${this.levelRoman(selected.companyLevelMin)} 级或前置未满足`;
-      this.addLabel(detail, selected.displayName, 0, 111, width - 72, 34, 24, BLUE_TEXT, false, 0);
+      this.addLabel(detail, selected.displayName, -55, 111, width - 182, 34, 24, BLUE_TEXT, false, 0);
       this.paintRounded(detail, 111, 111, 100, 30, 15, selected.status === "lit"
         ? new Color(193, 242, 222, 255)
         : selected.status === "researching"
@@ -125,46 +141,65 @@ export class TechView extends UiFactory {
           : new Color(211, 238, 247, 255));
       this.addLabel(detail, statusText, 111, 111, 92, 27, 14, BLUE_TEXT, true);
       this.addLabel(detail, `立即扣 ${selected.researchCost} · 研发 ${selected.researchMonths} 月 · 不消耗科技点`, 0, 72, width - 72, 26, 16, MUTED_TEXT, false, 0);
-      this.paintRounded(detail, -84, 15, 144, 80, 16, new Color(233, 246, 252, 255));
-      this.paintRounded(detail, 84, 15, 144, 80, 16, new Color(232, 249, 244, 255));
-      this.addLabel(detail, "现有设施", -84, 36, 116, 23, 15, MUTED_TEXT, true);
-      this.addLabel(detail, preview ? `${this.levelRoman(preview.currentTier)}  →  ${this.levelRoman(preview.unlockedTier)}` : "等待前置", -84, 6, 122, 32, 22, BLUE_TEXT, true);
-      this.addLabel(detail, "设施供能", 84, 36, 116, 23, 15, MUTED_TEXT, true);
-      this.addLabel(
-        detail,
-        preview && preview.affectedFacilityCount > 0 ? `${preview.currentOutputMw} → ${preview.projectedOutputMw} MW` : "新建设施开放 II 级",
-        84,
-        6,
-        132,
-        32,
-        18,
-        BLUE_TEXT,
-        true
-      );
-      this.addLabel(
-        detail,
-        preview && preview.affectedFacilityCount > 0 ? `已建 ${preview.affectedFacilityCount} 座火电自动升级 · 完成当月生效` : "点亮后提高火电可建等级",
-        0,
-        -48,
-        width - 72,
-        27,
-        15,
-        BLUE_TEXT,
-        true
-      );
-      this.addLabel(detail, "M3 点亮  →  同步 tier  →  M4 重算供能", 0, -84, width - 72, 25, 15, MUTED_TEXT, true);
+      if (selected.techId === "grid_regional") {
+        const gridRows = [
+          ["权限", "区域地图 + 区内建线"],
+          ["区域线造价", "8 → 6（-25%）"],
+          ["施工规则", "1月 · 固定线损125MW"]
+        ];
+        gridRows.forEach(([label, value], index) => {
+          const y = 31 - index * 44;
+          this.paintRounded(detail, 0, y, width - 72, 36, 12, index === 0 ? new Color(232, 249, 244, 255) : new Color(233, 246, 252, 255));
+          this.addLabel(detail, label, -111, y, 90, 25, 14, MUTED_TEXT, false, 0);
+          this.addLabel(detail, value, 44, y, 214, 25, 16, BLUE_TEXT, false, 0);
+        });
+        this.addLabel(detail, "在建不连通 · 完工后的 M4 按相同满足率调剂", 0, -92, width - 72, 25, 15, BLUE_TEXT, true);
+      } else {
+        this.paintRounded(detail, -84, 15, 144, 80, 16, new Color(233, 246, 252, 255));
+        this.paintRounded(detail, 84, 15, 144, 80, 16, new Color(232, 249, 244, 255));
+        this.addLabel(detail, "现有设施", -84, 36, 116, 23, 15, MUTED_TEXT, true);
+        this.addLabel(detail, preview ? `${this.levelRoman(preview.currentTier)}  →  ${this.levelRoman(preview.unlockedTier)}` : "等待前置", -84, 6, 122, 32, 22, BLUE_TEXT, true);
+        this.addLabel(detail, "设施供能", 84, 36, 116, 23, 15, MUTED_TEXT, true);
+        this.addLabel(
+          detail,
+          preview && preview.affectedFacilityCount > 0 ? `${preview.currentOutputMw} → ${preview.projectedOutputMw} MW` : "新建设施开放 II 级",
+          84,
+          6,
+          132,
+          32,
+          18,
+          BLUE_TEXT,
+          true
+        );
+        this.addLabel(
+          detail,
+          preview && preview.affectedFacilityCount > 0 ? `已建 ${preview.affectedFacilityCount} 座火电自动升级 · 完成当月生效` : "点亮后提高火电可建等级",
+          0,
+          -48,
+          width - 72,
+          27,
+          15,
+          BLUE_TEXT,
+          true
+        );
+        this.addLabel(detail, "M3 点亮  →  同步 tier  →  M4 重算供能", 0, -84, width - 72, 25, 15, MUTED_TEXT, true);
+      }
       if (selected.status === "researching" && active) {
-        this.makeTextButton(detail, `取消研发 · 全额退 ${selected.researchCost}`, 0, -122, width - 78, 48, new Color(224, 237, 244, 255), BLUE_TEXT, () => this.cancelSelectedResearch(active.researchId), 16);
+        this.makeTextButton(detail, `取消研发 · 全额退 ${selected.researchCost}`, 0, -122, width - 78, 44, new Color(224, 237, 244, 255), BLUE_TEXT, () => this.cancelSelectedResearch(active.researchId), 16);
       }
     }
 
     const primaryLabel = selected?.status === "researching"
-      ? `返回城市 · 下一月完成 ${selected.displayName}`
+      ? `返回城市 · 推进 ${active?.monthsRemaining ?? selected.researchMonths} 月完成`
       : selected?.status === "lit"
-        ? "返回城市 · 查看火电 II 与供能变化"
+        ? selected.techId === "grid_regional"
+          ? "返回城市 · 打开区域地图"
+          : "返回城市 · 查看火电 II 与供能变化"
         : selected?.status === "unlocked"
           ? `开始研发 · 扣 ${selected.researchCost}`
-          : "该节点尚未开放";
+          : selected?.techId === "grid_regional"
+            ? "公司达到 III 级后开放"
+            : "该节点尚未开放";
     this.makePrimaryButton(
       this.node,
       primaryLabel,
@@ -223,13 +258,16 @@ export class TechView extends UiFactory {
 
   private close(): void {
     const snapshot = this.techScreen.getSnapshot();
-    const thermal2 = snapshot.technologies.find((item: any) => item.techId === "thermal_2");
+    const selected = snapshot.technologies.find((item: any) => item.techId === this.selectedTechId);
+    const active = snapshot.technologies.find((item: any) => item.techId === snapshot.activeResearch?.techId);
     const toast = snapshot.activeResearch
-      ? `${thermal2?.displayName ?? "研发"}进行中 · 下一月完成`
-      : thermal2?.status === "lit"
-        ? "火电·II 已点亮并应用到现有设施"
+      ? `${active?.displayName ?? "研发"}进行中 · 剩 ${snapshot.activeResearch.monthsRemaining} 月`
+      : selected?.techId === "grid_regional" && selected.status === "lit"
+        ? "区域电网已点亮 · 区域地图入口已开放"
+        : selected?.status === "lit"
+          ? `${selected.displayName} 已点亮并应用`
         : "";
     this.returnToCity(toast);
-    console.warn(`[PLAYABLE-CORE-03] technology closed status=${thermal2?.status ?? "missing"} active=${snapshot.activeResearch?.monthsRemaining ?? 0}`);
+    console.warn(`[PLAYABLE-CORE-04] technology closed selected=${selected?.techId ?? "missing"} status=${selected?.status ?? "missing"} active=${snapshot.activeResearch?.monthsRemaining ?? 0}`);
   }
 }

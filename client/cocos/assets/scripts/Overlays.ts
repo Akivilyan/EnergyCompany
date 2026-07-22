@@ -79,8 +79,9 @@ export class Overlays extends UiFactory {
     this.addLabel(modal, "为何升级", 0, 41, width - 76, 24, 16, MUTED_TEXT, false, 0);
     this.addLabel(modal, `M9 EXP ${detail.growth.expBefore} → ${detail.growth.expAfter} · 达到门槛 ${detail.growth.reachedThreshold}`, 0, 10, width - 76, 26, 16, BLUE_TEXT, false, 0);
     this.addLabel(modal, "本次解锁", 0, -35, width - 76, 26, 18, BLUE_TEXT, false, 0);
-    this.addLabel(modal, "✓ 科技研发入口", 0, -70, width - 76, 25, 17, new Color(18, 112, 105, 255), false, 0);
-    this.addLabel(modal, "✓ 起始省新增 2 座可经营城市", 0, -103, width - 76, 25, 16, BLUE_TEXT, false, 0);
+    const reachedRegionalLevel = detail.growth.levelAfter >= 3 && detail.growth.levelBefore < 3;
+    this.addLabel(modal, reachedRegionalLevel ? "✓ 区域电网研发节点" : "✓ 科技研发入口", 0, -70, width - 76, 25, 17, new Color(18, 112, 105, 255), false, 0);
+    this.addLabel(modal, reachedRegionalLevel ? "✓ 点亮后开放区域地图与区内建线" : "✓ 起始省新增 2 座可经营城市", 0, -103, width - 76, 25, 16, BLUE_TEXT, false, 0);
     this.addLabel(modal, "等级与这些解锁不会因 EXP 回落而失去", 0, -140, width - 72, 24, 15, MUTED_TEXT, true);
     this.makePrimaryButton(modal, "查看公司成长与下一步", 0, -184, width - 74, 58, true, () => {
       this.levelUpDetail = null;
@@ -95,6 +96,7 @@ export class Overlays extends UiFactory {
     const completedResearch = detail.research.completed[0];
     const tierChange = detail.research.facilityTierChanges[0];
     if (completedResearch) {
+      const regionalGridCompleted = completedResearch.techId === "grid_regional";
       const receipt = this.layer("TechnologyCompletionReceipt", this.node, width - 32, 176, 0, hudY - 160);
       this.paintRounded(receipt, 0, 0, width - 32, 176, 20, new Color(243, 251, 255, 250), new Color(116, 235, 217, 255), 3);
       this.addSprite(receipt, this.sprites.techSelected, -142, 57, 42, 42);
@@ -102,7 +104,9 @@ export class Overlays extends UiFactory {
       this.addLabel(receipt, `✓ ${completedResearch.displayName} 已点亮`, 8, 25, width - 90, 27, 18, new Color(18, 112, 105, 255), false, 0);
       this.addLabel(
         receipt,
-        tierChange
+        regionalGridCompleted
+          ? "区域地图与区内建线权限已开放 · 区域线造价 -25%"
+          : tierChange
           ? `现有火电 ${this.levelRoman(tierChange.tierBefore)} → ${this.levelRoman(tierChange.tierAfter)} · 设施 ${tierChange.outputMwBefore} → ${tierChange.outputMwAfter} MW`
           : "科技效果已应用",
         8,
@@ -114,8 +118,8 @@ export class Overlays extends UiFactory {
         false,
         0
       );
-      this.addLabel(receipt, `城市供能 ${detail.before.effectiveSupplyMw} → ${detail.after.effectiveSupplyMw} MW (${signed(detail.delta.effectiveSupplyMw)})`, 8, -38, width - 90, 25, 16, BLUE_TEXT, false, 0);
-      this.addLabel(receipt, `M3 点亮 → M4 供能重算 · 资金 ${signed(detail.delta.funds)}`, 8, -67, width - 90, 24, 14, MUTED_TEXT, false, 0);
+      this.addLabel(receipt, regionalGridCompleted ? "城市底部的“区域”入口已经刷新，可以选择两城建线" : `城市供能 ${detail.before.effectiveSupplyMw} → ${detail.after.effectiveSupplyMw} MW (${signed(detail.delta.effectiveSupplyMw)})`, 8, -38, width - 90, 25, 16, BLUE_TEXT, false, 0);
+      this.addLabel(receipt, regionalGridCompleted ? `M3 点亮 → 区域权限生效 · 资金 ${signed(detail.delta.funds)}` : `M3 点亮 → M4 供能重算 · 资金 ${signed(detail.delta.funds)}`, 8, -67, width - 90, 24, 14, MUTED_TEXT, false, 0);
       return;
     }
     const receipt = this.layer("MonthReceipt", this.node, width - 32, 112, 0, hudY - 126);

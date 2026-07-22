@@ -10,19 +10,21 @@ import {
 import {
   clearMountedGameClient,
   ensureChineseDefaultForDev,
-  mountGameClient
+  mountGameClient,
+  setMountedGameClient
 } from "../shared/game-client.mjs";
 import { CityView } from "./CityView";
 import { CompanyView } from "./CompanyView";
 import { loadPlayableConfig } from "./loadPlayableConfig";
 import { Overlays } from "./Overlays";
 import { loadSpriteCatalog } from "./PlayableAssets";
+import { RegionView } from "./RegionView";
 import { TechView } from "./TechView";
 import { renderFatalUi } from "./UiFactory";
 
 const { ccclass } = _decorator;
 
-type ViewMode = "city" | "company" | "tech";
+type ViewMode = "city" | "company" | "tech" | "region";
 
 @ccclass("CityPlayableRoot")
 export class CityPlayableRoot extends Component {
@@ -30,6 +32,7 @@ export class CityPlayableRoot extends Component {
   private cityView: CityView | null = null;
   private companyView: CompanyView | null = null;
   private techView: TechView | null = null;
+  private regionView: RegionView | null = null;
   private overlays: Overlays | null = null;
 
   onLoad(): void {
@@ -49,9 +52,11 @@ export class CityPlayableRoot extends Component {
         loadSpriteCatalog()
       ]);
       const client = mountGameClient({ configRepo });
+      setMountedGameClient(client);
       const cityScreen = client.app.screens.city("CITY-START");
       const companyScreen = client.app.screens.company;
       const techScreen = client.app.screens.tech;
+      const regionScreen = client.app.screens.region("MAP-01");
 
       this.overlays = new Overlays({
         node: this.node,
@@ -64,9 +69,11 @@ export class CityPlayableRoot extends Component {
         sprites,
         cityScreen,
         techScreen,
+        regionScreen,
         refresh: () => this.render(),
         openCompany: () => this.showCompany(true),
         openTech: () => this.showTech(),
+        openRegion: () => this.showRegion(),
         showToast: (message) => this.overlays!.setToast(message),
         clearToast: () => this.overlays!.clearToast(),
         clearReceipt: () => this.overlays!.clearReceipt(),
@@ -90,10 +97,18 @@ export class CityPlayableRoot extends Component {
         showToast: (message) => this.overlays!.setToast(message),
         returnToCity: (toast) => this.showCity(toast)
       });
+      this.regionView = new RegionView({
+        node: this.node,
+        sprites,
+        regionScreen,
+        refresh: () => this.render(),
+        showToast: (message) => this.overlays!.setToast(message),
+        returnToCity: (toast) => this.showCity(toast)
+      });
 
       this.render();
-      log("[PLAYABLE-CORE-03] ready v2: technology research and visible effect slice");
-      console.warn("[PLAYABLE-CORE-03] ready v2");
+      log("[PLAYABLE-CORE-04] ready v1: representative regional grid slice");
+      console.warn("[PLAYABLE-CORE-04] ready v1");
     } catch (mountError) {
       const message = mountError instanceof Error ? mountError.message : String(mountError);
       logError("[PLAYABLE-CORE-01] mount failed", mountError);
@@ -125,8 +140,16 @@ export class CityPlayableRoot extends Component {
     this.render();
   }
 
+  private showRegion(): void {
+    this.viewMode = "region";
+    this.overlays?.clearReceipt();
+    this.overlays?.clearToast();
+    this.regionView?.resetSelection();
+    this.render();
+  }
+
   private render(): void {
-    if (!this.cityView || !this.companyView || !this.techView || !this.overlays) return;
+    if (!this.cityView || !this.companyView || !this.techView || !this.regionView || !this.overlays) return;
     this.node.removeAllChildren();
     const size = view.getVisibleSize();
     const width = size.width;
@@ -139,6 +162,16 @@ export class CityPlayableRoot extends Component {
     }
     if (this.viewMode === "tech") {
       this.techView.render(width, height);
+      this.overlays.render(width, height, {
+        receipt: false,
+        toast: true,
+        settling: false,
+        levelUp: false
+      });
+      return;
+    }
+    if (this.viewMode === "region") {
+      this.regionView.render(width, height);
       this.overlays.render(width, height, {
         receipt: false,
         toast: true,

@@ -43,7 +43,7 @@ export class CompanyView extends UiFactory {
       48,
       new Color(236, 248, 252, 248),
       BLUE_TEXT,
-      () => this.returnToCity(growth.entries.technology.unlocked ? "科技入口已按公司 II 级刷新" : ""),
+      () => this.returnToCity(company.gridRegionalLit ? "区域地图入口已开放" : growth.level >= 3 ? "区域电网研发节点已开放" : growth.entries.technology.unlocked ? "科技入口已按公司 II 级刷新" : ""),
       31
     );
     this.addLabel(this.node, "公司成长", -38, top - 43, 150, 36, 25, WHITE, false, 0);
@@ -104,8 +104,12 @@ export class CompanyView extends UiFactory {
     const unlockY = top - 500;
     const unlock = this.layer("CurrentUnlocks", this.node, width - 32, 158, 0, unlockY);
     this.paintRounded(unlock, 0, 0, width - 32, 158, 20, new Color(239, 250, 247, 248), new Color(138, 231, 211, 255), 2);
-    this.addLabel(unlock, growth.level >= 2 ? "II 级已解锁" : "下一等级将解锁", 0, 53, width - 76, 28, 19, BLUE_TEXT, false, 0);
-    if (growth.level >= 2) {
+    this.addLabel(unlock, growth.level >= 3 ? "III 级区域能力" : growth.level >= 2 ? "II 级已解锁" : "下一等级将解锁", 0, 53, width - 76, 28, 19, BLUE_TEXT, false, 0);
+    if (growth.level >= 3) {
+      this.addLabel(unlock, "✓ 区域电网研发节点", 0, 16, width - 76, 26, 17, new Color(18, 112, 105, 255), false, 0);
+      this.addLabel(unlock, company.gridRegionalLit ? "✓ 区域地图与区内建线入口" : "○ 点亮区域电网后开放地图入口", 0, -17, width - 76, 26, 16, BLUE_TEXT, false, 0);
+      this.addLabel(unlock, company.gridRegionalLit ? "下一步：返回城市，进入区域地图" : "下一步：返回城市，进入科技 → 电网技术", 0, -52, width - 76, 26, 16, MUTED_TEXT, false, 0);
+    } else if (growth.level >= 2) {
       this.addLabel(unlock, "✓ 科技研发入口", 0, 16, width - 76, 26, 17, new Color(18, 112, 105, 255), false, 0);
       this.addLabel(unlock, "✓ 起始省新增 2 座可经营城市", 0, -17, width - 76, 26, 16, BLUE_TEXT, false, 0);
       this.addLabel(unlock, "下一步：返回城市，进入科技研发", 0, -52, width - 76, 26, 16, MUTED_TEXT, false, 0);
@@ -116,14 +120,14 @@ export class CompanyView extends UiFactory {
 
     this.makePrimaryButton(
       this.node,
-      growth.entries.technology.unlocked ? "返回城市 · 查看已开放科技入口" : "返回城市继续经营",
+      company.gridRegionalLit ? "返回城市 · 打开区域地图" : growth.level >= 3 ? "返回城市 · 研发区域电网" : growth.entries.technology.unlocked ? "返回城市 · 查看已开放科技入口" : "返回城市继续经营",
       0,
       -height / 2 + 48,
       width - 38,
       58,
       true,
       () => {
-        this.returnToCity(growth.entries.technology.unlocked ? "科技研发入口已开放" : "");
+        this.returnToCity(company.gridRegionalLit ? "区域地图入口已开放" : growth.level >= 3 ? "区域电网研发节点已开放" : growth.entries.technology.unlocked ? "科技研发入口已开放" : "");
         console.warn(
           `[PLAYABLE-CORE-02] company closed level=${growth.levelRoman} exp=${growth.expCurrent}`
         );

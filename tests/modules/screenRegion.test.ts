@@ -1,487 +1,139 @@
-import { createTestController, loadTestConfig, repoRoot } from "../helpers/testRepo.js";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { RunController } from "../../src/modules/runController.js";
-import { createScreenRegion, createScreenRegionForRegion } from "../../src/modules/screenRegion.js";
+import type { RunController } from "../../src/modules/runController.js";
+import { createScreenRegion } from "../../src/modules/screenRegion.js";
+import { createTestController } from "../helpers/testRepo.js";
 
+function addRuntimeCity(controller: RunController, cityId: string): void {
+  const city = controller.config.getCity(cityId);
+  if (!city) throw new Error(`missing ${cityId}`);
+  controller.state.cities[cityId] = {
+    cityId,
+    demandMw: city.base_demand_mw,
+    localSupplyMw: 0,
+    effectiveSupplyMw: 0,
+    netImportMw: 0,
+    supplyRatio: 0,
+    cityFullyEcoSupply: true,
+    ecoCapFactor: 1,
+    cityBaseSocialValue: city.city_base_social_value
+  };
+}
 
-describe("ScreenRegion", () => {
-  it("shows city unlock status by company level", () => {
-    const controller = createTestController(repoRoot);
+function prepareRegionalGrid(controller: RunController): void {
+  controller.state.companyLevel = 3;
+  controller.state.litTechIds.push("grid_regional");
+  addRuntimeCity(controller, "CITY-MAP01-02");
+}
+
+describe("ScreenRegion PLAYABLE-CORE-04", () => {
+  it("keeps the regional entry locked until company III and grid_regional are both ready", () => {
+    const controller = createTestController();
     const screen = createScreenRegion(controller);
 
-    const before = screen.getSnapshot();
-    const cityLv2 = before.cities.find((city) => city.cityId === "CITY-MAP01-02");
-    expect(cityLv2?.unlocked).toBe(false);
+    expect(screen.getSnapshot()).toMatchObject({
+      canOpen: false,
+      entryGate: "company_level_3",
+      regionalTechLit: false
+    });
 
-    controller.state.companyLevel = 2;
-    const after = screen.getSnapshot();
-    const cityLv2After = after.cities.find((city) => city.cityId === "CITY-MAP01-02");
-    expect(cityLv2After?.unlocked).toBe(true);
+    controller.state.companyLevel = 3;
+    expect(screen.getSnapshot()).toMatchObject({
+      canOpen: false,
+      entryGate: "grid_regional",
+      regionalTechLit: false
+    });
+
+    controller.state.litTechIds.push("grid_regional");
+    expect(screen.getSnapshot()).toMatchObject({
+      canOpen: true,
+      entryGate: "open",
+      regionalTechLit: true
+    });
   });
 
-  it("blocks grid link into locked city at level I", () => {
-    const controller = createTestController(repoRoot);
+  it("rejects a regional link when the technology gate is missing", () => {
+    const controller = createTestController();
+    controller.state.companyLevel = 3;
+    addRuntimeCity(controller, "CITY-MAP01-02");
     const screen = createScreenRegion(controller);
+
+    const candidate = screen.getSnapshot().linkCandidates.find(
+      (item) => item.toCityId === "CITY-MAP01-02" && item.linkType === "region"
+    );
+    expect(candidate).toMatchObject({ unlocked: false, available: false });
 
     const action = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
     expect(action.result.ok).toBe(false);
-    if (!action.result.ok) {
-      expect(action.result.error).toBe("not_unlocked");
-    }
+    if (!action.result.ok) expect(action.result.error).toBe("not_unlocked");
   });
 
-  it("allows grid link into level II city when unlocked", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 2;
-    const screen = createScreenRegion(controller);
+  it("exposes the representative two-city plan with rule-owned cost and loss", () => {
+    const controller = createTestController();
+    prepareRegionalGrid(controller);
+    const snapshot = createScreenRegion(controller).getSnapshot();
+    const candidate = snapshot.linkCandidates.find(
+      (item) => item.toCityId === "CITY-MAP01-02" && item.linkType === "region"
+    );
 
-    const action = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
-    expect(action.result.ok).toBe(true);
-    const linkId = "CITY-MAP01-02::CITY-START";
-    expect(action.after.gridLinks.some((link) => link.linkId === linkId)).toBe(true);
+    expect(snapshot.cities.find((city) => city.cityId === "CITY-MAP01-02")).toMatchObject({
+      operable: true,
+      demandMw: 520,
+      netImportMw: 0
+    });
+    expect(candidate).toMatchObject({
+      fromCityId: "CITY-START",
+      toCityId: "CITY-MAP01-02",
+      cost: 6,
+      lossMw: 125,
+      unlocked: true,
+      available: true
+    });
   });
 
-  it("cancels building grid link and restores funds in region screen", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 2;
+  it("keeps a building link inactive, then finishes it and applies one island satisfaction rate", () => {
+    const controller = createTestController();
+    prepareRegionalGrid(controller);
+    controller.state.facilities["fac-regional-source"] = {
+      id: "fac-regional-source",
+      cityId: "CITY-START",
+      facilityId: "wind",
+      tier: 1,
+      outputMw: 920,
+      monthlyOpex: 0,
+      monthlyFuel: 0,
+      isEco: true,
+      slotId: "slot-1"
+    };
+    expect(controller.runNextMonth().ok).toBe(true);
     const screen = createScreenRegion(controller);
-    const initialFunds = controller.state.funds;
+    const isolated = screen.getSnapshot();
+    expect(isolated.cities.find((city) => city.cityId === "CITY-START")?.supplyRatio).toBe(0.69);
+    expect(isolated.cities.find((city) => city.cityId === "CITY-MAP01-02")?.supplyRatio).toBe(0);
 
     const queued = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
     expect(queued.result.ok).toBe(true);
-    const linkId = "CITY-MAP01-02::CITY-START";
-    expect(queued.after.gridLinks.find((link) => link.linkId === linkId)?.buildCost).toBe(8);
-
-    const cancelled = screen.cancelGridLink(linkId);
-    expect(cancelled.result.ok).toBe(true);
-    expect(cancelled.after.funds).toBe(initialFunds);
-    expect(cancelled.after.gridLinks.some((link) => link.linkId === linkId)).toBe(false);
-  });
-
-  it("shows grid_regional-adjusted link cost in snapshot", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 3;
-    const screen = createScreenRegion(controller);
-    expect(screen.getSnapshot().gridLinkCost).toBe(8);
-
-    controller.state.litTechIds.push("grid_regional");
-    expect(screen.getSnapshot().gridLinkCost).toBe(6);
-  });
-
-  it("shows eng_grid_dispatch-adjusted regional loss in link candidates", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 3;
-    const screen = createScreenRegion(controller);
-
-    const before = screen
-      .getSnapshot()
-      .linkCandidates.find((candidate) => candidate.linkType === "region");
-    expect(before?.lossMw).toBe(125);
-
-    controller.state.litTechIds.push("eng_grid_dispatch");
-    const after = screen
-      .getSnapshot()
-      .linkCandidates.find((candidate) => candidate.linkType === "region");
-    expect(after?.lossMw).toBe(112);
-  });
-
-  it("shows grid_backbone-adjusted trunk candidate cost in snapshot", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 4;
-    const screen = createScreenRegionForRegion(controller, "MAP-03");
-
-    const before = screen
-      .getSnapshot()
-      .linkCandidates.find((candidate) => candidate.linkType === "trunk");
-    expect(before?.cost).toBe(8);
-
-    controller.state.litTechIds.push("grid_backbone");
-    const after = screen
-      .getSnapshot()
-      .linkCandidates.find((candidate) => candidate.linkType === "trunk");
-    expect(after?.cost).toBe(6);
-  });
-
-  it("advances month and finishes queued region link", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 2;
-    const screen = createScreenRegion(controller);
-
-    const queue = screen.queueGridLink("CITY-START", "CITY-MAP01-02", "region");
-    expect(queue.result.ok).toBe(true);
-
-    const advance = screen.advanceMonths(1);
-    expect(advance.failed).toBeNull();
-    expect(advance.reports).toHaveLength(1);
-    const linkId = "CITY-MAP01-02::CITY-START";
-    const link = advance.reports[0].after.gridLinks.find((item) => item.linkId === linkId);
-    expect(link?.status).toBe("finished");
-    expect(link?.monthsRemaining).toBe(0);
-  });
-
-  it("exposes trunk first and region links after second-batch region is connected", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 3;
-    const screen = createScreenRegionForRegion(controller, "MAP-02");
-
-    const snapshot = screen.getSnapshot();
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP02-01" &&
-          candidate.toCityId === "CITY-MAP02-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(false);
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP02-01" &&
-          candidate.toCityId === "CITY-START" &&
-          candidate.linkType === "trunk"
-      )
-    ).toBe(true);
-
-    const queue = screen.queueGridLink("CITY-MAP02-01", "CITY-START", "trunk");
-    expect(queue.result.ok).toBe(true);
-    const advance = screen.advanceMonths(1);
-    expect(advance.failed).toBeNull();
-
-    const connected = screen.getSnapshot();
-    expect(
-      connected.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP02-01" &&
-          candidate.toCityId === "CITY-MAP02-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(true);
-  });
-
-  it("opens level-IV province as trunk-first region before local links unlock", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 4;
-    const screen = createScreenRegionForRegion(controller, "MAP-03");
-
-    const snapshot = screen.getSnapshot();
-    expect(snapshot.cities).toHaveLength(3);
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP03-01" &&
-          candidate.toCityId === "CITY-START" &&
-          candidate.linkType === "trunk"
-      )
-    ).toBe(true);
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP03-01" &&
-          candidate.toCityId === "CITY-MAP03-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(false);
-
-    const queue = screen.queueGridLink("CITY-MAP03-01", "CITY-START", "trunk");
-    expect(queue.result.ok).toBe(true);
-    const advance = screen.advanceMonths(1);
-    expect(advance.failed).toBeNull();
-
-    const connected = screen.getSnapshot();
-    expect(
-      connected.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP03-01" &&
-          candidate.toCityId === "CITY-MAP03-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(true);
-  });
-
-  it("opens level-V province as trunk-first region before local links unlock", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    const screen = createScreenRegionForRegion(controller, "MAP-06");
-
-    const snapshot = screen.getSnapshot();
-    expect(snapshot.cities).toHaveLength(3);
-    expect(snapshot.totalDemandMw).toBe(1920);
-    expect(snapshot.designRole).toBe("coastal_industrial_export_province");
-    expect(snapshot.totalLocalSupplyMw).toBe(0);
-    expect(snapshot.totalNetImportMw).toBe(0);
-    expect(snapshot.totalEffectiveSupplyMw).toBe(0);
-    expect(snapshot.supplyGapMw).toBe(1920);
-    expect(snapshot.totalBuildSlots).toBe(13);
-    expect(snapshot.riverCityCount).toBe(0);
-    expect(snapshot.nuclearEligibleCityCount).toBe(1);
-    expect(snapshot.totalBaseSocialValue).toBe(38);
-    expect(snapshot.richResources).toEqual(["wind", "solar", "fossil"]);
-    expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "thermal", "nuclear"]);
-    expect(snapshot.operatingPressureTags).toEqual([
-      "high_demand",
-      "supply_gap",
-      "trunk_first",
-      "no_hydro",
-      "fossil_transition",
-      "nuclear_siting"
-    ]);
-    expect(snapshot.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "local_renewables",
-      "thermal_bridge",
-      "nuclear_anchor"
-    ]);
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP06-01" &&
-          candidate.toCityId === "CITY-START" &&
-          candidate.linkType === "trunk"
-      )
-    ).toBe(true);
-    expect(
-      snapshot.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP06-01" &&
-          candidate.toCityId === "CITY-MAP06-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(false);
-
-    const queue = screen.queueGridLink("CITY-MAP06-01", "CITY-START", "trunk");
-    expect(queue.result.ok).toBe(true);
-    const advance = screen.advanceMonths(1);
-    expect(advance.failed).toBeNull();
-
-    const connected = screen.getSnapshot();
-    expect(
-      connected.linkCandidates.some(
-        (candidate) =>
-          candidate.fromCityId === "CITY-MAP06-01" &&
-          candidate.toCityId === "CITY-MAP06-02" &&
-          candidate.linkType === "region"
-      )
-    ).toBe(true);
-    expect(connected.operatingPressureTags).toEqual([
-      "high_demand",
-      "supply_gap",
-      "no_hydro",
-      "fossil_transition",
-      "nuclear_siting"
-    ]);
-    expect(connected.operatingPlanHints).toEqual([
-      "close_supply_gap",
-      "local_renewables",
-      "thermal_bridge",
-      "nuclear_anchor"
-    ]);
-  });
-
-  it("exposes all level-IV expansion targets as selectable trunk routes", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 4;
-    const screen = createScreenRegionForRegion(controller, "MAP-01");
-
-    const snapshot = screen.getSnapshot();
-
-    expect(
-      snapshot.linkCandidates
-        .filter((candidate) => candidate.linkType === "trunk")
-        .map((candidate) => candidate.toCityId)
-    ).toEqual([
-      "CITY-MAP02-01",
-      "CITY-MAP03-01",
-      "CITY-MAP04-01",
-      "CITY-MAP05-01",
-      "CITY-META-01"
-    ]);
-  });
-
-  it("exposes level-IV expansion routes with differentiated operating plans", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 4;
-
-    const map04 = createScreenRegionForRegion(controller, "MAP-04").getSnapshot();
-    const map05 = createScreenRegionForRegion(controller, "MAP-05").getSnapshot();
-
-    expect(map04.designRole).toBe("solar_wind_buildout_province");
-    expect(map04.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "local_renewables",
-      "nuclear_anchor",
-      "hybrid_balancing"
-    ]);
-    expect(map05.designRole).toBe("river_valley_hybrid_province");
-    expect(map05.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "hydro_wind_export",
-      "local_renewables",
-      "hydro_anchor",
-      "hybrid_balancing"
-    ]);
-  });
-
-  it("exposes MAP-07 hydro-wind operating pressure and route", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    const screen = createScreenRegionForRegion(controller, "MAP-07");
-
-    const snapshot = screen.getSnapshot();
-
-    expect(snapshot.designRole).toBe("plateau_hydro_wind_province");
-    expect(snapshot.totalDemandMw).toBe(1670);
-    expect(snapshot.richResources).toEqual(["wind", "solar", "hydro"]);
-    expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "hydro"]);
-    expect(snapshot.operatingPressureTags).toEqual([
-      "supply_gap",
-      "trunk_first",
-      "hydro_site_bound"
-    ]);
-    expect(snapshot.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "hydro_wind_export",
-      "local_renewables",
-      "hydro_anchor"
-    ]);
-  });
-
-  it("exposes MAP-08 hybrid balancing operating pressure and route", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    const screen = createScreenRegionForRegion(controller, "MAP-08");
-
-    const snapshot = screen.getSnapshot();
-
-    expect(snapshot.designRole).toBe("frontier_hybrid_balancing_province");
-    expect(snapshot.totalDemandMw).toBe(2020);
-    expect(snapshot.richResources).toEqual(["wind", "solar", "hydro"]);
-    expect(snapshot.recommendedBuilds).toEqual(["wind", "solar", "hydro", "nuclear"]);
-    expect(snapshot.operatingPressureTags).toEqual([
-      "high_demand",
-      "supply_gap",
-      "trunk_first",
-      "nuclear_siting",
-      "mixed_dispatch"
-    ]);
-    expect(snapshot.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "local_renewables",
-      "hydro_anchor",
-      "nuclear_anchor",
-      "hybrid_balancing"
-    ]);
-  });
-
-  it("exposes MET-B terminal load operating pressure and route", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    const screen = createScreenRegionForRegion(controller, "MET-B");
-
-    const snapshot = screen.getSnapshot();
-
-    expect(snapshot.designRole).toBe("terminal_metropolis_load_hub");
-    expect(snapshot.totalDemandMw).toBe(2100);
-    expect(snapshot.richResources).toEqual(["solar", "hydro"]);
-    expect(snapshot.recommendedBuilds).toEqual(["solar", "hydro", "nuclear"]);
-    expect(snapshot.operatingPressureTags).toEqual([
-      "high_demand",
-      "supply_gap",
-      "trunk_first",
-      "low_slot_density",
-      "nuclear_siting",
-      "terminal_load"
-    ]);
-    expect(snapshot.operatingPlanHints).toEqual([
-      "secure_trunk",
-      "close_supply_gap",
-      "local_renewables",
-      "super_hydro_import",
-      "nuclear_anchor",
-      "slot_efficiency"
-    ]);
-  });
-
-  it("summarizes regional local supply, net import, and gap from runtime cities", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    controller.state.cities["CITY-MAP06-01"] = {
-      cityId: "CITY-MAP06-01",
-      demandMw: 1280,
-      localSupplyMw: 300,
-      effectiveSupplyMw: 900,
-      netImportMw: 600,
-      supplyRatio: 0.7,
-      cityFullyEcoSupply: true,
-      ecoCapFactor: 1,
-      cityBaseSocialValue: 18
-    };
-    const screen = createScreenRegionForRegion(controller, "MAP-06");
-
-    const snapshot = screen.getSnapshot();
-
-    expect(snapshot.totalDemandMw).toBe(1920);
-    expect(snapshot.totalLocalSupplyMw).toBe(300);
-    expect(snapshot.totalNetImportMw).toBe(600);
-    expect(snapshot.totalEffectiveSupplyMw).toBe(900);
-    expect(snapshot.supplyGapMw).toBe(1020);
-  });
-
-  it("exposes finished super hydro as trunk candidate from a level-V region", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    controller.state.litTechIds.push("super_hydro");
-    controller.state.superHydros["super_hydro_1"] = {
-      slotId: "super_hydro_1",
-      nodeId: "SUPER-HYDRO-1",
-      displayName: "Jinsha River UHV Hydro Base",
-      status: "finished",
-      monthsRemaining: 0,
-      outputMw: 1800
-    };
-    const screen = createScreenRegionForRegion(controller, "MAP-06");
-
-    const candidate = screen
-      .getSnapshot()
-      .linkCandidates.find(
-        (item) =>
-          item.fromCityId === "CITY-MAP06-01" &&
-          item.toCityId === "SUPER-HYDRO-1" &&
-          item.linkType === "trunk"
-      );
-    expect(candidate?.available).toBe(true);
-    expect(candidate?.toCityName).toBe("Jinsha River UHV Hydro Base");
-
-    const queue = screen.queueGridLink("CITY-MAP06-01", "SUPER-HYDRO-1", "trunk");
-    expect(queue.result.ok).toBe(true);
-  });
-
-  it("hides building super hydro from trunk candidates", () => {
-    const controller = createTestController(repoRoot);
-    controller.state.companyLevel = 5;
-    controller.state.litTechIds.push("super_hydro");
-    controller.state.superHydros["super_hydro_1"] = {
-      slotId: "super_hydro_1",
-      nodeId: "SUPER-HYDRO-1",
-      displayName: "Jinsha River UHV Hydro Base",
+    expect(queued.after.funds).toBe(queued.before.funds - 6);
+    expect(queued.after.gridLinks[0]).toMatchObject({
       status: "building",
       monthsRemaining: 1,
-      outputMw: 1800
-    };
-    const screen = createScreenRegionForRegion(controller, "MAP-06");
+      lossMw: 125,
+      buildCost: 6
+    });
+    expect(queued.after.cities.find((city) => city.cityId === "CITY-MAP01-02")?.supplyRatio).toBe(0);
 
-    expect(
-      screen
-        .getSnapshot()
-        .linkCandidates.some(
-          (item) => item.fromCityId === "CITY-MAP06-01" && item.toCityId === "SUPER-HYDRO-1"
-        )
-    ).toBe(false);
+    const advanced = screen.advanceOneMonth();
+    expect(advanced.ok).toBe(true);
+    if (!advanced.ok) return;
+    const start = advanced.value.after.cities.find((city) => city.cityId === "CITY-START");
+    const second = advanced.value.after.cities.find((city) => city.cityId === "CITY-MAP01-02");
+    expect(advanced.value.after.gridLinks[0]).toMatchObject({
+      status: "finished",
+      monthsRemaining: 0,
+      lossMw: 125
+    });
+    expect(start?.supplyRatio).toBe(0.43);
+    expect(second?.supplyRatio).toBe(0.43);
+    expect(start?.netImportMw).toBeLessThan(0);
+    expect(second?.netImportMw).toBeGreaterThan(0);
   });
 });

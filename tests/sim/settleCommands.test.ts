@@ -465,7 +465,7 @@ describe("dispatch commands and technology setup", () => {
     const config = loadTestConfig();
     const state = withSecondCity(createInitialState(config), config);
     state.companyLevel = 3;
-    state.litTechIds.push("eng_grid_dispatch");
+    state.litTechIds.push("grid_regional", "eng_grid_dispatch");
 
     const result = dispatch(
       state,

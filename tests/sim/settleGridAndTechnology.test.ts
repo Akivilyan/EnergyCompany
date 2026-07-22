@@ -35,7 +35,8 @@ describe("grid supply and technology effects", () => {
   it("M4 uses unified island rate when two cities are connected in v0", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
-    state.companyLevel = 2;
+    state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
     state.facilities["fac-a"] = {
       id: "fac-a",
       cityId: "CITY-START",
@@ -72,7 +73,8 @@ describe("grid supply and technology effects", () => {
   it("M4 subtracts finished grid link losses from island supply", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
-    state.companyLevel = 2;
+    state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
     state.facilities["fac-a"] = {
       id: "fac-a",
       cityId: "CITY-START",
@@ -397,6 +399,7 @@ describe("grid supply and technology effects", () => {
     const config = loadTestConfig();
     const state = withCity(createInitialState(config), config, "CITY-MAP02-01");
     state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
     const out = dispatch(
       state,
       {
@@ -459,7 +462,8 @@ describe("grid supply and technology effects", () => {
   it("M4 marks city non-eco even with net import", () => {
     const config = loadTestConfig();
     let state = withSecondCity(createInitialState(config), config);
-    state.companyLevel = 2;
+    state.companyLevel = 3;
+    state.litTechIds.push("grid_regional");
     state.facilities["fac-thermal"] = {
       id: "fac-thermal",
       cityId: "CITY-START",

@@ -92,6 +92,7 @@ export interface CompanySnapshot {
   effectiveLoanLevel: number;
   loanTierLevelBonus: number;
   socialValue: number;
+  gridRegionalLit: boolean;
   runResult: GameState["runResult"];
   adsRemaining: number;
   activeLoan: {
@@ -233,6 +234,7 @@ export class ScreenCompany {
       effectiveLoanLevel,
       loanTierLevelBonus,
       socialValue: state.socialValueCurrent,
+      gridRegionalLit: state.litTechIds.includes("grid_regional"),
       runResult: state.runResult,
       adsRemaining: state.adsRemaining,
       activeLoan: activeLoan

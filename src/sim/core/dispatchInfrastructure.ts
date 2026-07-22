@@ -219,6 +219,21 @@ export function handleInfrastructureCommand(
     }
     case "queue_grid_link": {
       if (command.fromCityId === command.toCityId) return err("invalid_command_payload", "grid link endpoints must be different");
+      if (command.linkType === "region") {
+        if (state.companyLevel < 3) {
+          return err("not_unlocked", "regional grid requires company level III", {
+            company_level: state.companyLevel,
+            required_company_level: 3,
+            link_type: command.linkType
+          });
+        }
+        if (!state.litTechIds.includes("grid_regional")) {
+          return err("not_unlocked", "regional grid technology not lit", {
+            required_tech_id: "grid_regional",
+            link_type: command.linkType
+          });
+        }
+      }
       const from = config.getCity(command.fromCityId);
       const to = config.getCity(command.toCityId);
       if (command.linkType === "region" && (!from || !to)) return err("not_found", "city not found for regional grid link");

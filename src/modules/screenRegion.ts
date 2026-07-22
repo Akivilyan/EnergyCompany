@@ -19,11 +19,14 @@ import {
 
 export interface RegionCityItem {
   cityId: string;
+  displayName: string;
   unlockCompanyLevel: number;
   unlocked: boolean;
+  operable: boolean;
   demandMw: number;
   localSupplyMw: number;
   effectiveSupplyMw: number;
+  netImportMw: number;
   supplyRatio: number;
 }
 
@@ -34,6 +37,7 @@ export interface RegionGridLinkItem {
   linkType: "region" | "trunk";
   status: "building" | "finished";
   monthsRemaining: number;
+  lossMw: number;
   buildCost: number | null;
 }
 
@@ -55,6 +59,9 @@ export interface RegionLinkCandidate {
 export interface ScreenRegionSnapshot {
   regionId: string;
   regionName: string;
+  canOpen: boolean;
+  entryGate: "open" | "company_level_3" | "grid_regional";
+  regionalTechLit: boolean;
   designRole: string | null;
   totalDemandMw: number;
   totalLocalSupplyMw: number;
@@ -122,11 +129,14 @@ export class ScreenRegion {
         const runtime = this.controller.state.cities[city.city_id];
         return {
           cityId: city.city_id,
+          displayName: city.display_name ?? city.city_id,
           unlockCompanyLevel: city.unlock_company_level,
           unlocked: this.controller.state.companyLevel >= city.unlock_company_level,
+          operable: !!runtime,
           demandMw: runtime?.demandMw ?? city.base_demand_mw,
           localSupplyMw: runtime?.localSupplyMw ?? 0,
           effectiveSupplyMw: runtime?.effectiveSupplyMw ?? 0,
+          netImportMw: runtime?.netImportMw ?? 0,
           supplyRatio: runtime?.supplyRatio ?? 0
         };
       })
@@ -153,6 +163,7 @@ export class ScreenRegion {
         linkType: link.linkType,
         status: link.status,
         monthsRemaining: link.monthsRemaining,
+        lossMw: link.lossMw,
         buildCost: link.buildCost ?? null
       }))
       .sort((a, b) => a.linkId.localeCompare(b.linkId));
@@ -160,6 +171,8 @@ export class ScreenRegion {
     const linkCandidates = this.buildLinkCandidates(cityNameMap);
 
     const connectionStatus = this.getRegionConnectionStatus(cities.map((city) => city.cityId));
+    const regionalTechLit = this.controller.state.litTechIds.includes("grid_regional");
+    const canOpen = this.controller.state.companyLevel >= 3 && regionalTechLit;
     const recommendedBuilds = getRecommendedBuilds(regionConfig ?? {}, regionCities);
     const operatingPressureTags = getOperatingPressureTags({
       regionId: this.regionId,
@@ -176,6 +189,13 @@ export class ScreenRegion {
     return {
       regionId: this.regionId,
       regionName: regionConfig?.display_name ?? this.regionId,
+      canOpen,
+      entryGate: canOpen
+        ? "open"
+        : this.controller.state.companyLevel < 3
+          ? "company_level_3"
+          : "grid_regional",
+      regionalTechLit,
       designRole: regionConfig?.design_role ?? null,
       totalDemandMw,
       totalLocalSupplyMw: cities.reduce((sum, city) => sum + city.localSupplyMw, 0),
@@ -255,6 +275,7 @@ export class ScreenRegion {
 
     const region = this.controller.config.bundle.regions.find((item) => item.region_id === this.regionId);
     const regionCities = unlockedCities.filter((city) => city.region_id === this.regionId);
+    const regionalTechLit = this.controller.state.litTechIds.includes("grid_regional");
     if (regionOperable && regionCities.length >= 2 && region) {
       const hubCity =
         regionCities.find((city) => city.city_type === "central") ?? regionCities[0];
@@ -267,8 +288,8 @@ export class ScreenRegion {
           linkType: "region",
           cost: getGridLinkBuildCost(this.controller.state, this.controller.config, 8, "region"),
           lossMw: getGridLinkLossMw(this.controller.state, this.controller.config, "region"),
-          unlocked: true,
-          available: !linkExists(hubCity.city_id, city.city_id),
+          unlocked: level >= 3 && regionalTechLit,
+          available: level >= 3 && regionalTechLit && !linkExists(hubCity.city_id, city.city_id),
           regionId: region.region_id,
           regionName: region.display_name ?? region.region_id,
           fromCityName: cityNameMap.get(hubCity.city_id) ?? hubCity.city_id,
