@@ -10,6 +10,10 @@ import {
   type AdRewardUiErrorCode
 } from "./adRewardService.js";
 import type { RunController } from "./runController.js";
+import {
+  buildCompanyGrowthSnapshot,
+  type CompanyGrowthSnapshot
+} from "./companyGrowth.js";
 
 export type CompanyUiErrorCode =
   | "loan_not_found"
@@ -99,6 +103,7 @@ export interface CompanySnapshot {
   loanTierOptions: CompanyLoanTierOption[];
   canApplyLoan: boolean;
   activeConstruction: CompanyConstructionQueueItem[];
+  growth: CompanyGrowthSnapshot;
 }
 
 export interface CompanyConstructionQueueItem {
@@ -246,7 +251,8 @@ export class ScreenCompany {
         facilityId: item.facilityId,
         tier: item.tier,
         monthsRemaining: item.monthsRemaining
-      }))
+      })),
+      growth: buildCompanyGrowthSnapshot(state, this.controller.config)
     };
   }
 

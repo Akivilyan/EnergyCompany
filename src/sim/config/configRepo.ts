@@ -71,6 +71,8 @@ export interface CityConfig {
 export interface CompanyLevelConfig {
   level: number;
   sv_threshold: number;
+  unlock_region_capital_count: number;
+  unlock_region_ordinary_count: number;
   unlock_notes?: string;
 }
 

@@ -27,6 +27,7 @@ const { ccclass } = _decorator;
 
 type FacilityId = "wind" | "solar" | "thermal";
 type SheetMode = "closed" | "choose" | "confirm";
+type ViewMode = "city" | "company";
 
 interface SpriteCatalog {
   funds: SpriteFrame;
@@ -141,11 +142,14 @@ function signed(value: number): string {
 export class CityPlayableRoot extends Component {
   private client: any = null;
   private cityScreen: any = null;
+  private companyScreen: any = null;
   private sprites: SpriteCatalog | null = null;
+  private viewMode: ViewMode = "city";
   private sheetMode: SheetMode = "closed";
   private selectedSlotId = "slot-5";
   private selectedFacilityId: FacilityId = "wind";
   private receipt: any = null;
+  private levelUpDetail: any = null;
   private toast = "";
   private settling = false;
 
@@ -168,9 +172,10 @@ export class CityPlayableRoot extends Component {
       this.sprites = sprites;
       this.client = mountGameClient({ configRepo });
       this.cityScreen = this.client.app.screens.city("CITY-START");
+      this.companyScreen = this.client.app.screens.company;
       this.render();
-      log("[PLAYABLE-CORE-01] ready: city construction and month settlement slice");
-      console.warn("[PLAYABLE-CORE-01] ready");
+      log("[PLAYABLE-CORE-02] ready: company growth and unlock slice");
+      console.warn("[PLAYABLE-CORE-02] ready");
     } catch (mountError) {
       const message = mountError instanceof Error ? mountError.message : String(mountError);
       logError("[PLAYABLE-CORE-01] mount failed", mountError);
@@ -198,14 +203,22 @@ export class CityPlayableRoot extends Component {
       this.renderFatal("CITY-START 不存在");
       return;
     }
+    if (this.viewMode === "company") {
+      this.drawCompanyPage(width, height);
+      return;
+    }
     this.drawCityBackdrop(width, height);
     this.drawHud(snapshot, width, height);
     this.drawCityField(snapshot, width, height);
     if (this.receipt && this.sheetMode === "closed") this.drawMonthReceipt(this.receipt, width, height);
     if (this.sheetMode !== "closed") this.drawBuildSheet(snapshot, width, height);
-    else this.drawNextMonthButton(width, height);
+    else {
+      this.drawCityEntries(snapshot, width, height);
+      this.drawNextMonthButton(width, height);
+    }
     if (this.toast) this.drawToast(this.toast, width, height);
     if (this.settling) this.drawSettlingOverlay(width, height);
+    if (this.levelUpDetail) this.drawLevelUpModal(this.levelUpDetail, width, height);
   }
 
   private drawCityBackdrop(width: number, height: number): void {
@@ -540,6 +553,231 @@ export class CityPlayableRoot extends Component {
     );
   }
 
+  private drawCityEntries(snapshot: any, _width: number, height: number): void {
+    const y = -height / 2 + 48;
+    this.makeTextButton(
+      this.node,
+      "公司",
+      -145,
+      y,
+      70,
+      58,
+      new Color(236, 247, 252, 248),
+      BLUE_TEXT,
+      () => {
+        this.viewMode = "company";
+        this.receipt = null;
+        this.toast = "";
+        this.render();
+        console.warn("[PLAYABLE-CORE-02] company entry opened");
+      },
+      17
+    );
+    const technologyUnlocked = snapshot.companyLevel >= 2;
+    this.makeTextButton(
+      this.node,
+      technologyUnlocked ? "科技 · 已开放" : "科技 · II级",
+      -59,
+      y,
+      92,
+      58,
+      technologyUnlocked
+        ? new Color(205, 247, 244, 250)
+        : new Color(207, 218, 224, 245),
+      technologyUnlocked ? new Color(18, 112, 105, 255) : MUTED_TEXT,
+      () => {
+        this.toast = technologyUnlocked
+          ? "科技研发入口已开放"
+          : "公司达到 II 级后开放科技研发";
+        this.render();
+        console.warn(
+          `[PLAYABLE-CORE-02] technology entry ${technologyUnlocked ? "unlocked" : "locked"}`
+        );
+      },
+      14
+    );
+  }
+
+  private drawCompanyPage(width: number, height: number): void {
+    const company = this.companyScreen.getSnapshot();
+    const growth = company.growth;
+    const top = height / 2;
+
+    this.paintRect(this.node, 0, 0, width, height, new Color(38, 145, 194, 255));
+    const wash = this.layer("CompanyBackdrop", this.node, width, height, 0, 0);
+    const g = wash.addComponent(Graphics);
+    g.fillColor = new Color(97, 211, 224, 255);
+    g.circle(-width * 0.34, top - 170, 190);
+    g.fill();
+    g.fillColor = new Color(60, 174, 203, 255);
+    g.circle(width * 0.38, -height * 0.28, 260);
+    g.fill();
+
+    this.makeTextButton(
+      this.node,
+      "‹",
+      -width / 2 + 42,
+      top - 43,
+      48,
+      48,
+      new Color(236, 248, 252, 248),
+      BLUE_TEXT,
+      () => {
+        this.viewMode = "city";
+        this.toast = growth.entries.technology.unlocked
+          ? "科技入口已按公司 II 级刷新"
+          : "";
+        this.render();
+      },
+      31
+    );
+    this.addLabel(this.node, "公司成长", -38, top - 43, 150, 36, 25, WHITE, false, 0);
+    this.addLabel(this.node, `第 ${company.month} 月快照`, width / 2 - 96, top - 43, 150, 28, 15, WHITE, false, 2);
+
+    const heroY = top - 132;
+    const hero = this.layer("CompanyGrowthHero", this.node, width - 32, 130, 0, heroY);
+    this.paintRounded(hero, 0, 0, width - 32, 130, 24, new Color(245, 251, 255, 248), new Color(255, 255, 255, 255), 2);
+    this.addLabel(hero, "公司 Lv", -135, 35, 72, 28, 17, MUTED_TEXT, false, 0);
+    this.paintRounded(hero, -75, 35, 45, 45, 14, new Color(88, 102, 191, 255));
+    this.addLabel(hero, growth.levelRoman, -75, 35, 42, 40, 23, WHITE, true);
+    this.addSprite(hero, this.sprites!.companyExp, -20, 35, 34, 34);
+    const thresholdText = growth.nextThreshold === null ? "MAX" : `${growth.expCurrent} / ${growth.nextThreshold} EXP`;
+    const barWidth = width - 92;
+    this.paintRounded(hero, 0, -25, barWidth, 31, 15, new Color(221, 225, 239, 255));
+    const fillWidth = Math.max(2, barWidth * growth.progressRatio);
+    this.paintRounded(hero, -barWidth / 2 + fillWidth / 2, -25, fillWidth, 31, 15, new Color(205, 77, 181, 255));
+    this.addLabel(hero, thresholdText, 0, -25, barWidth, 30, 16, BLUE_TEXT, true);
+
+    const ruleY = top - 244;
+    const rule = this.layer("ExpRule", this.node, width - 32, 74, 0, ruleY);
+    this.paintRounded(rule, 0, 0, width - 32, 74, 18, new Color(242, 250, 253, 244));
+    this.addLabel(rule, "每月按供能与环保结果覆盖重算 EXP", 0, 16, width - 62, 24, 16, BLUE_TEXT, true);
+    this.addLabel(rule, "EXP 可下降；公司等级与已解锁内容不回退", 0, -14, width - 62, 24, 15, MUTED_TEXT, true);
+
+    const breakdownY = top - 350;
+    const breakdown = this.layer("ExpBreakdown", this.node, width - 32, 116, 0, breakdownY);
+    this.paintRounded(breakdown, 0, 0, width - 32, 116, 18, new Color(240, 248, 252, 246));
+    this.addLabel(breakdown, "本月 EXP 从哪里来", 0, 38, width - 76, 27, 18, BLUE_TEXT, false, 0);
+    const city = growth.cityBreakdown[0];
+    if (city) {
+      this.addLabel(
+        breakdown,
+        `${city.displayName.replace("（负荷中心，占位）", "")}  ·  ${city.exp} EXP`,
+        0,
+        4,
+        width - 76,
+        25,
+        17,
+        BLUE_TEXT,
+        false,
+        0
+      );
+      this.addLabel(
+        breakdown,
+        `供能 ${city.effectiveSupplyMw}/${city.demandMw} MW  ·  ${city.fullyEco ? "全环保 ×1.0" : "待改善 ×0.8"}`,
+        0,
+        -29,
+        width - 76,
+        24,
+        15,
+        MUTED_TEXT,
+        false,
+        0
+      );
+    }
+
+    const unlockY = top - 500;
+    const unlock = this.layer("CurrentUnlocks", this.node, width - 32, 158, 0, unlockY);
+    this.paintRounded(unlock, 0, 0, width - 32, 158, 20, new Color(239, 250, 247, 248), new Color(138, 231, 211, 255), 2);
+    this.addLabel(unlock, growth.level >= 2 ? "II 级已解锁" : "下一等级将解锁", 0, 53, width - 76, 28, 19, BLUE_TEXT, false, 0);
+    if (growth.level >= 2) {
+      this.addLabel(unlock, "✓ 科技研发入口", 0, 16, width - 76, 26, 17, new Color(18, 112, 105, 255), false, 0);
+      this.addLabel(unlock, "✓ 起始省新增 2 座可经营城市", 0, -17, width - 76, 26, 16, BLUE_TEXT, false, 0);
+      this.addLabel(unlock, "下一步：返回城市，进入科技研发", 0, -52, width - 76, 26, 16, MUTED_TEXT, false, 0);
+    } else {
+      this.addLabel(unlock, "达到 1 EXP → 公司 II 级", 0, 10, width - 76, 28, 17, BLUE_TEXT, false, 0);
+      this.addLabel(unlock, "继续经营城市并推进月份", 0, -27, width - 76, 28, 16, MUTED_TEXT, false, 0);
+    }
+
+    this.makePrimaryButton(
+      this.node,
+      growth.entries.technology.unlocked ? "返回城市 · 查看已开放科技入口" : "返回城市继续经营",
+      0,
+      -height / 2 + 48,
+      width - 38,
+      58,
+      true,
+      () => {
+        this.viewMode = "city";
+        this.toast = growth.entries.technology.unlocked ? "科技研发入口已开放" : "";
+        this.render();
+        console.warn(
+          `[PLAYABLE-CORE-02] company closed level=${growth.levelRoman} exp=${growth.expCurrent}`
+        );
+      }
+    );
+  }
+
+  private drawLevelUpModal(detail: any, width: number, height: number): void {
+    const blocker = this.layer("CompanyLevelUpBlocker", this.node, width, height, 0, 0);
+    this.paintRect(blocker, 0, 0, width, height, new Color(20, 63, 94, 128));
+    this.makeHitTarget(blocker, () => {});
+
+    const modal = this.layer("CompanyLevelUpModal", this.node, width - 32, 430, 0, 8);
+    this.paintRounded(modal, 0, 0, width - 32, 430, 28, new Color(246, 252, 255, 255), new Color(134, 239, 226, 255), 3);
+    this.addSprite(modal, this.sprites!.companyExp, 0, 163, 48, 48);
+    this.addLabel(modal, "公司升级", 0, 119, width - 70, 38, 27, BLUE_TEXT, true);
+    this.addLabel(
+      modal,
+      `${this.levelRoman(detail.growth.levelBefore)}  →  ${this.levelRoman(detail.growth.levelAfter)}`,
+      0,
+      78,
+      width - 80,
+      36,
+      27,
+      new Color(119, 71, 177, 255),
+      true
+    );
+    this.paintRounded(modal, 0, 23, width - 74, 74, 17, new Color(239, 244, 252, 255));
+    this.addLabel(modal, "为何升级", 0, 41, width - 76, 24, 16, MUTED_TEXT, false, 0);
+    this.addLabel(
+      modal,
+      `M9 EXP ${detail.growth.expBefore} → ${detail.growth.expAfter} · 达到门槛 ${detail.growth.reachedThreshold}`,
+      0,
+      10,
+      width - 76,
+      26,
+      16,
+      BLUE_TEXT,
+      false,
+      0
+    );
+    this.addLabel(modal, "本次解锁", 0, -35, width - 76, 26, 18, BLUE_TEXT, false, 0);
+    this.addLabel(modal, "✓ 科技研发入口", 0, -70, width - 76, 25, 17, new Color(18, 112, 105, 255), false, 0);
+    this.addLabel(modal, "✓ 起始省新增 2 座可经营城市", 0, -103, width - 76, 25, 16, BLUE_TEXT, false, 0);
+    this.addLabel(modal, "等级与这些解锁不会因 EXP 回落而失去", 0, -140, width - 72, 24, 15, MUTED_TEXT, true);
+    this.makePrimaryButton(
+      modal,
+      "查看公司成长与下一步",
+      0,
+      -184,
+      width - 74,
+      58,
+      true,
+      () => {
+        this.levelUpDetail = null;
+        this.receipt = null;
+        this.viewMode = "company";
+        this.render();
+        console.warn("[PLAYABLE-CORE-02] level-up acknowledged and company opened");
+      }
+    );
+  }
+
+  private levelRoman(level: number): string {
+    return ["0", "I", "II", "III", "IV", "V"][level] ?? `${level}`;
+  }
+
   private drawNextMonthButton(width: number, height: number): void {
     this.makePrimaryButton(
       this.node,
@@ -566,9 +804,12 @@ export class CityPlayableRoot extends Component {
         this.toast = "月结失败，请重试";
       } else {
         this.receipt = result.value;
+        if (result.value.growth.levelsGained > 0) {
+          this.levelUpDetail = result.value;
+        }
         const completion = result.value.projectUpdates.find((update: any) => update.state === "completed");
         console.warn(
-          `[PLAYABLE-CORE-01] month ${result.value.monthTo} settled funds=${signed(result.value.delta.funds)} supply=${signed(result.value.delta.effectiveSupplyMw)} exp=${signed(result.value.delta.socialValue)} completion=${completion?.facilityId ?? "none"}`
+          `[PLAYABLE-CORE-02] month ${result.value.monthTo} settled funds=${signed(result.value.delta.funds)} supply=${signed(result.value.delta.effectiveSupplyMw)} exp=${result.value.growth.expBefore}->${result.value.growth.expAfter} level=${result.value.growth.levelBefore}->${result.value.growth.levelAfter} completion=${completion?.facilityId ?? "none"}`
         );
       }
       this.render();

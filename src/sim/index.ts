@@ -10,6 +10,7 @@ export { createInitialState } from "./core/createInitialState.js";
 export { dispatch } from "./core/dispatch.js";
 export {
   getConstructionBuildCost,
+  getCitySocialValue,
   getFacilityBuildTierMax,
   getFacilityTierSpec,
   getGridLinkBuildCost,

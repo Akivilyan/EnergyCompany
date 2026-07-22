@@ -83,6 +83,13 @@ describe("ScreenCityDetail", () => {
     expect(month4.value.delta.effectiveSupplyMw).toBeGreaterThan(0);
     expect(month4.value.after.recurringFundsDeltaEstimate).toBeGreaterThan(0);
     expect(month4.value.delta.socialValue).toBeGreaterThan(0);
+    expect(month4.value.growth).toMatchObject({
+      levelBefore: 1,
+      levelAfter: 2,
+      levelsGained: 1,
+      reachedThreshold: 1
+    });
+    expect(month4.value.growth.unlocked.map((item) => item.id)).toContain("screen_tech_tree");
   });
 
   it("returns not_found when city does not exist", () => {

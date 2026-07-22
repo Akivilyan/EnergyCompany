@@ -1,5 +1,5 @@
 import type { ConfigRepo, FacilityConfig, TechnologyConfig } from "../config/configRepo.js";
-import type { GameState } from "../types/gameState.js";
+import type { CityRuntime, GameState } from "../types/gameState.js";
 
 function getLitTechnologies(state: GameState, config: ConfigRepo): TechnologyConfig[] {
   return state.litTechIds
@@ -230,4 +230,18 @@ export function getEcoCitySocialValue(
     cityBaseSocialValue,
     sumModifierPercent(state, config, "eco_city_sv_pct")
   );
+}
+
+export function getCitySocialValue(
+  state: GameState,
+  config: ConfigRepo,
+  city: CityRuntime
+): number {
+  const cityBaseSocialValue = getEcoCitySocialValue(
+    state,
+    config,
+    city.cityBaseSocialValue,
+    city.cityFullyEcoSupply
+  );
+  return Math.floor(cityBaseSocialValue * city.supplyRatio * city.ecoCapFactor);
 }

@@ -1319,6 +1319,33 @@ describe("settleNextMonth", () => {
     expect(month.value.state.companyLevel).toBe(1);
   });
 
+  it("M9 overwrites EXP downward while M10 keeps level and unlock floor", () => {
+    const config = loadTestConfig();
+    const state = createInitialState(config, { doctrineId: "tech" });
+    state.companyLevel = 2;
+    state.socialValueCurrent = 12;
+    state.facilities = {};
+
+    const month = settleNextMonth(state, config, defaultPorts);
+
+    expect(month.ok).toBe(true);
+    if (!month.ok) return;
+    expect(month.value.state.socialValueCurrent).toBe(0);
+    expect(month.value.state.companyLevel).toBe(2);
+    const m9 = month.value.report.steps.find((step) => step.stepId === "M9_social_value_settlement");
+    const m10 = month.value.report.steps.find((step) => step.stepId === "M10_company_level_check");
+    expect(m9?.metrics).toMatchObject({
+      social_value_before: 12,
+      social_value: 0,
+      social_value_delta: -12
+    });
+    expect(m10?.metrics).toMatchObject({
+      company_level_before: 2,
+      company_level: 2,
+      levels_gained: 0
+    });
+  });
+
   it("M10 can upgrade normal run to level II after initial wind buildout", () => {
     const config = loadTestConfig();
     let state = createInitialState(config, { doctrineId: "tech" });

@@ -175,4 +175,37 @@ describe("ScreenCompany", () => {
     expect(out.uiErrorCode).toBe("no_active_construction");
     expect(out.after.adsRemaining).toBe(out.before.adsRemaining);
   });
+
+  it("exposes the I-V growth matrix and level-II entry refresh from one config truth", () => {
+    const controller = createTestController(repoRoot);
+    const screen = createScreenCompany(controller);
+
+    const levelOne = screen.getSnapshot().growth;
+    expect(levelOne.unlockMatrix.map((row) => row.level)).toEqual([1, 2, 3, 4, 5]);
+    expect(levelOne.unlockMatrix.map((row) => row.threshold)).toEqual([0, 1, 28, 84, 176]);
+    expect(levelOne.entries.technology).toEqual({ unlocked: false, requiredLevel: 2 });
+    expect(levelOne.entries.worldMap).toEqual({ unlocked: false, requiredLevel: 2 });
+
+    const levelTwoRow = levelOne.unlockMatrix.find((row) => row.level === 2);
+    expect(levelTwoRow?.newlyUnlocked.map((item) => item.id)).toEqual(
+      expect.arrayContaining([
+        "screen_tech_tree",
+        "screen_world_map",
+        "CITY-MAP01-02",
+        "CITY-MAP01-03",
+        "wind_2",
+        "loan_2"
+      ])
+    );
+
+    controller.state.companyLevel = 2;
+    controller.state.socialValueCurrent = 2;
+    const levelTwo = screen.getSnapshot().growth;
+    expect(levelTwo.levelRoman).toBe("II");
+    expect(levelTwo.nextThreshold).toBe(28);
+    expect(levelTwo.entries.technology.unlocked).toBe(true);
+    expect(levelTwo.entries.worldMap.unlocked).toBe(true);
+    expect(levelTwo.expCanDecrease).toBe(true);
+    expect(levelTwo.levelCanDecrease).toBe(false);
+  });
 });

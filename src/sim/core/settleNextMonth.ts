@@ -12,7 +12,7 @@ import type { SettlementReport, SettlementStepReport } from "../types/settlement
 import {
   getFacilityEcoStatus,
   getFacilityTierSpec,
-  getEcoCitySocialValue,
+  getCitySocialValue,
   getGridLinkLossMw,
   hasStorageOutputBoost,
   syncFacilityRuntimeTiers
@@ -414,20 +414,20 @@ export function settleNextMonth(
   }
   steps.push(step("M8_loan_settlement", `paid=${loanPaid}`, { loan_paid: loanPaid }));
 
+  const socialValueBefore = next.socialValueCurrent;
   let sv = 0;
   for (const city of Object.values(next.cities)) {
-    const cityBaseSocialValue = getEcoCitySocialValue(
-      next,
-      config,
-      city.cityBaseSocialValue,
-      city.cityFullyEcoSupply
-    );
-    sv += Math.floor(cityBaseSocialValue * city.supplyRatio * city.ecoCapFactor);
+    sv += getCitySocialValue(next, config, city);
   }
   next.socialValueCurrent = sv;
-  steps.push(step("M9_social_value_settlement", `sv=${sv}`, { social_value: sv }));
+  steps.push(step("M9_social_value_settlement", `sv=${sv}`, {
+    social_value_before: socialValueBefore,
+    social_value: sv,
+    social_value_delta: sv - socialValueBefore
+  }));
 
-  let newLevel = next.companyLevel;
+  const companyLevelBefore = next.companyLevel;
+  let newLevel = companyLevelBefore;
   for (const row of config.bundle.companyLevels) {
     const threshold = getEffectiveSvThreshold(next, config, row.level, row.sv_threshold);
     if (next.socialValueCurrent >= threshold && row.level > newLevel) {
@@ -435,7 +435,11 @@ export function settleNextMonth(
     }
   }
   next.companyLevel = newLevel;
-  steps.push(step("M10_company_level_check", `level=${newLevel}`, { company_level: newLevel }));
+  steps.push(step("M10_company_level_check", `level=${newLevel}`, {
+    company_level_before: companyLevelBefore,
+    company_level: newLevel,
+    levels_gained: newLevel - companyLevelBefore
+  }));
 
   const diff = config.bundle.difficulties.find((d) => d.difficulty_id === next.difficultyId);
   const disasterCashMult = diff?.disaster_cash_mult ?? 1;

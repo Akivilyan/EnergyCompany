@@ -10,6 +10,10 @@ import {
   type SimResult
 } from "../sim/index.js";
 import type { CitySnapshot, RunController } from "./runController.js";
+import {
+  buildCompanyUnlockMatrix,
+  type CompanyUnlockItem
+} from "./companyGrowth.js";
 
 const PLAYABLE_FACILITY_IDS = ["wind", "solar", "thermal"] as const;
 
@@ -70,6 +74,16 @@ export interface CityMonthlyAdvanceDetail {
   projectUpdates: CityProjectUpdate[];
   report: SettlementReport;
   settleResult: SettlementReport["result"];
+  growth: {
+    levelBefore: number;
+    levelAfter: number;
+    levelsGained: number;
+    expBefore: number;
+    expAfter: number;
+    expDelta: number;
+    reachedThreshold: number | null;
+    unlocked: CompanyUnlockItem[];
+  };
 }
 
 export interface CityConstructionAction {
@@ -260,6 +274,10 @@ export class ScreenCityDetail {
     if (!settle.ok) return settle;
     const after = this.getSnapshot();
     if (!after) return notFoundCity(this.cityId);
+    const levelRows = buildCompanyUnlockMatrix(this.controller.config, after.companyLevel);
+    const unlocked = levelRows
+      .filter((row) => row.level > before.companyLevel && row.level <= after.companyLevel)
+      .flatMap((row) => row.newlyUnlocked);
     return {
       ok: true,
       value: {
@@ -276,7 +294,18 @@ export class ScreenCityDetail {
         },
         projectUpdates: buildProjectUpdates(before, after),
         report: settle.value.report,
-        settleResult: settle.value.report.result
+        settleResult: settle.value.report.result,
+        growth: {
+          levelBefore: before.companyLevel,
+          levelAfter: after.companyLevel,
+          levelsGained: after.companyLevel - before.companyLevel,
+          expBefore: before.socialValue,
+          expAfter: after.socialValue,
+          expDelta: after.socialValue - before.socialValue,
+          reachedThreshold:
+            levelRows.find((row) => row.level === after.companyLevel)?.threshold ?? null,
+          unlocked
+        }
       }
     };
   }
