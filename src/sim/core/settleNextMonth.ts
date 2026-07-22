@@ -13,11 +13,16 @@ import {
   getFacilityEcoStatus,
   getFacilityTierSpec,
   getCitySocialValue,
-  getGridLinkLossMw,
-  hasStorageOutputBoost,
   syncFacilityRuntimeTiers
 } from "./technologyEffects.js";
-import { calculateRecurringCashflow, getCityResourceMultiplier } from "./cityEconomy.js";
+import { calculateRecurringCashflow } from "./cityEconomy.js";
+import {
+  recalcGridSupply,
+  syncGridLinkLosses,
+  syncOperableCities
+} from "./gridSettlement.js";
+
+export { syncOperableCities } from "./gridSettlement.js";
 
 export interface SettleOutput {
   state: GameState;
@@ -87,169 +92,6 @@ function getEffectiveSvThreshold(
     return config.bundle.runConfig.tutorial_level2_sv_threshold ?? 0;
   }
   return baseThreshold;
-}
-
-function getStartRegionId(config: ConfigRepo): string | null {
-  return config.getCity("CITY-START")?.region_id ?? null;
-}
-
-function isRegionOperable(state: GameState, config: ConfigRepo, regionId: string | undefined): boolean {
-  if (!regionId) return true;
-  const startRegionId = getStartRegionId(config);
-  if (regionId === startRegionId) return true;
-
-  const regionCityIds = new Set(
-    config.bundle.cities
-      .filter((cityConfig) => cityConfig.region_id === regionId)
-      .map((cityConfig) => cityConfig.city_id)
-  );
-  for (const link of Object.values(state.gridLinks)) {
-    if (link.status !== "finished" || link.linkType !== "trunk") continue;
-    const fromInRegion = regionCityIds.has(link.fromCityId);
-    const toInRegion = regionCityIds.has(link.toCityId);
-    if (fromInRegion && state.cities[link.toCityId]) return true;
-    if (toInRegion && state.cities[link.fromCityId]) return true;
-  }
-  return false;
-}
-
-/** 将已解锁城市写入运行态，供 M4/M9 按城结算社会价值。 */
-export function syncOperableCities(state: GameState, config: ConfigRepo): void {
-  for (const cityConfig of config.bundle.cities) {
-    if (state.companyLevel < cityConfig.unlock_company_level) {
-      continue;
-    }
-    if (!isRegionOperable(state, config, cityConfig.region_id)) {
-      continue;
-    }
-    if (state.cities[cityConfig.city_id]) {
-      continue;
-    }
-    state.cities[cityConfig.city_id] = {
-      cityId: cityConfig.city_id,
-      demandMw: cityConfig.base_demand_mw,
-      localSupplyMw: 0,
-      effectiveSupplyMw: 0,
-      netImportMw: 0,
-      supplyRatio: 0,
-      cityFullyEcoSupply: true,
-      ecoCapFactor: 1,
-      cityBaseSocialValue: cityConfig.city_base_social_value
-    };
-  }
-}
-
-function buildIslands(state: GameState): string[][] {
-  const cityIds = Object.keys(state.cities);
-  const superHydroNodeIds = Object.values(state.superHydros ?? {})
-    .filter((slot) => slot.status === "finished")
-    .map((slot) => slot.nodeId);
-  const nodeIds = [...cityIds, ...superHydroNodeIds];
-  const adj = new Map<string, Set<string>>();
-  for (const nodeId of nodeIds) {
-    adj.set(nodeId, new Set());
-  }
-  for (const link of Object.values(state.gridLinks)) {
-    if (link.status !== "finished") continue;
-    if (!adj.has(link.fromCityId) || !adj.has(link.toCityId)) continue;
-    adj.get(link.fromCityId)?.add(link.toCityId);
-    adj.get(link.toCityId)?.add(link.fromCityId);
-  }
-  const visited = new Set<string>();
-  const islands: string[][] = [];
-  for (const nodeId of nodeIds) {
-    if (visited.has(nodeId)) continue;
-    const island: string[] = [];
-    const stack = [nodeId];
-    visited.add(nodeId);
-    while (stack.length > 0) {
-      const cur = stack.pop();
-      if (!cur) continue;
-      island.push(cur);
-      for (const next of adj.get(cur) ?? []) {
-        if (visited.has(next)) continue;
-        visited.add(next);
-        stack.push(next);
-      }
-    }
-    islands.push(island);
-  }
-  return islands;
-}
-
-function syncGridLinkLosses(state: GameState, config: ConfigRepo): void {
-  for (const link of Object.values(state.gridLinks)) {
-    link.lossMw = getGridLinkLossMw(state, config, link.linkType);
-  }
-}
-
-function recalcSupply(state: GameState, config: ConfigRepo): void {
-  const hasStorageBoost = hasStorageOutputBoost(state);
-  const storageBoostTypes = new Set(["wind", "solar", "hydro"]);
-  const localSupplyByCity = new Map<string, number>();
-  const localFullyEcoByCity = new Map<string, boolean>();
-
-  for (const cityId of Object.keys(state.cities)) {
-    localSupplyByCity.set(cityId, 0);
-    localFullyEcoByCity.set(cityId, true);
-  }
-
-  for (const fac of Object.values(state.facilities)) {
-    const current = localSupplyByCity.get(fac.cityId) ?? 0;
-    const resourceBoost = getCityResourceMultiplier(config, fac.cityId, fac.facilityId);
-    const boost =
-      hasStorageBoost && storageBoostTypes.has(fac.facilityId) ? 2 : 1;
-    localSupplyByCity.set(fac.cityId, current + fac.outputMw * resourceBoost * boost);
-    if (!(fac.isEco ?? getFacilityEcoStatus(state, config, fac.facilityId))) {
-      localFullyEcoByCity.set(fac.cityId, false);
-    }
-  }
-  for (const slot of Object.values(state.superHydros ?? {})) {
-    if (slot.status !== "finished") continue;
-    localSupplyByCity.set(slot.nodeId, (localSupplyByCity.get(slot.nodeId) ?? 0) + slot.outputMw);
-    localFullyEcoByCity.set(slot.nodeId, true);
-  }
-
-  const islands = buildIslands(state);
-  for (const island of islands) {
-    let islandDemand = 0;
-    let islandSupply = 0;
-    let islandLoss = 0;
-    const islandCityIds = new Set(island);
-    for (const cityId of island) {
-      if (!state.cities[cityId]) {
-        islandSupply += localSupplyByCity.get(cityId) ?? 0;
-        continue;
-      }
-      const city = state.cities[cityId];
-      islandDemand += city.demandMw;
-      islandSupply += localSupplyByCity.get(cityId) ?? 0;
-    }
-    for (const link of Object.values(state.gridLinks)) {
-      if (link.status !== "finished") continue;
-      if (islandCityIds.has(link.fromCityId) && islandCityIds.has(link.toCityId)) {
-        islandLoss += link.lossMw;
-      }
-    }
-    const availableSupply = Math.max(0, islandSupply - islandLoss);
-    const islandRate =
-      islandDemand <= 0 ? 0 : Math.min(1, availableSupply / islandDemand);
-    for (const cityId of island) {
-      if (!state.cities[cityId]) continue;
-      const city = state.cities[cityId];
-      const localSupply = localSupplyByCity.get(cityId) ?? 0;
-      const effectiveSupply = Math.floor(city.demandMw * islandRate);
-      city.localSupplyMw = localSupply;
-      city.effectiveSupplyMw = effectiveSupply;
-      city.netImportMw = effectiveSupply - localSupply;
-      city.supplyRatio =
-        city.demandMw <= 0
-          ? 0
-          : Math.min(1, Math.floor((effectiveSupply * 100) / city.demandMw) / 100);
-      city.cityFullyEcoSupply = localFullyEcoByCity.get(cityId) ?? true;
-      city.ecoCapFactor = city.cityFullyEcoSupply ? 1 : 0.8;
-    }
-  }
 }
 
 function runM2(state: GameState): SettlementStepReport {
@@ -370,7 +212,7 @@ export function settleNextMonth(
   steps.push(runM1(next, config));
   syncFacilityRuntimeTiers(next, config);
   syncOperableCities(next, config);
-  recalcSupply(next, config);
+  recalcGridSupply(next, config);
   steps.push(
     step("M4_supply_recalc", "supply ratios updated", {
       supply_ratio: next.cities["CITY-START"]?.supplyRatio ?? 0
